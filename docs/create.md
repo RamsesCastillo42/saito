@@ -24,7 +24,7 @@ Before we can start coding, we need to get our module structure in order. Module
 
 Notice that we have the files `game.js`, `mods.js`, and `template.js`. Both `game.js` and `template.js` act as templates that we can implement in our own modules. `mods.js` is the way that our node is able to interface the functionality of the Saito network with the modules that exist in our `modules` directory. 
 
-We've created a new directory in our modules directory called `todo` with a `web` directory that has our `index.html` and `style.css` file that we'll serve using `todo.js`. Next, let's add some structure to our `todo.js` file.
+We've created a new directory in our `mods` directory called `todo` with a `web` directory that has our `index.html` and `style.css` file that we'll serve using `todo.js`. Next, let's add some structure to our `todo.js` file.
 
 
 ## Coding our Module
@@ -96,6 +96,7 @@ We want to think about how our module will work and transact with the Saito chai
 // todo.js
 
 Todo.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
+  if (tx.transaction.msg.module != "Todo") { return; }
   if (conf == 0) {
     todo = app.modules.returnModule("Todo");
     switch (tx.transaction.msg.type) {
@@ -125,7 +126,7 @@ Todo.prototype.createTodoTX = function createTodoTx(data) {
 
   var newtx = this.app.wallet.signTransaction(newtx);
 
-  this.app.network.propagateWithCallback(newtx, () => {
+  this.app.network.propagateTransactionWithCallback(newtx, () => {
     if (this.app.BROWSER) {
       alert("your message was propagated")
     }
