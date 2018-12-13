@@ -2,6 +2,7 @@
 .vscode/*
 .DS_Store
 options
+package-lock.json
 node_modules
 node_modules/*
 logs
