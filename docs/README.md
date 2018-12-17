@@ -1,6 +1,6 @@
 # Welcome to Saito
 
-Welcome to the Saito Network. Saito is a decentralized, peer-to-peer, blockchain network that's fixing the scaling problems of blockchain networks by solving the fundamental economic problems in blockchain. Learn more about our solutions be reading our [whitepaper](https://saito.tech/saito-whitepaper.pdf).
+Welcome to the Saito Network. Saito is a decentralized, peer-to-peer, blockchain network that's fixing the scaling problems of blockchain networks by solving the fundamental economic problems in blockchain. Learn more about our solutions be reading our (4 page) [whitepaper](https://saito.tech/saito-whitepaper.pdf).
 
 ## Getting started
 If you just downloaded Saito and want to get it running, please read our

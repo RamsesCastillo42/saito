@@ -1,6 +1,6 @@
 # Create Your First Module
 
-So now that you have Saito installed and you can connect to the network, it's time to start building on top of it. We'll show you the basics of getting an app up on Saito. As an example, we'll create a basic TODO app (decentralized of course).
+So now that you have Saito installed and you can connect to the network, it's time to start building on top of it. We'll show you the basics of getting an app up on Saito. As an example, we'll create a basic decentralized TODO app.
 
 ## Module App Structure
 
@@ -24,7 +24,7 @@ Before we can start coding, we need to get our module structure in order. Module
 
 Notice that we have the files `game.js`, `mods.js`, and `template.js`. Both `game.js` and `template.js` act as templates that we can implement in our own modules. `mods.js` is the way that our node is able to interface the functionality of the Saito network with the modules that exist in our `modules` directory. 
 
-We've created a new directory in our modules directory called `todo` with a `web` directory that has our `index.html` and `style.css` file that we'll serve using `todo.js`. Next, let's add some structure to our `todo.js` file.
+We've created a new directory in our `mods` directory called `todo` with a `web` directory that has our `index.html` and `style.css` file that we'll serve using `todo.js`. Next, let's add some structure to our `todo.js` file.
 
 
 ## Coding our Module
@@ -58,7 +58,7 @@ util.inherits(Todo, ModTemplate);
 
 Our module is inhereting our `template` so that it has all of the necessary functions. We will be overwriting the ones we want to use in order to add the business logic of our module.
 
-The constructor is a place to setup any local app state that will be necessary for our application. Lets add a field to save our TODOS to the state of our module.
+The constructor is a place to setup any local app state that will be necessary for our application. Let's add a field to save our TODOS to the state of our module.
 
 ```javascript
 // todo.js
@@ -96,6 +96,7 @@ We want to think about how our module will work and transact with the Saito chai
 // todo.js
 
 Todo.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
+  if (tx.transaction.msg.module != "Todo") { return; }
   if (conf == 0) {
     todo = app.modules.returnModule("Todo");
     switch (tx.transaction.msg.type) {
@@ -113,7 +114,7 @@ Todo.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
 We'll hold off on fleshing out the render logic to these functions until we've built out our html and css.
 
 
-Next thing that we'll want to do is allow the user to create transactions for both tasks and checkboxs and then propagate them into the network. We can write out our logic for that in a custom function called `createTodoTx`. This allows us to generically create TX for both our tasks and our checkboxs.
+Next thing that we'll want to do is allow the user to create transactions for both tasks and checkboxes and then propagate them into the network. We can write out our logic for that in a custom function called `createTodoTx`. This allows us to generically create TX for both our tasks and our checkboxes.
 
 ```javascript
 // todo.js
@@ -125,7 +126,7 @@ Todo.prototype.createTodoTX = function createTodoTx(data) {
 
   var newtx = this.app.wallet.signTransaction(newtx);
 
-  this.app.network.propagateWithCallback(newtx, () => {
+  this.app.network.propagateTransactionWithCallback(newtx, () => {
     if (this.app.BROWSER) {
       alert("your message was propagated")
     }

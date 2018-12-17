@@ -2,6 +2,7 @@
 .vscode/*
 .DS_Store
 options
+package-lock.json
 node_modules
 node_modules/*
 logs
@@ -25,5 +26,4 @@ lib/modules/mods/advert/web/cache/*.png
 lib/modules/mods/appstore/web/cache/*
 lib/modules/mods/explorer/web/index.html
 lib/modules/mods/registry/web/addresses.txt
-
-
+extras/shashmap/build

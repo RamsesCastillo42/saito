@@ -51,6 +51,11 @@ make install
 
 ## Install Saito
 
+Clone Saito from the github repo:
+```
+git clone https://github.com/saitotech/saito
+```
+
 Change directory into `saito` and install required NodeJS dependencies:
 ```
 npm install
@@ -87,3 +92,12 @@ Wait a few seconds after starting the program and type `Ctrl-C`. You
 will see the `^C` carat printed at the terminal line but get no other
 indications of change. You should then type `exit` to close your
 terminal. Saito will continue to run in the background.
+
+## Docker
+
+Build your docker container locally, or pull from `beargy/saito`
+```
+docker build -t bearguy/saito .
+```
+
+Then run it with `docker-compose up` and go to `http://localhost:8080` to see your Saito instance

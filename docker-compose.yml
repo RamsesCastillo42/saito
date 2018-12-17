@@ -1,0 +1,9 @@
+version: "3.0"
+services:
+    saito:
+        image: bearguy/saito 
+        volumes:
+            - ./lib:/saito/lib
+        ports: 
+            - "8081:12102"
+        command: ["npm", "start"]
