@@ -1,9 +1,20 @@
 version: "3.0"
 services:
-    saito:
-        image: bearguy/saito 
+    saito-1:
+        image: bearguy/saito
         volumes:
             - ./lib:/saito/lib
-        ports: 
-            - "8081:12102"
+            - ./tests/config/env/blocks:/saito/lib/data/blocks
+            - ./tests/config/env/node-1.json:/saito/lib/options
+        ports:
+            - "8080:12101"
+        command: ["npm", "start"]
+
+    saito-2:
+        image: bearguy/saito
+        volumes:
+            - ./lib:/saito/lib
+            - ./tests/config/env/node-2.json:/saito/lib/options
+        ports:
+            - "8081:12101"
         command: ["npm", "start"]

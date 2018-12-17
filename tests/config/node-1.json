@@ -1,0 +1,44 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 12101,
+        "protocol": "http",
+        "endpoint": {
+            "host": "localhost",
+            "port": 8080,
+            "protocol": "http"
+        }
+    },
+    "wallet": {
+        "balance":"132782.40740741",
+        "privatekey":"580a17ea510f9d40e6adaf66727cc96a31b14e02d55e5167b90100d0012b1a24",
+        "publickey":"wgQuw63kBimNnsJurP8oi1ejN4Nfiac13KzmeMZYQsXZ",
+        "identifier":"",
+        "inputs": [
+            {
+                "add":"wgQuw63kBimNnsJurP8oi1ejN4Nfiac13KzmeMZYQsXZ",
+                "amt":"66391.20370371",
+                "type":1,
+                "bid":3,
+                "tid":2,
+                "sid":0,
+                "bhash":"b38eb4fff6566ebb7bc94d1bbfb39fc717ef6025c1385f1fac717215919db428",
+                "lc":1
+            },
+            {
+                "add":"wgQuw63kBimNnsJurP8oi1ejN4Nfiac13KzmeMZYQsXZ",
+                "amt":"66391.20370370",
+                "type":1,
+                "bid":3,
+                "tid":2,
+                "sid":1,
+                "bhash":"b38eb4fff6566ebb7bc94d1bbfb39fc717ef6025c1385f1fac717215919db428",
+                "lc":1
+            }
+        ],
+        "outputs":[],
+        "spends":[0,0],
+        "default_fee":2,
+        "version":2.05
+    }
+}

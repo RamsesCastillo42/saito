@@ -47,13 +47,23 @@ if [ "$1" == "nuke" ]; then
 
 fi
 
-  rm -f remixtmp.js
-  rm -f saito/web/options
-  rm -f saito/web/browser.js.gz
-  rm -f saito/web/browser.js-*
+# For our docker config
+rm -r ../tests/config/env/blocks
+cp -r ../tests/config/blocks ../tests/config/env/
 
-  cp modules/mods/welcome/web/index.html saito/web/index.html
-  cp modules/mods/welcome/web/style.css saito/web/style.css
+for config in ../tests/config/*.json; do
+    name=${config##*/}
+    base=${name%.txt}
+    cp "$config" ../tests/config/env/"$base"
+done
+
+rm -f remixtmp.js
+rm -f saito/web/options
+rm -f saito/web/browser.js.gz
+rm -f saito/web/browser.js-*
+
+cp modules/mods/welcome/web/index.html saito/web/index.html
+cp modules/mods/welcome/web/style.css saito/web/style.css
 
 
 

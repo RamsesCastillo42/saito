@@ -1,0 +1,15 @@
+{
+    "server": {
+        "host": "localhost",
+        "port":12101,
+        "protocol": "http"
+    },
+    "peers": [
+        {
+            "host": "saito-1",
+            "port": 8080,
+            "protocol": "http",
+            "synctype": "full"
+        }
+    ]
+}

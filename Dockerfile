@@ -12,9 +12,6 @@ RUN ./configure && make && make install
 
 WORKDIR /saito
 RUN npm install
-RUN npm uninstall sqlite3
-RUN npm install --save sqlite3
-
 
 RUN cd ./lib && ./compile nuke
 

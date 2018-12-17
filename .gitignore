@@ -5,6 +5,7 @@ options
 package-lock.json
 node_modules
 node_modules/*
+tests/config/env
 logs
 logs/*
 lib/1
