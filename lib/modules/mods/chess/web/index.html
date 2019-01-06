@@ -9,10 +9,9 @@
 
     <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
-    <!--script type="text/javascript" src="/chess/chessboard.js"></script-->
     <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/chess/chessboard.css" type="text/css" media="screen" />
-    
+
 
     <link rel="stylesheet" type="text/css" href="/chess/style.css" />
     <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
@@ -31,12 +30,20 @@
                 <div class="module_label">saito chess</div>
             </a>
         </div>
-        <div class="module_container">
-            <div class="board-space">
-                <div id="board" style="width: 400px"></div>
-                <p>Status: <span id="status"></span></p>
-                <p>FEN: <span id="fen"></span></p>
-                <p>PGN: <span id="pgn"></span></p>
+        <div class="module_container row">
+            <div class="board-space column">
+                <div id="board" style="width: 100%"></div>
+                <div id="buttons" class="button_row">
+                    <button id="move_accept" class="chess_button column" disabled>✔</button>
+                    <button id="move_reject" class="chess_button column" disabled>✘</button>
+                </div>
+            </div>
+            <div class="controls column">
+
+                <p id="status_display">Status: <span id="status"></span></p>
+                <!--p>FEN: <span id="fen"></span></p>
+                <p>PGN: <span id="pgn"></span></p-->
+                <!--button id="resign" class="chess_button">Resign</button-->
             </div>
         </div>
     </div>
