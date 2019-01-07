@@ -1,5 +1,11 @@
 /* NOTE NEED TO ADD BLOCKCHAIN_SYNCFADE TOP RIGHT CORNER FOR MOBILE */
 
+.link {
+  display:inline;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
 .mail-module-label {
   font-weight:bold;
   position:absolute;
