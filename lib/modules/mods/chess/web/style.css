@@ -1,0 +1,84 @@
+body {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 13px;
+    padding:0px;
+    margin:0px;
+}
+
+h1 {
+    margin: 0em;
+}
+
+
+.header {
+    grid-area: header;
+    border-bottom: 1px solid #a5a5a5;
+    font-size:2em;
+    height: 3.1rem;
+
+}
+
+.logo {
+    width: 35px;
+    margin-top: 10px;
+    margin-left: 1.3em;
+    margin-right: 0.35em;
+    float: left;
+}
+
+.board-space {
+    padding: 15px;
+    margin-left: 0.5rem;
+}
+
+.module_label {
+    line-height: 2em;
+    color: black;
+}
+
+
+
+.row {
+    margin: 15px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 50% 50%;
+    background-color: #fff;
+    color: #444;
+}  
+
+.column {
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 115%;
+  }
+
+  .button_row {
+    margin: 15px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 50% 50%;
+}
+
+  .chess_button {
+    background-color: #999;
+    font-size: 200%;
+    padding: 10px;
+    border-radius: 5px;
+    color: #DDD;
+  }
+
+  .red {
+      color: red;
+  }
+
+  .green {
+      color: green;
+  }
+
+#status_display {
+    font-size: 200%;
+    line-height: 0px;
+}
