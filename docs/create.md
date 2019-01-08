@@ -111,16 +111,16 @@ Todo.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
 }
 ```
 
-We'll hold off on fleshing out the render logic to these functions until we've built out our html and css.
+We'll hold off on fleshing out the render logic to these functions until we've built out our HTML and CSS.
 
 
-Next thing that we'll want to do is allow the user to create transactions for both tasks and checkboxes and then propagate them into the network. We can write out our logic for that in a custom function called `createTodoTx`. This allows us to generically create TX for both our tasks and our checkboxes.
+Next thing that we'll want to do is allow the user to create transactions for both tasks and checkboxes, and then propagate them into the network. We can write out our logic for that in a custom function called `createTodoTx`. This allows us to generically create TX for both our tasks and our checkboxes.
 
 ```javascript
 // todo.js
 
 Todo.prototype.createTodoTX = function createTodoTx(data) {
-  var newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.retunrPublicKey());
+  var newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.returnPublicKey());
 
   newtx.transaction.msg = Object.assign({}, data, { module: "Todo" });
 
@@ -148,8 +148,8 @@ Now that we have some of our chain logic coded, we can start to connect this to 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Saito Todo Module">
+    <meta name="author" content="Stephen Peterkins">
 
     <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
@@ -271,7 +271,7 @@ h1 {
 }
 ```
 
-Just because these files exist, we need a way for our serve to send them to our browser. We'll extend our web server with the `webServer` function
+Just because these files exist, we need a way for our server to send them to our browser. We'll extend our web server with the `webServer` function.
 
 ```javascript
 // todo.js
@@ -305,11 +305,11 @@ this.mods.push(require('./mods/debug/debug')(this.app));
 this.mods.push(require('./mods/todo/todo')(this.app));
 ```
 
-Ok, now we're starting to see it take form! If you don't have your Saito instance started at this point, make sure to run `npm run nuke` to recompile the modules, `npm start` and take a look at [`http://localhost:12101/todo`](http://localhost:12101/todo) to check it out and see what it looks like.
+Ok, now we're starting to see it take form! If you don't have your Saito instance started at this point, make sure to run `npm run nuke` in your temrinal to recompile the modules, then `npm start` and take a look at [`http://localhost:12101/todo`](http://localhost:12101/todo) to check it out and see what it looks like.
 
 ### Event Listeners with attachEvents
 
-Our module is starting to form, but it still isn't functional quite yet. Let's create an event listener on our button to create a transaction out of the whatever we put in the form next to it.
+Our module is starting to form, but it still isn't functional quite yet. Let's create an event listener on our button using jquery to create a transaction out of the whatever we put in the form next to it.
 
 ```javascript
 // mods.js
@@ -348,11 +348,12 @@ Todo.prototype.attachEvents = function attachEvents(app) {
 
 Todo.prototype.addTask = function addTask(task_tx) {
   if (this.tasks[task_tx.transaction.sig]) { return; }
+  var {sig, msg} = task_tx.transaction
 
   var newTask = `
   <div class="task_container">
-    <input type="checkbox" class="task_checkbox" id="${task_tx.transaction.sig}">
-    <div class="task" id="task_${task_tx.transaction.sig}">${task_tx.transaction.msg.description}</div>
+    <input type="checkbox" class="task_checkbox" id="${sig}">
+    <div class="task" id="task_${sig}">${msg.description}</div>
   </div>
   `
   $('.todoList').append(newTask);
@@ -361,7 +362,7 @@ Todo.prototype.addTask = function addTask(task_tx) {
 
   this.attachEvents(this.app);
 }
-}
+
 ```
 
 We're creating a transaction from our description, propagating out to the Saito network, then adding the task locally. You can have both peers on the network be able to stay synced now when posted.

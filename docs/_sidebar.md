@@ -6,4 +6,3 @@
   - [Module API](module-api.md)
   - [Wallet API](wallet-api.md)
   - [Peer API](peer-api.md)
-- [DoraHacks Challenges](dorahacks.md)
