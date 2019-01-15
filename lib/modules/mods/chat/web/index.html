@@ -23,6 +23,18 @@
 
     <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
   </head>
+
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+  }
+  body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+  }
+  </style>
   <body>
 
   <div class="chat_loader">
@@ -36,7 +48,7 @@
     <div id="Chat_browser_active"></div>
     <div id="chat_container">
       <section id="chat_header">
-        <div style="display:flex; flex-direction: row;width: 207px;">
+        <div style="display:flex; flex-direction: row;width: 300px;">
           <a href="/" style="text-decoration:none;color:inherits">
             <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
           </a>
@@ -44,6 +56,7 @@
             <div style="font-family:Georgia;padding-top:5px;color:#444;">saito chat</div>
           </a>
         </div>
+        <button class="orange_button">add</button>
         <select class="chat_chat-room-selector">
         </select>
       </section>
