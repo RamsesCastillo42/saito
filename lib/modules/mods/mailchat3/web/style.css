@@ -20,6 +20,9 @@
   background-color: white;
   border: 1px solid #a5a5a5;
 }
+#chat_new-message-input {
+  width: 400px;
+}
 .lightbox_message_to_address {
   cursor:pointer;
 }

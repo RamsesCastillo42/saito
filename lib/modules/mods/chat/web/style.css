@@ -137,9 +137,9 @@ cursor:pointer;
 #chat_new-message-input {
     width: 100%;
     height: 100%;
-    padding-left: 6px;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    resize: none;
+    margin: auto;
+    padding: 10px;
     font-size: 1.2em;
 }
 
