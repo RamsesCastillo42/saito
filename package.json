@@ -43,6 +43,7 @@
     "fs-extra": "7.0.0",
     "image-resolver": "0.6.1",
     "jimp": "0.3.9",
+    "linkifyjs": "^2.1.7",
     "markdown": "0.5.0",
     "merkle-tree-gen": "1.1.0",
     "nativefier": "^7.6.8",
