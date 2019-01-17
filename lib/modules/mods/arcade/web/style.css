@@ -1,0 +1,136 @@
+/* NOTE NEED TO ADD BLOCKCHAIN_SYNCFADE TOP RIGHT CORNER FOR MOBILE */
+
+.link {
+  display:inline;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
+.invite_button {
+  border: 1px solid #444;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.gamebox {
+
+}
+
+.gamelist {
+
+}
+
+.address_box {
+  padding: 15px;
+  background-color: #E7E7E7;
+  border: 2px dashed #888;
+  margin-bottom: 15px;
+}
+.funding_alert {
+
+}
+
+
+.game {
+  width: 300px;
+  float:left;
+  margin-right:30px;
+}
+
+.gamename {
+ font-weight: bold;
+ width: 100%;
+ text-align: center;
+ margin-bottom: 10px;
+ font-size: 1.15em;
+ text-transform: uppercase;
+}
+
+.gameimage {
+ width: 300px;
+ width: 100%;
+ text-align: center;
+ border: 1px solid #888;
+}
+
+.body, body {
+ font-family: arial, helvetica, sans-serif, sans;
+ font-size: 13px;
+ padding:0px;
+ margin:0px;
+}
+
+.logo {
+ width:35px;
+ margin-top:10px;
+ margin-left:25px;
+ margin-right:10px;
+ float:left;
+}
+
+.logo_link {
+ text-decoration:none;
+ color:inherits
+}
+
+.logo_text {
+ font-family:Georgia;
+ padding-top:6px;
+ font-size:1.2em;
+ color:#444;
+}
+
+.header {
+ grid-area: header;
+ font-size: 2em;
+ width: 100%;
+ height: 50px;
+ border-bottom: 1px solid #a5a5a5;
+}
+
+.loader {
+ width: 100%;
+ max-width: 600px;
+ font-size: 2em;
+ line-height: 1.8em;
+ padding: 30px;
+}
+
+
+.main {
+ display: none;
+ width: 100%;
+ font-size:1.6em;
+ padding:30px;
+}
+
+.compose {
+ clear: both;
+ max-width: 140px;
+ margin-left: auto;
+ margin-right: auto;
+ margin-top: 20px;
+ color: #ffffff;
+ background-color: #d14836;
+ text-align: center;
+ padding-left: 10px;
+ padding-bottom: 5px;
+ padding-top: 5px;
+ padding-right: 10px;
+ line-height: 27px;
+ height: 27px;
+ font-weight: bold;
+ font-size: 0.85rem;
+ background-image: linear-gradient(to bottom, #dd4b39, #d14836);
+ border: 1px solid #b0281a;
+ cursor: pointer;
+}
+.compose:hover {
+ background-image: linear-gradient(to bottom, #dd4b39, #c53727);
+ border: 1px solid #b0281a;
+}
+
+
+
