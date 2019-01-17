@@ -52,7 +52,7 @@ h1 {
     color: #fff;
     border-radius: 5px;
     padding: 20px;
-    font-size: 115%;
+    font-size: 1.7em;
   }
 
   .button_row {
@@ -60,7 +60,7 @@ h1 {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: 50% 50%;
-}
+  }
 
   .chess_button {
     background-color: #999;
