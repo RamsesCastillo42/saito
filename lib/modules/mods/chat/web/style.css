@@ -4,6 +4,10 @@ body {
     overflow: hidden;
 }
 
+pre {
+    font-family: Consolas
+}
+
 #chat_container {
     display: grid;
     position: inherit;
