@@ -123,41 +123,36 @@
 
   </div>
 
-  <div w3-include-html="/mailchat/chat_popup.html"></div>
+  <div class="mail_chat_popup" style="display:none">
 
-  <script>
-    function includeHTML() {
-      var z, i, elmnt, file, xhttp;
-      /* Loop through a collection of all HTML elements: */
-      z = document.getElementsByTagName("*");
-      for (i = 0; i < z.length; i++) {
-        elmnt = z[i];
-        /*search for elements with a certain atrribute:*/
-        file = elmnt.getAttribute("w3-include-html");
-        if (file) {
-          /* Make an HTTP request using the attribute value as the file name: */
-          xhttp = new XMLHttpRequest();
-          xhttp.onreadystatechange = function() {
-            if (this.readyState == 4) {
-              if (this.status == 200) {elmnt.innerHTML = this.responseText;}
-              if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
-              /* Remove the attribute, and call this function once more: */
-              elmnt.removeAttribute("w3-include-html");
-              includeHTML();
-            }
-          } 
-          xhttp.open("GET", file, true);
-          xhttp.send();
-          /* Exit the function: */
-          return;
-        }
-      }
-    }
-  </script>
+    <div id="Chat_browser_active"></div>
+    <div id="chat_container">
 
-  <script>
-    includeHTML();
-  </script>
+      <section id="chat_header">
+        <div style="display:flex; flex-direction: row;width: 207px;">
+          <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
+          <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
+        </div>
+        <button class="orange_button">add</button>
+        <select class="chat_chat-room-selector">
+        </select>
+      </section>
+
+      <div id="chat_main" class="chat_chat_main">
+        <section id="chat_messages-list">Messages:</section>
+        <section id="chat_messages-list">
+          <ul class="chat_messages-list" id="All">
+            <p id="chat_message_id_0" class="chat_message"><i>BearGuy</i>: Welcome to Saito!</p>
+          </ul>
+        </section>
+      </div>
+
+      <section id="chat_new-message">
+        <textarea class="chat_new-message-input" id="chat_new-message-input"></textarea>
+      </section>
+
+    </div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/mailchat/script.js"></script>

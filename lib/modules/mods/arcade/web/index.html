@@ -15,6 +15,8 @@
 
   <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" type="text/css" media="screen" />
   <link rel="stylesheet" type="text/css" href="/arcade/style.css" />
+  <link rel="stylesheet" type="text/css" href="/chat/style.css" />
+  <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
@@ -80,7 +82,38 @@
 
   <div style="display:none" class="lightbox_message_from_address" id="lightbox_message_from_address"></div>
 
+  <div class="mail_chat_popup" style="display:none">
 
+    <div id="Chat_browser_active"></div>
+    <div id="chat_container">
+
+      <section id="chat_header">
+        <div style="display:flex; flex-direction: row;width: 207px;">
+          <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
+          <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
+        </div>
+        <button class="orange_button">add</button>
+        <select class="chat_chat-room-selector">
+        </select>
+      </section>
+
+      <div id="chat_main" class="chat_chat_main">
+        <section id="chat_messages-list">Messages:</section>
+        <section id="chat_messages-list">
+          <ul class="chat_messages-list" id="All">
+            <p id="chat_message_id_0" class="chat_message"><i>BearGuy</i>: Welcome to Saito!</p>
+          </ul>
+        </section>
+      </div>
+
+      <section id="chat_new-message">
+        <textarea class="chat_new-message-input" id="chat_new-message-input"></textarea>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/browser.js"></script>
   <script src="/arcade/script.js"></script>
