@@ -28,7 +28,12 @@ h1 {
 
 .board-space {
     padding: 15px;
-    margin-left: 0.5rem;
+    margin-left: 0.5rem;   
+}
+
+#board {
+    max-width: 700px;
+    margin: auto;
 }
 
 .module_label {
@@ -44,11 +49,11 @@ h1 {
     grid-gap: 10px;
     grid-template-columns: 50% 50%;
     background-color: #fff;
-    color: #444;
+    color: #555;
 }  
 
 .column {
-    background-color: #444;
+    background-color: #555;
     color: #fff;
     border-radius: 5px;
     padding: 20px;
@@ -79,6 +84,16 @@ h1 {
   }
 
 #status_display {
-    font-size: 200%;
+    font-size: 2.5vw;
     line-height: 0px;
+}
+
+#status_opponent {
+  font-size: 1.4vw;
+}
+
+#log {
+    overflow-y: auto;
+    max-height: 30vw;
+    display: block;
 }
