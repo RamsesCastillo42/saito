@@ -5,7 +5,8 @@ body {
 }
 
 pre {
-    font-family: Consolas
+    font-family: Consolas;
+    margin: 0;
 }
 
 #chat_container {
@@ -155,7 +156,7 @@ cursor:pointer;
 .chat_message {
     margin-right: 1px;
     /* padding-top: 3px; */
-    padding-bottom: 3px;
+    /* padding-bottom: 3px; */
 }
 
 #chat_sidebar {
