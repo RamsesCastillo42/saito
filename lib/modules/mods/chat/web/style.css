@@ -76,12 +76,9 @@ pre {
     font-weight: bold;
 }
 
-.orange_button {
-    text-align:center;
+.chat_orange_button {
+    text-align: center;
     width: 100%;
-    /* padding: 15px 35px; */
-    /* padding: 3px; */
-    /* align-self: center; */
     justify-self: center;
     align-self: center;
     background: #ff8844;
