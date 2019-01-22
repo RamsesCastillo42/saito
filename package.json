@@ -33,6 +33,7 @@
     "browserify": "^16.2.3",
     "chess.js": "^0.10.2",
     "chessboardjs": "0.0.1",
+    "color-hash": "^1.0.3",
     "crx": "3.2.1",
     "crypto-browserify": "3.12.0",
     "ethereumjs-util": "5.2.0",
