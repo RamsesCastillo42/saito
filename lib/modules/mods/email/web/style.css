@@ -876,9 +876,9 @@ td .from {
 
 input#restore_privatekey_input {
   width: 41%;
-  line-height: 38px;
+  line-height: 1.4em;
   font-size: 20px;
-  padding: 5px;
+  padding: 2px;
 }
 
 
