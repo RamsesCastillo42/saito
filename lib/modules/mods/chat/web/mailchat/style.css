@@ -19,6 +19,7 @@
   max-width: 400px;
   background-color: white;
   border: 1px solid #a5a5a5;
+  font-size: 0.8rem;
 }
 #chat_new-message-input {
   width: 400px;
@@ -27,6 +28,9 @@
   font-size: 1.15em;
   line-height: 1.5em;
   white-space: normal;
+}
+.chat_timestamp {
+  font-size: 0.7rem;
 }
 .chat_messages-list {
   padding-bottom: 5px;
@@ -37,6 +41,7 @@
 .intro_message {
   font-size: 1.15em;
   line-height: 0.8em;
+  padding-top: 5px;
 }
 #message_id_0 {
   white-space: none;

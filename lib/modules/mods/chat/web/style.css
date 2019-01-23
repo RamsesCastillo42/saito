@@ -46,7 +46,7 @@ pre {
 
 .chat_chat-room-selector {
     text-align-last:center;
-    border: black;
+    border: 1px solid grey
 }
 
 .chat_chat-room-selector > option {
@@ -145,10 +145,31 @@ pre {
     margin: 0;
 }
 
+.chat_message_container {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    /* cursor: default; */
+}
+
 .chat_message {
     margin-right: 1px;
     line-height: 0.8em;
     font-size: 1.2em;
+}
+
+.chat_timestamp {
+    justify-self: right;
+    color: rgb(102, 102, 102);
+    font-size: 1.0rem;
+    padding-top: 5px;
+    margin: 0;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
 
 #chat_sidebar {
