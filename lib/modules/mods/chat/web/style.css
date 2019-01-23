@@ -1,11 +1,6 @@
-body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
-
 pre {
-    font-family: Consolas
+    font-family: Consolas;
+    margin: 0;
 }
 
 #chat_container {
@@ -81,28 +76,25 @@ pre {
     font-weight: bold;
 }
 
-.orange_button {
-text-align:center;
-width: 100%;
-/* padding: 15px 35px; */
-/* padding: 3px; */
-/* align-self: center; */
-justify-self: center;
-align-self: center;
-background: #ff8844;
-color: #fff !important;
-font-size: 0.9vw;
-font-weight: 400;
-font-family: 'Montserrat', sans-serif;
-display: inline-block;
-border-radius: 3px;
-text-transform: uppercase;
-line-height: 25px;
-margin-right: 10;
-transition: all 0.3s ease-in-out;
--moz-transition: all 0.3s ease-in-out;
--webkit-transition: all 0.3s ease-in-out;
-cursor:pointer;
+.chat_orange_button {
+    text-align: center;
+    width: 100%;
+    justify-self: center;
+    align-self: center;
+    background: #ff8844;
+    color: #fff !important;
+    font-size: 0.9vw;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    display: inline-block;
+    border-radius: 3px;
+    text-transform: uppercase;
+    line-height: 25px;
+    margin-right: 10;
+    transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    cursor:pointer;
 }
 
 .chat_close:hover,
@@ -152,10 +144,11 @@ cursor:pointer;
     padding: 0;
     margin: 0;
 }
+
 .chat_message {
     margin-right: 1px;
-    /* padding-top: 3px; */
-    padding-bottom: 3px;
+    line-height: 0.8em;
+    font-size: 1.2em;
 }
 
 #chat_sidebar {

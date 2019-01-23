@@ -1,0 +1,73 @@
+{
+  "name": "saito",
+  "version": "2.0.0",
+  "description": "big-data blockchain",
+  "main": "start.js",
+  "scripts": {
+    "start": "NODE_ENV=dev node ./lib/start.js",
+    "serve": "NODE_ENV=prod node --max_old_space_size=4144 lib/start.js",
+    "nuke": " cd lib/ && ./compile nuke",
+    "compile": " cd lib/ && ./compile",
+    "test": "NODE_ENV=test mocha 'tests/*.spec.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaitoTech/saito.git"
+  },
+  "author": "",
+  "license": "private",
+  "bugs": {
+    "url": "https://github.com/SaitoTech/saito/issues"
+  },
+  "homepage": "https://github.com/SaitoTech/saito#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "base-58": "0.0.1",
+    "big.js": "5.1.2",
+    "bignumber": "^1.1.0",
+    "bignumber.js": "^8.0.1",
+    "bitwise-xor": "0.0.0",
+    "bloom-filter": "0.2.0",
+    "bluebird": "3.5.1",
+    "body-parser": "1.18.3",
+    "browserify": "^16.2.3",
+    "chess.js": "^0.10.2",
+    "chessboardjs": "0.0.1",
+    "color-hash": "^1.0.3",
+    "crx": "3.2.1",
+    "crypto-browserify": "3.12.0",
+    "ethereumjs-util": "5.2.0",
+    "ethereumjs-wallet": "0.6.2",
+    "express": "4.16.3",
+    "express-fileupload": "0.4.0",
+    "fastest-stable-stringify": "^2.0.2",
+    "fs-extra": "7.0.0",
+    "image-resolver": "0.6.1",
+    "jimp": "0.3.9",
+    "linkifyjs": "^2.1.7",
+    "markdown": "0.5.0",
+    "merkle-tree-gen": "1.1.0",
+    "nativefier": "^7.6.8",
+    "node-cryptojs-aes": "0.4.0",
+    "request": "2.88.0",
+    "secp256k1": "3.5.0",
+    "sha256": "0.2.0",
+    "shashmap": "file:./extras/shashmap/",
+    "shelljs": "0.8.2",
+    "socket.io": "2.1.1",
+    "sqlite": "2.9.2",
+    "url-parse": "1.4.3",
+    "uuid": "^3.3.2",
+    "web3": "^1.0.0-beta.36",
+    "web3-utils": "^1.0.0-beta.36",
+    "winston": "3.0.0",
+    "winston-daily-rotate-file": "3.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "babelify": "^10.0.0",
+    "chai": "4.1.2",
+    "mocha": "5.2.0"
+  }
+}

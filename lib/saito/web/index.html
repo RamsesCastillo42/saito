@@ -11,10 +11,14 @@
 
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800italic,700italic,600italic,400italic,300italic,800,700,600' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
   <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
+
+  <!-- <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
+  <link rel="stylesheet" type="text/css" href="/chat/style.css" /> -->
+  <link rel="stylesheet" type="text/css" href="style.css" />
+
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
@@ -73,16 +77,17 @@
       <div>
         <div class="section_header">RUN APPLICATION:</div>
 
-        <ul>
-          <li><a href="/email">Saito Email</a></li>
-          <li><a href="/r/">Saito Reddit</a></li>
-          <li><a href="/facebook">Saito Facebook</a></li>
-          <li><a href="/arcade">Saito Arcade</a></li>
-          <li><a href="/appstore">Saito AppStore</a></li>
-          <li><a href="/remix">Module Builder</a></li>
-          <li><a href="/adsense">Saito Ad Network</a></li>
-          <li><a href="/faucet">Token Faucet</a></li>
-          <li><a href="/explorer">Blockchain Explorer</a></li>
+        <ul class="mod-list">
+          <li id="Email"><a href="/email">Saito Email</a></li>
+          <li id="Chat"><a href="/chat">Saito Chat</a></li>
+          <li id="Reddit"><a href="/r/">Saito Reddit</a></li>
+          <li id="Facebook"><a href="/facebook">Saito Facebook</a></li>
+          <li id="Arcade"><a href="/arcade">Saito Arcade</a></li>
+          <li id="AppStore"><a href="/appstore">Saito AppStore</a></li>
+          <li id="Remix"><a href="/remix">Module Builder</a></li>
+          <li id="Adsense"><a href="/adsense">Saito Ad Network</a></li>
+          <li id="Faucet"><a href="/faucet">Token Faucet</a></li>
+          <li id="Explorer"><a href="/explorer">Blockchain Explorer</a></li>
         </ul>
 
 
@@ -99,9 +104,41 @@
   </div>
 </div>
 
+<!-- <div class="mail_chat_popup" style="display:none">
+
+  <div id="Chat_browser_active"></div>
+  <div id="chat_container">
+
+    <section id="chat_header">
+      <div style="display:flex; flex-direction: row;width: 207px;">
+        <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
+        <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
+      </div>
+      <button class="chat_orange_button">add</button>
+      <select class="chat_chat-room-selector">
+      </select>
+    </section>
+
+    <div id="chat_main" class="chat_chat_main">
+      <section id="chat_messages-list">Messages:</section>
+      <section id="chat_messages-list">
+        <ul class="chat_messages-list" id="All">
+          <p id="chat_message_id_0" class="chat_message"><i>BearGuy</i>: Welcome to Saito!</p>
+        </ul>
+      </section>
+    </div>
+
+    <section id="chat_new-message">
+      <textarea class="chat_new-message-input" id="chat_new-message-input"></textarea>
+    </section>
+
+  </div>
+</div> -->
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/browser.js"></script>
+<!-- <script src="/mailchat/script.js"></script> -->
 
 </body>
 </html>
