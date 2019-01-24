@@ -46,7 +46,8 @@ pre {
 
 .chat_chat-room-selector {
     text-align-last:center;
-    border: 1px solid grey
+    border: 1px solid grey;
+    width: 95%;
 }
 
 .chat_chat-room-selector > option {
@@ -90,7 +91,6 @@ pre {
     border-radius: 3px;
     text-transform: uppercase;
     line-height: 25px;
-    margin-right: 10;
     transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -webkit-transition: all 0.3s ease-in-out;
@@ -155,6 +155,7 @@ pre {
     margin-right: 1px;
     line-height: 0.8em;
     font-size: 1.2em;
+    white-space: normal;
 }
 
 .chat_timestamp {
@@ -181,4 +182,32 @@ pre {
 
 .message_author {
     font-weight: bold;
+}
+
+
+@media only screen and (max-width: 535px) {
+    #chat_header {
+        grid-template-columns: 55% 15% 30%;
+    }
+
+    .chat_chat-room-selector {
+        width: 100%;
+    }
+
+    .chat_orange_button {
+        height: 100%;
+        font-size: 0.4em;
+    }
+
+    .chat_chat_main {
+        font-size: 0.9em;
+    }
+
+    .chat_message {
+        line-height: 1.2em;
+    }
+
+    .chat_timestamp {
+        padding: 0;
+    }
 }

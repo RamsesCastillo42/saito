@@ -10,7 +10,9 @@
   bottom: 500px;
 }
 #chat_header {
-  grid-template-columns: 55% 15% 30%;
+  grid-template-columns: 20% 15% 65%;
+  grid-gap: 5px;
+  /* margin: 5px; */
 }
 #chat_main {
   height:420px;
