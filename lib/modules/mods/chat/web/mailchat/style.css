@@ -8,6 +8,7 @@
   position: fixed;
   right: 400px;
   bottom: 500px;
+  z-index: 100;
 }
 #chat_header {
   grid-template-columns: 20% 15% 65%;
