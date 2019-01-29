@@ -44,10 +44,24 @@ body {
 
 .header {
     grid-area: header;
+    display: grid;
+    grid-template-columns: auto 15rem;
     /* width: 100%; */
     height: 100%;
     border-bottom: 1px solid #a5a5a5;
     font-size: 2em;
+}
+
+.saito-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 3rem;
+}
+
+.saito-icon {
+    font-size: 2rem;
+    color: black;
 }
 
 .main {
@@ -653,6 +667,14 @@ textarea {
 
     .logo {
         margin-left: 0.6em;
+    }
+
+    .saito_nav {
+        display: none;
+    }
+
+    .saito-icon {
+        display: none;
     }
 
 }
