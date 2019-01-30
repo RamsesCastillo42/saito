@@ -13,6 +13,7 @@ lib/logs/*
 lib/data
 lib/data/*
 lib/options
+lib/test.js
 lib/options.*
 lib/options-bk
 lib/env_files

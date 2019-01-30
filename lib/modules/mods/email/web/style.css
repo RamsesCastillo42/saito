@@ -50,11 +50,11 @@
 }
 
 .logo {
- width:35px;
- margin-top:10px;
- margin-left:25px;
- margin-right:10px;
- float:left;
+  width:35px;
+  margin-top:10px;
+  margin-left: 1em;
+  margin-right: 0.35em;
+  float:left;
 }
 
 .logo_link {
@@ -70,11 +70,25 @@
 }
 
 .header {
- grid-area: header;
- font-size: 2em;
- width: 100%;
- height: 50px;
- border-bottom: 1px solid #a5a5a5;
+  grid-area: header;
+  display: grid;
+  grid-template-columns: auto 15rem;
+  font-size: 2em;
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #a5a5a5;
+}
+
+.saito-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 3rem;
+}
+
+.saito-icon {
+  font-size: 2rem;
+  color: black;
 }
 
 .loader {
@@ -776,6 +790,14 @@ td .from {
 
   .logo {
     margin-left: 0.6em;
+  }
+
+  .saito_nav {
+      display: none;
+  }
+
+  .saito-icon {
+      display: none;
   }
 
   .inner_message .from {
