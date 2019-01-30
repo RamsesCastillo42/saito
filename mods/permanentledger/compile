@@ -1,0 +1,4 @@
+
+rm -f ../mods/permanentledger/ledger/*.blk
+rm -f ../mods/permanentledger/ledger/ledger.txt
+

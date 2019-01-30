@@ -1,0 +1,6 @@
+
+#rm -f ../mods/remix/web/cache/*
+#rm -f ../mods/remix/web/cache/*
+#mkdir ../mods/remix/web/cache
+
+
