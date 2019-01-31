@@ -1,5 +1,5 @@
-module.exports = {
-    mods: [
+module.exports =
+    [
         '../../mods/welcome/welcome',
         '../../mods/chess/chess',
         '../../mods/arcade/arcade',
@@ -18,4 +18,3 @@ module.exports = {
         '../../mods/money/money',
         '../../mods/debug/debug',
     ]
-}

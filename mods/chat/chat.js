@@ -13,6 +13,10 @@ class Chat extends ChatCore {
   constructor(app) {
     super(app);
 
+    // if (!(this instanceof Chat)) {
+    //   return new Chat(app);
+    // }
+
     this.handlesEmail    = 1;
     this.emailAppName    = "Settings";
 

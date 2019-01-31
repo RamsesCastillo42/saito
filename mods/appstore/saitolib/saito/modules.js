@@ -5,14 +5,15 @@
 // it uses a copy of this file to generate the
 // browser.js file needed by the chrome exts
 //
-function Modules(app) {
+function Modules(app, mods) {
 
   if (!(this instanceof Modules)) {
-    return new Modules(app);
+    return new Modules(app, mods);
   }
 
-  this.app     = app;
-  this.mods    = [];
+  this.app          = app;
+  this.mods         = [];
+  this.mods_list    = mods;
 
   this.lowest_sync_bid = -1;
 
@@ -28,15 +29,13 @@ module.exports = Modules
  */
 Modules.prototype.pre_initialize = function pre_initialize() {
 
-  //this.mods.push(require('./mods/permanentledger/permanentledger')(this.app));
-  //this.mods.push(require('./mods/spammer/spammer')(this.app));
+  // this.mods.push(require('./mods/permanentledger/permanentledger')(this.app));
+  // this.mods.push(require('./mods/spammer/spammer')(this.app));
   //this.mods.push(require('./mods/init/init')(this.app));
   this.mods.push(require('../../mods/welcome/welcome')(this.app));
   // this.mods.push(require('./mods/twilight/twilight')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   this.mods.push(require('../../mods/arcade/arcade')(this.app));
-
-
 
 
   this.mods.push(require('../../mods/settings/settings')(this.app));
@@ -64,6 +63,14 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/remix/remix')(this.app));
   this.mods.push(require('../../mods/money/money')(this.app));
   this.mods.push(require('../../mods/debug/debug')(this.app));
+
+  // this.mods = this.mods_list.map(mod => {
+  //   if (mod == '../../mods/chat/chat') {
+  //     const Chat = require(mod);
+  //     return new Chat(this.app)
+  //   }
+  //   return require(mod)(this.app);
+  // });
 
   // we need to check if any new modules have been added and install them
   if (this.app.options.modules == null) {

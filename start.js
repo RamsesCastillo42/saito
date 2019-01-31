@@ -1,5 +1,5 @@
-var saito = require('./lib/saito/saito');
-var mods = require('./mods/mods.config');
+const saito = require('./lib/saito/saito');
+const mods = require('./mods/mods.config');
 
 var app                   = {};
     app.BROWSER           = 0;
