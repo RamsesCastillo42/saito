@@ -778,10 +778,18 @@ td .from {
     margin-left: 12px;
   }
 
+  .balance-money {
+    padding-top: 0px;
+  }
+
   #blockchain_syncfade {
     position: absolute;
     top: 0px;
     right: 1em;
+  }
+
+  td .from {
+    min-width:100px;
   }
 
   /* .email_title {
@@ -801,8 +809,16 @@ td .from {
   }
 
   .inner_message .from {
-    width: 120px;
-    max-width: 120px;
+    width: 80px;
+    max-width: 80px;
+    overflow: hidden;
+    border-top: 0px;
+    vertical-align: center;
+  }
+
+  .inner_message .title {
+    width: 150px;
+    max-width: 150px;
     overflow: hidden;
     border-top: 0px;
     vertical-align: center;
