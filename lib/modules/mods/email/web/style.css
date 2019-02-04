@@ -255,7 +255,6 @@
  font-size: 1.15em;
  color: #555;
  margin-right: 5px;
- padding-top: 10px;
 }
 .mail {
  grid-area: mail;
@@ -750,7 +749,8 @@ td .from {
   }
   .mail-balance {
     justify-self: right;
-    align-self: center;
+    align-self: start;
+    display: inherit;
   }
 
   .mail-header {
@@ -788,6 +788,12 @@ td .from {
   }
 }
 
+@media only screen and (min-width: 535px) {
+  .bottom-send {
+    display: none;
+  }
+}
+
 @media only screen and (max-width: 535px) {
   .logo_text {
     display: none;
@@ -798,7 +804,7 @@ td .from {
   }
 
   .balance-money {
-    padding-top: 0px;
+    padding-top: 10px;
   }
 
   #blockchain_syncfade {
@@ -848,7 +854,7 @@ td .from {
   }
 
   .lightbox_compose_module {
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     grid-row-gap: 1em;
   }
@@ -864,6 +870,21 @@ td .from {
 
   .redbutton {
     max-width: 100%;
+    display: none;
+    height: 0;
+  }
+
+  .bottom-send {
+    max-width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 7px;
+  }
+
+  .button-send {
+    margin-top: 1em;
+    padding: 7px;
+    margin-bottom: 1em;
   }
 
   .mail-alertbox {
