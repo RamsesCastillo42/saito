@@ -1,0 +1,68 @@
+body {
+ font-family: arial, helvetica, sans-serif;
+ font-size: 13px;
+ padding:0px;
+ margin:0px;
+}
+.gameboard {
+  position: absolute;
+  background-image: url("img/game0.jpg");
+  background-size: cover;
+  //width: 2677px;
+  //height: 2907px;
+  width: 1338px;
+  height: 1458px;
+}
+.card {
+  cursor:pointer;
+}
+
+.leftcol {
+  position: absolute;
+  left: 1338px;
+  top: 0px;
+}
+.score {
+  position:relative;
+  font-size: 1.8em;
+  padding:10px;
+  //left: 1338px;
+  //top: 0px;
+  width: 225px;
+  height: 200px;
+  background-color: #fffccd;
+  border: 2px solid #948f8b;
+}
+
+.tiles {
+  position:relative;
+  font-size: 1.8em;
+  padding:10px;
+  //left: 1338px;
+  //width: 225px;
+  background-color: #fffccd;
+  border: 2px solid #948f8b;
+}
+.status {
+  display: none;
+  position:relative;
+  font-size: 1.8em;
+  padding:10px;
+  //left: 1338px;
+  //top: 200px;
+  width: 225px;
+  height: 200px;
+  background-color: #fffccd;
+  border: 2px solid #948f8b;
+}
+
+.slot {
+ position: absolute;
+ cursor: pointer;
+}
+.slot:hover {
+ background-color: blue;
+ opacity: 0.8;
+}
+
+
