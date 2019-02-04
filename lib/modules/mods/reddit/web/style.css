@@ -248,6 +248,8 @@ textarea {
 
 .post {
  /* min-width: 600px; */
+ display: grid;
+ grid-template-columns: 30px 75px auto;
  min-height: 75px;
  /* padding-bottom: 20px; */
  margin-bottom: 20px;
@@ -273,7 +275,7 @@ textarea {
  height: 72px;
 }
 .content {
- float:left;
+ /* float:left; */
  /* min-width:500px; */
  max-width: 500px;
  margin-left: 15px;
@@ -654,9 +656,9 @@ textarea {
         top: 0.5rem;
         right: 5.5rem;
     }
-    .content{
-        max-width: 250px;
-    }
+    /* .content{
+        max-width: 220px;
+    } */
     .submit {
         position: absolute;
         top: 0.5rem;
