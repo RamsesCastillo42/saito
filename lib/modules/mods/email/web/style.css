@@ -601,11 +601,25 @@ td .from {
   cursor: pointer;
 }
 
-.redbutton:hover {
+.redbutton:hover, .bottom-send:hover {
   background-image: linear-gradient(to bottom, #dd4b39, #c53727);
   border: 1px solid #b0281a;
 }
 
+.bottom-send {
+  clear: both;
+  max-width: 140px;
+  color: #ffffff;
+  background-color: #d14836;
+  text-align: center;
+  line-height: 27px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom, #dd4b39, #d14836);
+  border: 1px solid #b0281a;
+  cursor: pointer;
+  margin-top: 5px;
+}
 
 .message_container {
   margin-left: 1em;
