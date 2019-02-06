@@ -697,3 +697,11 @@ blockquote {
     margin-left: 5px;
     padding-left: 10px;
 }
+
+#d_text p img {
+    max-width: 100%;
+}
+
+.toggle-preview-text p img {
+    max-width: 100%;
+}
