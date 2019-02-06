@@ -26,8 +26,8 @@ body {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  //left: 1338px;
-  //top: 0px;
+  #left: 1338px;
+  #top: 445px;
   width: 225px;
   height: 200px;
   background-color: #fffccd;
@@ -38,24 +38,24 @@ body {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  //left: 1338px;
-  //width: 225px;
+  #top: 200px;
+  #left: 1338px;
+  width: 225px;
+  height: 242px;
   background-color: #fffccd;
   border: 2px solid #948f8b;
 }
 .status {
-  display: none;
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  //left: 1338px;
-  //top: 200px;
+  #left: 1338px;
+  #top: 0px;
   width: 225px;
   height: 200px;
   background-color: #fffccd;
   border: 2px solid #948f8b;
 }
-
 .slot {
  position: absolute;
  cursor: pointer;
