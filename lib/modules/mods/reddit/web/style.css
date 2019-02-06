@@ -143,6 +143,18 @@ body {
 }
 .submit_text {
  clear:both;
+ resize: vertical;
+}
+.toggle-post-button {
+    width: 100px;
+    padding: 5px;
+    margin-top: 10px;
+    background: lightgrey
+}
+.toggle-preview-text {
+    display: none;
+    height: 100%;
+    width: 100%;
 }
 .submit_text_label {
  margin-top: 15px;
