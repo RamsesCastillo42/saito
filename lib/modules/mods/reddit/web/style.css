@@ -536,6 +536,7 @@ textarea {
  min-height: 120px;
  font-size: 1em;
  width: 100%;
+ min-width: 550px;
  padding: 4px;
 }
 .comment_reply_submit {
