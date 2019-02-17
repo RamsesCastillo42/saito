@@ -733,3 +733,9 @@ blockquote {
 .toggle-preview-text p img {
     max-width: 100%;
 }
+
+.comment_text p img {
+    max-width: 100%;
+}
+
+
