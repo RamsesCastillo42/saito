@@ -1,6 +1,6 @@
 {
   "name": "saito-lib",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "npm library of core saito functionality",
   "main": "dist/saito-lib.js",
   "scripts": {
