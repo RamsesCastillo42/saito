@@ -74,11 +74,13 @@
         <div for="submit_title" class="submit_title_label" id="submit_title_label">title:</div>
         <input type="text" class="submit_title" id="submit_title" name="submit_title" />
         <br />
-        <div for="submit_link" class="submit_link_label" id="submit_link_label">url: <span style="font-size:0.9em"><i>(optional)</i></span> [<a href="https://imgur.com/" onclick="window.open(this.href, 'mywin', 'left=20,top=20,width=800,height=600,toolbar=1,resizable=0'); return false;" id="image_upload" class="image_upload">upload image</a>]</div>
+        <div for="submit_link" class="submit_link_label" id="submit_link_label">url: <span style="font-size:0.9em"><i>(optional)</i></span> [<a href="https://imgur.com/upload" onclick="window.open(this.href, 'mywin', 'left=20,top=20,width=800,height=600,toolbar=1,resizable=0'); return false;" id="image_upload" class="image_upload">upload image</a>]</div>
         <input type="text" class="submit_link" id="submit_link" name="submit_link" />
         <br />
         <div for="submit_text" class="submit_text_label" id="submit_text_label">discussion:</div>
+        <div class="toggle-preview-text" style=""></div>
         <textarea class="submit_text" id="submit_text" name="submit_text"></textarea>
+        <button class="toggle-post-button">toggle preview</button>
         <br />
         <div for="submit_r" class="submit_r_label" id="submit_r_label">subreddit:</div>
         <input type="text" class="submit_r" id="submit_r" name="submit_r" />
@@ -131,10 +133,23 @@
 
     <p>
       <b>A Note on Moderation Policy:</b>
-      We strive to respect freedom of speech, but acknowledge that our moderation policies will be entirely arbitrary: if you don't like them setup a Saito server, mirror the entire website and set your own policies.
+      We strive to respect freedom of speech, but acknowledge that our moderation policies will be entirely arbitrary: if you don't like them setup a Saito server, start listening to on-chain posts and set your own policies.
     </p>
 
   </div>
+
+
+
+  <div style="display:none" id="lightbox_editpost" class="lightbox_editpost">
+
+    <h2>Edit your Post:</h2>
+
+    <p>You may edit the content of posts you create. But you need to do it from within the post discussion page.</p>
+
+  </div>
+
+
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/mailchat/script.js"></script>

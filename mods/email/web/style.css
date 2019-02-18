@@ -248,7 +248,6 @@
  font-weight: bold;
  font-size: 1.15em;
  color: #555;
- padding-top: 10px;
 }
 .balance-money {
  float: right;
@@ -256,7 +255,6 @@
  font-size: 1.15em;
  color: #555;
  margin-right: 5px;
- padding-top: 10px;
 }
 .mail {
  grid-area: mail;
@@ -383,6 +381,9 @@ td .from {
 }
 
 .lightbox_message_from_address {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .lightbox_message_to {
@@ -399,6 +400,9 @@ td .from {
 }
 
 .lightbox_message_to_address {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .lightbox_message_text {
@@ -601,11 +605,25 @@ td .from {
   cursor: pointer;
 }
 
-.redbutton:hover {
+.redbutton:hover, .bottom-send:hover {
   background-image: linear-gradient(to bottom, #dd4b39, #c53727);
   border: 1px solid #b0281a;
 }
 
+.bottom-send {
+  clear: both;
+  max-width: 140px;
+  color: #ffffff;
+  background-color: #d14836;
+  text-align: center;
+  line-height: 27px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom, #dd4b39, #d14836);
+  border: 1px solid #b0281a;
+  cursor: pointer;
+  margin-top: 5px;
+}
 
 .message_container {
   margin-left: 1em;
@@ -731,7 +749,8 @@ td .from {
   }
   .mail-balance {
     justify-self: right;
-    align-self: center;
+    align-self: start;
+    display: inherit;
   }
 
   .mail-header {
@@ -764,8 +783,14 @@ td .from {
   }
 
   .redbutton#reply {
-    max-width: 100%;
+    width: 100%;
     margin-top: 10px;
+  }
+}
+
+@media only screen and (min-width: 535px) {
+  .bottom-send {
+    display: none;
   }
 }
 
@@ -778,10 +803,18 @@ td .from {
     margin-left: 12px;
   }
 
+  .balance-money {
+    padding-top: 10px;
+  }
+
   #blockchain_syncfade {
     position: absolute;
     top: 0px;
     right: 1em;
+  }
+
+  td .from {
+    min-width:100px;
   }
 
   /* .email_title {
@@ -801,15 +834,27 @@ td .from {
   }
 
   .inner_message .from {
-    width: 120px;
-    max-width: 120px;
+    width: 80px;
+    max-width: 80px;
     overflow: hidden;
     border-top: 0px;
     vertical-align: center;
   }
 
+  .inner_message .title {
+    width: 150px;
+    max-width: 150px;
+    overflow: hidden;
+    border-top: 0px;
+    vertical-align: center;
+  }
+
+  .message {
+    margin-bottom: 10px;
+  }
+
   .lightbox_compose_module {
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     grid-row-gap: 1em;
   }
@@ -825,6 +870,21 @@ td .from {
 
   .redbutton {
     max-width: 100%;
+    display: none;
+    height: 0;
+  }
+
+  .bottom-send {
+    max-width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 7px;
+  }
+
+  .button-send {
+    margin-top: 1em;
+    padding: 7px;
+    margin-bottom: 1em;
   }
 
   .mail-alertbox {
@@ -888,7 +948,8 @@ td .from {
     background-color: white;
     margin-left: 110px;
     font-size: 1.4em;
-    /* height: 54px; */
+    height: 54px;
+    overflow: hidden;
     padding-top: 2px;
     padding-bottom: 5px;
     min-width: 120px;

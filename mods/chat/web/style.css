@@ -137,6 +137,14 @@ pre {
     margin: auto;
     padding: 10px;
     font-size: 1.2em;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    resize: none;
+}
+
+.chat-send-message-button {
+    cursor: pointer;
 }
 
 #chat_messages-list {
@@ -153,7 +161,7 @@ pre {
 
 .chat_message {
     margin-right: 1px;
-    line-height: 0.8em;
+    line-height: 1.2em;
     font-size: 1.2em;
     white-space: normal;
 }
@@ -205,6 +213,7 @@ pre {
 
     .chat_message {
         line-height: 1.2em;
+        padding-bottom: 0.5em;
     }
 
     .chat_timestamp {

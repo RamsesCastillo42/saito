@@ -217,7 +217,11 @@ Peer.prototype.sendHandshake = function sendHandshake(sync_blockchain = 1) {
   request.data = {};
   request.data.host = "";
   request.data.port = "";
-  request.data.endpoint = this.app.server.server.endpoint;
+
+  if (this.app.server) {
+    request.data.endpoint = this.app.server.server.endpoint;
+  }
+
   request.data.publickey = this.app.wallet.returnPublicKey();
   this.challenge_local = (new Date().getTime());
   request.data.challenge = this.challenge_local;
@@ -461,8 +465,6 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
 
         } else {
 
-if (this.app.BROWSER == 1) { console.log("DEBUGGING PERSISTENT ERROR: -- offchain loop"); }
-
           //
           // servers shut down if one of the upstream
           // machines they are connecting to report a 
@@ -550,7 +552,20 @@ if (this.app.BROWSER == 1) { console.log("DEBUGGING PERSISTENT ERROR: -- offchai
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
             this.promptOffChainUpdate();
           } else {
-            this.sendBlockchain(last_shared_bid, message.data.synctype);
+	    //
+	    // lite-client -- even if last_shared_bid is 0 because the 
+	    // fork_id situation is wrong, we will send them everything
+	    // from the latest block they request -- this avoids lite-clients
+	    // that pop onto the network but do not stick around long-enough
+	    // to generate a fork ID from being treated as new lite-clients
+	    // and only sent the last 10 blocks.
+	    //
+	    if (last_shared_bid == 0 && peer_last_bid > 0 && (peer_last_bid-last_shared_bid > 9)) {
+	      if (peer_last_bid-10 < 0) { peer_last_bid = 0; } else { peer_last_bid = peer_last_bid-10; }
+              this.sendBlockchain(peer_last_bid, message.data.synctype);
+ 	    } else {
+              this.sendBlockchain(last_shared_bid, message.data.synctype);
+	    }
           }
 
         }
@@ -651,7 +666,6 @@ if (this.app.BROWSER == 1) { console.log("DEBUGGING PERSISTENT ERROR: -- offchai
       ////////////////
       if (message.request == "slip check") {
         let validres = {};
-console.log(JSON.stringify(message));
 	if (message.data == undefined) { 
 	  validres.valid = 0;
 	} else {
@@ -669,17 +683,13 @@ console.log(JSON.stringify(message));
 	        slip.bhash = message.data.slip.bhash;
             let bid = this.app.blockchain.returnLatestBlockId();
 
-console.log("CHECKING: " + JSON.stringify(slip));
-
             if (this.app.storage.validateTransactionInput(slip, bid) == 1) {
-console.log("is valid!");
   	      validres.valid = 1;
             } else {
 	      validres.valid = 0;
 	    }
           }
         }
-console.log("RESULT: " + JSON.stringify(validres));
         if (mycallback != null) { mycallback(JSON.stringify(validres)); }
 	return;
       }
@@ -703,13 +713,9 @@ console.log("RESULT: " + JSON.stringify(validres));
         let t = JSON.parse(message.data);
         let missing_hash = t.hash;
         let last_hash = t.last_hash;
-        console.log("MISSING HASH: ", missing_hash);
-        console.log("LAST HASH: ", last_hash);
 
         let missing_bid = this.app.blockchain.block_hash_hmap[missing_hash];
         let last_bid = this.app.blockchain.block_hash_hmap[last_hash];
-        console.log("MISSING BID: ", missing_bid);
-        console.log("LAST BID: ", last_bid);
 
         if (last_hash == "") {
           if (missing_bid > 0) {
@@ -743,7 +749,7 @@ console.log("RESULT: " + JSON.stringify(validres));
       if (message.request == "block") {
         if (message.data == null) { return; }
         if (message.data.bhash == null) { return; }
-        console.log("\n\n________________________________");
+        console.log("\n________________________________");
         console.log("BLOCK AVAILABLE: " + message.data.bhash);
         console.log("________________________________\n");
         if (this.app.blockchain.isHashIndexed(message.data.bhash) != 1) { this.app.mempool.fetchBlock(this, message.data.bhash); }
@@ -777,6 +783,7 @@ console.log("RESULT: " + JSON.stringify(validres));
           }
           prevhash = hash;
         }
+        this.app.blockchain.saveBlockchain();
       }
 
 
@@ -859,7 +866,6 @@ Peer.prototype.sendBlockchain = function sendBlockchain(start_bid, synctype) {
   if (start_bid == 0) {
     let block_gap = synctype == "full" ? this.app.blockchain.genesis_period : 10
     start_bid = this.app.blockchain.returnLatestBlockId() - block_gap;
-
     if (start_bid < 0) { start_bid = 0; }
   }
 

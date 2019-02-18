@@ -119,6 +119,7 @@ class Chat extends ChatCore {
         var messages = this.chat.rooms[i].messages.map(async (message) => {
           let local_id = Object.assign({ identifiers: [] },
             this.app.keys.findByPublicKey(message.author));
+
           if (local_id.identifiers.length > 0) {
             message.author = local_id.identifiers[0];
           } else {
@@ -380,6 +381,30 @@ Happy Chatting!`
     return false;
   }
 
+  _triggerMessageEvent() {
+    var msg     = $('.chat_new-message-input').val();
+    var room_id = $('.chat_chat-room-selector').val();
+
+    $('.chat_new-message-input').val("");
+
+    if (msg == '') { return }
+
+    switch(msg.substr(0, msg.indexOf(' '))) {
+      case 'help':
+        this._addHelpEvent(room_id);
+        break;
+
+      case 'add':
+        if (msg.length > 4) { this._addCreateRoomEvent(msg, room_id); }
+        break;
+
+      default:
+        this._addSendEvent(msg, room_id);
+        break;
+    }
+    return false;
+  }
+
   attachEvents(app) {
     Notification.requestPermission();
 
@@ -387,29 +412,13 @@ Happy Chatting!`
     $('.chat_new-message-input').on('keypress', (e) => {
       if ((e.which == 13 || e.keyCode == 13) && !e.shiftKey) {
         e.preventDefault();
-
-        var msg = $('.chat_new-message-input').val();
-        var room_id = $('.chat_chat-room-selector').val();
-
-        $('.chat_new-message-input').val("");
-
-        if (msg == '') { return }
-
-        switch(msg.substr(0, msg.indexOf(' '))) {
-          case 'help':
-            this._addHelpEvent(room_id);
-            break;
-
-          case 'add':
-            if (msg.length > 4) { this._addCreateRoomEvent(msg, room_id); }
-            break;
-
-          default:
-            this._addSendEvent(msg, room_id);
-            break;
-        }
-        return false;
+        this._triggerMessageEvent();
       }
+    });
+
+    $('.fa-arrow-right').off();
+    $('.fa-arrow-right').on('click', () =>  {
+      this._triggerMessageEvent();
     });
 
     var chat_self = this;

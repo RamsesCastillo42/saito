@@ -155,8 +155,8 @@ Email.prototype.attachMessage = function attachMessage(message, app) {
 
   if (use_markdown == 0) {
     md = message.data;
-  } else {  
-    var md = markdown.toHTML(message.data);
+  } else {
+    md = markdown.toHTML(message.data);
   }
 
   md = linkifyHtml(md);
@@ -493,7 +493,7 @@ Email.prototype.attachEvents = function attachEvents(app) {
     email_self.showEmailAlert();
 
     $('#primary_nav_wrap ul ul').css('display', 'none');
-    $('.mail-module-label').html("Compose Email");
+    $('.mail-module-label').html("Compose");
     $('.mail-module-label').show();
     $('.mail-controls-btn').hide();
 
@@ -563,8 +563,8 @@ Email.prototype.attachEvents = function attachEvents(app) {
     }
 
     // this is used by all modules, look to specialize in the future
-    $('#send').off();
-    $('#send').on('click', function() {
+    $('#send, #send2').off();
+    $('#send, #send2').on('click', function() {
 
       if (email_self.app.network.isConnected() == 0) {
         alert("Browser lost connection to network: email not sent...");
@@ -755,7 +755,7 @@ Email.prototype.displaySelectEmail = function displaySelectEmail(from, to, title
     <div class="select_email_container">
       <div class="lightbox_message_title">
         <div class="lightbox_message_reply" id="lightbox_message_reply">
-          <div id="reply" class="redbutton reply">REPLY</div>
+          <button id="reply" class="redbutton reply">REPLY</button>
         </div>
         <div class="lightbox_message_from" id="lightbox_message_from">
           <span class="lightbox_message_from_label">FROM: </span>
@@ -846,6 +846,7 @@ Email.prototype.displayEmailForm = function displayEmailForm(app) {
   element_to_edit = $('#module_editable_space');
   element_to_edit_html = '<input type="text" class="email_title" id="email_title" value="" /><p></p><textarea class="email_body" id="email_body" name="email_body"></textarea>';
   element_to_edit_html += '<input type="hidden" name="email_attachments" id="email_attachments">';
+  element_to_edit_html += '<div class="bottom-send send" id="send">SEND</div>';
   element_to_edit_html += '<div id="file-wrap">';
   element_to_edit_html += '<div id="file-upload-shim" class="addfile">Add file</div></div>';
   element_to_edit.html(element_to_edit_html);
@@ -972,6 +973,8 @@ Email.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
 
   if (txmsg == null) { return; }
   if (txmsg.module != "Email") { return; }
+
+console.log("\n\n\nIN EMAIL ONCONFIRMATION!");
 
   if (conf == 0) {
     if (tx.isFrom(app.wallet.returnPublicKey())) {
@@ -1200,6 +1203,7 @@ Email.prototype.receiveMail = function receiveMail(title, data, tx=null, mycallb
   this.app.archives.saveTransaction(newtx);
   this.addMessageToInbox(newtx, this.app);
   this.app.storage.saveOptions();
+  this.attachEvents(this.app);
 
   if (mycallback != null) { mycallback(); }
 

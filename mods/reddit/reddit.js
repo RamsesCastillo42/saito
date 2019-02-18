@@ -1,4 +1,5 @@
 const saito = require('../../lib/saito/saito');
+const h2m = require('h2m');
 const sqlite = require('sqlite');
 const ModTemplate = require('../../lib/templates/template');
 const util = require('util');
@@ -31,41 +32,31 @@ function Reddit(app) {
 
   this.reddit            = {};
   this.reddit.posts_per_page = 30;
-  this.reddit.firehose   = 1;   // do I want ALL posts
-                                // 1 = show me everything
+  this.reddit.firehose   = 1;   // 1 = show me everything
                                 // 0 = only friends
-
-  this.reddit.filter     = 0;   // do I want ALL comments
-                                //
-                                // 0 = show all comments
+  this.reddit.filter     = 0;   // 0 = show all comments
                                 // 1 = only comments from ppl I follow
 
   this.reddit.username_timer = null;
 
-  this.snapshot_dir       = __dirname + "/web/screenshots/";
+  this.snapshot_dir      = __dirname + "/web/screenshots/";
 
-  this.browser_active    = 0;
 
   this.cacheEnabled      = 1;
   this.cacheEnabledPost  = 1; // cache post pages
   this.lastCached        = 0;
   this.lastID            = 1;
 
-  // a parent variable called "subreddit"
-  // is included in the HTML and edited
-  // directly by this script. see webSefver
-  // function.
-  //
-  // a parent variable called load_content_on_load
-  // is included in the HTML and edited
-  // directly by this script. It controls whether
-  // we fetch posts from server on load.
+  // subreddit -- HTML loaded variable for /r/subreddit
+  // load_content_on_load -- fetch posts from server on load?
 
   return this;
 
 }
 module.exports = Reddit;
 util.inherits(Reddit, ModTemplate);
+
+
 
 ////////////////////
 // Install Module //
@@ -128,10 +119,27 @@ Reddit.prototype.installModule = async function installModule() {
 
 
 
+Reddit.prototype.updateFilter = function updateFilter(nf) {
+  this.reddit.filter = nf;
+  this.saveReddit();
+}
+
+Reddit.prototype.updateFirehose = function updateFirehose(nf) {
+  this.reddit.firehose = nf;
+  this.saveReddit();
+}
+
+
+
+
+
+
+
 ////////////////
 // Initialize //
 ////////////////
 Reddit.prototype.initialize = async function initialize() {
+
   if (this.app.BROWSER == 0) { this.db = await sqlite.open(this.dir); return;}
 
   if (this.browser_active == 0) { return; }
@@ -155,7 +163,7 @@ Reddit.prototype.initialize = async function initialize() {
           message.request         = "reddit load request";
           message.data            = {};
           message.data.request    = "reddit load request";
-          message.data.subreddit  = subreddit;
+          message.data.subreddit  = subreddit.toLowerCase();
           message.data.post_id    = post_id;
           message.data.comment_id = comment_id;
           message.data.offset     = offset;
@@ -176,20 +184,20 @@ Reddit.prototype.initialize = async function initialize() {
           message.request         = "reddit load moderate";
           message.data            = {};
           message.data.request    = "reddit load moderate";
-          message.data.subreddit  = subreddit;
+          message.data.subreddit  = subreddit.toLowerCase();
           message.data.post_id    = post_id;
           message.data.comment_id = comment_id;
           this.app.network.sendRequest(message.request, message.data);
         }, 500);
       }
 
-      console.log("ATTEMPTING TO LOAD POSTS")
+      //console.log("ATTEMPTING TO LOAD POSTS")
       var rdloadtimer = setTimeout(() => {
         message                   = {};
         message.request           = "reddit load post";
         message.data              = {};
         message.data.request      = "reddit load post";
-        message.data.subreddit    = subreddit;
+        message.data.subreddit    = subreddit.toLowerCase();
         message.data.post_id      = post_id;
         message.data.comment_id   = comment_id;
         message.data.load_content = load_content_on_load;
@@ -227,11 +235,38 @@ Reddit.prototype.initializeHTML = function initializeHTML(app) {
   }
 
 
+  var mykey = app.wallet.returnPublicKey();
+
+
   // timer to check names of users
   this.reddit.username_timer = setTimeout(function() {
 
     var keystocheck = [];
     var updateme = 0;
+    var posteradd = "";
+    
+    try {
+      posteradd = $('.post_author_address').attr("id");
+    } catch (err) {}
+
+    if (posteradd == app.wallet.returnPublicKey()) {
+      $('.d_edit').show();
+    }
+
+
+
+    $('.content_link_editpost').each(function() {
+      if ($(this).attr("id") == mykey) {;
+        $(this).show();
+      }
+    });
+
+    $('.comment_link_edit').each(function() {
+      if ($(this).attr("id") == mykey) {;
+        $(this).show();
+      }
+    });
+
 
     $('.post_author').each(function() {
 
@@ -260,7 +295,7 @@ Reddit.prototype.initializeHTML = function initializeHTML(app) {
         app.dns.fetchIdentifier(thispublickey, function(answer) {
 
           if (app.dns.isRecordValid(answer) == 0) {
-            console.log(answer);
+            //console.log(answer);
             return;
           }
 
@@ -269,20 +304,18 @@ Reddit.prototype.initializeHTML = function initializeHTML(app) {
           let myidentifier = dns_response.identifier;
           let mypublickey = dns_response.publickey;
 
-
           $('.post_author').each(function() {
             var publickey2  = $(this).text();
             var tmpid = $(this).attr('id');
             tmpid = "#post_author_clickable_" + tmpid.substring(12);
             if (publickey2 === mypublickey) {
               $(tmpid).text(myidentifier);
-
             }
           });
         });
       }
     });
-  }, 2000);
+  }, 1000);
 
 }
 
@@ -421,6 +454,137 @@ Reddit.prototype.attachEvents = function attachEvents(app) {
 
 
 
+  $('.comment_link_edit').off();
+  $('.comment_link_edit').on('click', function() {
+
+    let comment_to_edit = h2m($(this).parent().parent().find(".comment_text").html());
+    let commentobj      = $(this).parent().parent().find(".comment_text").first();
+    let comment_id      = $(this).parent().parent().parent().attr("id");
+    let post_id         = $(".post_author").attr("id");
+
+    comment_id          = comment_id.substring(8);
+    post_id             = post_id.substring(12);
+
+
+    $('.edit_data').val(comment_to_edit);
+    $('.edit_comment_id').val(comment_id);
+    $('.edit_post_id').val(post_id);
+    $('.edit_interface').show();
+
+    $('.edit_submit').off();
+    $('.edit_submit').on('click', function() {
+
+      var msg = {};
+      msg.module     = "Reddit";
+      msg.type       = "edit_comment";
+      msg.post_id    = $('.edit_post_id').val();
+      msg.comment_id = $('.edit_comment_id').val();
+      msg.data       = $('.edit_data').val();
+
+      var amount = 0.0;
+      var fee    = 2.0001;
+
+      var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(reddit_self.publickey, amount);
+      if (newtx == null) { alert("Unable to send TX. Do you have enough Saito?"); return; }
+      newtx.transaction.msg = msg;
+      newtx = app.wallet.signTransaction(newtx);
+      app.network.propagateTransactionWithCallback(newtx, function() {
+        alert("your edit has been broadcast");
+        commentobj.html("Comment Updating...");
+        commentobj.css('background-color','yellow');
+        $('.edit_interface').hide();
+      });
+
+    });
+  });
+
+
+
+
+
+  $('.d_edit').off();
+  $('.d_edit').on('click', function() {
+
+    let post_to_edit    = h2m($(".d_text").html());
+    let post_id         = $(".post_author_clickable").attr("id").substring(22);
+
+    $('.edit_data').val(post_to_edit);
+    $('.edit_comment_id').val("");
+    $('.edit_post_id').val(post_id);
+    $('.edit_interface').show();
+
+    $('.edit_submit').off();
+    $('.edit_submit').on('click', function() {
+
+      var msg = {};
+      msg.module     = "Reddit";
+      msg.type       = "edit_post";
+      msg.post_id    = $('.edit_post_id').val();
+      msg.data       = $('.edit_data').val();
+
+      var amount = 0.0;
+      var fee    = 2.0001;
+
+      var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(reddit_self.publickey, amount);
+      if (newtx == null) { alert("Unable to send TX. Do you have enough Saito?"); return; }
+      newtx.transaction.msg = msg;
+      newtx = app.wallet.signTransaction(newtx);
+      app.network.propagateTransactionWithCallback(newtx, function() {
+        alert("your edit has been broadcast");
+        $(".d_text").html("Post Updating...");
+        $(".d_text").css('background-color','yellow');
+        $('.edit_interface').hide();
+      });
+
+    });
+  });
+
+
+
+
+
+
+
+  $('.content_link_editpost').off();
+  $('.content_link_editpost').on('click', function() {
+
+    var myid = $(this).attr('id');
+    myid = myid.substring(20);
+    var author_key_div = "#post_author_"+myid;
+    var author_key = $(author_key_div).text();
+
+    $.fancybox({
+      href            : '#lightbox_editpost',
+      fitToView       : false,
+      width           : '100%',
+      height          : '400px',
+      closeBtn        : true,
+      autoSize        : false,
+      closeClick      : false,
+      openEffect      : 'none',
+      closeEffect     : 'none',
+      helpers: {
+        overlay : {
+          closeClick : false
+        }
+      },
+      keys : {
+        close : null
+      },
+      afterShow : function(){
+      }
+    });
+  });
+
+
+
+
+
+  // toggle submission
+  $('#submit').off();
+
+
+
 
   $('.content_link_report').off();
   $('.content_link_report').on('click', function() {
@@ -458,7 +622,7 @@ Reddit.prototype.attachEvents = function attachEvents(app) {
           message.request         = "reddit report";
           message.data            = {};
           message.data.request    = "reddit report";
-          message.data.subreddit  = subreddit;
+          message.data.subreddit  = subreddit.toLowerCase();
           message.data.post_id    = myid;
           reddit_self.app.network.sendRequest(message.request, message.data);
           $.fancybox.close();
@@ -506,6 +670,18 @@ Reddit.prototype.attachEvents = function attachEvents(app) {
   $('#home').on('click', function() {
     location.href = "/r";
     return;
+  });
+
+  $('.toggle-post-button').off();
+  $('.toggle-post-button').on('click', () => {
+    var text = $('#submit_text').val();
+    let markdown_preview = markdown.toHTML(text);
+
+    $('.toggle-preview-text').empty();
+    $('.toggle-preview-text').append(markdown_preview);
+
+    $('.submit_text').toggle();
+    $('.toggle-preview-text').toggle();
   });
 
 
@@ -592,20 +768,26 @@ Reddit.prototype.attachEvents = function attachEvents(app) {
     var id = $(this).attr('id').substring(21);
     var ud = "#comment_reply_textarea_"+id;
 
+    var post_author = $('.post_author').html();
+    var post_url = window.location.href;
+
     // fetch data from tx
     var msg = {};
-    msg.module     = "Reddit";
-    msg.type       = "comment";
-    msg.text       = $(ud).val();
-    msg.post_id    = post_id;
-    msg.parent_id  = id;
-    msg.subreddit  = subreddit;
+    msg.module      = "Reddit";
+    msg.type        = "comment";
+    msg.text        = $(ud).val();
+    msg.post_id     = post_id;
+    msg.parent_id   = id;
+    msg.post_author = post_author;
+    msg.link        = post_url;
+    msg.subreddit   = subreddit.toLowerCase();
+    msg.identifier  = app.wallet.returnIdentifier();
 
     var amount = 0.0;
-    var fee    = 2.0001;
+    var fee    = 1.0000;
 
     // send post across network
-    var newtx = app.wallet.createUnsignedTransactionWithDefaultFee(reddit_self.publickey, amount);
+    var newtx = app.wallet.createUnsignedTransaction(reddit_self.publickey, amount, fee);
     if (newtx == null) { alert("Unable to send TX"); return; }
     newtx.transaction.msg = msg;
     newtx = app.wallet.signTransaction(newtx);
@@ -714,11 +896,11 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
     } else {
       $('#d_content_title').html(`<a target="_blank" href="${tx.transaction.msg.link}">${tx.transaction.msg.title}</a>`);
     }
-    var content_subreddit = '/r/'+message.data.subreddit;
+    var content_subreddit = '/r/'+message.data.subreddit.toLowerCase();
     var content_thumbnail = "/r/screenshots/"+message.data.id+".png";
     let updatethmb = '<img src="'+content_thumbnail+'" class="thumbnail_image" onerror="this.src=\'/img/saito-logo-blue.png\'" /></div>';
     $('#d_thumb').html(updatethmb);
-    var cd = 'submitted by <span class="post_author_clickable" id="post_author_clickable_'+tx.transaction.sig+'">'+this.formatAuthor(tx.transaction.from[0].add)+'</span>';
+    var cd = 'submitted by <span class="post_author_clickable" id="post_author_clickable_'+tx.transaction.sig+'">'+this.formatAuthor(tx.transaction.from[0].add)+'</span><span class="post_author_address" id="'+tx.transaction.from[0].add+'" style="display:none"></span>';
     if (message.data.subreddit != "") { cd += ' to <a href="'+content_subreddit+'">'+content_subreddit+'</a>'; }
 
     $('#d_content_details').html(cd);
@@ -737,6 +919,14 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
       $('#d > .post_author').text(tx.transaction.from[0].add);
     }
     this.attachEvents(this.app);
+
+    //
+    // enable editing link if we are this author
+    //
+    if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+      $('.d_edit').show();
+    }
+
 
     if ($('.post').length > 29) {
       $('#next').show();
@@ -772,12 +962,13 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
     content_title       = tx.transaction.msg.title;
     cpost_id            = tx.transaction.sig;
     content_subreddit   = '/r/'+tx.transaction.msg.subreddit;
+    content_subreddit   = content_subreddit.toLowerCase();
     if (content_subreddit == '/r/') {
       content_subreddit = "/r/main";
     }
     content_site        = content_subreddit;
     content_site_link   = "";
-    content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+this.formatAuthor(tx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a>';
+    content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+this.formatAuthor(tx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a><span class="post_author_address" style="display:none" id="'+tx.transaction.from[0].add+'"></span>';
     content_link        = '/r/'+content_subreddit+'/'+cpost_id;
     comments_link       = '/r/'+content_subreddit+'/'+cpost_id;
     if (link.href != "") {
@@ -860,7 +1051,7 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
 
 Reddit.prototype.returnPostHtml = function returnPostHtml(cpost_id, post_author_address, votes_total, comment_thumbnail, content_link, content_title, content_site_link, content_site, content_subreddit, content_details, comments_text) {
 
-  console.log("in returnPostHTML w/ comments: " + comments_text);
+  //console.log("in returnPostHTML w/ comments: " + comments_text);
 
   var toInsert = `
       <div class="post" id="post_${cpost_id}">
@@ -876,6 +1067,7 @@ Reddit.prototype.returnPostHtml = function returnPostHtml(cpost_id, post_author_
           <div class="content_details">${content_details}</div>
           <div class="content_links">
             <a href="${content_subreddit}/${cpost_id}" class="content_link content_link_comments">${comments_text}</a>
+            <div class="content_link content_link_editpost" id="${post_author_address}">edit</div>
             <div class="content_link content_link_report" id="content_link_report_${cpost_id}">report</div>
           </div>
         </div>
@@ -899,6 +1091,7 @@ Reddit.prototype.addComment = function addComment(tx, message, app, prepend, pen
   var pid               = 0;
   var cid               = 0;
   var votes_total       = 1;
+  var commentor_address = tx.transaction.from[0].add;
 
   if (tx != null) {
     content_text  = tx.transaction.msg.text;
@@ -928,6 +1121,7 @@ Reddit.prototype.addComment = function addComment(tx, message, app, prepend, pen
           <div class="comment_author_'+cid+'" id="comment_author_'+tx.transaction.from[0].add+'" style="display:none"></div>\
           <div class="comment_text" id="comment_text_'+cid+'">'+linkifyHtml(markdown.toHTML(content_text))+'</div>\
           <div class="comment_links" id="comment_links_'+cid+'">\
+            <div class="comment_link comment_link_edit" id="'+commentor_address+'">edit</div>\
             <div class="comment_link comment_link_reply" id="comment_link_reply_'+cid+'">reply</div>\
           </div>\
           <div class="comment_reply" id="comment_reply_'+cid+'">\
@@ -957,7 +1151,7 @@ Reddit.prototype.addComment = function addComment(tx, message, app, prepend, pen
     app.dns.fetchIdentifier(tx.transaction.from[0].add, function(answer) {
 
       if (app.dns.isRecordValid(answer) == 0) {
-        console.log(answer);
+        //console.log(answer);
         return;
       }
 
@@ -1102,6 +1296,7 @@ Reddit.prototype.webServer = function webServer(app, expressapp) {
   });
   expressapp.get('/r/:subreddit', function (req, res) {
     var this_subreddit = req.params.subreddit;
+    this_subreddit = this_subreddit.toLowerCase();
     var cachedFile = this_subreddit.replace(/\W/g, '') + ".html";
     var data = "";
     var offset = 0;
@@ -1135,6 +1330,7 @@ Reddit.prototype.webServer = function webServer(app, expressapp) {
   });
   expressapp.get('/r/:subreddit/:post_id', function (req, res) {
     var this_subreddit = req.params.subreddit;
+    this_subreddit = this_subreddit.toLowerCase();
     var this_post_id   = req.params.post_id;
     var data = "";
     var cachedFile = this_post_id.replace(/\W/g, '') + ".html";
@@ -1156,6 +1352,7 @@ Reddit.prototype.webServer = function webServer(app, expressapp) {
   });
   expressapp.get('/r/:subreddit/:post_id/:comment_id', function (req, res) {
     var this_subreddit = req.params.subreddit;
+    this_subreddit = this_subreddit.toLowerCase();
     var this_post_id   = req.params.post_id;
     var this_comment_id = req.params.comment_id;
     var data = fs.readFileSync(__dirname + '/web/post.html', 'utf8', (err, data) => {});
@@ -1523,7 +1720,7 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
     if (msg.request == "reddit post") {
       tx = msg.data.tx;
       newtx = new saito.transaction(tx);
-      console.log("CREATING NEW POST  TX", tx);
+      //console.log("CREATING NEW POST  TX", tx);
       app.modules.returnModule("Reddit").addPost(newtx, msg, app, 0);
 
       // recache main
@@ -1592,13 +1789,36 @@ Reddit.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
   if (app.BROWSER == 0) {
     if (conf == 0) {
       myreddit = app.modules.returnModule("Reddit");
+      if (tx.transaction.msg.type == "edit_comment") { myreddit.editComment(tx); }
+      if (tx.transaction.msg.type == "edit_post") { myreddit.editPost(tx); }
       if (tx.transaction.msg.type == "post") { myreddit.savePost(tx); }
-      if (tx.transaction.msg.type == "comment" && (tx.transaction.msg.parent_id != null || tx.transaction.msg.post_id != null)) { myreddit.saveComment(tx, tx.transaction.msg.post_id, tx.transaction.msg.parent_id); }
+      if (tx.transaction.msg.type == "comment" && (tx.transaction.msg.parent_id != null || tx.transaction.msg.post_id != null)) {
+        myreddit.saveComment(tx, tx.transaction.msg.post_id, tx.transaction.msg.parent_id);
+        myreddit.sendNotification(tx);
+      }
     }
     return;
   }
 
 }
+Reddit.prototype.updatePostImg = async function updatePostImg(post_id, imgurl) {
+
+/****
+  console.log("Update our Image Post");
+
+  var imgsql = "UPDATE posts SET image_url = $imgurl WHERE post_id = $pid";
+  try {
+    let row = await this.db.run(imgsql, {
+      $imgurl: imgurl,
+      $pid: post_id
+    })
+  } catch(err) {
+    console.log(err);
+  }
+****/
+
+}
+
 Reddit.prototype.savePost = async function savePost(tx) {
 
   var reddit_self = this;
@@ -1622,17 +1842,17 @@ Reddit.prototype.savePost = async function savePost(tx) {
     })
     if (row) {
       this.lastID = row.lastID;
-      console.log("LST ID", this.lastID);
+      //console.log("LST ID", this.lastID);
     }
   } catch(err) {
     console.log(err);
   }
 
-  console.log("\n\n\n\nSAVED POST!\n\n\n");
+  //console.log("\n\n\n\nSAVED POST!\n\n\n");
 
-    //////////////////////////////
-    // generate new cached page //
-    //////////////////////////////
+  //////////////////////////////
+  // generate new cached page //
+  //////////////////////////////
   if (reddit_self.cacheEnabled == 1) {
     reddit_self.generateCachedPagePosts(tx.transaction.msg.subreddit);
     reddit_self.generateCachedPagePosts("main");
@@ -1646,6 +1866,8 @@ Reddit.prototype.savePost = async function savePost(tx) {
   var snapshot_dir       = reddit_self.snapshot_dir;
   var snapshot_filepath  = snapshot_dir + snapshot_localfile;
 
+  var snapshot_img_url   = "";
+
   if (link.href != "") {
 
     var resolver = new ImageResolver();
@@ -1654,35 +1876,63 @@ Reddit.prototype.savePost = async function savePost(tx) {
     resolver.register(new ImageResolver.Opengraph());
     resolver.register(new ImageResolver.Webpage());
 
-    resolver.resolve(snapshot_target, (result) => {
-      if ( result ) {
-        console.log("downloading: "+ result.image);
+
+
+    try {
+      resolver.resolve(snapshot_target, (result) => {
+        if ( result ) {
+          //console.log("downloading: "+ result.image);
           snapshot_target = result.image;
 
-        request.head(snapshot_target, (err, res, body) => {
-          if (!err) {
-            console.log('content-type:', res.headers['content-type']);
-            console.log('content-length:', res.headers['content-length']);
-            request(snapshot_target).pipe(fs.createWriteStream(snapshot_filepath)).on('close', () => {
+    //
+    // tell our database to update the image
+    //
+        reddit_self.updatePostImg(snapshot_target, tx.transaction.sig);
 
-              console.log("About to JIMP this puppy");
+          request.head(snapshot_target, (err, res, body) => {
+            if (!err) {
+              //console.log('content-type:', res.headers['content-type']);
+              //console.log('content-length:', res.headers['content-length']);
+              request(snapshot_target).pipe(fs.createWriteStream(snapshot_filepath)).on('close', async () => {
 
-              Jimp.read(snapshot_filepath, (err, lenna) =>{
-                console.log("JIMPing this puppy");
-                if (err) { console.log(err); return;}
-                lenna.resize(snapshot_width, snapshot_height) // resize
-                  .quality(60)                 // set JPEG quality
-                  .write(snapshot_filepath); // save
-                console.log("JIMPed: " + snapshot_filepath);
-              })
-              console.log('done: ' + result.image);
-            });
-          }
-        });
-      } else {
-        console.log( "No image found" );
-      }
-    });
+                //console.log("About to JIMP this puppy");\
+                let image
+                try {
+                  image = await Jimp.read(snapshot_filepath)
+                } catch(error1) {
+                  let temp = await new Promise(resolve => setTimeout(resolve, 600));
+                  try {
+                    image = await Jimp.read(snapshot_filepath);
+                    debug('Success reading file on second attempt!');
+                  } catch (error2) {
+                    console.log(error2)
+                    return
+                  }
+                }
+
+                image.resize(snapshot_width, snapshot_height) // resize
+                    .quality(60)                 // set JPEG quality
+                    .write(snapshot_filepath); // save
+
+                // Jimp.read(snapshot_filepath, (err, lenna) => {
+                //   //console.log("JIMPing this puppy");
+                //   if (err) { console.log(err); return;}
+                //   lenna.resize(snapshot_width, snapshot_height) // resize
+                //     .quality(60)                 // set JPEG quality
+                //     .write(snapshot_filepath); // save
+                //   //console.log("JIMPed: " + snapshot_filepath);
+                // })
+                //console.log('done: ' + result.image);
+              });
+            }
+          });
+        } else {
+          //console.log( "No image found" );
+        }
+      });
+    } catch(err) {
+      console.log(err)
+    }
   }
 }
 
@@ -1726,13 +1976,151 @@ Reddit.prototype.saveComment = function saveComment(tx, post_id, parent_id) {
 
 
 // set to async, change in other parts
+Reddit.prototype.editComment = async function editComment(tx) {
+
+  //
+  // msg.module     = "Reddit";
+  //  msg.type       = "edit_comment";
+  //  msg.post_id    = $('.edit_post_id');
+  //  msg.comment_id = $('.edit_comment_id');
+  //  msg.data       = $('.edit_data').val();
+  //
+
+  var reddit_self = this;
+
+  var sql = "SELECT * FROM comments WHERE comment_id = $cid";
+  var params = { $cid : tx.transaction.msg.comment_id }
+  var poster = "";
+  var post_id = tx.transaction.msg.post_id;
+
+//console.log(sql + " --- " + JSON.stringify(params));
+
+  try {
+    var rows = await this.db.all(sql, params);
+    if (rows != null) {
+//console.log(JSON.stringify(rows));
+      var tmptx = new saito.transaction(rows[0].tx);
+      tmptx.transaction.msg.text = tx.transaction.msg.data;
+      poster = tmptx.transaction.from[0].add;
+    }
+  } catch(err) {
+    console.log(err);
+    return;
+  }
+
+  if (poster == "") { return; }
+
+  if (tx.transaction.from[0].add != poster) {
+    console.log("Refusing to update Reddit: poster not identical");
+    return;
+  }
+
+//console.log("ABOUT TO UPDATE");
+
+  var sql2 = "UPDATE comments SET tx = $tx WHERE comment_id = $cid";
+  var params2 = { $tx : JSON.stringify(tmptx.transaction) , $cid : tx.transaction.msg.comment_id };
+  try {
+//console.log(sql2 + " -- " + JSON.stringify(params2));
+    this.db.run(sql2, params2);
+  } catch(err) {
+    console.log(err);
+  }
+
+  //
+  // clear cache
+  //
+  reddit_self.clearCache();
+
+  // generate new cached page
+  if (reddit_self.cacheEnabledPost == 1) {
+      //console.log("POST ID: " + post_id);
+    reddit_self.generateCachedPagePostAndComments(post_id);
+  }
+
+}
+
+
+
+
+
+
+
+
+// set to async, change in other parts
+Reddit.prototype.editPost = async function editPost(tx) {
+
+  //
+  //  msg.module     = "Reddit";
+  //  msg.type       = "edit_post";
+  //  msg.post_id    = $('.edit_post_id');
+  //  msg.data       = $('.edit_data').val();
+  //
+
+  var reddit_self = this;
+
+  var sql = "SELECT * FROM posts WHERE post_id = $pid";
+  var params = { $pid : tx.transaction.msg.post_id }
+  var poster = "";
+
+//console.log(sql + " --- " + JSON.stringify(params));
+
+  try {
+    var rows = await this.db.all(sql, params);
+    if (rows != null) {
+//console.log(JSON.stringify(rows));
+      var tmptx = new saito.transaction(rows[0].tx);
+      tmptx.transaction.msg.text = tx.transaction.msg.data;
+      poster = tmptx.transaction.from[0].add;
+    }
+  } catch(err) {
+    console.log(err);
+    return;
+  }
+
+  if (poster == "") { return; }
+
+  if (tx.transaction.from[0].add != poster) {
+//    console.log("Refusing to update dreddit: poster not identical");
+    return;
+  }
+
+//console.log("ABOUT TO UPDATE");
+
+
+  var sql2 = "UPDATE posts SET tx = $tx WHERE post_id = $pid";
+  var params2 = { $tx : JSON.stringify(tmptx.transaction) , $pid : tx.transaction.msg.post_id };
+  try {
+//console.log(sql2 + " -- " + JSON.stringify(params2));
+    this.db.run(sql2, params2);
+  } catch(err) {
+    console.log(err);
+  }
+
+  //
+  // clear cache
+  //
+  reddit_self.clearCache();
+
+  // generate new cached page
+  if (reddit_self.cacheEnabledPost == 1) {
+    //console.log("POST ID: " + tx.transaction.msg.post_id);
+    reddit_self.generateCachedPagePostAndComments(tx.transaction.msg.post_id);
+  }
+
+}
+
+
+
+
+
+// set to async, change in other parts
 Reddit.prototype.generateCachedPagePosts = async function generateCachedPagePosts(sr) {
 
   if (this.app.BROWSER == 1) { return; }
 
   var reddit_self = this;
 
-  console.log("\n\n\n\n\nGENERATING WITH: "+sr);
+  //console.log("\n\n\n\n\nGENERATING WITH: "+sr);
 
   if (sr == "") { return; }
 
@@ -1764,7 +2152,8 @@ Reddit.prototype.generateCachedPagePosts = async function generateCachedPagePost
 
         var content_site        = content_subreddit;
         var content_site_link   = "";
-        var content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+reddit_self.formatAuthor(tmptx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a>';
+
+        var content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+reddit_self.formatAuthor(tmptx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a><span class="post_author_address" id="'+tmptx.transaction.from[0].add+'" style="display:none"></span>';
         var content_link        = '/r/'+content_subreddit+'/'+cpost_id;
         var comments_link       = '/r/'+content_subreddit+'/'+cpost_id;
         if (link.href != "") { content_link = link.href; }
@@ -1799,6 +2188,7 @@ Reddit.prototype.generateCachedPagePosts = async function generateCachedPagePost
       }
       data_html = data_html.replace('subreddit = ""','subreddit = "'+sr+'"');
       data_html = data_html.replace('&nbsp;',data_posts);
+      data_html = data_html.replace('&nbsp;','');
       data_html = data_html.replace('load_content_on_load = 1','load_content_on_load = 0; if ($(".post").length > 29) { $("#next").show(); }');
 
       //rewrite cached page
@@ -1831,15 +2221,23 @@ Reddit.prototype.generateCachedPagePostAndComments = async function generateCach
   var sql = "SELECT * FROM posts WHERE post_id = $post_id";
   var params = { $post_id : post_id };
   var content_author = "";
+  var votes_total = 1;
 
   try {
     let row = await this.db.all(sql, params);
     if (row != null) {
-      var tmptx = new saito.transaction(row.tx);
+
+      var tmptx = new saito.transaction(row[0].tx);
+
+//console.log("THIS TX: " + JSON.stringify(tmptx));
 
       var myhref = tmptx.transaction.msg.link;
-      if (myhref.indexOf("http://") != 0 && myhref.indexOf("https://") != 0) { myhref = "http://" + myhref; }
-      var link   = new URL(myhref);
+      var link   = "";
+
+      if (myhref != undefined) {
+        if (myhref.indexOf("http://") != 0 && myhref.indexOf("https://") != 0) { myhref = "http://" + myhref; }
+        link   = new URL(myhref);
+      }
 
       var content_title       = tmptx.transaction.msg.title;
       var cpost_id            = tmptx.transaction.sig;
@@ -1849,7 +2247,7 @@ Reddit.prototype.generateCachedPagePostAndComments = async function generateCach
 
       var content_site        = content_subreddit;
       var content_site_link   = "";
-      var content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+reddit_self.formatAuthor(tmptx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a>';
+      var content_details     = "submitted by <span class=\"post_author_clickable\" id=\"post_author_clickable_"+cpost_id+"\">"+reddit_self.formatAuthor(tmptx.transaction.from[0].add)+'</span> to <a href="'+content_subreddit+'">'+content_subreddit+'</a><span class="post_author_address" id="'+tmptx.transaction.from[0].add+'" style="display:none"></span>';
       var content_link        = '/r/'+content_subreddit+'/'+cpost_id;
       var comments_link       = '/r/'+content_subreddit+'/'+cpost_id;
       if (link.href != "") { content_link      = link.href; }
@@ -1864,39 +2262,58 @@ Reddit.prototype.generateCachedPagePostAndComments = async function generateCach
       content_author = reddit_self.formatAuthor(tmptx.transaction.from[0].add);
 
       var comments_text       = "read comments";
-      if (row.comments == 1) { comments_text = "1 comment"; }
-      if (row.comments > 1)  { comments_text = row.comments + " comments"; }
-      var comment_thumbnail = "/r/screenshots/" + row.id + ".png";
-      var votes_total       = row.votes;
-      var content_text      = linkifyHtml(markdown.toHTML(tx.transaction.msg.text));
+      if (row[0].comments == 1) { comments_text = "1 comment"; }
+      if (row[0].comments > 1)  { comments_text = row[0].comments + " comments"; }
+      var comment_thumbnail = "/r/screenshots/" + row[0].id + ".png";
+      votes_total           = row[0].votes;
+      var content_text      = linkifyHtml(markdown.toHTML(tmptx.transaction.msg.text));
+
+      jsscript = '<script type="text/javascript">$("#post_author").html("'+content_author.replace(/\"/g,"\\\"")+'");$("#d_votes > .votes > .votes_total").html('+votes_total+');$("#d_text").html("'+content_text.replace(/\"/,"\\\"")+'");$("#d_content_title").html("'+content_title.replace(/\"/g,"\\\"")+'");$("#d_content_details").html("'+content_details.replace(/\"/g,"\\\"")+'");$("#d_thumb").html("<img src=\''+comment_thumbnail.replace(/\"/g,"\\\"")+'\' class=\'thumbnail_image\' onerror=\'this.src=\\\"/img/saito_logo_grey.png\\\"\' /></div>");</script>';
+
+      data_html = data_html.replace('&nbsp;',data_posts);
+      data_html = data_html.replace('load_content_on_load = 1','load_content_on_load = 2');
+      jsscript += '</body>';
+      data_html = data_html.replace('</body>',jsscript);
+
+      //console.log("___________________________________________");
+      //console.log("THIS IS THE DATA WE ARE ADDING TO THE PAGE!");
+      //console.log("___________________________________________");
+
+      //rewrite cached page
+      var cachedFile = post_id.replace(/\W/g, '') + ".html";
+
+      fs.writeFileSync((__dirname + '/web/cache/' + cachedFile), data_html, function(err) {
+        if (err) {
+          return console.log(err);
+        }
+      });
 
     }
-
-    jsscript = '<script type="text/javascript">$("#post_author").html("'+content_author.replace(/\"/g,"\\\"")+'");$("#d_votes").html(3);$("#d_text").html("'+content_text.replace(/\"/,"\\\"")+'");$("#d_content_title").html("'+content_title.replace(/\"/g,"\\\"")+'");$("#d_content_details").html("'+content_details.replace(/\"/g,"\\\"")+'");$("#d_thumb").html("<img src=\''+comment_thumbnail.replace(/\"/g,"\\\"")+'\' class=\'thumbnail_image\' onerror=\'this.src=\\\"/img/saito_logo_grey.png\\\"\' /></div>");</script>';
-
-    data_html = data_html.replace('&nbsp;',data_posts);
-    data_html = data_html.replace('load_content_on_load = 1','load_content_on_load = 2');
-    jsscript += '</body>';
-    data_html = data_html.replace('</body>',jsscript);
-
-    console.log("___________________________________________");
-    console.log("THIS IS THE DATA WE ARE ADDING TO THE PAGE!");
-    console.log("___________________________________________");
-
-    //rewrite cached page
-    var cachedFile = post_id.replace(/\W/g, '') + ".html";
-
-    fs.writeFileSync((__dirname + '/web/cache/' + cachedFile), data_html, function(err) {
-      if (err) {
-        return console.log(err);
-      }
-    });
   } catch(err) {
     console.log(err);
   }
 
 }
 
+/**
+ * Send notification to OP
+ */
+Reddit.prototype.sendNotification = async function sendNotification(tx) {
+  txmsg = tx.returnMessage();
+
+  if (txmsg.post_author == tx.transaction.from[0].add) { return; }
+  newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(txmsg.post_author, 0.0);
+
+  let author = txmsg.identifier == "" ? tx.transaction.from[0].add : txmsg.identifier;
+
+  newtx.transaction.msg        = {};
+  newtx.transaction.msg.module = "Email";
+  newtx.transaction.msg.title  = `${author} commented on your post`;
+  newtx.transaction.msg.data   = `Visit the comment at this url: ${txmsg.link}`;
+  newtx = this.app.wallet.signTransaction(newtx);
+
+  this.app.network.propagateTransaction(newtx);
+}
 
 ////////////////////
 // handle options //
@@ -1904,16 +2321,6 @@ Reddit.prototype.generateCachedPagePostAndComments = async function generateCach
 Reddit.prototype.saveReddit = function saveReddit(app) {
   app.options.reddit = this.reddit;
   app.storage.saveOptions();
-}
-
-Reddit.prototype.updateFilter = function updateFilter(nf) {
-  this.reddit.filter = nf;
-  this.saveReddit();
-}
-
-Reddit.prototype.updateFirehose = function updateFirehose(nf) {
-  this.reddit.firehose = nf;
-  this.saveReddit();
 }
 
 Reddit.prototype.updateBalance = function updateBalance(app) {
@@ -1997,7 +2404,7 @@ Reddit.prototype.formatAuthor = function formatAuthor(author, app, msg=null) {
          $(tmpselect).html(dns_response.identifier);
       });
     }
-    return author.substring(0, 18) + "...";
+    return author.substring(0, 8) + "...";
   }
 
   return author;

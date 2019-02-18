@@ -5,6 +5,10 @@
   cursor:pointer;
 }
 
+.status {
+  display:none;
+}
+
 .invitation_player1 {
  display: flex;
 }

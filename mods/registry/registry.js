@@ -344,28 +344,30 @@ Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
       // browser can update itself
       //
       if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
-    let sigsplit = sig.replace(/\n/g, '').split("\t");
-    if (sigsplit.length > 6) {
-      let registry_id    = sigsplit[1];
-      let registry_bid   = sigsplit[2];
-      let registry_bhash = sigsplit[3];
-      let registry_add   = sigsplit[4];
-      let registry_sig   = sigsplit[6];
-      let registry_key   = sigsplit[7];
 
-      let msgtosign   = registry_id + registry_add + registry_bid + registry_bhash;
-      let msgverifies = registry_self.app.crypto.verifyMessage(msgtosign, registry_sig, registry_self.publickey);
+        let sigsplit = sig.replace(/\n/g, '').split("\t");
+        if (sigsplit.length > 6) {
 
-      if (msgverifies) {
-        registry_self.app.keys.addKey(registry_add, registry_id, 0, "Email");
-        registry_self.app.keys.saveKeys();
-        registry_self.app.wallet.updateIdentifier(registry_id);
-        try {
-          $('#saitoname').text(registry_self.app.wallet.returnIdentifier());
-        } catch (err) {}
-        registry_self.app.wallet.saveWallet();
-      }
-    }
+          let registry_id    = sigsplit[1];
+          let registry_bid   = sigsplit[2];
+          let registry_bhash = sigsplit[3];
+          let registry_add   = sigsplit[4];
+          let registry_sig   = sigsplit[6];
+          let registry_key   = sigsplit[7];
+
+          let msgtosign   = registry_id + registry_add + registry_bid + registry_bhash;
+          let msgverifies = registry_self.app.crypto.verifyMessage(msgtosign, registry_sig, registry_self.publickey);
+
+          if (msgverifies) {
+            registry_self.app.keys.addKey(registry_add, registry_id, 0, "Email");
+            registry_self.app.keys.saveKeys();
+            registry_self.app.wallet.updateIdentifier(registry_id);
+            try {
+              $('#saitoname').text(registry_self.app.wallet.returnIdentifier());
+            } catch (err) {}
+            registry_self.app.wallet.saveWallet();
+          }
+        }
       }
     }
   }
@@ -390,39 +392,41 @@ Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
       //
       if (txmsg.module == "Email") {
 
-    if (txmsg.sig != "") { return; }
+        if (txmsg.sig != "") { return; }
 
-    var sig = txmsg.sig;
+        var sig = txmsg.sig;
 
-  // browser can update itself
-  if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
-    let sigsplit = sig.split("\t");
-    if (sigsplit.length > 6) {
-      let registry_id    = sigsplit[1];
-      let registry_bid   = sigsplit[2];
-      let registry_bhash = sigsplit[3];
-      let registry_add   = sigsplit[4];
-      let registry_sig   = sigsplit[6];
-      let registry_key   = sigsplit[7];
+        // browser can update itself
+        if (tx.transaction.to[0].add == registry_self.app.wallet.returnPublicKey()) {
+          let sigsplit = sig.split("\t");
 
-        let msgtosign   = identifier + address + block_id + block_hash;
-        let msgverifies = registry_self.app.crypto.verifyMessage(msgtosign, registry_sig, registry_self.publickey);
+          if (sigsplit.length > 6) {
 
-      if (msgverifies) {
-          registry_self.app.keys.addKey(dns_response.publickey, dns_response.identifier, 0, "Email");
-          registry_self.app.keys.saveKeys();
-          registry_self.app.wallet.updateIdentifier(registry_id);
-        try {
-          $('#saitoname').text(email_self.app.wallet.returnIdentifier());
-        } catch (err) {}
-        registry_self.app.wallet.saveWallet();
-      }
-    }
-  }
+            let registry_id    = sigsplit[1];
+            let registry_bid   = sigsplit[2];
+            let registry_bhash = sigsplit[3];
+            let registry_add   = sigsplit[4];
+            let registry_sig   = sigsplit[6];
+            let registry_key   = sigsplit[7];
 
-  // servers update database
-    registry_self.addDomainRecord(txmsg.sig);
-    return;
+            let msgtosign   = identifier + address + block_id + block_hash;
+            let msgverifies = registry_self.app.crypto.verifyMessage(msgtosign, registry_sig, registry_self.publickey);
+
+            if (msgverifies) {
+              registry_self.app.keys.addKey(dns_response.publickey, dns_response.identifier, 0, "Email");
+              registry_self.app.keys.saveKeys();
+              registry_self.app.wallet.updateIdentifier(registry_id);
+              try {
+                $('#saitoname').text(email_self.app.wallet.returnIdentifier());
+              } catch (err) {}
+              registry_self.app.wallet.saveWallet();
+            }
+          }
+        }
+
+        // servers update database
+        registry_self.addDomainRecord(txmsg.sig);
+        return;
 
       }
 
@@ -437,7 +441,7 @@ Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
         if (tx.transaction.to[0].add != registry_self.publickey) { return; }
         if (txmsg.requested_identifier === "") { return; }
 
-        let full_identifier = tx.transaction.msg.requested_identifier + "@" + app.modules.returnModule("Registry").domain;
+        let full_identifier = tx.transaction.msg.requested_identifier.toLowerCase() + "@" + app.modules.returnModule("Registry").domain;
         if (full_identifier.indexOf("'") > 0) { return; }
         full_identifier = full_identifier.replace(/\s/g, '');
         await registry_self.addDatabaseRecord(tx, blk, full_identifier);
@@ -550,10 +554,11 @@ Registry.prototype.attachEvents = function attachEvents(app) {
 // from hosts to DNS providers.
 //
 Registry.prototype.handleDomainRequest = async function handleDomainRequest(app, message, peer, mycallback) {
+
   try {
     var registry_self = this;
 
-    let identifier = message.data.identifier;
+    let identifier = message.data.identifier.toLowerCase();
     let publickey  = message.data.publickey;
 
     var sql;
@@ -590,6 +595,7 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
     }
   } catch (err) {}
 }
+
 
 
 Registry.prototype.onChainReorganization  = async function onChainReorganization(block_id, block_hash, lc) {

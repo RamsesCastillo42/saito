@@ -21,6 +21,12 @@ body {
     "main";
 }
 
+#saitoname {
+    font-family: Georgia;
+    padding-top: 7px;
+    color: #fff;
+}
+
 .logo {
     width:35px;
     margin-top:10px;
@@ -234,12 +240,12 @@ body {
  margin-left: 52px;
  padding-left: 12px;
  padding-right: 12px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
 }
 .post_controls_item {
- margin-top:3px;
- margin-right:35px;
- float:right;
- font-size:16px;
+ font-size:1em;
  cursor: pointer;
 }
 .post_controls_label {
@@ -404,6 +410,25 @@ body {
 @media only screen and (max-width: 525px) {
     .logo {
         margin-left: 0.6em;
+    }
+
+    .header {
+        grid-template-columns: 1fr;
+    }
+
+    #saitoname {
+        margin-left: 2.3em;
+        margin-top: .1em;
+        font-size: 1.9em;
+        height: 100%;
+    }
+
+    .post_content {
+        margin-left: 0px;
+    }
+
+    .post_controls {
+        margin-left: 0px;
     }
 
     .saito_nav {

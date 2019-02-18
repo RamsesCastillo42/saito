@@ -75,12 +75,12 @@
           <div class="d_content" id="d_content">
             <div style="height: 30px;">
               <div class="d_content_title" id="d_content_title">Loading Post...</div>
+              <div class="d_edit" id="d_edit" style="display:none;float:left;margin-left:15px;">[ edit post ]</div>
               <div class="d_content_details" id="d_content_details"></div>
             </div>
           </div>
         </div>
         <div class="d_text" id="d_text"></div>
-        <div class="d_votes" id="d_votes" style="display:none;"></div>
 
         <div class="add_comment" id="add_comment">
           <textarea class="comment_reply_textarea" id="comment_reply_textarea_0"></textarea>
@@ -106,7 +106,22 @@
   </div>
 
 
+  <div id="edit_interface" class="edit_interface" style="display:none">
 
+    Edit your post or comment. It may take a few minutes for the blockchain to propagate the update:
+
+    <p></p>
+
+    <textarea id="edit_data" class="edit_data">This is our textarea</textarea>
+
+    <p></p>
+
+    <input type="hidden" id="edit_post_id" class="edit_post_id" value="" />
+    <input type="hidden" id="edit_comment_id" class="edit_comment_id" value="" />
+    <input type="button" id="edit_submit" class="edit_submit" value="Edit Post or Comment" />
+
+
+  </div>
 
 
   <script src="/socket.io/socket.io.js"></script>
