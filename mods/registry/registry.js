@@ -558,7 +558,10 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
   try {
     var registry_self = this;
 
-    let identifier = message.data.identifier.toLowerCase();
+    var identifier
+    if (message.data.identifier) {
+      identifier = message.data.identifier.toLowerCase();
+    }
     let publickey  = message.data.publickey;
 
     var sql;
@@ -568,13 +571,13 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
     dns_response.publickey      = "";
     dns_response.identifier     = "";
 
-    var sql = identifier != null
-      ? "SELECT * FROM mod_registry_addresses WHERE longest_chain = 1 AND identifier = $identifier"
-      : "SELECT * FROM mod_registry_addresses WHERE publickey = $publickey";
+    var sql = publickey != null
+      ? "SELECT * FROM mod_registry_addresses WHERE publickey = $publickey"
+      : "SELECT * FROM mod_registry_addresses WHERE longest_chain = 1 AND identifier = $identifier";
 
-    var params = identifier != null
-      ? { $identifier : identifier }
-      : { $publickey : publickey }
+    var params = publickey != null
+      ? { $publickey : publickey }
+      : { $identifier : identifier }
 
     let row = await registry_self.db.get(sql, params);
     if (row != null) {

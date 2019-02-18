@@ -31,38 +31,38 @@ Modules.prototype.pre_initialize = function pre_initialize() {
 
   // this.mods.push(require('./mods/permanentledger/permanentledger')(this.app));
   // this.mods.push(require('./mods/spammer/spammer')(this.app));
-  //this.mods.push(require('./mods/init/init')(this.app));
-//   this.mods.push(require('../../mods/welcome/welcome')(this.app));
-//   // this.mods.push(require('./mods/twilight/twilight')(this.app));
-//   this.mods.push(require('../../mods/chess/chess')(this.app));
-//   this.mods.push(require('../../mods/arcade/arcade')(this.app));
+  // this.mods.push(require('./mods/init/init')(this.app));
+  this.mods.push(require('../../mods/welcome/welcome')(this.app));
+  // this.mods.push(require('./mods/twilight/twilight')(this.app));
+  this.mods.push(require('../../mods/chess/chess')(this.app));
+  this.mods.push(require('../../mods/arcade/arcade')(this.app));
 
 
-//   this.mods.push(require('../../mods/settings/settings')(this.app));
-//   //this.mods.push(require('./mods/raw/raw')(this.app));
-//   this.mods.push(require('../../mods/advert/advert')(this.app));
-// // uses msig
-//   this.mods.push(require('../../mods/appstore/appstore')(this.app));
-// //  this.mods.push(require('./mods/auth/auth')(this.app));
-// //  this.mods.push(require('./mods/bank/bank')(this.app));
-// // uses msig
-//   const Chat = require('../../mods/chat/chat');
-//   this.mods.push(new Chat(this.app));
-//   this.mods.push(require('../../mods/email/email')(this.app));
-//   this.mods.push(require('../../mods/encrypt/encrypt')(this.app));
+  this.mods.push(require('../../mods/settings/settings')(this.app));
+  //this.mods.push(require('./mods/raw/raw')(this.app));
+  this.mods.push(require('../../mods/advert/advert')(this.app));
+// uses msig
+  this.mods.push(require('../../mods/appstore/appstore')(this.app));
+//  this.mods.push(require('./mods/auth/auth')(this.app));
+//  this.mods.push(require('./mods/bank/bank')(this.app));
+// uses msig
+  const Chat = require('../../mods/chat/chat');
+  this.mods.push(new Chat(this.app));
+  this.mods.push(require('../../mods/email/email')(this.app));
+  this.mods.push(require('../../mods/encrypt/encrypt')(this.app));
 
-//   //this.mods.push(require('./mods/ethchannels/ethchannels')(this.app));
+  //this.mods.push(require('./mods/ethchannels/ethchannels')(this.app));
 
-//   this.mods.push(require('../../mods/explorer/explorer')(this.app));
-// // uses msig
-//   this.mods.push(require('../../mods/facebook/facebook')(this.app));
-//   this.mods.push(require('../../mods/faucet/faucet')(this.app));
-//   this.mods.push(require('../../mods/registry/registry')(this.app));
+  this.mods.push(require('../../mods/explorer/explorer')(this.app));
+// uses msig
+  this.mods.push(require('../../mods/facebook/facebook')(this.app));
+  this.mods.push(require('../../mods/faucet/faucet')(this.app));
+  this.mods.push(require('../../mods/registry/registry')(this.app));
 
-//   this.mods.push(require('../../mods/reddit/reddit')(this.app));
-//   this.mods.push(require('../../mods/remix/remix')(this.app));
-//   this.mods.push(require('../../mods/money/money')(this.app));
-//   this.mods.push(require('../../mods/debug/debug')(this.app));
+  this.mods.push(require('../../mods/reddit/reddit')(this.app));
+  this.mods.push(require('../../mods/remix/remix')(this.app));
+  this.mods.push(require('../../mods/money/money')(this.app));
+  this.mods.push(require('../../mods/debug/debug')(this.app));
 
   // this.mods = this.mods_list.map(mod => {
   //   if (mod == '../../mods/chat/chat') {
