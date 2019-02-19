@@ -4,7 +4,8 @@ var util = require('util');
 
 var this_chess = null;
 var chess = null;
-var chessboard = null;
+//var chessboard = null;
+var chessboard = require("../chess/web/chessboard");
 var chess_app = 'gree';
 
 
@@ -43,16 +44,12 @@ util.inherits(Chessgame, ModTemplate);
 
 
 
+
+
 ////////////////////
 // initializeGame //
 ////////////////////
 Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
-
-  ///////////////////////////////////
-  // we have finished initializing //
-  ///////////////////////////////////
-  if (this.game.initializing == 1) { this.game.initializing = 0; this.saveGame(this.game.id); }
-
 
   console.log('#######################################################');
   console.log('#######################################################');
@@ -67,12 +64,21 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   //
   this.loadGame(game_id);
 
+  ///////////////////////////////////
+  // we have finished initializing //
+  ///////////////////////////////////
+  if (this.game.initializing == 1) { 
+    this.game.initializing = 0;
+    //this.saveGame(this.game.id); 
+  }
+
+
   //
   // initialize the javascript objects we need
   //
   chess = require('chess.js');
   if (this.browser_active == 1) {
-    chessboard = require("../chess/web/chessboard");
+    //chessboard = require("../chess/web/chessboard");
     // rules = require("../chess/web/rules")
   }
 
@@ -109,7 +115,8 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
     // old game
     //
     this.game.game = new chess.Chess();
-    this.game.game.load(this_chess.game.position);
+    this.game.game.load(this.game.position);
+    this.game.position = this.game.game.fen();
 
   }
 
@@ -118,18 +125,16 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   //
   if (this.browser_active == 1) {
 
-    //
-    // active player moves, others lock
-    //
     if (this.game.target == this.game.player) {
       this.setBoard(this.game.game.fen());
     } else {
       this.lockBoard(this.game.game.fen());
     }
 
-    $('#opponent_id').html(this_chess.game.opponents[0]);
-     this.updateStatusMessage();
+    $('#opponent_id').html(this.game.opponents[0]);
+    this.updateStatusMessage();
     this.attachEvents();
+
   }
 
 
@@ -154,20 +159,19 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 //
 Chessgame.prototype.handleGame = function handleGame(msg) {
 
-console.log("HANDLE THE GAME!: " + JSON.stringify(msg));
-
   let data = JSON.parse(msg.extra.data);
   this_chess.game.position = data.position;
   this_chess.game.target = msg.extra.target;
 
-  if (msg.extra.target == this.game.player) {
+  if (msg.extra.target == this_chess.game.player) {
     this_chess.setBoard(this_chess.game.position);
-    this.updateLog((this.game.log.length +1) +": " + data.move, 999);
+    this_chess.updateLog((this_chess.game.log.length +1) +": " + data.move, 999);
     this_chess.updateStatusMessage();
+  } else {
+    this_chess.setBoard(this_chess.game.position);
   }
 
   this_chess.saveGame(this_chess.game.id);
-
 
   return 0;
 
@@ -350,10 +354,12 @@ Chessgame.prototype.setBoard = function setBoard(position) {
         onChange: this.onChange
     };
 
-    this_chess.game.chessboard = new chessboard('board', cfg);
+    if (this.browser_active == 1) {
+      this_chess.game.chessboard = new chessboard('board', cfg);
+    }
     this_chess.game.game.load(position);
 
-    if (this_chess.game.player == 2) {
+    if (this_chess.game.player == 2 && this.browser_active == 1) {
       this_chess.game.chessboard.orientation('black');
     }
 

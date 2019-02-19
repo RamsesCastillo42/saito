@@ -5,6 +5,11 @@
   cursor:pointer;
 }
 
+.legal {
+ font-size: 0.85em;
+ padding-top:40px;
+}
+
 .status {
   display:none;
 }
@@ -30,7 +35,7 @@
 }
 
 .gamelist {
-
+  clear:both;
 }
 
 .address_box {
@@ -50,6 +55,7 @@
   width: 300px;
   float:left;
   margin-right:30px;
+  height: 330px;
 }
 
 .gamename {

@@ -48,6 +48,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
 // uses msig
   const Chat = require('../../mods/chat/chat');
   this.mods.push(new Chat(this.app));
+
   this.mods.push(require('../../mods/email/email')(this.app));
   this.mods.push(require('../../mods/encrypt/encrypt')(this.app));
 
@@ -64,27 +65,6 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/money/money')(this.app));
   this.mods.push(require('../../mods/debug/debug')(this.app));
 
-  // this.mods = this.mods_list.map(mod => {
-  //   if (mod == '../../mods/chat/chat') {
-  //     const Chat = require(mod);
-  //     return new Chat(this.app)
-  //   }
-  //   return require(mod)(this.app);
-  // });
-
-  // we need to check if any new modules have been added and install them
-  // if (this.app.options.modules == null) {
-  //   this.app.options.modules = [];
-  // }
-  // for (let i = 0; i < this.mods.length; i++) {
-  //   mi = 0;
-  //   for (let j = 0; j < this.app.options.modules.length; j++) { if (this.mods[i].name == this.app.options.modules[j]) { mi = 1; }}
-  //   if (mi == 0) {
-  //     this.mods[i].installModule(this.app);
-  //     this.app.options.modules.push(this.mods[i].name);
-  //   };
-  // }
-  //this.app.storage.saveOptions();
   if (this.app.options.modules == null) {
     this.app.options.modules = [];
     for (let i = 0; i < this.mods.length; i++) {

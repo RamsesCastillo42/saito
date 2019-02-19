@@ -868,11 +868,13 @@ Storage.prototype.saveClientOptions = function saveClientOptions() {
   var t                      = {};
       t.keys                 = [];
       t.peers                = [];
+      t.proxymod             = [];
       t.dns                  = [];
       t.blockchain           = {};
       t.registry             = this.app.options.registry;
       t.dns                  = this.app.dns.dns.domains;
       t.peers.push(this.app.server.server.endpoint);
+      t.proxymod.push(this.app.server.server.endpoint);
 
   //
   // write file
