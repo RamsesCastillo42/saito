@@ -31,5 +31,6 @@ mods/appstore/web/cache/*
 mods/explorer/web/index.html
 mods/registry/web/addresses.txt
 mods/reddit/web
+mods/reddit/web/*
 
 extras/shashmap/build
