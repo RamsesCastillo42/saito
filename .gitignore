@@ -6,6 +6,7 @@ logs/*
 
 config
 config/*
+config/options.*
 
 .DS_Store
 node_modules
