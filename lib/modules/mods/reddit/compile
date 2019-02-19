@@ -1,4 +1,0 @@
-
-rm -f modules/mods/r/web/cache/*.html
-rm -f modules/mods/r/web/screenshots/*.png
-

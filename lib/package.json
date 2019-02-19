@@ -1,0 +1,51 @@
+{
+  "name": "saito-lib",
+  "version": "1.0.4",
+  "description": "npm library of core saito functionality",
+  "main": "dist/saito-lib.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/webpack/bin/webpack.js",
+    "watch": "./node_modules/webpack/bin/webpack.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/SaitoTech/saito-lib"
+  },
+  "keywords": [
+    "lib",
+    "javascript",
+    "blockchain",
+    "cryptocurrency"
+  ],
+  "author": "Stephen Peterkins",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "base-58": "0.0.1",
+    "big.js": "5.1.2",
+    "bignumber": "^1.1.0",
+    "bignumber.js": "^8.0.1",
+    "bitwise-xor": "0.0.0",
+    "crx": "3.2.1",
+    "crypto-browserify": "3.12.0",
+    "fastest-stable-stringify": "^2.0.2",
+    "fs": "0.0.1-security",
+    "fs-extra": "7.0.0",
+    "merkle-tree-gen": "1.1.0",
+    "nativefier": "^7.6.8",
+    "net": "^1.0.2",
+    "node-cryptojs-aes": "0.4.0",
+    "request": "2.88.0",
+    "secp256k1": "3.5.0",
+    "sha256": "0.2.0",
+    "shelljs": "0.8.2",
+    "socket.io": "2.1.1",
+    "tls": "0.0.1",
+    "url-parse": "1.4.3"
+  },
+  "devDependencies": {
+    "webpack": "^4.28.1",
+    "webpack-cli": "^3.1.2"
+  }
+}

@@ -1,0 +1,6 @@
+
+rm -f ../mods/advert/web/cache/*.html
+rm -f ../mods/advert/web/cache/*.png
+rm -f ../mods/advert/web/cache/*.jpg
+cp -f ../mods/advert/adverts/*.png ../mods/advert/web/cache/
+

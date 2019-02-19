@@ -1,0 +1,7 @@
+#if [ -d "../mods/remix/web/cache/" ]; then
+#    echo "ARE WE IN HERE?"
+#    rm -rf ../mods/remix/web/cache/*
+#else
+#    mkdir ../mods/remix/web/cache/
+#fi
+
