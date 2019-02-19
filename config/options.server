@@ -1,0 +1,23 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 12101,
+        "protocol": "http"
+    },
+    "wallet": {
+        "balance":0,
+        "privatekey":"a0935d8d00ba30d38de71847d8dbfef9774803138d2dbeda6a3c3b48e34fe79f",
+        "publickey":"226GV8Bz5rwNV7aNhrDybKhntsVFCtPrhd3pZ3Ayr9x33",
+        "identifier":"",
+        "default_fee": 2
+    },
+    "dns": [
+        {
+            "domain": "saito",
+            "host": "localhost",
+            "port": 12101,
+            "protocol": "http",
+            "publickey": "226GV8Bz5rwNV7aNhrDybKhntsVFCtPrhd3pZ3Ayr9x33"
+        }
+    ]
+}
