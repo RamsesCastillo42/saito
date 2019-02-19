@@ -153,8 +153,6 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             }
           }
 
-alert("INVITE");
-
           let tmpmod = txmsg.module;
           this.active_game = tmpmod.charAt(0).toUpperCase();
           this.active_game += tmpmod.slice(1);
@@ -204,8 +202,6 @@ alert("INVITE");
 	    }
           }
         }
-
-alert("ACCEPT");
 
         //
         // repeat if needed

@@ -1,0 +1,150 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Saito R</title>
+
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-buttons.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-buttons.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-media.js"></script>
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-thumbs.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-thumbs.js"></script>
+
+  <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="/r/style.css" />
+  <link rel="stylesheet" type="text/css" href="/chat/style.css" />
+  <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
+
+</head>
+<body>
+
+  <div id="Reddit_browser_active"></div>
+  
+  <div class="redditContainer">
+
+    <div class="header">
+      <div>
+        <a href="/" style="text-decoration:none;color:inherits">
+          <img src="/img/saito_logo_black.png" class="logo" />
+        </a>
+        <a href="/r/" style="text-decoration:none;color:inherits">
+          <div id="subreddit_link" style="font-family:Georgia;padding-top:5px;font-size:1.2em;color:#444;">/r/</div>
+        </a>
+      </div>
+      <div class="saito-nav">
+        <a href="/email">
+          <i class="fa fa-envelope saito-icon"></i>
+        </a>
+        <a href="/r">
+          <i class="fa fa-reddit saito-icon"></i>
+        </a>
+        <a href="/facebook">
+          <i class="fa fa-facebook saito-icon"></i>
+        </a>
+      </div>
+    </div>
+
+
+    <div class="loader" style="display:all">
+      Loading... please be patient.
+    </div>
+
+    <div class="main" style="display:none">
+
+      <div class="discussion" id="discussion">
+        <div class="d" id="d">
+          <div class="post_author" id="post_author"></div>
+          <div class="d_votes" id="d_votes">
+            <div class="votes" id="">
+              <div class="upvote_wrapper" id="post_upvote"><i class="fa fa-arrow-up upvote post_upvote" aria-hidden="true"></i></div>
+              <div class="votes_total" id="votes_total">1</div>
+              <div class="downvote_wrapper" id="post_downvote"><i class="fa fa-arrow-down downvote post_downvote" aria-hidden="true"></i></div>
+            </div>
+          </div>
+          <div class="d_thumb" id="d_thumb"></div>
+          <div class="d_content" id="d_content">
+            <div style="height: 30px;">
+              <div class="d_content_title" id="d_content_title">Loading Post...</div>
+              <div class="d_edit" id="d_edit" style="display:none;float:left;margin-left:15px;">[ edit post ]</div>
+              <div class="d_content_details" id="d_content_details"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d_text" id="d_text"></div>
+
+        <div class="add_comment" id="add_comment">
+          <textarea class="comment_reply_textarea" id="comment_reply_textarea_0"></textarea>
+          <input type="button" class="comment_reply_submit" id="comment_reply_submit_0" value="reply" />
+        </div>
+
+        <div class="comments" id="comments">
+        </div>
+
+      </div>
+
+      <div class="sidebar" id="sidebar">
+        <input type="button"  class="submit" id="home" value="home" name="home" />
+        <div class="balance" id="balance" style="">
+          <div class="saitoname" id="saitoname"></div>
+          <div class="balance_money" id="balance_money">0.0</div>
+          <div class="balance_label" id="balance_label">SAITO</div>
+        </div>
+        <div class="advert-300-250" id="advert-300-250"></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="edit_interface" class="edit_interface" style="display:none">
+
+    Edit your post or comment. It may take a few minutes for the blockchain to propagate the update:
+
+    <p></p>
+
+    <textarea id="edit_data" class="edit_data">This is our textarea</textarea>
+
+    <p></p>
+
+    <input type="hidden" id="edit_post_id" class="edit_post_id" value="" />
+    <input type="hidden" id="edit_comment_id" class="edit_comment_id" value="" />
+    <input type="button" id="edit_submit" class="edit_submit" value="Edit Post or Comment" />
+
+
+  </div>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/mailchat/script.js"></script>
+  <script type="text/javascript">
+
+    var subreddit = "";
+    var post_id = "";
+    var comment_id = "";
+    var load_content_on_load = 1;
+    var offset = 0;
+
+
+    $.ajaxSetup({ cache: true });
+    $.getScript( "/browser.js", function( data, textStatus, jqxhr ) {
+      $('.loader').hide();
+      $('.main').show();
+    });
+
+  </script>
+
+</body>
+</html>
+
+
+
