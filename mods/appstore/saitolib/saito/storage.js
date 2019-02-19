@@ -681,7 +681,7 @@ Storage.prototype.loadOptions = async function loadOptions() {
   //
   if (this.app.BROWSER == 0) {
 
-    if (fs.existsSync(__dirname + '/../../data/options')) {
+    if (fs.existsSync(__dirname + '/../../config/options')) {
 
       //
       // open options file
