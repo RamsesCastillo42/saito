@@ -1,5 +1,5 @@
-var saito = require('../../lib/saito/saito');
-var ModTemplate = require('../../lib/templates/template');
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/template');
 
 const axios = require('axios');
 

@@ -3,7 +3,7 @@ const util        = require('util');
 const path        = require('path');
 const sqlite      = require('sqlite');
 const request     = require("request");
-// const saito     = require('../../../saito');
+const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
 
 

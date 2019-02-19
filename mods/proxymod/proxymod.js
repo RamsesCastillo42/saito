@@ -4,8 +4,8 @@
 // handle onPeerRequest messages through
 // intermediaries
 //
-var saito = require('../../../saito');
-var ModTemplate = require('../../template');
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 
 

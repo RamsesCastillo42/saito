@@ -4,8 +4,8 @@
 // transactions to speed up block production 
 // for testing purposes.`
 //
-var saito = require('../../../saito');
-var ModTemplate = require('../../template');
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 var ledgerdir  = __dirname + "/ledger/";
 var ledgerfile = ledgerdir + "ledger.txt";
