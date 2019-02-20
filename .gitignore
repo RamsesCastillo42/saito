@@ -19,6 +19,7 @@ data/blocks/*.blk
 lib/saito/*.swp
 lib/saito/web/browser.js
 lib/saito/web/client.options
+lib/modules/mods/*
 
 mods/twilight
 mods/twilight/*
