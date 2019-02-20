@@ -1,5 +1,6 @@
 const util = require('util');
-const ModTemplate = require('../../template');
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/template');
 
 
 //////////////////
