@@ -1,5 +1,5 @@
-var saito = require('../../../saito');
-var Game = require('../../game');
+var saito = require('../../lib/saito/saito');
+var Game = require('../../lib/templates/game');
 var util = require('util');
 
 

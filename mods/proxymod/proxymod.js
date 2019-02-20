@@ -4,8 +4,8 @@
 // handle onPeerRequest messages through
 // intermediaries
 //
-var saito = require('../../../saito');
-var ModTemplate = require('../../template');
+var saito = require('../../lib/saito/saito');
+var ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 
 
@@ -22,6 +22,9 @@ function ProxyMod(app) {
   this.name            = "ProxyMod";
   this.browser_active  = 0;
 
+  this.handlesEmail    = 1;
+  this.emailAppName    = "ProxyMod";
+
   this.db 		 = null;
 
   return this;
@@ -29,6 +32,37 @@ function ProxyMod(app) {
 }
 module.exports = ProxyMod;
 util.inherits(ProxyMod, ModTemplate);
+
+
+
+
+/////////////////////
+// Email Functions //
+/////////////////////
+ProxyMod.prototype.displayEmailForm = function displayEmailForm(app) {
+
+  element_to_edit = $('#module_editable_space');
+  element_to_edit.html('<div class="module_instructions">Click send to inform the recipient that you have a Proxy Module installed.</div>');
+  $('.lightbox_compose_payment').val(app.wallet.returnDefaultFee());
+
+}
+ProxyMod.prototype.formatEmailTransaction = function formatEmailTransaction(tx, app) {
+
+  link_id    = "encrypt_authorize_link_"+this.email_view_txsig;
+
+  tx.transaction.msg.module    = this.name;
+  tx.transaction.msg.request   = "proxy exchange request";
+  tx.transaction.msg.host      = this.app.network.peers[0].peer.host;
+  tx.transaction.msg.port      = this.app.network.peers[0].peer.port;
+  tx.transaction.msg.publickey = this.app.network.peers[0].peer.publickey;
+
+  return tx;
+
+}
+
+
+
+
 
 
 
@@ -93,38 +127,33 @@ ProxyMod.prototype.installModule = async function installModule() {
 
 ProxyMod.prototype.initialize = async function initialize() {
 
-  //
-  // connect to our proxy servers
-  //
+  /////////////
+  // connect //
+  /////////////
   if (this.app.options.proxymod != undefined) {
     for (let i = 0; i < this.app.options.proxymod.length; i++) {
       this.app.network.addPeer(JSON.stringify(this.app.options.proxymod[i], 0, 1, 0));
     }
   }
 
-  //
-  // send message to receive queued transactions after two seconds
-  //
+
+  ////////////////////
+  // fetch messages //
+  ////////////////////
   setTimeout(() => {
     if (this.app.options.proxymod != undefined) {
       for (let i = 0; i < this.app.options.proxymod.length; i++) {
         for (let j = 0; j < this.app.network.peers.length; j++) {
-
 	  if (this.app.options.proxymod[i].host == this.app.network.peers[j].peer.host) {
 	    if (this.app.options.proxymod[i].port == this.app.network.peers[j].peer.port) {
 
-	      //////////////////////////////
-	      // load queued transactions //
-	      //////////////////////////////
-              var rdloadtimer = setTimeout(() => {
-                message                 = {};
-                message.request         = "proxymod load request";
-                message.data            = {};
-                message.data.request    = "proxymod load request";
-                message.data.publickey  = this.app.wallet.returnPublicKey();
+              message                 = {};
+              message.request         = "proxymod load request";
+              message.data            = {};
+              message.data.request    = "proxymod load request";
+              message.data.publickey  = this.app.wallet.returnPublicKey();
 
-                this.app.network.peers[j].sendRequest(message.request, message.data, function () {});
-              }, 500);
+              this.app.network.peers[j].sendRequest(message.request, message.data, function () {});
 
 	    }
 	  }
@@ -134,44 +163,10 @@ ProxyMod.prototype.initialize = async function initialize() {
   }, 2000);
 
 
-  //
-  // send message to receive queued transactions after two seconds
-  //
-  setTimeout(() => {
-    if (this.app.options.proxymod != undefined) {
-      for (let i = 0; i < this.app.options.proxymod.length; i++) {
-        for (let j = 0; j < this.app.network.peers.length; j++) {
-
-	  if (this.app.options.proxymod[i].host == this.app.network.peers[j].peer.host) {
-	    if (this.app.options.proxymod[i].port == this.app.network.peers[j].peer.port) {
-
-	      //////////////////////////////////
-	      // send relay message to myself //
-	      //////////////////////////////////
-              var rdloadtimer = setTimeout(() => {
-                message                 = {};
-                message.request         = "proxymod relay request";
-                message.data            = {};
-                message.data.request    = "proxymod relay request";
-                message.data.recipient  = this.app.wallet.returnPublicKey();
-                message.data.tx         = "this is the data we are sending!";
-
-                this.app.network.peers[j].sendRequest(message.request, message.data, function () {});
-              }, 500);
-
-	    }
-	  }
-        }
-      }
-    }
-  }, 3000);
-
-
-  //
-  // and servers initialize their database
-  //
+  //////////////////
+  // servers only //
+  //////////////////
   if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return; }
-
   if (this.db == null) {
     try {
       var sqlite = require('sqlite');
@@ -209,44 +204,83 @@ ProxyMod.prototype.initialize = async function initialize() {
 //
 ProxyMod.prototype.handlePeerRequest = async function handlePeerRequest(app, message, peer, mycallback=null) {
 
+  /////////////////////
+  // clients receive //
+  /////////////////////
+  if (message.request === "proxymod load") {
 
-console.log("HERE: " + JSON.stringify(message));
-
-  //
-  // is this for someone whose connections i handle
-  //
-
-
-  //
-  // if so, save it in my database
-  //
-
-
-  //
-  // now start queueing all database content for them if they are online and connected
-  //
-
-
-
-
-  ////////////////////
-  // relay requests //
-  ////////////////////
-  if (message.request === "proxymod relay request") {
-
-    let data = message.data.tx;
+    //
+    // real TX will be inside SHELL tx
+    //
     let recipient = message.data.recipient;
-
-console.log("\n\n\nDATA: " + data + "\nRECIPIENT: " + recipient);
+    let tx   = new saito.transaction(JSON.parse(message.data.tx));
+        tx.decryptMessage(this.app);
+    let txmsg = tx.returnMessage();
 
     //
     // is this for me?
     //
     if (recipient == this.app.wallet.returnPublicKey()) {
-alert("I AM THE RECIPIENT OF THIS: " + JSON.stringify(data));
+
+console.log("\n\nIS FOR ME");
+
+      //
+      // get actual tx
+      //
+      let actual_tx = new saito.transaction(JSON.stringify(txmsg));
+          actual_tx.decryptMessage(this.app);
+      let actual_txmsg = actual_tx.returnMessage();
+
+console.log("IS FOR ME 2: " + JSON.stringify(actual_txmsg));
+
+      for (let i = 0; i < app.modules.mods.length; i++) {
+        if (actual_txmsg.module != undefined) {
+          if (app.modules.mods[i].shouldAffixCallbackToModule(actual_txmsg.module) == 1) {
+            //
+            // route to the onConfirmation function as first received msg
+            //
+console.log("INTO MODULE: " + app.modules.mods[i].name);
+            app.modules.mods[i].onConfirmation(null, actual_tx, 0, this.app);
+console.log("OUT OF MODULE: " + app.modules.mods[i].name);
+          }
+        }
+      }
       return;
     }
+  }
 
+
+  /////////////////////
+  // server requests //
+  /////////////////////
+  if (message.request === "proxymod load request") {
+    this.loadRequest(peer, message.data.publickey);
+  }
+
+
+  ///////////////////
+  // servers relay //
+  ///////////////////
+  if (message.request === "proxymod relay request") {
+
+    let tx = new saito.transaction(message.data.tx);
+        tx.decryptMessage(this.app);
+    let txmsg = tx.returnMessage();
+    let recipient = message.data.recipient;
+
+console.log("msg for: " + recipient);
+
+    if (recipient == this.app.wallet.returnPublicKey()) {
+      let message = tx.transaction.msg;
+      for (let i = 0; i < this.app.modules.mods.length; i++) {
+        if (txmsg.module != undefined) {
+          if (this.app.modules.mods[i].shouldAffixCallbackToModule(txmsg.module) == 1) {
+            this.app.modules.mods[i].onConfirmation(null, tx, 0, this.app);
+          }
+        }
+      }
+      return;
+    }
 
     let user_id = await this.returnUserId(recipient);
     if (user_id == null) {
@@ -257,39 +291,18 @@ alert("I AM THE RECIPIENT OF THIS: " + JSON.stringify(data));
 	return;
       }
     }
+
+console.log("msg for: " + recipient + " UID: " + user_id);
     if (user_id == null) { return; }
 
-
-console.log("INSERT INTO DATABASE");
-
-    //
-    // insert into database
-    //
-    await this.addUserTransaction(recipient, data);
-
-console.log("AND SEND TO PEER");
-
-    //
-    // send to peers if connected
-    //
+    await this.addUserTransaction(recipient, JSON.stringify(tx.transaction));
     for (let i = 0; i < this.app.network.peers.length; i++) {
       if (this.app.network.peers[i].peer.publickey == recipient) {
+console.log(" and triggering send!");
         this.loadRequest(this.app.network.peers[i], recipient);
       }
     }
   }
-
-
-
-
-
-  ///////////////////
-  // load requests //
-  ///////////////////
-  if (message.request === "proxymod load request") {
-    this.loadRequest(peer, message.data.publickey);
-  }
-
 }
 
 
@@ -298,21 +311,91 @@ console.log("AND SEND TO PEER");
 
 ProxyMod.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, app) {
 
-  //
-  // if this transaction is for me
-  //
+  var proxymod_self = app.modules.returnModule("ProxyMod");
+
+  if (conf == 0) {
+  
+    var sender           = tx.transaction.from[0].add;
+    var receiver         = tx.transaction.to[0].add;
+    var txmsg            = tx.returnMessage();
+    var request          = txmsg.request;  // "request"
+
+    if (txmsg.module == "ProxyMod") {
+
+      if (receiver == app.wallet.returnPublicKey()) {
 
 
-  //
-  // if it is a proxymod transaction
-  //
+        /////////////////////////
+        // exchange proxy info //
+        /////////////////////////
+        if (request == "proxy exchange request") {
+
+	  //
+	  // prevent infinite loops
+	  //
+	  let proxy = proxymod_self.app.keys.returnProxyByPublicKey(sender);
+          if (proxy != null) {
+	    if (proxy.host == txmsg.host && proxy.port == txmsg.port) {
+	      return;
+	    }
+	  }
+
+  	  proxymod_self.app.keys.addKey(sender)
+	  proxymod_self.app.keys.updateProxyByPublicKey(sender, txmsg.host, txmsg.port, txmsg.publickey);
+	  proxymod_self.app.keys.saveKeys();
+
+          msg                 = {};
+          msg.id              = tx.transaction.id + "_1";
+          msg.from            = sender;
+          msg.to              = receiver;
+          msg.time            = tx.transaction.ts;
+          msg.module          = "Email";
+          msg.title           = "ProxyMod Update - "+receiver;
+          msg.data            = "Your wallet has been updated to include the latest proxy information sent by " + receiver;
+          msg.markdown = 0;
+
+          app.modules.returnModule("Email").attachMessage(msg, app);
+          app.archives.saveTransaction(tx);
 
 
-  //
-  // add it to my database for queuing
-  //
+	  let mymsg = {};
+	      mymsg.module    = "ProxyMod";
+	      mymsg.request   = "proxy exchange request";
+	      mymsg.host      = app.network.peers[0].peer.host;
+	      mymsg.port      = app.network.peers[0].peer.port;
+	      mymsg.publickey = app.network.peers[0].peer.publickey;
+	      mymsg           = app.keys.encryptMessage(sender, mymsg);
+ 
+	  if (app.network.canSendOffChainMessage(sender) == 1) {
+	    app.network.sendOffChainMessage(sender, mymsg);
+	  } else {
+            if (Big(tx.transaction.to[0].amt).gt(0)) {
+	      let fee = tx.transaction.to[0].amt;
+	      let newtx = app.wallet.createUnsignedTransaction(sender, 0, fee);
+	      if (newtx == null) { return; }
+	      newtx.transaction.msg = mymsg;
+      	      newtx = app.wallet.signTransaction(newtx);
+      	      app.network.propagateTransaction(newtx);
+	    }
+	  }
+        }
+      }
 
+
+
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -396,17 +479,11 @@ ProxyMod.prototype.loadRequest = async function loadRequest(peer, publickey) {
 
   let user_id = await this.returnUserId(publickey);
 
-  //
-  // insert new user
-  //
   if (user_id == null) {
     this.insertNewUser(publickey);
     return;
   }
 
-  //
-  // or stream transactions
-  //
   let sql    = "SELECT * FROM transactions WHERE user_id = $uid";
   let params = { $uid : user_id }
   let rows   = null;
@@ -420,34 +497,23 @@ ProxyMod.prototype.loadRequest = async function loadRequest(peer, publickey) {
 
   if (rows != null) {
     if (rows.length != 0) {
-
       for (var fat = 0; fat < rows.length; fat++) {
 
         let message                 = {};
         message.request         = "proxymod load";
         message.data            = {};
+        message.data.recipient  = publickey;
         message.data.id         = rows[fat].id;
         message.data.tx         = rows[fat].tx;
 
-console.log("SENDING DATA!");
-
+console.log("SENDING REQUEST TO PEER !");
 
         peer.sendRequestWithCallback(message.request, message.data, (err) => {
-console.log("DELETING USER TRANSACTIONS: " + JSON.stringify(message));
           this.deleteUserTransaction(message.data.id);
         });
-
       }
     }
   }
 }
-
-
-
-
-
-
-
-
 
 

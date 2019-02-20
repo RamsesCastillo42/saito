@@ -99,7 +99,10 @@ Arcade.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, a
     if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
       arcade_self.handleOnConfirmation(blk, tx, conf, app);
     }
-  } catch (err) { return; }
+  } catch (err) { 
+    console.log("Error in Arcade: " + JSON.stringify(err));
+    return; 
+  }
 
 }
 Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, conf, app) {
@@ -121,10 +124,6 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     if (txmsg.request == "gameover") {
 
       try {
-
-	//
-	// NOTIFY ARCADE
-	// 
 	let html = 'Your opponent has resigned. You win!<p></p><div class="link delete_game" id="delete_game">Return to Arcade</div>.';
         if (this.browser_active == 1) {
 	  $('.lightbox_message_from_address').html(tx.transaction.from[0].add);
@@ -132,11 +131,9 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  $('.manage_invitations').show();
           this.attachEvents(this.app);
 	}
-
       } catch (err) {
       }
     }
-
 
 
     if (txmsg.request == "invite") {
