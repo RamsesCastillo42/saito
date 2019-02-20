@@ -202,26 +202,12 @@ Server.prototype.initialize = function initialize() {
 
               let tempblk = JSON.parse(JSON.stringify(blk.block));
 
-              // for (let i = 0; i < blk.transactions.length; i++) {
-              //   let add_transaction = 0;
-              //   for (let ii = 0; ii < blk.transactions[i].transaction.from.length && add_transaction == 0; ii++) {
-              //     if (keylist.includes(blk.transactions[i].transaction.from[ii].add)) { add_transaction = 1; }
-              //   }
-              //   for (let ii = 0; ii < blk.transactions[i].transaction.to.length && add_transaction == 0; ii++) {
-              //     if (keylist.includes(blk.transactions[i].transaction.to[ii].add)) { add_transaction = 1; }
-              //   }
-              //   if (add_transaction == 1) {
-              //     let x = {"transaction" : blk.transactions[i].transaction};
-              //     tempblk.txsjson.push(JSON.stringify(x));
-              //   }
-              // }
-
               var txsjson = [];
               blk.transactions.forEach((tx, index) => {
                 let { transaction } = tx;
                 let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
                 if (add_tx) {
-                  txsjson.push(tempblk.txsjson[index]);
+                  txsjson.push(JSON.stringify({ "transaction": tx.transaction}));
                 }
               });
 
@@ -272,7 +258,7 @@ Server.prototype.initialize = function initialize() {
           let { transaction } = tx;
           let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
           if (add_tx) {
-            txsjson.push(tempblk.txsjson[index]);
+            txsjson.push(JSON.stringify({ "transaction": tx.transaction}));
           }
         });
 
