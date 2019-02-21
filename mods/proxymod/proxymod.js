@@ -52,9 +52,12 @@ ProxyMod.prototype.formatEmailTransaction = function formatEmailTransaction(tx, 
 
   tx.transaction.msg.module    = this.name;
   tx.transaction.msg.request   = "proxy exchange request";
-  tx.transaction.msg.host      = this.app.network.peers[0].peer.host;
-  tx.transaction.msg.port      = this.app.network.peers[0].peer.port;
-  tx.transaction.msg.publickey = this.app.network.peers[0].peer.publickey;
+
+  if (this.app.options.proxymod != undefined) {
+    tx.transaction.msg.host      = this.app.options.proxymod.host;
+    tx.transaction.msg.port      = this.app.oprions.proxymod.port;
+    tx.transaction.msg.publickey = this.app.options.proxymod.publickey;
+  }
 
   return tx;
 
@@ -222,8 +225,6 @@ ProxyMod.prototype.handlePeerRequest = async function handlePeerRequest(app, mes
     //
     if (recipient == this.app.wallet.returnPublicKey()) {
 
-console.log("\n\nIS FOR ME");
-
       //
       // get actual tx
       //
@@ -231,17 +232,10 @@ console.log("\n\nIS FOR ME");
           actual_tx.decryptMessage(this.app);
       let actual_txmsg = actual_tx.returnMessage();
 
-console.log("IS FOR ME 2: " + JSON.stringify(actual_txmsg));
-
       for (let i = 0; i < app.modules.mods.length; i++) {
         if (actual_txmsg.module != undefined) {
           if (app.modules.mods[i].shouldAffixCallbackToModule(actual_txmsg.module) == 1) {
-            //
-            // route to the onConfirmation function as first received msg
-            //
-console.log("INTO MODULE: " + app.modules.mods[i].name);
             app.modules.mods[i].onConfirmation(null, actual_tx, 0, this.app);
-console.log("OUT OF MODULE: " + app.modules.mods[i].name);
           }
         }
       }
@@ -268,8 +262,6 @@ console.log("OUT OF MODULE: " + app.modules.mods[i].name);
     let txmsg = tx.returnMessage();
     let recipient = message.data.recipient;
 
-console.log("msg for: " + recipient);
-
     if (recipient == this.app.wallet.returnPublicKey()) {
       let message = tx.transaction.msg;
       for (let i = 0; i < this.app.modules.mods.length; i++) {
@@ -292,13 +284,11 @@ console.log("msg for: " + recipient);
       }
     }
 
-console.log("msg for: " + recipient + " UID: " + user_id);
     if (user_id == null) { return; }
 
     await this.addUserTransaction(recipient, JSON.stringify(tx.transaction));
     for (let i = 0; i < this.app.network.peers.length; i++) {
       if (this.app.network.peers[i].peer.publickey == recipient) {
-console.log(" and triggering send!");
         this.loadRequest(this.app.network.peers[i], recipient);
       }
     }
@@ -340,6 +330,9 @@ ProxyMod.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
 	    }
 	  }
 
+	  if (txmsg.host == undefined && txmsg.port == undefined) { return; }
+	  if (txmsg.host == "" && txmsg.port == "") { return; }
+
   	  proxymod_self.app.keys.addKey(sender)
 	  proxymod_self.app.keys.updateProxyByPublicKey(sender, txmsg.host, txmsg.port, txmsg.publickey);
 	  proxymod_self.app.keys.saveKeys();
@@ -357,25 +350,27 @@ ProxyMod.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
           app.modules.returnModule("Email").attachMessage(msg, app);
           app.archives.saveTransaction(tx);
 
+	  if (app.options.proxymod != undefined) {
 
-	  let mymsg = {};
-	      mymsg.module    = "ProxyMod";
-	      mymsg.request   = "proxy exchange request";
-	      mymsg.host      = app.network.peers[0].peer.host;
-	      mymsg.port      = app.network.peers[0].peer.port;
-	      mymsg.publickey = app.network.peers[0].peer.publickey;
-	      mymsg           = app.keys.encryptMessage(sender, mymsg);
+	    let mymsg = {};
+	        mymsg.module    = "ProxyMod";
+	        mymsg.request   = "proxy exchange request";
+	        mymsg.host      = app.options.proxymod.host;
+	        mymsg.port      = app.options.proxymod.port;
+	        mymsg.publickey = app.options.proxymod.publickey;
+	        mymsg           = app.keys.encryptMessage(sender, mymsg);
  
-	  if (app.network.canSendOffChainMessage(sender) == 1) {
-	    app.network.sendOffChainMessage(sender, mymsg);
-	  } else {
-            if (Big(tx.transaction.to[0].amt).gt(0)) {
-	      let fee = tx.transaction.to[0].amt;
-	      let newtx = app.wallet.createUnsignedTransaction(sender, 0, fee);
-	      if (newtx == null) { return; }
-	      newtx.transaction.msg = mymsg;
-      	      newtx = app.wallet.signTransaction(newtx);
-      	      app.network.propagateTransaction(newtx);
+	    if (app.network.canSendOffChainMessage(sender) == 1) {
+	      app.network.sendOffChainMessage(sender, mymsg);
+	    } else {
+              if (Big(tx.transaction.to[0].amt).gt(0)) {
+	        let fee = tx.transaction.to[0].amt;
+	        let newtx = app.wallet.createUnsignedTransaction(sender, 0, fee);
+	        if (newtx == null) { return; }
+	        newtx.transaction.msg = mymsg;
+      	        newtx = app.wallet.signTransaction(newtx);
+      	        app.network.propagateTransaction(newtx);
+	      }
 	    }
 	  }
         }
