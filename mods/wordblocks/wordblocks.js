@@ -27,6 +27,7 @@ function Wordblocks(app) {
 
   this.letters         = {};
   this.moves           = [];
+  this.firstmove       = 1;
 
   return this;
 
@@ -73,14 +74,6 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 
   //
-  // initialize
-  //
-  if (this.game.initializing == 1) {
-    this.game.initializing = 0;
-  }
-
-
-  //
   // deal cards 
   //
   if (this.game.deck.cards.length == 0 && this.game.step.game == 0) {
@@ -88,8 +81,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.updateStatus("Generating the Game");
 
     this.game.queue.push("EMAIL\tready");
-    this.game.queue.push("DEAL\t2\t8");
-    this.game.queue.push("DEAL\t1\t8");
+    this.game.queue.push("DEAL\t2\t7");
+    this.game.queue.push("DEAL\t1\t7");
     this.game.queue.push("DECKENCRYPT\t2");
     this.game.queue.push("DECKENCRYPT\t1");
     this.game.queue.push("DECKXOR\t2");
@@ -191,6 +184,19 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   $('.tile').css('height',this.scale(163)+"px");
   $('.tile').css('width',this.scale(148)+"px");
+
+
+  //
+  // has a move been made
+  //
+  for (let i = 1; i < 16; i++) {
+    for (let k = 1; k < 16; k++) {
+      let boardslot = i + "_" + k;
+      if (this.game.board[boardslot].letter != "_") {
+	this.firstmove = 0;
+      }
+    }
+  }
 
 
   //
@@ -297,7 +303,6 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       word = prompt("Provide your word:");
       if (word) {
 
-
 	//
 	// reset board
 	//
@@ -379,8 +384,50 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
 
   let valid_placement = 1;
 
+  let tmphand = JSON.parse(JSON.stringify(this.game.hand));
+
   x = parseInt(x);
   y = parseInt(y);
+
+  //
+  // if this is the first word, it has to cross a critical star
+  //
+  if (this.firstmove == 1) {
+    if (orientation == "vertical") {
+
+      if (x != 6 && x != 10) {
+        alert("First Word must be placed to cross a Star");
+        return 0;
+      }
+
+      let starting_point = y;
+      let ending_point = y+word.length-1;
+
+      if (    (starting_point <= 6 && ending_point >= 6)  ||   (starting_point <= 10 && ending_point >= 6)   ) {
+      } else {
+	alert("First Word must be long enough to cross a Star");
+	return 0;
+      }
+
+    }
+    if (orientation == "horizontal") {
+      if (y != 6 && y != 10) {
+        alert("First Word must be placed to cross a Star");
+        return 0;
+      }
+
+      let starting_point = x;
+      let ending_point = x+word.length-1;
+
+      if (    (starting_point <= 6 && ending_point >= 6)  ||   (starting_point <= 10 && ending_point >= 6)   ) {
+      } else {
+	alert("First Word must be long enough to cross a Star");
+	return 0;
+      }
+    }
+    this.firstmove = 0;
+  }
+
 
   for (let i = 0; i < word.length; i++) {
 
@@ -395,7 +442,26 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
 console.log(letter + " -- " + boardslot + " -- AND LETTER ---> " + this.game.board[boardslot].letter + " and orientation: " + orientation);
         valid_placement = 0;
       }
+    } else {
+
+      let letter_found = 0;
+
+console.log("AAAAA: " + JSON.stringify(tmphand));
+
+      for (let k = 0; k < tmphand.length; k++) {
+	if (this.game.cards[tmphand[k]].name == letter) {
+	  tmphand.splice(k, 1);
+	  letter_found = 1;
+	}
+      }
+
+      if (letter_found == 0) {	
+	alert("INVALID: letter not in hand!");
+	return 0;
+      }
+
     }
+
   }
 
   if (valid_placement == 0) { alert("This is an invalid placement!"); }
@@ -1090,6 +1156,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
       // place word player x y [horizontal/vertical]
       //
       if (mv[0] === "place") {
+
+	this.firstmove = 0;
 
 	let word   = mv[1];
 	let player = mv[2];
