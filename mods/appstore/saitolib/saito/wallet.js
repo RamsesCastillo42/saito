@@ -26,6 +26,7 @@ function Wallet(app) {
   this.wallet.spends                = [];
   this.wallet.default_fee           = 2;
   this.wallet.version               = 2.06;
+  this.wallet.pending               = []; // sent but not seen
 
   this.inputs_hmap                  = [];
   this.inputs_hmap_counter 	    = 0;
@@ -789,6 +790,25 @@ Wallet.prototype.containsOutput = function containsUtxo(s) {
  * @param {integer} lchain
  */
 Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, from_slips, lc) {
+
+  //
+  // any txs in pending should be checked to see if
+  // we can remove them now that we have received
+  // a transaction that might be it....
+  //
+  if (this.wallet.pending.length > 0) {
+console.log("CHECKING PENDING: ");
+console.log(JSON.stringify(this.wallet.pending));
+    for (let i = 0; i < this.wallet.pending.length; i++) {
+console.log("TX SIG: " + tx.transaction.sig);
+      if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
+console.log("MATCH THAT WE SHOULD REMOVE!");
+	this.wallet.pending.splice(i, 1);
+	i--;
+      }
+    }
+  }
+
 
   //
   // if this is a speed test, delete all previous inputs

@@ -86,7 +86,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "1.png",
-      $link      : "https://app.saito.network/advert"
+      $link      : "https://apps.saito.network/advert"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -94,7 +94,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "2.png",
-      $link      : "https://app.saito.network/advert"
+      $link      : "https://apps.saito.network/advert"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -102,7 +102,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "3.png",
-      $link      : "https://app.saito.network/appstore"
+      $link      : "https://apps.saito.network/appstore"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -118,7 +118,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "5.png",
-      $link      : "https://app.saito.network/remix"
+      $link      : "https://apps.saito.network/remix"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -126,7 +126,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "6.png",
-      $link      : "https://app.saito.network/remix"
+      $link      : "https://apps.saito.network/remix"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -150,7 +150,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "9.png",
-      $link      : "https://app.saito.network/email"
+      $link      : "https://apps.saito.network/email"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -158,7 +158,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "10.png",
-      $link      : "https://app.saito.network/registry"
+      $link      : "https://apps.saito.network/registry"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -166,7 +166,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "11.png",
-      $link      : "https://app.saito.network/explorer"
+      $link      : "https://apps.saito.network/explorer"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -174,7 +174,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "12.png",
-      $link      : "https://app.saito.network/facebook"
+      $link      : "https://apps.saito.network/arcade"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -182,7 +182,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "13.png",
-      $link      : "https://app.saito.network/facebook"
+      $link      : "https://apps.saito.network/facebook"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -190,7 +190,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "14.png",
-      $link      : "https://app.saito.network/facebook"
+      $link      : "https://apps.saito.network/facebook"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -198,7 +198,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "15.png",
-      $link      : "https://app.saito.network/faucet"
+      $link      : "https://apps.saito.network/faucet"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -206,7 +206,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "16.png",
-      $link      : "https://app.saito.network/advert"
+      $link      : "https://apps.saito.network/advert"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -222,7 +222,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "18.png",
-      $link      : "https://app.saito.network/faucet"
+      $link      : "https://apps.saito.network/faucet"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -230,7 +230,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "19.png",
-      $link      : "https://app.saito.network/faucet"
+      $link      : "https://apps.saito.network/faucet"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -238,7 +238,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "20.png",
-      $link      : "https://app.saito.network/faucet"
+      $link      : "https://apps.saito.network/faucet"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -246,7 +246,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "21.png",
-      $link      : "https://app.saito.network/r"
+      $link      : "https://apps.saito.network/r"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -254,7 +254,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "22.png",
-      $link      : "https://app.saito.network/r"
+      $link      : "https://apps.saito.network/r"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -286,7 +286,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "26.png",
-      $link      : "https://app.saito.network/r"
+      $link      : "https://apps.saito.network/r"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -294,7 +294,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "27.png",
-      $link      : "https://app.saito.network/r"
+      $link      : "https://apps.saito.network/r"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -302,7 +302,7 @@ Advert.prototype.installModule = function installModule() {
     params4  = {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "28.png",
-      $link      : "https://app.saito.network/r"
+      $link      : "https://apps.saito.network/r"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 
@@ -407,6 +407,46 @@ Advert.prototype.installModule = function installModule() {
       $publickey : advert_self.app.wallet.returnPublicKey(),
       $adfile    : "41.png",
       $link      : "http://saito.tech"
+    };
+    advert_self.app.storage.execDatabase(sql4, params4, function() {});
+
+    sql4     = "INSERT INTO mod_advert_adverts (publickey, adfile, views, link, width, height) VALUES ($publickey, $adfile, 0, $link, 300, 250)";
+    params4  = {
+      $publickey : advert_self.app.wallet.returnPublicKey(),
+      $adfile    : "42.png",
+      $link      : "https://gmtgames.com"
+    };
+    advert_self.app.storage.execDatabase(sql4, params4, function() {});
+
+    sql4     = "INSERT INTO mod_advert_adverts (publickey, adfile, views, link, width, height) VALUES ($publickey, $adfile, 0, $link, 300, 250)";
+    params4  = {
+      $publickey : advert_self.app.wallet.returnPublicKey(),
+      $adfile    : "43.png",
+      $link      : "https://apps.saito.network/arcade"
+    };
+    advert_self.app.storage.execDatabase(sql4, params4, function() {});
+
+    sql4     = "INSERT INTO mod_advert_adverts (publickey, adfile, views, link, width, height) VALUES ($publickey, $adfile, 0, $link, 300, 250)";
+    params4  = {
+      $publickey : advert_self.app.wallet.returnPublicKey(),
+      $adfile    : "44.png",
+      $link      : "https://apps.saito.network/arcade"
+    };
+    advert_self.app.storage.execDatabase(sql4, params4, function() {});
+
+    sql4     = "INSERT INTO mod_advert_adverts (publickey, adfile, views, link, width, height) VALUES ($publickey, $adfile, 0, $link, 300, 250)";
+    params4  = {
+      $publickey : advert_self.app.wallet.returnPublicKey(),
+      $adfile    : "45.png",
+      $link      : "https://apps.saito.network/arcade"
+    };
+    advert_self.app.storage.execDatabase(sql4, params4, function() {});
+
+    sql4     = "INSERT INTO mod_advert_adverts (publickey, adfile, views, link, width, height) VALUES ($publickey, $adfile, 0, $link, 300, 250)";
+    params4  = {
+      $publickey : advert_self.app.wallet.returnPublicKey(),
+      $adfile    : "46.png",
+      $link      : "https://apps.saito.network/arcade"
     };
     advert_self.app.storage.execDatabase(sql4, params4, function() {});
 

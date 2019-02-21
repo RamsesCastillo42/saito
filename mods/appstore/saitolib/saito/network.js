@@ -115,6 +115,17 @@ console.log("handshake is not completed....");
   // }, this.polling_speed);
 
 
+  //
+  // rebroadcast any queued txs
+  //
+  setTimeout(() => {
+    for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+      let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
+      this.propagateTransaction(tmptx);
+    }
+  }, 3000);
+
+
 }
 
 
@@ -472,6 +483,7 @@ Network.prototype.propagateTransaction = function propagateTransaction(tx, outbo
   }
 
   this.sendTransactionToPeers(tx, outbound_message, mycallback);
+
 }
 
 
@@ -544,5 +556,153 @@ Network.prototype.close = function close() {
   }
   return;
 }
+
+
+
+/**
+ * canSendOffChainMessage
+ *
+ * returns 1 if we have a direct connection to the peer in question
+ * or we have a direct connection to a specified proxy of theirs
+ *
+**/
+Network.prototype.canSendOffChainMessage = function canSendOffChainMessage(publickey) {
+
+  let this_is_possible = 0;
+
+  // direct connection
+  for (let i = 0; i < this.peers.length; i++) {
+    if (this.peers[i].peer.publickey === publickey) {
+      if (this.peers[i].isConnected() == 1) {
+console.log("WE ARE DIRECTLY CONNECTED TO: " + publickey);
+	return 1;
+      }
+    }
+  }
+
+  // proxymod connection
+  let proxy = this.app.keys.returnProxyByPublicKey(publickey);
+  if (proxy != null) {
+console.log("WE HAVE A PROXYMOD CONNECTION: " + JSON.stringify(proxy));
+    return 1; 
+  } 
+
+  return 0;
+
+}
+
+
+
+/**
+ * sendOffChainMessage
+ *
+ * sends an offchain message if possible, returns 0 if not possible
+ *
+**/
+Network.prototype.sendOffChainMessage = async function sendOffChainMessage(publickey, message) {
+
+  let send_direct = 0;
+  let send_proxy  = 0;
+
+  //
+  // send direct message
+  //
+  for (let i = 0; i < this.peers.length; i++) {
+    if (this.peers[i].peer.publickey == publickey) {
+      if (this.peers[i].isConnected() == 1) {
+	send_direct = 1;
+      }
+    }
+  }
+
+  //
+  // send proxy
+  //
+  let proxy = this.app.keys.returnProxyByPublicKey(publickey);
+  if (proxy != null) { 
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].peer.publickey == proxy.publickey) {
+        if (this.peers[i].isConnected() == 1) {
+  	  send_proxy = 1;
+        }
+      }
+    }
+  }
+
+
+  //
+  // abort if no method of sending
+  //
+  if (send_direct == 0 && send_proxy == 0) { return 0; }
+
+
+
+  //
+  // SEND DIRECTLY
+  //
+  if (send_direct == 1) {
+
+    let newtx = this.app.wallet.createUnsignedTransaction(publickey, 0.0, 0.0);
+    if (newtx == null) { return 0; }
+    newtx.transaction.msg = this.app.keys.encryptMessage(publickey, message);
+    newtx = app.wallet.signTransaction(newtx);
+
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].peer.publickey == publickey) {
+
+        m                 = {};
+        m.request         = "proxymod relay request";
+        m.data            = {};
+        m.data.request    = "proxymod relay request";
+        m.data.publickey  = this.app.wallet.returnPublicKey();
+        m.data.tx         = JSON.stringify(newtx.transaction);
+
+        this.app.network.peers[j].sendRequest(m.request, m.data, function () {});
+
+      }
+    }
+
+    return 1;
+  }
+
+
+
+
+  //
+  // SEND INDIRECTLY
+  //
+  if (send_proxy == 1) {
+
+    let newtx = this.app.wallet.createUnsignedTransaction(publickey, 0.0, 0.0);
+    if (newtx == null) { return 0; }
+    newtx.transaction.msg = this.app.keys.encryptMessage(publickey, message);
+    newtx = this.app.wallet.signTransaction(newtx);
+
+    let shelltx = this.app.wallet.createUnsignedTransaction(proxy.publickey, 0.0, 0.0);
+    if (shelltx == null) { return 0; }
+    shelltx.transaction.msg = this.app.keys.encryptMessage(proxy.publickey, newtx.transaction);
+    shelltx = this.app.wallet.signTransaction(shelltx);
+ 
+    for (let i = 0; i < this.peers.length; i++) {
+      if (this.peers[i].peer.publickey == proxy.publickey) {
+
+        m                 = {};
+        m.request         = "proxymod relay request";
+        m.data            = {};
+        m.data.request    = "proxymod relay request";
+        m.data.recipient  = publickey;
+        m.data.tx         = JSON.stringify(shelltx.transaction);
+
+console.log("SENDING LIVE REQUEST: " + JSON.stringify(m));
+
+        this.app.network.peers[i].sendRequest(m.request, m.data, function () {});
+
+      }
+    }
+    return 1;
+  }
+
+}
+
 
 
