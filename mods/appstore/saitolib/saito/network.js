@@ -115,6 +115,17 @@ console.log("handshake is not completed....");
   // }, this.polling_speed);
 
 
+  //
+  // rebroadcast any queued txs
+  //
+  setTimeout(() => {
+    for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+      let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
+      this.propagateTransaction(tmptx);
+    }
+  }, 3000);
+
+
 }
 
 
@@ -472,6 +483,7 @@ Network.prototype.propagateTransaction = function propagateTransaction(tx, outbo
   }
 
   this.sendTransactionToPeers(tx, outbound_message, mycallback);
+
 }
 
 
