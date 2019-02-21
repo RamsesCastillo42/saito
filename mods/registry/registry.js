@@ -590,10 +590,70 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
         dns_response.block_hash = row.block_hash;
         dns_response.signer     = row.signer;
         dns_response.signature  = row.signature;
-        mycallback(JSON.stringify(dns_response));
+        mycallback(JSON.stringify(dns_response));chat
       }
     } else {
       dns_response.err = "identifier not found";
+      mycallback(JSON.stringify(dns_response));
+    }
+  } catch (err) {}
+}
+
+/**
+ * Handle Multiple Identifer Requests in one domain Request
+ *
+ * @param {object} app
+ * @param {object} message
+ * @param {object} peer
+ * @param {function} callback
+ */
+
+Registry.prototype.handleMultipleDomainRequest = async function handleMultipleDomainRequest(app, message, peer, mycallback) {
+
+  try {
+    var registry_self = this;
+
+    var identifiers;
+    var publickeys;
+    if (message.data.identifiers) {
+      identifiers = message.data.identifiers.map(identifier => identifier.toLowerCase());
+    } else {
+      publickeys  = message.data.publickeys;
+      question_string = message.data.publickeys.map(id => '?').join(', ')
+    }
+
+    var sql;
+    var params;
+    let dns_response            = {};
+    dns_response.err            = "";
+    dns_response.payload        = "";
+
+    var sql = publickeys != null
+      ? `SELECT * FROM mod_registry_addresses WHERE publickey IN (${question_string})`
+      : `SELECT * FROM mod_registry_addresses WHERE longest_chain = 1 AND identifier IN (${question_string})`;
+
+    var params = publickeys != null ? publickeys : identifiers;
+
+    let rows = await registry_self.db.all(sql, params);
+    if (rows.length != 0) {
+      dns_response.payload = rows.map((row) => {
+        return {
+          identifier  : row.identifier,
+          publickey   : row.publickey,
+          unixtime    : row.unixtime,
+          block_id    : row.block_id,
+          block_hash  : row.block_hash,
+          signer      : row.signer,
+          signature   : row.signature,
+        }
+      });
+
+      dns_response.err         = "";
+      mycallback(JSON.stringify(dns_response));
+      // }
+      // }
+    } else {
+      dns_response.err = "no identifiers found";
       mycallback(JSON.stringify(dns_response));
     }
   } catch (err) {}

@@ -244,6 +244,9 @@ ModTemplate.prototype.attachEmailFormEvents = function attachEmailFormEvents(app
 //
 ModTemplate.prototype.handleDomainRequest = function handleDomainRequest(app, message, peer, mycallback) {}
 
+
+ModTemplate.prototype.handleMultipleDomainRequest = function handleMultipleDomainRequest(app, message, peer, mycallback) {}
+
 //
 // HANDLE PEER REQUEST
 //

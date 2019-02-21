@@ -116,27 +116,24 @@ class Chat extends ChatCore {
   async _initializeChat() {
     if (this.app.BROWSER == 1) {
       for (let i = this.chat.rooms.length - 1; i >= 0; i--) {
-        var messages = this.chat.rooms[i].messages.map(async (message) => {
+        var fetch_keys = this.chat.rooms[i].messages.map((message) => {
           let local_id = Object.assign({ identifiers: [] },
             this.app.keys.findByPublicKey(message.author));
-
-          if (local_id.identifiers.length > 0) {
-            message.author = local_id.identifiers[0];
-          } else {
-            let publickey = message.author;
-
-            try {
-              message.author = await this._getIdentifier(message.author);
-            } catch(err) {
-              console.log(err);
-            }
-
-            this.app.keys.addKey(publickey, message.author);
+          if (local_id.identifiers.length == 0) {
+            return message.author
           }
+        })
+        if (fetch_keys != []) {
+          await this._getMultipleIdentifiers(fetch_keys)
+        }
+        var messages = this.chat.rooms[i].messages.map((message) => {
+          let local_id = Object.assign({ identifiers: [] },
+            this.app.keys.findByPublicKey(message.author));
+          message.author = local_id.identifiers.length > 0 ? local_id.identifiers[0] : message.author.substring(0,8);
           message.timestamp = JSON.parse(message.tx).ts;
           return message;
         });
-        this.chat.rooms[i].messages = await Promise.all(messages);
+        this.chat.rooms[i].messages = messages;
         this._addChatRoomToSelector(i);
       }
       this.chat.rooms[this.chat.rooms.length - 1].messages.unshift(this._welcomeMessage());
@@ -576,6 +573,20 @@ Happy Chatting!`
       this.app.dns.fetchIdentifier(author, (answer) => {
         author = this.app.dns.isRecordValid(answer) ?  JSON.parse(answer).identifier : author.substring(0,8);
         resolve (author);
+      });
+    });
+  }
+
+  _getMultipleIdentifiers(keys) {
+    return new Promise((resolve, reject) => {
+      this.app.dns.fetchMultipleIdentifiers(keys, (answer) => {
+        if (this.app.dns.isRecordValid(answer)) {
+          var response = JSON.parse(answer).payload
+          response.forEach(key => {
+            this.app.keys.addKey(key.publickey, key.identifier);
+          })
+        }
+        resolve (true);
       });
     });
   }
