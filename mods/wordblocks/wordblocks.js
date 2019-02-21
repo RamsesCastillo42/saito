@@ -332,7 +332,11 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 	  //
 	  let cards_needed = 7;
           cards_needed = cards_needed - wordblocks_self.game.hand.length;
-          wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed);
+	  if (cards_needed > wordblocks_self.game.deck.cards.length) { cards_needed = wordblocks_self.game.deck.cards.length-1; }
+	
+	  if (cards_needed > 0) {
+            wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed);
+	  }
 
 	  myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
 	  wordblocks_self.exhaustWord(word, orientation, x, y);
