@@ -163,7 +163,7 @@ Reddit.prototype.initialize = async function initialize() {
           message.request         = "reddit load request";
           message.data            = {};
           message.data.request    = "reddit load request";
-          message.data.subreddit  = subreddit.toLowerCase();
+          message.data.subreddit  = subreddit;
           message.data.post_id    = post_id;
           message.data.comment_id = comment_id;
           message.data.offset     = offset;
@@ -184,7 +184,7 @@ Reddit.prototype.initialize = async function initialize() {
           message.request         = "reddit load moderate";
           message.data            = {};
           message.data.request    = "reddit load moderate";
-          message.data.subreddit  = subreddit.toLowerCase();
+          message.data.subreddit  = subreddit;
           message.data.post_id    = post_id;
           message.data.comment_id = comment_id;
           this.app.network.sendRequest(message.request, message.data);
@@ -896,7 +896,7 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
     } else {
       $('#d_content_title').html(`<a target="_blank" href="${tx.transaction.msg.link}">${tx.transaction.msg.title}</a>`);
     }
-    var content_subreddit = '/r/'+message.data.subreddit.toLowerCase();
+    var content_subreddit = '/r/'+message.data.subreddit;
     var content_thumbnail = "/r/screenshots/"+message.data.id+".png";
     let updatethmb = '<img src="'+content_thumbnail+'" class="thumbnail_image" onerror="this.src=\'/img/saito-logo-blue.png\'" /></div>';
     $('#d_thumb').html(updatethmb);
@@ -962,7 +962,7 @@ Reddit.prototype.addPost = function addPost(tx, message, app, prepend=0, pending
     content_title       = tx.transaction.msg.title;
     cpost_id            = tx.transaction.sig;
     content_subreddit   = '/r/'+tx.transaction.msg.subreddit;
-    content_subreddit   = content_subreddit.toLowerCase();
+    content_subreddit   = content_subreddit;
     if (content_subreddit == '/r/') {
       content_subreddit = "/r/main";
     }
@@ -1404,7 +1404,7 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
     /////////////////////
     if (msg.request === "reddit load request") {
 
-      var sr = msg.data.subreddit;
+      var sr = msg.data.subreddit.toLowerCase();
       var so = msg.data.offset;
 
       var sql    = "SELECT * FROM posts ORDER BY unixtime_rank DESC LIMIT $ppp OFFSET $offset";
@@ -1518,7 +1518,7 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
 
       if (msg.data != null) {
         if (msg.data.subreddit != undefined) {
-          reddit_self.generateCachedPagePosts(msg.data.subreddit);
+          reddit_self.generateCachedPagePosts(msg.data.subreddit.toLowerCase());
         }
       }
       reddit_self.generateCachedPagePosts("main");
@@ -1834,7 +1834,7 @@ Reddit.prototype.savePost = async function savePost(tx) {
     let row = await this.db.run(sql, {
       $tx: JSON.stringify(tx.transaction),
       $post_id: tx.transaction.sig,
-      $subreddit: tx.transaction.msg.subreddit,
+      $subreddit: tx.transaction.msg.subreddit.toLowerCase(),
       $unixtime: tx.transaction.ts,
       $unixtime_rank: tx.transaction.ts,
       $url : link.href,
