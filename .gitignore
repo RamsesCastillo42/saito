@@ -27,6 +27,7 @@ mods/twilight/*
 mods/scrabble
 mods/scrabble/*
 mods/appstore/saitolib/*
+mods/appstore/saitolib/saito/web/client.options
 mods/advert/web/cache/*.png
 mods/appstore/web/cache/*
 mods/explorer/web/index.html

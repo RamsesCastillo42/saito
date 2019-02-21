@@ -201,6 +201,18 @@ Modules.prototype.handleDomainRequest = function handleDomainRequest(message, pe
 /**
  * 
  */
+Modules.prototype.handleMultipleDomainRequest = function handleMultipleDomainRequest(message, peer, mycallback) {
+  for (let iii = 0; iii < this.mods.length; iii++) {
+    if (this.mods[iii].handlesDNS == 1) {
+      this.mods[iii].handleMultipleDomainRequest(this.app, message, peer, mycallback);
+    }
+  }
+  return;
+}
+
+/**
+ * 
+ */
 Modules.prototype.handlePeerRequest = function handlePeerRequest(message, peer, mycallback=null) {
   for (let iii = 0; iii < this.mods.length; iii++) {
     try {
