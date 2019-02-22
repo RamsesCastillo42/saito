@@ -528,17 +528,51 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
       return;
     }
 
-    var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
-    if (newtx == null) {
-      alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
-      return;
+    if (arcade_self.app.crypto.isPublicKey(address) == 0) {
+
+      arcade_self.app.dns.fetchPublicKey(address, function(answer) {
+        if (arcade_self.app.dns.isRecordValid(answer) == 0) {
+	  alert("Cannot find publickey of specified user. Are you connected to a DNS server?");
+          return;
+        }
+
+        dns_response = JSON.parse(answer);
+
+        arcade_self.app.keys.addKey(dns_response.publickey, dns_response.identifier, 0, "Arcade");
+        arcade_self.app.keys.saveKeys();
+
+	address = dns_response.publickey;
+
+        var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
+        if (newtx == null) {
+          alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+          return;
+        }
+        newtx.transaction.msg.module  = arcade_self.active_game;
+        newtx.transaction.msg.request = "invite";
+        newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
+        newtx = arcade_self.app.wallet.signTransaction(newtx);
+        arcade_self.app.network.propagateTransaction(newtx);
+        $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+	return;
+
+      });
+    } else {
+
+      var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
+      if (newtx == null) {
+        alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+        return;
+      }
+      newtx.transaction.msg.module  = arcade_self.active_game;
+      newtx.transaction.msg.request = "invite";
+      newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
+      newtx = arcade_self.app.wallet.signTransaction(newtx);
+      arcade_self.app.network.propagateTransaction(newtx);
+      $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+
     }
-    newtx.transaction.msg.module  = arcade_self.active_game;
-    newtx.transaction.msg.request = "invite";
-    newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
-    newtx = arcade_self.app.wallet.signTransaction(newtx);
-    arcade_self.app.network.propagateTransaction(newtx);
-    $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+
   });
 
 
