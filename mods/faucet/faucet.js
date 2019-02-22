@@ -163,7 +163,7 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
 
 
         // send an email
-        newtx = faucet_self.app.wallet.createUnsignedTransactionWithDefaultFee(saito_address, 100.0);
+        newtx = faucet_self.app.wallet.createUnsignedTransactionWithDefaultFee(saito_address, 1000.0);
         if (newtx == null) { 
 
           res.charset = 'UTF-8';
@@ -174,7 +174,7 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
 	}
         newtx.transaction.msg.module = "Email";
         newtx.transaction.msg.title  = "Saito Faucet - Transaction Receipt";
-        newtx.transaction.msg.data   = 'You have received 100 tokens from our Saito faucet.';
+        newtx.transaction.msg.data   = 'You have received 1000 tokens from our Saito faucet.';
         newtx = faucet_self.app.wallet.signTransaction(newtx);
 
         faucet_self.app.network.propagateTransaction(newtx);
@@ -227,7 +227,7 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
         </a>
       </div>
       <div class="main" id="main" style="">
-        Click the button below to receive 100 Saito tokens:
+        Click the button below to receive 1000 Saito tokens:
         <p></p>(auto-filled with your browser\'s address)<p></p>
         <form method="get" action="/faucet/success">
           <input type="text" style="padding:2px;width:640px" name="saito_address" id="saito_address" value="${saito_address}" />
