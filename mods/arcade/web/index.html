@@ -30,7 +30,7 @@
   <div class="header">
     <a href="/" class="logo_link">
       <img src="/img/saito_logo_black.png" class="logo" />
-      <div id="saitoname" class="logo_text">saito arcade</div>
+      <a href="/arcade" class="nonlink"><div id="saitoname" class="logo_text">saito arcade</div></a>
     </a>
   </div>
 
@@ -47,36 +47,39 @@
 
     <div class="game_options">
 
-      Saito Arcade provides a quick way to play blockchain games.
+      Saito Arcade provides a quick way to play blockchain games. Get notified when new games are released by <a href="/arcade/email">clicking here</a>.
 
       <p></p>
 
       <div class="gamelist">
 
         <div class="game">
-          <div class="gamename" id="gamename_twilight">Twilight Struggle</div>
-          <img class="gameimage" id="gameimage" src="/arcade/img/twilight.jpg" />
-          <div class="compose" id="Twilight">NEW GAME</div>
+          <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
         </div>
 
         <div class="game">
-          <div class="gamename" id="gamename_chess">Chess</div>
-          <img class="gameimage" id="gameimage" src="/arcade/img/chess.jpg" />
-          <div class="compose" id="Chess">NEW GAME</div>
+          <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
         </div>
 
         <div class="game">
-          <div class="gamename" id="gamename_wordblocks">Wordblocks</div>
-          <img class="gameimage" id="gameimage" src="/arcade/img/wordblocks.jpg" />
-          <div class="compose" id="Wordblocks">NEW GAME</div>
+          <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
         </div>
 
       </div>
 
       <p></p>
 
-      <div class="legal">
-	Twilight Struggle is licensed for use in open source gaming engines like Saito provided that at least one player has purchased the game. Please support <a href="http://gmtgames.com">GMT Games</a> and encouraging further development of Twilight Struggle by picking up a <a href="https://www.amazon.com/GMT-Games-Twilight-Struggle-Deluxe/dp/B0060L6EE4/">physical copy of the game</a>.
+      <div class="active_games">
+	<table id="gametable" class="gametable">
+	  <tbody>
+	    <tr>
+	      <th>Game</th>
+	      <th>Opponent</th>
+	      <th>Status</th>
+	      <th>Action</th>
+	    </tr>
+	  </tbody>
+	</table>
       </div>
 
     </div>
