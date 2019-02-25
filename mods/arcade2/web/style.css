@@ -5,20 +5,9 @@
   cursor:pointer;
 }
 
-.publisher_message {
-
-}
-
-th {
- text-align: left;
-}
-td {
- text-align: left;
- padding-right:45px;
-}
-#gametable {
- font-size:1.0em;
- display:none;
+.legal {
+ font-size: 0.85em;
+ padding-top:40px;
 }
 
 .status {
@@ -83,7 +72,6 @@ td {
  width: 100%;
  text-align: center;
  border: 3px solid #888;
- cursor:pointer;
 }
 
 .body, body {
