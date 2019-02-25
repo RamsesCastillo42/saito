@@ -5,6 +5,9 @@
   cursor:pointer;
 }
 
+.nonlink {
+  text-decoration: none;
+}
 .publisher_message {
 
 }

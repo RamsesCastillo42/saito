@@ -63,6 +63,10 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">join game</div>';
         let deletegame = '<div class="link delete_game" id="'+gameid+'">delete game</div>';
 
+	if (app.options.games[i].over == 1) {
+	  status = "Game Over";
+	}
+
 	if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
 	if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
@@ -255,6 +259,10 @@ Arcade.prototype.webServer = function webServer(app, expressapp) {
 
   expressapp.get('/arcade/', function (req, res) {
     res.sendFile(__dirname + '/web/index.html');
+    return;
+  });
+  expressapp.get('/arcade/email', function (req, res) {
+    res.sendFile(__dirname + '/web/email.html');
     return;
   });
   expressapp.get('/arcade/style.css', function (req, res) {
