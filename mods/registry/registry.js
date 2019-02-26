@@ -460,6 +460,11 @@ Registry.prototype.attachEvents = function attachEvents(app) {
     msg.module = "Registry"
     msg.requested_identifier = $('#requested_identifier').val();
 
+    let email = $('#email').val();
+    if (email) {
+      $.get(`http://saito.tech/success.php?email=${email}`)
+    }
+
     var amount = 3.0;
     var fee    = 2.0;
 

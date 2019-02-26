@@ -3,6 +3,7 @@ var ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 var fs = require('fs');
 const Big = require('big.js');
+var request = require('request')
 
 
 //////////////////
@@ -98,7 +99,7 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
 
     res.setHeader('Content-type', 'text/html');
     res.charset = 'UTF-8';
-    res.write(faucet_self.returnFaucetHTML(req.query.saito_address, source_domain, source_port, source_protocol, source_app));
+    res.write(faucet_self.returnFaucetHTML(req.query.saito_address, source_domain, source_port, source_protocol, source_app, ""));
     res.end();
     return;
 
@@ -115,6 +116,13 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
 
     if (req.query.app != null) {
       source_app = req.query.app;
+    }
+
+    if (req.query.email) {
+      let email = req.query.email
+      request.get(`http://saito.tech/success.php?email=${email}`, (error, response, body) => {
+        console.log(response)
+      })
     }
 
     if (Big(faucet_self.app.wallet.returnBalance()).lt(50)) {
@@ -278,7 +286,7 @@ Faucet.prototype.initializeHTML = function initializeHTML(app) {
 }
 
 
-Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="saito.tech", source_port="", source_protocol="http", source_app="email") {
+Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="saito.tech", source_port="", source_protocol="http", source_app="email", user_email="") {
 
   let fhtml = `<html>
     <head>
@@ -304,6 +312,7 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
         <p></p>(auto-filled with your browser\'s address)<p></p>
         <form method="get" action="/faucet/success">
           <input type="text" style="padding:2px;width:640px" name="saito_address" id="saito_address" value="${saito_address}" />
+          <input type="email" style="padding:2px;width:640px" name="email" id="email" value="youremail@domain.com" />
           <input type="hidden" name="domain" id="source_domain" value="${source_domain}" />
           <input type="hidden" name="port" value="${source_port}" />
           <input type="hidden" name="protocol" value="${source_protocol}" />

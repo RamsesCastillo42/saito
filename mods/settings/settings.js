@@ -40,12 +40,16 @@ Settings.prototype.displayEmailForm = function displayEmailForm(app) {
   element_to_edit_html = `
     <div id="module_instructions" class="module_instructions">
       <b>Network Keys:</b>
+      <div>
       <div class="courier">
-public:&nbsp; ${app.wallet.returnPublicKey()}
-<br />
-private: <input id="privatekey" type="password" value="${app.wallet.returnPrivateKey()}" class="password" />
-<br />
-address: ${app.wallet.returnIdentifier() || "no address registered"}
+        <div id="keys">
+          public:&nbsp; ${app.wallet.returnPublicKey()}
+          <br />
+          private: <input id="privatekey" type="password" value="${app.wallet.returnPrivateKey()}" class="password" />
+          <br />
+          address: ${app.wallet.returnIdentifier() || "no address registered"}
+          <br />
+        </div>
       </div>
       <p></p>
       <b>Advanced Options:</b>
@@ -86,10 +90,14 @@ address: ${app.wallet.returnIdentifier() || "no address registered"}
      </div>
      <p></p>
      </div>
+     </div>
+     <input type="radio" name="key" value="public" checked> Publickey
+     <input type="radio" name="key" value="private"> Privatekey
+     <div id="qrcode"></div>
    </div>
    <style type="text/css">
      .courier {
-       font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+        font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
        line-height: 1.6em;
      }
      .module_instructions {
@@ -122,6 +130,8 @@ address: ${app.wallet.returnIdentifier() || "no address registered"}
   </script>`;
   element_to_edit.html(element_to_edit_html);
 
+  const qrcode = new QRCode(document.getElementById("qrcode"), app.wallet.returnPublicKey());
+
   $('#module_textinput_button').off();
   $('#module_textinput_button').on('click', function() {
     var identifier_to_check = $('module_textinput').val();
@@ -132,7 +142,7 @@ address: ${app.wallet.returnIdentifier() || "no address registered"}
       alert("Only Alphanumeric Characters Permitted");
     }
   });
-  
+
   $('#privatekey').on('click', function() {
     console.log("------------surely-------------");
     if ($('#privatekey')[0].type=="password") {
@@ -142,6 +152,12 @@ address: ${app.wallet.returnIdentifier() || "no address registered"}
     }
   });
 
+  $("input[name='key']").on('change', function () {
+    let button_value = $(this).val()
+    let qr_info = button_value == 'public' ? app.wallet.returnPublicKey() : app.wallet.returnPrivateKey()
+    qrcode.clear()
+    qrcode.makeCode(qr_info);
+  });
 
   // auto-input correct address and payment amount
   $('#lightbox_compose_to_address').val(app.wallet.returnPublicKey());
