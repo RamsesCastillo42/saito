@@ -56,12 +56,12 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   console.log('######################################################');
   console.log('######################################################');
 
-
-  this.board = new chessboard('board', null);
-  this.engine = new chess.Chess();
-  let starting_position = this.engine.fen();
-
-  console.log("STARTING GAMESTATE: " + starting_position);
+  if (this.browser_active == 1) {
+    chess = require('chess.js');
+    chessboard = require("../chess/web/chessboard");
+    this.board = new chessboard('board', null);
+    this.engine = new chess.Chess();
+  }
 
   //
   // load this.game object
@@ -94,18 +94,9 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 
   if (this.browser_active == 1) {
 
-    chess = require('chess.js');
-    chessboard = require("../chess/web/chessboard");
-
     if (this.game.position != undefined) {
-      //
-      // existing game
-      //
       this.engine.load(this.game.position);
     } else {
-      //
-      // new game
-      //
       this.game.position = this.engine.fen();
     }
 
@@ -120,15 +111,6 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
     this.attachEvents();
 
   }
-
-  //
-  // add item to queue, so that our underlying game
-  // module will loop around trying to remove it, and
-  // our messages will be sent to handleGame
-  //
-  //this.game.queue.push("start");
-
-  console.log("FINISHED INITIALIZING!");
 
 }
 
@@ -158,8 +140,7 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   let data = JSON.parse(msg.extra.data);
   this.game.position = data.position;
   this.game.target = msg.extra.target;
-  
-
+ 
   if (msg.extra.target == this.game.player) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
@@ -168,7 +149,7 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
     this.updateStatusMessage();
   } else {
     if (this.browser_active == 1) {
-      this.setBoard(this.game.position);
+      this.lockBoard(this.game.position);
     }
   }
 
@@ -282,47 +263,49 @@ Chessgame.prototype.attachEvents = function attachEvents() {
 
 Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str="") {
 
-    //
-    // print message if provided
-    //
-    if (str != "") {
-      var statusEl = $('#status');
-      statusEl.html(str);
-      return;
-    }
+  if (this.browser_active != 1) { return; }
 
-    var status = '';
-
-    var moveColor = 'White';
-    if (this.engine.turn() === 'b') {
-      moveColor = 'Black';
-    }
-
-    // checkmate?
-    if (this.engine.in_checkmate() === true) {
-      status = 'Game over, ' + moveColor + ' is in checkmate.';
-    }
-
-    // draw?
-    else if (this.engine.in_draw() === true) {
-      status = 'Game over, drawn position';
-    }
-
-    // game still on
-    else {
-
-      status = moveColor + ' to move';
-
-      // check?
-      if (this.engine.in_check() === true) {
-        status += ', ' + moveColor + ' is in check';
-      }
-
-    }
-
+  //
+  // print message if provided
+  //
+  if (str != "") {
     var statusEl = $('#status');
-    statusEl.html(status);
-    this.updateLog();
+    statusEl.html(str);
+    return;
+  }
+
+  var status = '';
+
+  var moveColor = 'White';
+  if (this.engine.turn() === 'b') {
+    moveColor = 'Black';
+  }
+
+  // checkmate?
+  if (this.engine.in_checkmate() === true) {
+    status = 'Game over, ' + moveColor + ' is in checkmate.';
+  }
+
+  // draw?
+  else if (this.engine.in_draw() === true) {
+    status = 'Game over, drawn position';
+  }
+
+  // game still on
+  else {
+
+    status = moveColor + ' to move';
+
+    // check?
+    if (this.engine.in_check() === true) {
+      status += ', ' + moveColor + ' is in check';
+    }
+
+  }
+
+  var statusEl = $('#status');
+  statusEl.html(status);
+  this.updateLog();
 
 };
 
@@ -339,7 +322,7 @@ Chessgame.prototype.setBoard = function setBoard(position) {
       }
     }
 
-    var cfg = {
+    let cfg = {
         draggable: true,
         position: position,
         pieceTheme: 'chess/pieces/{piece}.png',
@@ -366,24 +349,25 @@ Chessgame.prototype.setBoard = function setBoard(position) {
 
 Chessgame.prototype.lockBoard = function lockBoard(position) {
 
-    if (this.board != undefined) {
-      if (this.board.destroy != undefined) {
-        this.board.destroy();
-      }
+  if (this.board != undefined) {
+    if (this.board.destroy != undefined) {
+      this.board.destroy();
     }
+  }
 
-    var cfg = {
-        pieceTheme: 'chess/pieces/{piece}.png',
-        moveSpeed: 0,
-        position: position
-    }
+  let cfg = {
+    pieceTheme: 'chess/pieces/{piece}.png',
+    moveSpeed: 0,
+    position: position
+  }
 
-    this.board = new chessboard('board', cfg);
-    this.engine.load(position);
+  this.board = new chessboard('board', cfg);
+  this.engine.load(position);
 
-    if (this.game.player == 2) {
-      this.board.orientation('black');
-    }
+  if (this.game.player == 2) {
+    this.board.orientation('black');
+  }
+
 }
 
 
@@ -392,52 +376,53 @@ Chessgame.prototype.lockBoard = function lockBoard(position) {
 
 
 
-/////////////////////////////////////////////
-/////////////// Board Config ////////////////
-/////////////////////////////////////////////
+
+//////////////////
+// Board Config //
+//////////////////
 Chessgame.prototype.onDragStart = function onDragStart(source, piece, position, orientation) {
 
-    if (this_chess.engine.game_over() === true ||
-        (this_chess.engine.turn() === 'w' && piece.search(/^b/) !== -1) ||
-        (this_chess.engine.turn() === 'b' && piece.search(/^w/) !== -1)) {
-        return false;
-    }
+  if (this_chess.engine.game_over() === true ||
+    (this_chess.engine.turn() === 'w' && piece.search(/^b/) !== -1) ||
+    (this_chess.engine.turn() === 'b' && piece.search(/^w/) !== -1)) {
+    return false;
+  }
 };
 
 Chessgame.prototype.onDrop = function onDrop(source, target) {
 
-    this_chess.removeGreySquares();
+  this_chess.removeGreySquares();
 
-    // see if the move is legal
-    var move = this_chess.engine.move({
-        from: source,
-        to: target,
-        promotion: 'q' // NOTE: always promote to a queen for example simplicity
-    });
+  // see if the move is legal
+  var move = this_chess.engine.move({
+    from: source,
+    to: target,
+    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+  });
 
-    // illegal move
-    if (move === null) return 'snapback';
+  // illegal move
+  if (move === null) return 'snapback';
 
 };
 
 Chessgame.prototype.onMouseoverSquare = function onMouseoverSquare(square, piece) {
 
-    // get list of possible moves for this square
-    var moves = this_chess.engine.moves({
-        square: square,
-        verbose: true
-    });
+  // get list of possible moves for this square
+  var moves = this_chess.engine.moves({
+    square: square,
+    verbose: true
+  });
 
-    // exit if there are no moves available for this square
-    if (moves.length === 0) { return; }
+  // exit if there are no moves available for this square
+  if (moves.length === 0) { return; }
 
-    // highlight the square they moused over
-    this_chess.greySquare(square);
+  // highlight the square they moused over
+  this_chess.greySquare(square);
 
-    // highlight the possible squares for this piece
-    for (var i = 0; i < moves.length; i++) {
-        this_chess.greySquare(moves[i].to);
-    }
+  // highlight the possible squares for this piece
+  for (var i = 0; i < moves.length; i++) {
+    this_chess.greySquare(moves[i].to);
+  }
 };
 
 Chessgame.prototype.onMouseoutSquare = function onMouseoutSquare(square, piece) {
