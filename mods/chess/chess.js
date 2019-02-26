@@ -132,7 +132,7 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   }
 
   //
-  // the message we get fro the other player
+  // the message we get from the other player
   // tells us the new board state, so we
   // update our own information and save the
   // game
@@ -172,7 +172,7 @@ Chessgame.prototype.endTurn = function endTurn(data) {
   this.game.target = extra.target;
   this.sendMessage("game", extra);
   this.saveGame(this.game.id);
-  this.updateLog((this.game.log.length +1) +": " + this.engine.history(), 999);
+  this.updateLog((this.game.log.length +1) +": " + data.move, 999);
   this.updateStatusMessage();
 
 }
@@ -231,7 +231,7 @@ Chessgame.prototype.attachEvents = function attachEvents() {
       data.black = this_chess.game.black;
       data.id = this_chess.game.id;
       data.position = this_chess.engine.fen();
-      data.move = this_chess.engine.history();
+      data.move = this_chess.game.move;
 
       this_chess.endTurn(data);
 
@@ -247,8 +247,8 @@ Chessgame.prototype.attachEvents = function attachEvents() {
     $('#move_reject').off();
     $('#move_reject').on('click', function () {
 
-      this_chess.setBoard(this.game.moveStartPosition);
-
+      //this_chess.setBoard(this.game.moveStartPosition);
+      this_chess.setBoard(this_chess.game.position);      
       $('#move_accept').prop('disabled', true);
       $('#move_accept').removeClass('green');
 
@@ -399,9 +399,11 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   });
-
+  
   // illegal move
   if (move === null) return 'snapback';
+
+  this_chess.game.move = move.san;
 
 };
 
