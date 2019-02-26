@@ -23,13 +23,13 @@ function Arcade(app) {
 
 
   this.initialization_check_active = true;
-  this.initializetion_check_speed  = 2000;
   this.initialization_check_timer  = null;
 
   this.active_game     = "";
   this.active_game_id  = "";
 
   this.currently_playing = 0;
+  this.currently_viewing_monitor = 0;
 
   return this;
 
@@ -183,6 +183,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game += tmpmod.slice(1);
           let mhtml = this.returnGameMonitor(this.app);
 	  $('.status').show();
+	  this.currently_viewing_monitor = 1;
           $('.game_options').slideUp();
           $('.game_monitor').html(mhtml);
           this.updateBalance(this.app);
@@ -228,6 +229,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           $('.status').show();
           $('.game_options').slideUp();
           $('.game_monitor').html(mhtml);
+	  this.currently_viewing_monitor = 1;
           $('.manage_invitations').html("Initializing your game...");
           this.updateBalance(app);
           $('.game_monitor').show();
@@ -241,7 +243,20 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           $('.manage_invitations').html(html);
           $('.manage_invitations').show();
           this.attachEvents(this.app);
-        }
+        } else {
+
+	  if (this.currently_viewing_monitor == 1) {
+
+	    let active_module = txmsg.module;
+
+	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a>.`;
+            $('.manage_invitations').html(html);
+            $('.manage_invitations').show();
+            if (this.browser_active == 1) { $('#status').hide(); }
+            this.attachEvents(this.app);
+	  }
+
+	}
 
       } catch (err) {
       }
@@ -362,23 +377,29 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 Arcade.prototype.startInitializationTimer = function startInitializationTimer(game_id) {
 
   let arcade_self = this;
-  let pos = -1;
-
-  this.active_game_id = game_id;
 
   try {
 
-    if (this.app.options.games != undefined) {
-      for (let i = 0; i < this.app.options.games.length; i++) {
-        if (this.app.options.games[i].id == game_id) {
-	  pos = i;
-        }
-      }
-    }
-
-    if (pos == -1) { return; }
+console.log("start initialization function with id: " + game_id);
 
     arcade_self.initialization_check_timer = setInterval(() => {
+
+      let pos = -1;
+      if (arcade_self.app.options.games != undefined) {
+        for (let i = 0; i < arcade_self.app.options.games.length; i++) {
+          if (arcade_self.app.options.games[i].id == game_id) {
+  	    pos = i;
+          }
+        }
+      }
+console.log("initialization timer is looping...: " + pos + " ---> " + arcade_self.initialization_check_speed);
+
+      if (pos == -1) { 
+console.log("no game found: " + JSON.stringify(arcade_self.app.options.games));
+        return; 
+      }
+
+console.log("found the game: " + pos);
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
         let html = `Your game is ready: <a href="/${arcade_self.active_game.toLowerCase()}">click here to open</a>.`;
@@ -389,7 +410,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
         arcade_self.attachEvents(this.app);
       }
 
-    }, arcade_self.initialization_check_speed);
+    }, 2000);
 
   } catch (err) {
     alert("ERROR checking if game is initialized!");
@@ -521,6 +542,11 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
         newtx = arcade_self.app.wallet.signTransaction(newtx);
         arcade_self.app.network.propagateTransaction(newtx);
         $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+
+        let game_id = newtx.transaction.to[0].add + newtx.transaction.ts + newtx.transaction.from[0].add;
+console.log("LISTENING FOR 1: " + game_id);
+        arcade_self.startInitializationTimer(game_id);
+
 	return;
 
       });
@@ -537,6 +563,10 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
       newtx = arcade_self.app.wallet.signTransaction(newtx);
       arcade_self.app.network.propagateTransaction(newtx);
       $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+
+      let game_id = newtx.transaction.from[0].add + newtx.transaction.ts + newtx.transaction.to[0].add;
+console.log("LISTENING FOR 2: " + game_id);
+      arcade_self.startInitializationTimer(game_id);
 
     }
 
