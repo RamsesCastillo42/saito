@@ -66,6 +66,9 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 	if (app.options.games[i].over == 1) {
 	  status = "Game Over";
 	}
+        if (status == "") {
+	  status = "Game Underway";
+	}
 
 	if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
 	if (status.length > 50) { status = status.substring(0, 50) + "..."; }
@@ -477,9 +480,9 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
     let game_id = tmpar[0];
     let game_module = tmpar[1];
     let game_self = app.modules.returnModule(game_module);
-    this.game = game_self.loadGame(game_id);
-    this.game.ts = new Date().getTime();
-    this.game.module = game_module;
+    game_self.game = game_self.loadGame(game_id);
+    game_self.game.ts = new Date().getTime();
+    game_self.game.module = game_module;
     game_self.saveGame(game_id);
     window.location = '/' + game_module.toLowerCase();
   });

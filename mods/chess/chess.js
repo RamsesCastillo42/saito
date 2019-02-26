@@ -2,9 +2,9 @@ var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/game');
 var util = require('util');
 
-var chess = require('chess.js');
-var chessboard = require("../chess/web/chessboard");
 var this_chess = null;
+var chess = null;
+var chessboard = null;
 
 //////////////////
 // CONSTRUCTOR  //
@@ -94,6 +94,9 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 
   if (this.browser_active == 1) {
 
+    chess = require('chess.js');
+    chessboard = require("../chess/web/chessboard");
+
     if (this.game.position != undefined) {
       //
       // existing game
@@ -158,11 +161,15 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   
 
   if (msg.extra.target == this.game.player) {
-    this.setBoard(this.game.position);
+    if (this.browser_active == 1) {
+      this.setBoard(this.game.position);
+    }
     this.updateLog((this.game.log.length+1) +": " + data.move, 999);
     this.updateStatusMessage();
   } else {
-    this.setBoard(this.game.position);
+    if (this.browser_active == 1) {
+      this.setBoard(this.game.position);
+    }
   }
 
   this.saveGame(this.game.id);
