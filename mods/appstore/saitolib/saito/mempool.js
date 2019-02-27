@@ -103,10 +103,10 @@ Mempool.prototype.fetchBlock = function fetchBlock(peer, bhash) {
         this.downloading_active = 0;
         return;
       }
-      this.downloads = this.downloads.filter(download => {
-        return this.network.hasPeer(download.peer.peer.publickey)
-      })
       if (this.downloading_active == 1) {
+        this.downloads = this.downloads.filter(download => {
+          return this.app.network.hasPeer(download.peer.peer.publickey)
+        })
         console.log("downloading is active....");
         console.log("DOWNLOAD: ---", this.downloads.map(download => { download.peer.peer, download.bhash }))
         return;
@@ -150,6 +150,10 @@ Mempool.prototype.fetchBlock = function fetchBlock(peer, bhash) {
 
           this.downloads.splice(0, 1);
           this.downloading_active = 0;
+
+          if (response.status == 400) {
+            return
+          }
 
           let blk = new saito.block(this.app, body);
 
