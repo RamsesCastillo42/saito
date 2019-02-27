@@ -4,6 +4,16 @@ body {
  padding:0px;
  margin:0px;
 }
+.player {
+  margin-bottom:6px;
+}
+.link {
+  border-bottom: 1px dashed;
+  cursor:pointer;
+}
+.tosstiles {
+  border-bottom: 1px dashed;
+}
 .gameboard {
   position: absolute;
   background-image: url("img/game0.jpg");
@@ -30,8 +40,8 @@ body {
   #top: 445px;
   width: 225px;
   height: 200px;
-  background-color: #fffccd;
-  border: 2px solid #948f8b;
+  #background-color: #fffccd;
+  #border: 2px solid #948f8b;
 }
 
 .tiles {
@@ -42,8 +52,8 @@ body {
   #left: 1338px;
   width: 225px;
   height: 242px;
-  background-color: #fffccd;
-  border: 2px solid #948f8b;
+  #background-color: #fffccd;
+  #border: 2px solid #948f8b;
 }
 .status {
   position:relative;
