@@ -237,7 +237,7 @@ Welcome.prototype.updateControlPanel = function updateControlPanel(app, blk=null
 
     let bts = new Date(blk.block.ts);
     saito_blocktime = bts.getHours() + ":" + ("0" + bts.getMinutes()).substr(-2) + ":" + ("0" + bts.getSeconds()).substr(-2);
-    saito_difficulty = blk.block.difficulty;
+    saito_difficulty = blk.block.difficulty.toString().substring(0, 5);
     saito_paysplit = blk.block.paysplit;
     saito_latest_block = blk.block.id;
 
