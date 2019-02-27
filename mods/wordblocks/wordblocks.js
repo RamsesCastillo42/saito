@@ -107,7 +107,11 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.opponents != undefined) { players = this.game.opponents.length+1; }
   for (let i = 0; i < players; i++) {
     let this_player = i+1;
-    html += '<div class="player">Player '+this_player+': <span id="score_'+this_player+'">0</span></div>';
+    if (this.game.player == this_player) {
+      html += '<div class="player">Your Score: <span id="score_'+this_player+'">0</span></div>';
+    } else {
+      html += '<div class="player">Player '+this_player+': <span id="score_'+this_player+'">0</span></div>';
+    }
   }
   if (this.browser_active == 1) { $('.score').html(html); }
  
@@ -116,7 +120,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   // who can go?
   //
   if (this.game.target == this.game.player) {
-    this.updateStatus("Your  turn!");
+    this.updateStatus("Your  turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
     this.enableEvents();
   } else {
     this.updateStatus("Waiting for Player " + this.game.target + " to move.");
@@ -267,6 +271,40 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
   let wordblocks_self = this;
 
+  $('.tosstiles').off();
+  $('.tosstiles').on('click', function() {
+
+    tiles = prompt("Which tiles do you want to discard? Tossed tiles count against your score:");
+    if (tiles) {
+
+alert("Tossed: " + tiles);
+/***
+      let points_to_remove = 0;
+      for (let i = 0; i < tiles.length; i++) {
+	try {
+  	  let ltr = tiles[i].toUpperCase();
+	  points_to_remove += wordblocks_self.letters[ltr].score;
+	} catch (err) {}
+      }
+***/
+
+      wordblocks_self.removeTilesFromHand(tiles);
+      wordblocks_self.addMove("turn\t"+wordblocks_self.game.player);
+      let cards_needed = 7;
+      cards_needed = cards_needed - wordblocks_self.game.hand.length;
+      if (cards_needed > wordblocks_self.game.deck.cards.length) { cards_needed = wordblocks_self.game.deck.cards.length-1; }
+      if (cards_needed > 0) { wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed); }
+
+      wordblocks_self.showTiles();
+      wordblocks_self.endTurn();
+
+    }
+
+  });
+
+
+
+
   $('.slot').off();
   $('.slot').on('click',function() {
 
@@ -296,7 +334,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       }
       if (action2 == "cancel") {
 	$('.card').off();
-	$('.status').html("Your turn!");
+        $('.status').html("Your  turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+        wordblocks_self.addEventsToBoard();
 	return;
       }
 
@@ -341,6 +380,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 	  myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
 	  wordblocks_self.exhaustWord(word, orientation, x, y);
 	  wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
+
+	  if (wordblocks_self.checkForEndGame() == 1) { return; }
 
 	  wordblocks_self.endTurn();
 
@@ -1147,6 +1188,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
   ///////////
   if (this.game.queue.length > 0) {
 
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
+
       //
       // save before we start executing the game queue
       //
@@ -1155,6 +1198,20 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
+
+      //
+      // game over conditions
+      //
+      if (mv[0] === "gameover") {
+	if (wordblocks_self.browser_active == 1) {
+	  alert("Game Over");
+	}
+	wordblocks_self.game.over = 1;
+	wordblocks_self.saveGame(wordblocks_self.game.id);
+	return;
+      }
+
+
 
       //
       // place word player x y [horizontal/vertical]
@@ -1171,6 +1228,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
 
 	let score = 0;
 
+
 	if (player != wordblocks_self.game.player) {
 	  this.addWordToBoard(word, orient, x, y);
 	  score = this.scoreWord(word, player, orient, x, y);
@@ -1179,8 +1237,12 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
 	}
 
 	if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
-	  wordblocks_self.updateStatus("Your turn!");
+
+	  if (wordblocks_self.checkForEndGame() == 1) { return; }
+
+          wordblocks_self.updateStatus("Your turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
 	  wordblocks_self.enableEvents();
+
 	} else {
           wordblocks_self.updateStatus("Player "+wordblocks_self.returnNextPlayer(player) + " turn");
 	  wordblocks_self.disableEvents();
@@ -1188,6 +1250,24 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
 
         this.game.queue.splice(this.game.queue.length-1, 1);
 	return 1; // remove word and wait for next
+      }
+
+      if (mv[0] === "turn") {
+
+	if (wordblocks_self.checkForEndGame() == 1) { return; }
+
+	let player = mv[1];
+
+        if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
+          wordblocks_self.updateStatus("Your turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+          wordblocks_self.enableEvents();
+        } else {
+          wordblocks_self.updateStatus("Player "+wordblocks_self.returnNextPlayer(player) + " turn");
+          wordblocks_self.disableEvents();
+        }
+
+        this.game.queue.splice(this.game.queue.length-1, 1);
+	return 1;
       }
 
 
@@ -1205,6 +1285,22 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
 
 }
 
+
+
+Wordblocks.prototype.checkForEndGame = function checkForEndGame() {
+
+  //
+  // the game ends when one player has no cards left
+  //
+  if (this.game.hand.length == 0 && this.game.deck.cards.length == 0) {
+    this.addMove("gameover");
+    this.endTurn();
+    return 1;
+  }
+
+  return 0;
+
+}
 
 
 Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score) {
