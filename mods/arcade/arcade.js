@@ -63,6 +63,9 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">join game</div>';
         let deletegame = '<div class="link delete_game" id="'+gameid+'">delete game</div>';
 
+        let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
+        if (tmpid != "") { opponent = tmpid; }
+
 	if (app.options.games[i].over == 1) {
 	  status = "Game Over";
 	}

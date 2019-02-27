@@ -738,4 +738,10 @@ blockquote {
     max-width: 100%;
 }
 
-
+code {
+    background: #EEEEEE;
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    display: inline-block;
+}

@@ -107,7 +107,7 @@ echo "specifying a connection point to the public network.          "
 echo ""
 echo "You can start Saito by running: "
 echo ""
-echo "$> node start.js "
+echo "$> npm start "
 echo ""
 echo ""
 

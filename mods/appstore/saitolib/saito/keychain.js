@@ -332,17 +332,21 @@ Keychain.prototype.returnPublicKeyByIdentifier = function returnPublicKeyByIdent
   return "";
 }
 
-// /**
-//  * Return public key by identifier
-//  *
-//  * @param {string} identifier
-//  */
-// Keychain.prototype.returnIdentifierByPublicKey = function returnIdentifierByPublicKey(publickey) {
-//   for (let x = 0; x < this.keys.length; x++) {
-//     if (this.app.crypto.isPublicKey(publickey)) { return this.keys[x].identifier[0]; }
-//   }
-//   return "";
-// }
+/**
+ * Return public key by identifier
+ *
+ * @param {string} identifier
+ */
+Keychain.prototype.returnIdentifierByPublicKey = function returnIdentifierByPublicKey(publickey) {
+  for (let x = 0; x < this.keys.length; x++) {
+    if (this.app.crypto.isPublicKey(publickey)) { 
+      if (this.keys[x].identifier.length > 0) {
+        return this.keys[x].identifier[0]; 
+      }
+    }
+  }
+  return "";
+}
 
 
 /**
