@@ -9,6 +9,7 @@ body {
 }
 .link {
   border-bottom: 1px dashed;
+  cursor:pointer;
 }
 .tosstiles {
   border-bottom: 1px dashed;
