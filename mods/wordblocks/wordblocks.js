@@ -104,13 +104,25 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   let html = "";
   let am_i_done = 0;
   let players = 1;
+
   if (this.game.opponents != undefined) { players = this.game.opponents.length+1; }
+
+  let score = [];
+
+  if (this.game.score == undefined) { 
+    this.game.score = [];
+    for (let i = 0; i < players; i++) {
+      this.game.score[i] = 0;
+    }
+  }
+
+
   for (let i = 0; i < players; i++) {
     let this_player = i+1;
     if (this.game.player == this_player) {
-      html += '<div class="player">Your Score: <span id="score_'+this_player+'">0</span></div>';
+      html += '<div class="player">Your Score: <span id="score_'+this_player+'">'+this.game.score[i]+'</span></div>';
     } else {
-      html += '<div class="player">Player '+this_player+': <span id="score_'+this_player+'">0</span></div>';
+      html += '<div class="player">Player '+this_player+': <span id="score_'+this_player+'">'+this.game.score[i]+'</span></div>';
     }
   }
   if (this.browser_active == 1) { $('.score').html(html); }
@@ -277,16 +289,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     tiles = prompt("Which tiles do you want to discard? Tossed tiles count against your score:");
     if (tiles) {
 
-alert("Tossed: " + tiles);
-/***
-      let points_to_remove = 0;
-      for (let i = 0; i < tiles.length; i++) {
-	try {
-  	  let ltr = tiles[i].toUpperCase();
-	  points_to_remove += wordblocks_self.letters[ltr].score;
-	} catch (err) {}
-      }
-***/
+      alert("Tossed: " + tiles);
 
       wordblocks_self.removeTilesFromHand(tiles);
       wordblocks_self.addMove("turn\t"+wordblocks_self.game.player);
@@ -484,17 +487,15 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
 
     if (this.game.board[boardslot].letter != "_") { 
       if (this.game.board[boardslot].letter != letter) { 
-console.log(letter + " -- " + boardslot + " -- AND LETTER ---> " + this.game.board[boardslot].letter + " and orientation: " + orientation);
         valid_placement = 0;
       }
     } else {
 
       let letter_found = 0;
 
-console.log("AAAAA: " + JSON.stringify(tmphand));
-
       for (let k = 0; k < tmphand.length; k++) {
 	if (this.game.cards[tmphand[k]].name == letter) {
+	  k = tmphand.length+1;
 	  tmphand.splice(k, 1);
 	  letter_found = 1;
 	}
@@ -895,6 +896,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       boardslot = y+"_"+i;
 
       let tmpb = this.returnBonus(boardslot);
+
       let letter_bonus = 1;
 
       if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = 3; }
@@ -988,10 +990,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
-
             let thisletter = this.game.board[boardslot].letter;
-
-console.log(thisletter + ": " + this.letters[thisletter].score);
 
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
@@ -1067,10 +1066,13 @@ console.log(thisletter + ": " + this.letters[thisletter].score);
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
       let thisletter = this.game.board[boardslot].letter;
-console.log(thisletter + " -- " + boardslot);
+console.log("LETTER: " + tmpb + " -- " + this.game.board[boardslot] + " >>>>>> " + thisletter + " -- " + boardslot);
 console.log(JSON.stringify(this.game.board));
       score += (this.letters[thisletter].score * letter_bonus);
     }
+
+    score *= word_bonus;
+
 
 
     //
@@ -1180,7 +1182,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg=null) {
   // show board and tiles
   //
   this.showTiles();
-  this.addEventsToBoard();
 
 
   ///////////
@@ -1280,6 +1281,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
 
   } // if cards in queue
+  else {
+
+    if (this.game.target == this.game.player) {
+      this.addEventsToBoard();
+    }
+
+  }
 
   return 1;
 
@@ -1307,6 +1315,7 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
 
   if (this.browser_active == 0) { return; }
   let divname = "#score_"+player;
+  this.game.score[player-1] = this.game.score[player-1] + score;
   $(divname).html((parseInt($(divname).html()) + score));
 
 }
