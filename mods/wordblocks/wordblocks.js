@@ -218,7 +218,9 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // attach events
   //
-  this.addEventsToBoard();
+  if (this.game.target == this.game.player) {
+    this.addEventsToBoard();
+  }
 
 
 
@@ -1281,6 +1283,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
 
   } // if cards in queue
+/***
   else {
 
     if (this.game.target == this.game.player) {
@@ -1288,6 +1291,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
     }
 
   }
+***/
 
   return 1;
 

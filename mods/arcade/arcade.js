@@ -61,7 +61,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">join game</div>';
-        let deletegame = '<div class="link delete_game" id="'+gameid+'">delete game</div>';
+        let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'">delete game</div>';
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -160,7 +160,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     if (txmsg.request == "gameover") {
 
       try {
-	let html = 'Your opponent has resigned. You win!<p></p><div class="link delete_game" id="delete_game">Return to Arcade</div>.';
+	let html = 'Your opponent has resigned. You win!<p></p><div class="link delete_game" id="'+txmsg.game_id+'_'+txmsg.module+'">Return to Arcade</div>.';
         if (this.browser_active == 1) {
 	  $('.lightbox_message_from_address').html(tx.transaction.from[0].add);
 	  $('.manage_invitations').html(html);
@@ -498,7 +498,13 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
   $('.delete_game').off();
   $('.delete_game').on('click', function () {
 
-    let gameid = $(this).attr('id');
+    let tmpid = $(this).attr('id');
+    let tmpar = tmpid.split("_");
+    let gameid = tmpar[0];
+    let game_module = tmpar[1];
+    let game_self = app.modules.returnModule(game_module);
+    game_self.loadGame(gameid);
+    game_self.resignGame();
 
     for (let i = 0; arcade_self.app.options.games.length; i++) {
       if (arcade_self.app.options.games[i].id == gameid) {
