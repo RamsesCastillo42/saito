@@ -41,6 +41,7 @@
     "express": "4.16.3",
     "express-fileupload": "0.4.0",
     "fastest-stable-stringify": "^2.0.2",
+    "firebase-admin": "^7.0.0",
     "fs-extra": "7.0.0",
     "h2m": "^0.7.0",
     "image-resolver": "0.6.1",
