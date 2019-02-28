@@ -393,7 +393,7 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
 
   this_chess.removeGreySquares();
 
-  this_chess.game.move = this_chess.engine.fen().split(" ").slice(-1)[0] + this_chess.engine.fen().split(" ")[1] + ": ";
+  this_chess.game.move = this_chess.engine.fen().split(" ").slice(-1)[0] + " " + this_chess.colours(this_chess.engine.fen().split(" ")[1]) + ": ";
 
   // see if the move is legal
   var move = this_chess.engine.move({
@@ -405,7 +405,12 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
   // illegal move
   if (move === null) return 'snapback';
 
+  this_chess.game.move += this_chess.pieces(move.piece) + " ";
+  if (move.san.split("x").length > 1) {
+    this_chess.game.move += "captures " + this_chess.pieces(move.captured) + " - ";
+  }
   this_chess.game.move += move.san;
+
 
 };
 
@@ -469,5 +474,28 @@ Chessgame.prototype.onChange = function onChange(oldPos, newPos) {
 
 };
 
+Chessgame.prototype.colours = function colours (x) {
 
+  switch (x){
+    case "w": return("White");
+    case "b": return("Black");
+    }
 
+  return;
+
+}
+
+Chessgame.prototype.pieces = function pieces (x) {
+
+  switch (x){
+    case "p": return("Pawn");
+    case "r": return("Rook");
+    case "n": return("Knight");
+    case "b": return("Bishop");
+    case "q": return("Queen");
+    case "k": return("King");
+  }
+
+  return;
+
+}
