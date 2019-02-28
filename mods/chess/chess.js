@@ -59,7 +59,7 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.browser_active == 1) {
     chess = require('chess.js');
     chessboard = require("../chess/web/chessboard");
-    this.board = new chessboard('board', null);
+    this.board = new chessboard('board', { pieceTheme: 'chess/pieces/{piece}.png' });
     this.engine = new chess.Chess();
   }
 
