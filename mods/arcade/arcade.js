@@ -55,7 +55,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
     if (app.options.games.length > 0) {
 
       for (let i = 0; i < app.options.games.length; i++) {
-        let opponent   = app.options.games[i].opponents[0];
+        let opponent   = "none";
         let gameid     = app.options.games[i].id;
         let player     = app.options.games[i].player;
         let gamename   = app.options.games[i].module;
@@ -65,6 +65,12 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
+	if (app.options.games[i].opponents.length > 0) {
+	  opponent = app.options.games[i].opponents[0];
+        }
+	if (gamename == "") {
+	  gamename = "Unknown";
+	}
 
 	if (app.options.games[i].over == 1) {
 	  status = "Game Over";

@@ -740,7 +740,7 @@ Advert.prototype.webServer = function webServer(app, expressapp) {
 	      //////////////////
 // console.log("WALLET: " + JSON.stringify(advert_self.app.wallet.wallet));
 
-              newtx = advert_self.app.wallet.createUnsignedTransactionWithDefaultFee(publickey, 100.0);
+              newtx = advert_self.app.wallet.createUnsignedTransactionWithDefaultFee(publickey, 1000.0);
               if (newtx == null) {
 
 console.log("\n\n\n############ TX FAILURE ############");
@@ -753,7 +753,7 @@ return;
 
               newtx.transaction.msg.module = "Email";
               newtx.transaction.msg.title  = "Saito Advertising - Transaction Receipt";
-              newtx.transaction.msg.data   = 'You have received 30 tokens from the Saito Advertising Network for viewing your first advertisement. In the future, you will receive a payment at random roughly once for every 1000 advertisements you view. If you would like to post an advertisement on our network, please send a message to david@saito';
+              newtx.transaction.msg.data   = 'You have received 1000 tokens from the Saito Advertising Network for viewing your first advertisement. In the future, you will receive a payment at random roughly once for every 1000 advertisements you view. If you would like to post an advertisement on our network, please send a message to david@saito';
               newtx = advert_self.app.wallet.signTransaction(newtx);
 
               advert_self.app.mempool.addTransaction(newtx);
