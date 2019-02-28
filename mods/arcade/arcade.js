@@ -392,8 +392,6 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 
   try {
 
-console.log("start initialization function with id: " + game_id);
-
     arcade_self.initialization_check_timer = setInterval(() => {
 
       let pos = -1;
@@ -404,14 +402,10 @@ console.log("start initialization function with id: " + game_id);
           }
         }
       }
-console.log("initialization timer is looping...: " + pos + " ---> " + arcade_self.initialization_check_speed);
 
       if (pos == -1) { 
-console.log("no game found: " + JSON.stringify(arcade_self.app.options.games));
         return; 
       }
-
-console.log("found the game: " + pos);
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
         let html = `Your game is ready: <a href="/${arcade_self.active_game.toLowerCase()}">click here to open</a>.`;
@@ -556,7 +550,6 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
         $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
 
         let game_id = newtx.transaction.to[0].add + newtx.transaction.ts + newtx.transaction.from[0].add;
-console.log("LISTENING FOR 1: " + game_id);
         arcade_self.startInitializationTimer(game_id);
 
 	return;
@@ -577,7 +570,6 @@ console.log("LISTENING FOR 1: " + game_id);
       $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
 
       let game_id = newtx.transaction.from[0].add + newtx.transaction.ts + newtx.transaction.to[0].add;
-console.log("LISTENING FOR 2: " + game_id);
       arcade_self.startInitializationTimer(game_id);
 
     }
