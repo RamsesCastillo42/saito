@@ -197,17 +197,17 @@ class ChatCore extends ModTemplate {
       return
     }
 
+    try {
+      var author = await this.app.dns.fetchIdentifierPromise(publickey)
+    } catch(err) {
+      console.log(err)
+    }
+
     if (notify_publickeys.length == 2) {
       publickey = notify_publickeys[0] == publickey ? notify_publickeys[1] : notify_publickeys[0]
     } else {
       // we need to get the group id to blast notifications. For now, we'll return
       return
-    }
-
-    try {
-      var author = await this.app.dns.fetchIdentifierPromise(publickey)
-    } catch(err) {
-      console.log(err)
     }
 
     const notifier = this.app.modules.returnModule("Notifier")
