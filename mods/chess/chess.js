@@ -89,7 +89,7 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
     // email ourselves
     //
     let title = this.emailAppName + " Game Ready";
-    let data  = 'Your game of ' + this.emailAppName + ' is ready to play!<p></p><div id="'+this.game.id+'" class="open_game link">Click here to play your game.</div>';
+    let data  = 'Your game of ' + this.emailAppName + ' is ready to play!<p></p><div id="'+this.game.id+'_'+this.game.module+'" class="open_game link">Click here to play your game.</div>';
     let newtx = new saito.transaction();
     let email_self = this.app.modules.returnModule("Email");
     newtx.transaction.ts = new Date().getTime();
