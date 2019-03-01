@@ -35,7 +35,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/welcome/welcome')(this.app));
   this.mods.push(require('../../mods/wordblocks/wordblocks')(this.app));
   this.mods.push(require('../../mods/twilight/twilight')(this.app));
-  // this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
+  //this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   this.mods.push(require('../../mods/arcade/arcade')(this.app));
   this.mods.push(require('../../mods/proxymod/proxymod')(this.app));
@@ -52,8 +52,8 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   const Chat = require('../../mods/chat/chat');
   this.mods.push(new Chat(this.app));
 
-  const Notifer = require('../../mods/fcm-notification/notifier');
-  this.mods.push(new Notifer(this.app));
+  //const Notifer = require('../../mods/fcm-notification/notifier');
+  //this.mods.push(new Notifer(this.app));
 
   this.mods.push(require('../../mods/email/email')(this.app));
   this.mods.push(require('../../mods/encrypt/encrypt')(this.app));
