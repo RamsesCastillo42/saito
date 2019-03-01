@@ -558,7 +558,7 @@ Registry.prototype.attachEvents = function attachEvents(app) {
 // this handles zero-free requests sent peer-to-peer across the Saito network
 // from hosts to DNS providers.
 //
-Registry.prototype.handleDomainRequest = async function handleDomainRequest(app, message, peer, mycallback) {
+Registry.prototype.handleDomainRequest = async function handleDomainRequest(app, message, peer, mycallback, stringify=true) {
 
   try {
     var registry_self = this;
@@ -595,11 +595,15 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
         dns_response.block_hash = row.block_hash;
         dns_response.signer     = row.signer;
         dns_response.signature  = row.signature;
-        mycallback(JSON.stringify(dns_response));chat
+
+        dns_response = stringify ? JSON.stringify(dns_response) : dns_response
+        mycallback(dns_response);
       }
     } else {
       dns_response.err = "identifier not found";
-      mycallback(JSON.stringify(dns_response));
+
+      dns_response = stringify ? JSON.stringify(dns_response) : dns_response
+      mycallback(dns_response);
     }
   } catch (err) {}
 }
@@ -613,7 +617,7 @@ Registry.prototype.handleDomainRequest = async function handleDomainRequest(app,
  * @param {function} callback
  */
 
-Registry.prototype.handleMultipleDomainRequest = async function handleMultipleDomainRequest(app, message, peer, mycallback) {
+Registry.prototype.handleMultipleDomainRequest = async function handleMultipleDomainRequest(app, message, peer, mycallback, stringify=true) {
 
   try {
     var registry_self = this;
@@ -654,16 +658,30 @@ Registry.prototype.handleMultipleDomainRequest = async function handleMultipleDo
       });
 
       dns_response.err         = "";
-      mycallback(JSON.stringify(dns_response));
+      dns_response = stringify ? JSON.stringify(dns_response) : dns_response
+      mycallback(dns_response);
       // }
       // }
     } else {
       dns_response.err = "no identifiers found";
-      mycallback(JSON.stringify(dns_response));
+      dns_response = stringify ? JSON.stringify(dns_response) : dns_response
+      mycallback(dns_response);
     }
   } catch (err) {}
 }
 
+
+Registry.prototype.localDomainQuery = async function localDomainQuery(query) {
+  return new Promise((resolve, reject) => {
+    this.handleDomainRequest({}, {data: query}, {}, (answer) => {
+      if (answer.err) {
+        reject("Query failed")
+      }
+      // resolve(answer[Object.keys(query)[0]])
+      resolve(answer)
+    }, false)
+  })
+}
 
 
 Registry.prototype.onChainReorganization  = async function onChainReorganization(block_id, block_hash, lc) {
