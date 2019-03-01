@@ -4,7 +4,6 @@ const ModTemplate = require('../../lib/templates/template');
 const path = require('path');
 
 const admin = require('firebase-admin');
-const serviceAccount = require('./saitowalletServiceAccountKey.json');
 
 class Notifier extends ModTemplate {
   constructor(app) {
@@ -55,6 +54,13 @@ class Notifier extends ModTemplate {
 
     this.db = await sqlite.open(this.dir);
 
+    try {
+      var serviceAccount = require('./saitowalletServiceAccountKey.json');
+    } catch(err) {
+      console.log("Firebase not properly configured")
+      return
+    }
+
     if (serviceAccount) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
@@ -69,7 +75,10 @@ class Notifier extends ModTemplate {
       const publickey = body.publickey
       const token = body.token
 
-      const sql = 'INSERT INTO users (publickey, token, unixtime) VALUES ($publickey, $token, $unixtime)'
+      var sql = 'DELETE FROM users WHERE publickey = $publickey'
+      await this.db.run(sql, {$publickey: publickey})
+
+      sql = 'INSERT INTO users (publickey, token, unixtime) VALUES ($publickey, $token, $unixtime)'
       const params = {$publickey: publickey, $token: token, $unixtime: new Date().getTime()}
 
       try {
@@ -97,11 +106,17 @@ class Notifier extends ModTemplate {
     })
   }
 
-  async notifyByPublickey(publickey, title, body) {
-    if (this.app.BROWSER == 1) { return; }
+  async notifyByPublickeys(publickey, title, body) {
     // This registration token comes from the client FCM SDKs.
-    // var registrationToken = 'bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...';
-    var registrationToken = await this._getTokenByPublickey(publickey)
+    try {
+      var registrationTokens = await this._getTokensByPublickeys(publickey)
+      if (registrationTokens.length == 0) {
+        return
+      }
+    } catch(err) {
+      console.log(err)
+      return
+    }
 
     // See the "Defining the message payload" section above for details
     // on how to define a message payload.
@@ -112,9 +127,13 @@ class Notifier extends ModTemplate {
       }
     };
 
+    var options = {
+      collapseKey: "saito_is_rad"
+    }
+
     // Send a message to the device corresponding to the provided
     // registration token with the provided options.
-    admin.messaging().sendToDevice(registrationToken, payload)
+    admin.messaging().sendToDevice(registrationTokens, payload, options)
       .then(function(response) {
         console.log('Successfully sent message:', response);
       })
@@ -123,12 +142,13 @@ class Notifier extends ModTemplate {
       });
   }
 
-  async _getTokenByPublickey(publickey) {
-    let sql = 'SELECT * FROM users WHERE publickey = $publickey'
-    let params = {$publickey: publickey}
+  async _getTokensByPublickeys(publickeys) {
+    let question_string = publickeys.map(id => '?').join(', ')
+    let sql = `SELECT * FROM users WHERE publickey IN (${question_string})`
+
     try {
-      let row = await this.db.get(sql, params)
-      return row.token
+      let rows = await this.db.all(sql, publickeys);
+      return rows.map(row => row.token)
     } catch(err) {
       console.log(err)
     }

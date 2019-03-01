@@ -197,21 +197,21 @@ class ChatCore extends ModTemplate {
       return
     }
 
+    var author
     try {
-      var author = await this.app.dns.fetchIdentifierPromise(publickey)
+      const registry = this.app.modules.returnModule("Registry")
+      author = await registry.localDomainQuery({publickey})
+      if (author.identifier) {
+        author = author.identifier
+      }
     } catch(err) {
-      console.log(err)
+      author = publickey
     }
 
-    if (notify_publickeys.length == 2) {
-      publickey = notify_publickeys[0] == publickey ? notify_publickeys[1] : notify_publickeys[0]
-    } else {
-      // we need to get the group id to blast notifications. For now, we'll return
-      return
-    }
+    var to_publickeys = notify_publickeys.filter(notify_key =>  notify_key != publickey)
 
     const notifier = this.app.modules.returnModule("Notifier")
-    notifier.notifyByPublickey(publickey, author, message)
+    notifier.notifyByPublickeys(to_publickeys, author, message)
   }
 
   // maybe condition creation based on acceptance of invite? Need to consider that functionality
