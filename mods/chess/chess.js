@@ -48,6 +48,15 @@ util.inherits(Chessgame, ModTemplate);
 ////////////////////
 Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 
+  //
+  // enable chat
+  //
+  if (this.browser_active == 1) {
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+  }
+
+
   console.log('######################################################');
   console.log('######################################################');
   console.log('######################         #######################');
