@@ -416,9 +416,9 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
 
   this_chess.game.move += this_chess.pieces(move.piece) + " ";
   if (move.san.split("x").length > 1) {
-    this_chess.game.move += "captures " + this_chess.pieces(move.captured) + " - ";
+    this_chess.game.move += "captures " + this_chess.pieces(move.captured);
   }
-  this_chess.game.move += move.san;
+  this_chess.game.move += " - " + move.san;
 
 
 };
