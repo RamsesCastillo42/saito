@@ -33,6 +33,7 @@ mods/appstore/saitolib/saito/web/client.options
 mods/advert/web/cache/*.png
 mods/appstore/web/cache/*
 mods/explorer/web/index.html
+mods/fcm-notification/*.json
 mods/registry/web/addresses.txt
 mods/reddit/web
 mods/reddit/web/*
