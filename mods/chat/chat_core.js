@@ -197,6 +197,12 @@ class ChatCore extends ModTemplate {
       return
     }
 
+    try {
+      var author = await this.app.dns.fetchIdentifierPromise(publickey)
+    } catch(err) {
+      console.log(err)
+    }
+
     if (notify_publickeys.length == 2) {
       publickey = notify_publickeys[0] == publickey ? notify_publickeys[1] : notify_publickeys[0]
     } else {
@@ -205,7 +211,7 @@ class ChatCore extends ModTemplate {
     }
 
     const notifier = this.app.modules.returnModule("Notifier")
-    notifier.notifyByPublickey(publickey, this.name, message)
+    notifier.notifyByPublickey(publickey, author, message)
   }
 
   // maybe condition creation based on acceptance of invite? Need to consider that functionality
