@@ -912,7 +912,6 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
     score *= word_bonus;
 
-
     //
     // now score vertical words 
     //
@@ -954,8 +953,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         //
         // find the end of the word
         //
-        current_y = orth_end+1;
         current_x = i;
+        current_y = orth_end+1;
         boardslot = current_y+"_"+current_x;
         divname = "#"+boardslot;
 
@@ -966,7 +965,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 	} else {
 
           while (this.game.board[boardslot].letter != "_" && current_y <= 15) {
-            end_of_word = current_y;
+            orth_end = current_y;
             current_y++;
             boardslot = current_y+"_"+current_x;
 	    if (current_y > 15) { break; }
@@ -981,9 +980,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         // score this word
         //
         if (orth_start != orth_end) {
-          for (let i = orth_start, k = 0; i <= orth_end; i++) {
-            boardslot = i+"_"+x;
+          for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
+            let boardslot = w+"_"+i;
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
 
@@ -1144,9 +1143,9 @@ console.log(JSON.stringify(this.game.board));
         // score this word
         //
 	if (orth_start != orth_end) {
-          for (let i = orth_start, k = 0; i <= orth_end; i++) {
+          for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
-            boardslot = y+"_"+i;
+            boardslot = y+"_"+w;
   
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
