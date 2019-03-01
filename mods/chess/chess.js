@@ -59,7 +59,7 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.browser_active == 1) {
     chess = require('chess.js');
     chessboard = require("../chess/web/chessboard");
-    this.board = new chessboard('board', null);
+    this.board = new chessboard('board', { pieceTheme: 'chess/pieces/{piece}.png' });
     this.engine = new chess.Chess();
   }
 
@@ -145,7 +145,7 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
     }
-    this.updateLog((this.game.log.length+1) +": " + data.move, 999);
+    this.updateLog(data.move, 999);
     this.updateStatusMessage();
   } else {
     if (this.browser_active == 1) {
@@ -172,7 +172,7 @@ Chessgame.prototype.endTurn = function endTurn(data) {
   this.game.target = extra.target;
   this.sendMessage("game", extra);
   this.saveGame(this.game.id);
-  this.updateLog((this.game.log.length +1) +": " + data.move, 999);
+  this.updateLog(data.move, 999);
   this.updateStatusMessage();
 
 }
@@ -393,6 +393,8 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
 
   this_chess.removeGreySquares();
 
+  this_chess.game.move = this_chess.engine.fen().split(" ").slice(-1)[0] + this_chess.engine.fen().split(" ")[1] + ": ";
+
   // see if the move is legal
   var move = this_chess.engine.move({
     from: source,
@@ -403,7 +405,7 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
   // illegal move
   if (move === null) return 'snapback';
 
-  this_chess.game.move = move.san;
+  this_chess.game.move += move.san;
 
 };
 

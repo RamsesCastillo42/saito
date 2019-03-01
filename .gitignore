@@ -22,6 +22,8 @@ lib/saito/web/browser.js
 lib/saito/web/client.options
 lib/modules/mods/*
 
+mods/pandemic
+mods/pandemic/*
 mods/twilight
 mods/twilight/*
 mods/scrabble
