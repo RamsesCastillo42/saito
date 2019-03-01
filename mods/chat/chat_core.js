@@ -156,6 +156,7 @@ class ChatCore extends ModTemplate {
     if (txmsg.publickey == this.app.wallet.returnPublicKey()) { return; }
 
     if (!this.app.BROWSER) {
+      this._notifyRoom(tx);
       this.app.network.sendTransactionToPeers(tx, "chat send message");
       this._saveMessageToDB(tx);
     } else {
@@ -180,6 +181,31 @@ class ChatCore extends ModTemplate {
       }
       this.app.storage.execDatabase(sql, params, function () { });
     }
+  }
+
+  async _notifyRoom(tx) {
+    var { room_id, publickey, message } = tx.returnMessage();
+
+    let sql =  'SELECT publickey FROM mod_chat_rooms WHERE uuid = $uuid'
+    let params = {$uuid: room_id}
+
+    try {
+      var notify_publickeys = await this.app.storage.db.all(sql, params)
+      notify_publickeys = notify_publickeys.map(row => row.publickey)
+    } catch(err) {
+      console.log(err)
+      return
+    }
+
+    if (notify_publickeys.length == 2) {
+      publickey = notify_publickeys[0] == publickey ? notify_publickeys[1] : notify_publickeys[0]
+    } else {
+      // we need to get the group id to blast notifications. For now, we'll return
+      return
+    }
+
+    const notifier = this.app.modules.returnModule("Notifier")
+    notifier.notifyByPublickey(publickey, this.name, message)
   }
 
   // maybe condition creation based on acceptance of invite? Need to consider that functionality

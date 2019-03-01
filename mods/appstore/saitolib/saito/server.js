@@ -158,7 +158,9 @@ Server.prototype.initialize = function initialize() {
         if (err) {
           res.status(400)
           res.send({
-            "err": "Could not find block on this server"
+            error: {
+              message: "Could not find block on this server"
+            }
           })
         }
 
