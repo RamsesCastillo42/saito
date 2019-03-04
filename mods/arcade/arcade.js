@@ -39,6 +39,82 @@ util.inherits(Arcade, ModTemplate);
 
 
 
+Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
+
+  return `
+
+    <div class="address_box">
+
+      Your address for this game:
+
+      <p></p>
+
+      <span style="font-family: Courier">ADDRESS: </span><span class="saito_address" id="saito_address">${app.wallet.returnPublicKey()}</span>
+      <br />
+      <span style="font-family: Courier">BALANCE: </span><span class="saito_balance" id="saito_balance">0.0</span> SAITO
+
+    </div>
+
+    <div class="funding_alert">
+      Transfer tokens to this address or <a href="https://games.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
+    </div>
+
+    <div class="manage_invitations" style="display:none">
+
+      Provide the address of the player you are inviting. Otherwise wait to confirm an inbound invitation:
+
+      <p></p>
+
+      <div class="invitation_player1" id="invitation_player1">
+        <input type="text" style="float:left;width:700px;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+<br />
+        <input type="submit" style="font-size:1.1em;display:inline;cursor:pointer;float:left;" id="invite_button" class="invite_button" >
+      </div>
+
+      <p></p>
+
+      <div id="publisher_message" class="publisher_message"></div>
+
+      <p></p>
+
+      <div class="invitation_player2" id="invitation_player2" style="display:none">
+        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept" id="player2_accept">ACCEPT INVITATION</span> ]
+      </div>
+
+      <p></p>
+
+      <div class="return_to_arcade" id="return_to_arcade">
+	Return to Arcade
+      </div>
+
+    </div>
+
+  `;
+
+}
+Arcade.prototype.showMonitor = function showMonitor(html) {
+
+  this.currently_viewing_monitor = 1;
+
+  $('.game_monitor').html(this.returnGameMonitor(this.app));
+  this.updateBalance(this.app);
+  $('.game_monitor').slideDown(500, function() {});
+  $('.gamelist').hide();
+  $('.game_options').hide();
+
+  if (this.browser_active == 1) { this.attachEvents(this.app); }
+
+}
+Arcade.prototype.hideMonitor = function hideMonitor() {
+
+  $('.gamelist').show();
+  $('.game_options').show();
+  $('.game_monitor').hide();
+
+}
+
+
+
 
 Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
@@ -60,8 +136,8 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let player     = app.options.games[i].player;
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
-        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">join game</div>';
-        let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'">delete game</div>';
+        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">JOIN</div>';
+        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'">DELETE</div>';
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -87,20 +163,19 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         //
         // add to table
         //
-        let html  = '<tr>';
-	    html += '<td id="'+gameid+'_game">'+gamename+'</td>';
-	    html += '<td id="'+gameid+'_opponent">'+opponent+'</td>';
-	    html += '<td id="'+gameid+'_status">'+status+'</td>';
-	    html += '<td id="">'+joingame+'</td>';
-	    html += '<td id="">'+deletegame+'</td>';
-	    html += '</tr>';
+        let html  = '<div class="single_activegame">';
+            html += '<div id="'+gameid+'_game">';
+            html += '<b>' + gamename + '</b></br>';
+            html += opponent + '</div>';
+	    html += '<div class="joingamelink">'+joingame+'</div>';
+	    html += '<div class="deletegamelink">'+deletegame+'</div>';
+	    html += '</div>';
 
-        $('#gametable tbody').append(html);
+        $('#gametable').append(html);
 
       }
 
-
-      $('#gametable').show();
+      $('.active_games').show();
 
     }
   }
@@ -108,8 +183,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   //
   // update balance
   //
-  $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
-
+  this.updateBalance(app);
 
   //
   // attach events
@@ -158,7 +232,6 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     // GAME OVER
     //
     if (txmsg.request == "gameover") {
-
       try {
 	let html = 'Your opponent has resigned. You win!<p></p><div class="link delete_game" id="'+txmsg.game_id+'_'+txmsg.module+'">Return to Arcade</div>.';
         if (this.browser_active == 1) {
@@ -167,8 +240,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  $('.manage_invitations').show();
           this.attachEvents(this.app);
 	}
-      } catch (err) {
-      }
+      } catch (err) {}
     }
 
 
@@ -193,33 +265,20 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           let tmpmod = txmsg.module;
           this.active_game = tmpmod.charAt(0).toUpperCase();
           this.active_game += tmpmod.slice(1);
-          let mhtml = this.returnGameMonitor(this.app);
-	  $('.status').show();
-	  this.currently_viewing_monitor = 1;
-          $('.game_options').slideUp();
-          $('.game_monitor').html(mhtml);
-          this.updateBalance(this.app);
-          $('.game_monitor').show();
-          if (this.browser_active == 1) {
-            this.attachEvents(this.app);
-	  }
+	  this.showMonitor();
 
           game_id = tx.transaction.from[0].add + tx.transaction.ts + tx.transaction.to[0].add;
 
-	  let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div>';
-
           if (this.browser_active == 1) {
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div>';
 	    $('.lightbox_message_from_address').html(tx.transaction.from[0].add);
 	    $('.manage_invitations').html(html);
 	    $('.manage_invitations').show();
             this.attachEvents(this.app);
 	  }
-	} catch (err) {
-	  alert("Not in Arcade: " + JSON.stringify(err));
-	}
+	} catch (err) {}
       }
     }
-
 
 
 
@@ -230,40 +289,23 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
       try {
 
-        //
-        // NOTIFY ARCADE
-        //
         let game_self = app.modules.returnModule(txmsg.module);
         game_self.game = game_self.loadGame(txmsg.game_id);
 
         if (game_self.game.initializing == 1) {
-          let mhtml = this.returnGameMonitor(app);
-          $('.status').show();
-          $('.game_options').slideUp();
-          $('.game_monitor').html(mhtml);
-	  this.currently_viewing_monitor = 1;
-          $('.manage_invitations').html("Initializing your game...");
-          this.updateBalance(app);
-          $('.game_monitor').show();
 
-          //
-          // game exists now
-          //
           this.startInitializationTimer(txmsg.game_id);
+	  this.showMonitor();
+          $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.');
 
-          let html = 'Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.';
-          $('.manage_invitations').html(html);
-          $('.manage_invitations').show();
-          this.attachEvents(this.app);
         } else {
 
 	  if (this.currently_viewing_monitor == 1) {
 
 	    let active_module = txmsg.module;
-
 	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a>.`;
+	    this.showMonitor();
             $('.manage_invitations').html(html);
-            $('.manage_invitations').show();
             if (this.browser_active == 1) { $('#status').hide(); }
             this.attachEvents(this.app);
 	  }
@@ -312,6 +354,9 @@ Arcade.prototype.webServer = function webServer(app, expressapp) {
 }
 
 
+
+
+
 ////////////////////////
 // Load from Archives //
 ////////////////////////
@@ -338,53 +383,6 @@ Arcade.prototype.loadAllFromArchives = function loadAllFromArchives(app) {
 
 
 
-Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
-
-  return `
-
-    <div class="address_box">
-
-      Your address for this game:
-
-      <p></p>
-
-      <span style="font-family: Courier">ADDRESS: </span><span class="saito_address" id="saito_address">${app.wallet.returnPublicKey()}</span>
-      <br />
-      <span style="font-family: Courier">BALANCE: </span><span class="saito_balance" id="saito_balance">0.0</span> SAITO
-
-    </div>
-
-    <div class="funding_alert">
-      Transfer tokens to this address or <a href="https://games.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
-    </div>
-
-    <div class="manage_invitations" style="display:none">
-
-      Provide the address of the player you are inviting. Otherwise wait to confirm an inbound invitation:
-
-      <p></p>
-
-      <div class="invitation_player1" id="invitation_player1">
-        <input type="text" style="float:left;width:700px;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
-<br />
-        <input type="submit" style="font-size:1.1em;display:inline;cursor:pointer;float:left;" id="invite_button" class="invite_button" >
-      </div>
-
-      <p></p>
-
-      <div id="publisher_message" class="publisher_message"></div>
-
-      <p></p>
-
-      <div class="invitation_player2" id="invitation_player2" style="display:none">
-        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept" id="player2_accept">ACCEPT INVITATION</span> ]
-      </div>
-
-    </div>
-
-  `;
-
-}
 
 Arcade.prototype.startInitializationTimer = function startInitializationTimer(game_id) {
 
@@ -448,27 +446,28 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
 
   var arcade_self = this;
 
-  //
-  //
-  //
-  $('.gameimage').off();
-  $('.gameimage').on('click', function() {
+
+  $('.game').off();
+  $('.game').on('click', function() {
 
     arcade_self.active_game = $(this).attr("id");
-    let html = arcade_self.returnGameMonitor(arcade_self.app);
-    $('.status').show();
-    $('.game_options').slideUp();
-    $('.game_monitor').html(html);
+    arcade_self.showMonitor();
 
     if (arcade_self.active_game == "Twilight") {
       $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. Please support GMT Games and encourage further development of Twilight Struggle by <a href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
     }
 
-    $('.game_monitor').show();
-    arcade_self.updateBalance(arcade_self.app);
-    arcade_self.attachEvents(arcade_self.app);
-
   });
+
+
+  //
+  // return to arcade
+  //
+  $('.return_to_arcade').off();
+  $('.return_to_arcade').on('click', function() {
+    arcade_self.hideMonitor();
+  });
+
 
 
 

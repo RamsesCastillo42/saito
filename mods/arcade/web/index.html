@@ -1,6 +1,6 @@
 <html>
-
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,11 +21,9 @@
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
 </head>
-
 <body>
 
   <div id="Arcade_browser_active"></div>
-
 
   <div class="header">
     <a href="/" class="logo_link">
@@ -43,26 +41,32 @@
   </div>
 
 
-  <div class="main" style="display:none">
+  <div class="main" style="display:all">
+
+    <div class="arcade" style="display:all">
+    <div class="game_monitor" id="game_monitor"></div>
 
     <div class="game_options">
 
-      Saito Arcade provides a quick way to play blockchain games. Get notified when new games are released by <a href="/arcade/email">clicking here</a>. Users please note that these games are not yet usable on mobile phones.
+      Saito Arcade provides a quick way to play blockchain games. Get notified when new games are released by <a href="/arcade/email">clicking here</a>.
 
       <p></p>
 
       <div class="gamelist">
 
-        <div class="game">
+        <div class="game" id="Twilight">
           <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
+          <div class="gametitle" id="Twilight">Twilight Struggle</div>
         </div>
 
-        <div class="game">
+        <div class="game" id="Chess">
           <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
+          <div class="gametitle" id="Chess">Chess</div>
         </div>
 
-        <div class="game">
+        <div class="game" id="Wordblocks">
           <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
+          <div class="gametitle" id="Wordblocks">Wordblocks</div>
         </div>
 
       </div>
@@ -70,31 +74,19 @@
       <p></p>
 
       <div class="active_games">
-	<table id="gametable" class="gametable">
-	  <tbody>
-	    <tr>
-	      <th>Game</th>
-	      <th>Opponent</th>
-	      <th>Status</th>
-	      <th>Action</th>
-	    </tr>
-	  </tbody>
-	</table>
+
+	<div class="active_games">Active Games</div>
+
+	<div id="gametable" class="gametable">
+	</div>
+
       </div>
-
     </div>
-
-    <div class="game_monitor" id="game_monitor">
     </div>
-
-    <p></p>
-
-    <div class="status" id="status">[ game status log ]</div>
-
   </div>
 
-  <div style="display:none" class="lightbox_message_from_address" id="lightbox_message_from_address"></div>
-
+  <div id="status" class="status"></div>
+  <div id="lightbox_message_from_address" class="lightbox_message_from_address" style="display:none" /></div>
 
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -102,5 +94,4 @@
   <script src="/arcade/script.js"></script>
 
 </body>
-
 </html>
