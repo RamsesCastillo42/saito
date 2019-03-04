@@ -24,8 +24,8 @@ class Notifier extends ModTemplate {
 
       var sql = 'CREATE TABLE IF NOT EXISTS users (\
                     id INTEGER, \
-                    publickey TEXT, \
-                    token TEXT,  \
+                    publickey TEXT NOT NULL, \
+                    token TEXT NOT NULL,  \
                     unixtime INT, \
                     UNIQUE (publickey), \
                     PRIMARY KEY(id ASC) \
@@ -78,6 +78,16 @@ class Notifier extends ModTemplate {
       var sql = 'DELETE FROM users WHERE publickey = $publickey'
       await this.db.run(sql, {$publickey: publickey})
 
+      if (!publickey || !token) {
+        res.status(400)
+        res.send({
+          payload: {},
+          error: {
+            message: "Insufficient data to execute task (missing publickey or token)"
+          }
+        })
+        return
+      }
       sql = 'INSERT INTO users (publickey, token, unixtime) VALUES ($publickey, $token, $unixtime)'
       const params = {$publickey: publickey, $token: token, $unixtime: new Date().getTime()}
 
@@ -86,7 +96,7 @@ class Notifier extends ModTemplate {
       } catch (err) {
         console.log(err)
       }
-      if (db_action_status.changes) {
+      if (db_action_status.changes === 1) {
         res.send({
           payload: {
             message: "Success! Token has been linked to publickey"
