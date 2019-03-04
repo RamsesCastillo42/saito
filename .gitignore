@@ -14,6 +14,8 @@ node_modules/*
 tests/config/env
 package-lock.json
 
+
+
 data/*.sq3
 data/blocks/*.blk
 
@@ -28,6 +30,7 @@ mods/twilight
 mods/twilight/*
 mods/scrabble
 mods/scrabble/*
+mods/appstore/saitolib
 mods/appstore/saitolib/*
 mods/appstore/saitolib/saito/web/client.options
 mods/advert/web/cache/*.png

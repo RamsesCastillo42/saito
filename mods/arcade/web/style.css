@@ -1,10 +1,105 @@
 
+.return_to_arcade {
+  color: -webkit-link;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.active_games {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  clear: both;
+  padding-top: 40px;
+  text-decoration: underline;
+}
+.joingamelink {
+  float:left; 
+  margin-bottom:20px;
+  margin-top:20px;
+}
+.deletegamelink { 
+  float:left; 
+  margin-bottom:20px;
+  margin-top:20px;
+}
+
+.single_activegame {
+  margin-bottom:20px;
+  margin-right:20px;
+  margin-top:20px;
+  float:left;
+  padding:14px;
+  border: 1px dashed #888;
+  background-color: #efefef;
+}
+
+.gamelink {
+  float:keft;
+  margin-top:15px;
+}
+.delete_game {
+ margin-left:30px;
+}
+.join {
+ margin-left:10px;
+}
+td {
+ padding-bottom:10px;
+}
+
+.arcade {
+ max-width:700px;
+}
+
+.gamelist {
+ clear: both;
+ margin-left: auto;
+ margin-right: auto;
+ width: 350px;
+}
+
+.gametitle {
+ font-size: 1.2em;
+ font-weight: bold;
+ margin-top: 6px;
+ text-align: center;
+ cursor:pointer;
+}
+
+
+@media only screen and (min-width: 700px) {
+  .arcade {
+    max-width:700px;
+  }
+  .gamelist {
+    margin-left: none;
+    margin-right: none;
+    width: 700px;
+  }
+}
+@media only screen and (max-width: 400px) {
+  .arcade {
+    max-width:390px;
+  }
+}
+@media only screen and (max-width: 370px) {
+  .arcade {
+    max-width:370px;
+  }
+}
+
+
+
+
+
+
 .link {
   display:inline;
   text-decoration:underline;
   cursor:pointer;
 }
-
+.game_monitor {
+ display:none;
+}
 .nonlink {
   text-decoration: none;
 }
@@ -21,9 +116,10 @@ td {
 }
 #gametable {
  font-size:1.0em;
- display:none;
 }
-
+.active_games {
+  display:none;
+}
 .status {
   display:none;
 }
@@ -48,10 +144,6 @@ td {
 
 }
 
-.gamelist {
-  clear:both;
-}
-
 .address_box {
   width: 700px;
   padding: 15px;
@@ -69,7 +161,7 @@ td {
   width: 300px;
   float:left;
   margin-right:30px;
-  height: 330px;
+  height: 250px;
 }
 
 .gamename {
@@ -117,7 +209,6 @@ td {
 }
 
 .header {
- grid-area: header;
  font-size: 2em;
  width: 100%;
  height: 50px;
