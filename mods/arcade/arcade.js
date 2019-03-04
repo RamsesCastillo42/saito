@@ -66,7 +66,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
       <p></p>
 
       <div class="invitation_player1" id="invitation_player1">
-        <input type="text" style="float:left;width:700px;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+        <input type="text" style="border:1px solid #444;float:left;width:700px;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
 <br />
         <input type="submit" style="font-size:1.1em;display:inline;cursor:pointer;float:left;" id="invite_button" class="invite_button" >
       </div>
@@ -296,7 +296,8 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
           this.startInitializationTimer(txmsg.game_id);
 	  this.showMonitor();
-          $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.');
+          $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+	  $('.status').show();
 
         } else {
 
@@ -626,8 +627,9 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
     newtx = arcade_self.app.wallet.signTransaction(newtx);
     arcade_self.app.network.propagateTransaction(newtx);
 
-    let html = 'You have accepted the invitation. Please keep your browser open while both players exchange the cryptographic information necessary to have a provably fair game. This may take up to five minutes, but only needs to happen once before the game. When your game is ready we will notify you here.';
+    let html = 'You have accepted the invitation. Please keep your browser open while both players exchange the cryptographic information necessary to have a provably fair game. This may take up to five minutes, but only needs to happen once before the game. When your game is ready we will notify you here.<p></p><div id="status" class="status"></div>';
     $('.manage_invitations').html(html);
+    $('.status').show();
 
   });
 
