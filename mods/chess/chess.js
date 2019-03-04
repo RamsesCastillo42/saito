@@ -11,26 +11,31 @@ var chessboard = null;
 //////////////////
 function Chessgame(app) {
 
-    if (!(this instanceof Chessgame)) { return new Chessgame(app); }
+  if (!(this instanceof Chessgame)) { return new Chessgame(app); }
 
-    Chessgame.super_.call(this);
+  Chessgame.super_.call(this);
 
-    this.app = app;
+  this.app = app;
 
-    this.publickey = app.wallet.returnPublicKey();
+  this.publickey = app.wallet.returnPublicKey();
 
-    this.name = "Chess";
-    this.browser_active = 0;
-    this.handlesEmail = 1;
-    this.emailAppName = "Chess";
+  this.name = "Chess";
+  this.browser_active = 0;
+  this.handlesEmail = 1;
+  this.emailAppName = "Chess";
 
-    this.game   = {};
-    this.board  = null;
-    this.engine = null;
+  this.game = {};
+  this.board = null;
+  this.engine = null;
 
-    this_chess = this;
+  this.game.captured = {}
 
-    return this;
+  this.game.captured.white = "";
+  this.game.captured.black = "";
+
+  this_chess = this;
+
+  return this;
 
 }
 module.exports = Chessgame;
@@ -77,19 +82,25 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   //
   this.loadGame(game_id);
 
+  this.game.captured = {}
+
+  this.game.captured.white = "";
+  this.game.captured.black = "";
+
+
   //
   // finish initializing
   //
-  if (this.game.initializing == 1) { 
+  if (this.game.initializing == 1) {
 
     this.game.initializing = 0;
-    this.saveGame(this.game.id); 
+    this.saveGame(this.game.id);
 
     //
     // email ourselves
     //
     let title = this.emailAppName + " Game Ready";
-    let data  = 'Your game of ' + this.emailAppName + ' is ready to play!<p></p><div id="'+this.game.id+'_'+this.game.module+'" class="open_game link">Click here to play your game.</div>';
+    let data = 'Your game of ' + this.emailAppName + ' is ready to play!<p></p><div id="' + this.game.id + '_' + this.game.module + '" class="open_game link">Click here to play your game.</div>';
     let newtx = new saito.transaction();
     let email_self = this.app.modules.returnModule("Email");
     newtx.transaction.ts = new Date().getTime();
@@ -97,7 +108,7 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
     newtx.transaction.to = [];
     newtx.transaction.from.push(new saito.slip(this.app.wallet.returnPublicKey()));
     newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey()));
-    email_self.receiveMail(title, data, newtx, function() {});
+    email_self.receiveMail(title, data, newtx, function () { });
 
   }
 
@@ -115,7 +126,23 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
       this.lockBoard(this.engine.fen());
     }
 
-    $('#opponent_id').html(this.game.opponents[0]);
+    var opponent = this.game.opponents[0];
+
+    if (this.app.crypto.isPublicKey(opponent)) {
+      if (this.app.keys.returnIdentifierByPublicKey(opponent).length >= 6) {
+        opponent = this.app.keys.returnIdentifierByPublicKey(opponent);
+      }
+      else {
+        try {
+          opponent = await this.app.dns.fetchIdentifierPromise(opponent);
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    }
+
+    $('#opponent_id').html(opponent);
     this.updateStatusMessage();
     this.attachEvents();
 
@@ -149,7 +176,10 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   let data = JSON.parse(msg.extra.data);
   this.game.position = data.position;
   this.game.target = msg.extra.target;
- 
+
+  this.game.captured.white = data.captured.white;
+  this.game.captured.black = data.captured.black;
+
   if (msg.extra.target == this.game.player) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
@@ -176,8 +206,8 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
 Chessgame.prototype.endTurn = function endTurn(data) {
 
   let extra = {};
-      extra.target = this.returnNextPlayer(this.game.player);
-      extra.data   = JSON.stringify(data);
+  extra.target = this.returnNextPlayer(this.game.player);
+  extra.data = JSON.stringify(data);
   this.game.target = extra.target;
   this.sendMessage("game", extra);
   this.saveGame(this.game.id);
@@ -195,34 +225,34 @@ Chessgame.prototype.endTurn = function endTurn(data) {
 // webServer //
 ///////////////
 Chessgame.prototype.webServer = function webServer(app, expressapp) {
-    expressapp.get('/chess/', (req, res) => {
-        res.sendFile(__dirname + '/web/index.html');
-        return;
-    });
-    expressapp.get('/chess/style.css', (req, res) => {
-        res.sendFile(__dirname + '/web/style.css');
-        return;
-    });
-    expressapp.get('/chess/chessboard.css', (req, res) => {
-        res.sendFile(__dirname + '/www/css/chessboard.css');
-        return;
-    });
-    /*expressapp.get('/chess/chessboard.js', (req, res) => {
-        res.sendFile(__dirname + '/www/js/chessboard.js');
-        return;
-    });*/
-    expressapp.get('/chess/pieces/:imagefile', function (req, res) {
-        var imgf = '/www/img/chesspieces/alpha/' + req.params.imagefile;
-        if (imgf.indexOf("\/") != false) { return; }
-        res.sendFile(__dirname + imgf);
-        return;
-    });
-    expressapp.get('/chess/chess/pieces/:imagefile', function (req, res) {
-        var imgf = '/www/img/chesspieces/alpha/' + req.params.imagefile;
-        if (imgf.indexOf("\/") != false) { return; }
-        res.sendFile(__dirname + imgf);
-        return;
-    });
+  expressapp.get('/chess/', (req, res) => {
+    res.sendFile(__dirname + '/web/index.html');
+    return;
+  });
+  expressapp.get('/chess/style.css', (req, res) => {
+    res.sendFile(__dirname + '/web/style.css');
+    return;
+  });
+  expressapp.get('/chess/chessboard.css', (req, res) => {
+    res.sendFile(__dirname + '/www/css/chessboard.css');
+    return;
+  });
+  /*expressapp.get('/chess/chessboard.js', (req, res) => {
+      res.sendFile(__dirname + '/www/js/chessboard.js');
+      return;
+  });*/
+  expressapp.get('/chess/pieces/:imagefile', function (req, res) {
+    var imgf = '/www/img/chesspieces/alpha/' + req.params.imagefile;
+    if (imgf.indexOf("\/") != false) { return; }
+    res.sendFile(__dirname + imgf);
+    return;
+  });
+  expressapp.get('/chess/chess/pieces/:imagefile', function (req, res) {
+    var imgf = '/www/img/chesspieces/alpha/' + req.params.imagefile;
+    if (imgf.indexOf("\/") != false) { return; }
+    res.sendFile(__dirname + imgf);
+    return;
+  });
 }
 
 
@@ -230,47 +260,55 @@ Chessgame.prototype.webServer = function webServer(app, expressapp) {
 
 Chessgame.prototype.attachEvents = function attachEvents() {
 
-    $('#move_accept').off();
-    $('#move_accept').on('click', function () {
+  $('#move_accept').off();
+  $('#move_accept').on('click', function () {
 
-      console.log('send move transaction and wait for reply.');
+    console.log('send move transaction and wait for reply.');
 
-      var data = {};
-      data.white = this_chess.game.white;
-      data.black = this_chess.game.black;
-      data.id = this_chess.game.id;
-      data.position = this_chess.engine.fen();
-      data.move = this_chess.game.move;
+    var data = {};
+    data.white = this_chess.game.white;
+    data.black = this_chess.game.black;
+    data.id = this_chess.game.id;
+    data.position = this_chess.engine.fen();
+    data.move = this_chess.game.move;
+    data.captured = {};
+    data.captured.white = this_chess.game.captured.white;
+    data.captured.black = this_chess.game.captured.black;
 
-      this_chess.endTurn(data);
+    this_chess.endTurn(data);
 
-      $('#move_accept').prop('disabled', true);
-      $('#move_accept').removeClass('green');
+    $('#move_accept').prop('disabled', true);
+    $('#move_accept').removeClass('green');
 
-      $('#move_reject').prop('disabled', true);
-      $('#move_reject').removeClass('red');
+    $('#move_reject').prop('disabled', true);
+    $('#move_reject').removeClass('red');
 
-    });
+  });
 
 
-    $('#move_reject').off();
-    $('#move_reject').on('click', function () {
+  $('#move_reject').off();
+  $('#move_reject').on('click', function () {
 
-      //this_chess.setBoard(this.game.moveStartPosition);
-      this_chess.setBoard(this_chess.game.position);      
-      $('#move_accept').prop('disabled', true);
-      $('#move_accept').removeClass('green');
+    this_chess.setBoard(this_chess.game.position);
+    $('#move_accept').prop('disabled', true);
+    $('#move_accept').removeClass('green');
 
-      $('#move_reject').prop('disabled', true);
-      $('#move_reject').removeClass('red');
+    $('#move_reject').prop('disabled', true);
+    $('#move_reject').removeClass('red');
 
-    });
+  });
+
+  $(window).resize(function () {
+    if (this_chess.board) {
+      this_chess.board.resize();
+    }
+  });
 
 }
 
 
 
-Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str="") {
+Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str = "") {
 
   if (this.browser_active != 1) { return; }
 
@@ -312,8 +350,11 @@ Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str="") {
 
   }
 
+
   var statusEl = $('#status');
   statusEl.html(status);
+  var capturedEL = $('#captured');
+  capturedEL.html(this.game.captured.white + this.game.captured.black);
   this.updateLog();
 
 };
@@ -323,35 +364,35 @@ Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str="") {
 
 Chessgame.prototype.setBoard = function setBoard(position) {
 
-    this.game.moveStartPosition = position;
+  this.game.moveStartPosition = position;
 
-    if (this.board != undefined) {
-      if (this.board.destroy != undefined) {
-        this.board.destroy();
-      }
+  if (this.board != undefined) {
+    if (this.board.destroy != undefined) {
+      this.board.destroy();
     }
+  }
 
-    let cfg = {
-        draggable: true,
-        position: position,
-        pieceTheme: 'chess/pieces/{piece}.png',
-        onDragStart: this.onDragStart,
-        onDrop: this.onDrop,
-        onMouseoutSquare: this.onMouseoutSquare,
-        onMouseoverSquare: this.onMouseoverSquare,
-        onSnapEnd: this.onSnapEnd,
-        onMoveEnd: this.onMoveEnd,
-        onChange: this.onChange
-    };
+  let cfg = {
+    draggable: true,
+    position: position,
+    pieceTheme: 'chess/pieces/{piece}.png',
+    onDragStart: this.onDragStart,
+    onDrop: this.onDrop,
+    onMouseoutSquare: this.onMouseoutSquare,
+    onMouseoverSquare: this.onMouseoverSquare,
+    onSnapEnd: this.onSnapEnd,
+    onMoveEnd: this.onMoveEnd,
+    onChange: this.onChange
+  };
 
-    if (this.browser_active == 1) {
-      this.board = new chessboard('board', cfg);
-    }
-    this.engine.load(position);
+  if (this.browser_active == 1) {
+    this.board = new chessboard('board', cfg);
+  }
+  this.engine.load(position);
 
-    if (this.game.player == 2 && this.browser_active == 1) {
-      this.board.orientation('black');
-    }
+  if (this.game.player == 2 && this.browser_active == 1) {
+    this.board.orientation('black');
+  }
 
 }
 
@@ -379,13 +420,6 @@ Chessgame.prototype.lockBoard = function lockBoard(position) {
 
 }
 
-
-
-
-
-
-
-
 //////////////////
 // Board Config //
 //////////////////
@@ -410,16 +444,21 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   });
-  
+
   // illegal move
   if (move === null) return 'snapback';
 
   this_chess.game.move += this_chess.pieces(move.piece) + " ";
   if (move.san.split("x").length > 1) {
     this_chess.game.move += "captures " + this_chess.pieces(move.captured);
+    if (move.color == "w") {
+      this_chess.game.captured.black += this_chess.piecehtml(move.captured, "b");
+    } else {
+      this_chess.game.captured.white += this_chess.piecehtml(move.captured, "w");
+    }
   }
-  this_chess.game.move += " - " + move.san;
 
+  this_chess.game.move += " - " + move.san;
 
 };
 
@@ -483,28 +522,33 @@ Chessgame.prototype.onChange = function onChange(oldPos, newPos) {
 
 };
 
-Chessgame.prototype.colours = function colours (x) {
+Chessgame.prototype.colours = function colours(x) {
 
-  switch (x){
-    case "w": return("White");
-    case "b": return("Black");
-    }
+  switch (x) {
+    case "w": return ("White");
+    case "b": return ("Black");
+  }
 
   return;
 
 }
 
-Chessgame.prototype.pieces = function pieces (x) {
+Chessgame.prototype.pieces = function pieces(x) {
 
-  switch (x){
-    case "p": return("Pawn");
-    case "r": return("Rook");
-    case "n": return("Knight");
-    case "b": return("Bishop");
-    case "q": return("Queen");
-    case "k": return("King");
+  switch (x) {
+    case "p": return ("Pawn");
+    case "r": return ("Rook");
+    case "n": return ("Knight");
+    case "b": return ("Bishop");
+    case "q": return ("Queen");
+    case "k": return ("King");
   }
 
   return;
 
+}
+
+Chessgame.prototype.piecehtml = function piecehtml(p, c) {
+  var pieceImg = '<img class="captured" src = "/chess/pieces/' + c + p.toUpperCase() + '.png">';
+  return (pieceImg);
 }

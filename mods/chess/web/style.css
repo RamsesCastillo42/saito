@@ -1,12 +1,16 @@
+html, body {
+    overflow: hidden;
+  }
+
 body {
     font-family: arial, helvetica, sans-serif;
     font-size: 13px;
-    padding:0px;
-    margin:0px;
+    padding:0;
+    margin:0;
 }
 
 h1 {
-    margin: 0em;
+    margin: 0;
 }
 
 .connection_monitor {
@@ -37,7 +41,6 @@ h1 {
 
 .board-space {
     padding: 15px;
-    margin-left: 0.5rem;   
 }
 
 #board {
@@ -50,7 +53,54 @@ h1 {
     color: black;
 }
 
+.row {
+    margin: 15px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto 50%;
+    background-color: #fff;
+    color: #555;
+}  
 
+.column {
+    background-color: #555;
+    color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    font-size: 1.7em;
+  }
+
+  .button_row {
+    margin-top: 15px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 50% 50%;
+  }
+
+#status_display {
+    font-size: 2.5vw;
+    line-height: 0px;
+}
+
+#status_opponent {
+  font-size: 1.4vw;
+}
+
+#log {
+    overflow-y: auto;
+    max-height: 30vw;
+    display: block;
+}
+
+span#captured {
+    display: block;
+    margin-top: 5px;
+}
+
+img.captured {
+    width: 32px;
+}
 
 .row {
     margin: 15px;
@@ -69,40 +119,36 @@ h1 {
     font-size: 1.7em;
   }
 
-  .button_row {
-    margin: 15px;
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: 50% 50%;
-  }
-
   .chess_button {
     background-color: #999;
-    font-size: 200%;
-    padding: 10px;
+    font-size: 5vw;
+    padding: 1vw;
     border-radius: 5px;
     color: #DDD;
   }
 
-  .red {
-      color: red;
+@media only screen and (max-width: 900px) {
+  .row {
+      grid-template-columns: 100%;
+      grid-template-rows: auto 1fr;
   }
-
-  .green {
-      color: green;
+  #status_display {
+      font-size: 4.5vw;
+      line-height: 0px;
   }
-
-#status_display {
-    font-size: 2.5vw;
-    line-height: 0px;
+  #status_opponent {
+      font-size: 3.5vw;
+  }
+  .controls {
+      overflow-y: auto;;
+      height: 30vw;
+  }
 }
 
-#status_opponent {
-  font-size: 1.4vw;
+.red {
+    color: red;
 }
 
-#log {
-    overflow-y: auto;
-    max-height: 30vw;
-    display: block;
+.green {
+    color: green;
 }
