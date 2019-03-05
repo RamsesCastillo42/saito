@@ -18,6 +18,7 @@ function Wordblocks(app) {
   this.browser_active  = 0;
   this.handlesEmail    = 1;
   this.emailAppName    = "Wordblocks";
+  this.maxPlayers      = 4;
 
   //
   // this sets the ratio used for determining
@@ -80,13 +81,42 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
     this.updateStatus("Generating the Game");
 
-    this.game.queue.push("EMAIL\tready");
-    this.game.queue.push("DEAL\t2\t7");
-    this.game.queue.push("DEAL\t1\t7");
-    this.game.queue.push("DECKENCRYPT\t2");
-    this.game.queue.push("DECKENCRYPT\t1");
-    this.game.queue.push("DECKXOR\t2");
-    this.game.queue.push("DECKXOR\t1");
+    if (this.game.opponents.length == 1) {
+      this.game.queue.push("EMAIL\tready");
+      this.game.queue.push("DEAL\t2\t7");
+      this.game.queue.push("DEAL\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t2");
+      this.game.queue.push("DECKENCRYPT\t1");
+      this.game.queue.push("DECKXOR\t2");
+      this.game.queue.push("DECKXOR\t1");
+    }
+    if (this.game.opponents.length == 2) {
+      this.game.queue.push("EMAIL\tready");
+      this.game.queue.push("DEAL\t3\t7");
+      this.game.queue.push("DEAL\t2\t7");
+      this.game.queue.push("DEAL\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t3");
+      this.game.queue.push("DECKENCRYPT\t2");
+      this.game.queue.push("DECKENCRYPT\t1");
+      this.game.queue.push("DECKXOR\t3");
+      this.game.queue.push("DECKXOR\t2");
+      this.game.queue.push("DECKXOR\t1");
+    }
+    if (this.game.opponents.length == 1) {
+      this.game.queue.push("EMAIL\tready");
+      this.game.queue.push("DEAL\t4\t7");
+      this.game.queue.push("DEAL\t3\t7");
+      this.game.queue.push("DEAL\t2\t7");
+      this.game.queue.push("DEAL\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t4");
+      this.game.queue.push("DECKENCRYPT\t3");
+      this.game.queue.push("DECKENCRYPT\t2");
+      this.game.queue.push("DECKENCRYPT\t1");
+      this.game.queue.push("DECKXOR\t4");
+      this.game.queue.push("DECKXOR\t3");
+      this.game.queue.push("DECKXOR\t2");
+      this.game.queue.push("DECKXOR\t1");
+    }
     this.game.queue.push("DECK\t"+JSON.stringify(this.returnDeck()));
 
   }

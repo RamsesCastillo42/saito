@@ -1,5 +1,27 @@
 
+.opponent_address2 {
+  display:none;
+  margin-top:20px;
+}
+.opponent_address3 {
+  display:none;
+  margin-top:20px;
+}
+.opponent_address4 {
+  display:none;
+  margin-top:20px;
+}
+.opponent_address5 {
+  display:none;
+  margin-top:20px;
+}
+.opponent_address6 {
+  display:none;
+  margin-top:20px;
+}
 .return_to_arcade {
+  clear:both;
+  padding-top:20px;
   color: -webkit-link;
   cursor: pointer;
   text-decoration: underline;
@@ -125,10 +147,10 @@ td {
 }
 
 .invitation_player1 {
- display: flex;
+ display: block;
 }
 .invitation_player2 {
- display: flex;
+ display: block;
 }
 
 .invite_button {
@@ -137,7 +159,6 @@ td {
   padding-right: 6px;
   padding-top: 2px;
   padding-bottom: 2px;
-  margin-left: 10px;
 }
 
 .gamebox {

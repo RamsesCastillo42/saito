@@ -61,15 +61,23 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="manage_invitations" style="display:none">
 
-      Provide the address of the player you are inviting. Otherwise wait to confirm an inbound invitation:
+      Provide the address(es) of the player(s) you are inviting. Otherwise wait to confirm an inbound invitation:
 
       <p></p>
 
       <div class="invitation_player1" id="invitation_player1">
-        <input type="text" style="border:1px solid #444;float:left;width:700px;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
-<br />
-        <input type="submit" style="font-size:1.1em;display:inline;cursor:pointer;float:left;" id="invite_button" class="invite_button" >
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+	<div class="opponent_address2">
+          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+	  <p></p>
+	</div>
+	<div class="opponent_address3">
+          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+	  <p></p>
+	</div>
+        <input type="submit" style="font-size:1.1em;display:block;cursor:pointer;float:left;clear:both;" id="invite_button" class="invite_button" >
       </div>
+
 
       <p></p>
 
@@ -102,7 +110,17 @@ Arcade.prototype.showMonitor = function showMonitor(html) {
   $('.gamelist').hide();
   $('.game_options').hide();
 
+  //
+  // game module specific, like max players
+  //
+  let game_mod = this.app.modules.returnModule(this.active_game);
+  if (game_mod != null) {
+    if (game_mod.maxPlayers > 2) { $('.opponent_address2').show(); }
+    if (game_mod.maxPlayers > 3) { $('.opponent_address3').show(); }
+  }
+
   if (this.browser_active == 1) { this.attachEvents(this.app); }
+
 
 }
 Arcade.prototype.hideMonitor = function hideMonitor() {
@@ -249,11 +267,11 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     // INVITE
     //
     if (txmsg.request == "invite") {
-      if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
 	try {
 
-          let game_id = tx.transaction.from[0].add + tx.transaction.ts + tx.transaction.to[0].add;
+          let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
           if (app.options.games != undefined) {
             for (let i = 0; i < app.options.games.length; i++) {
 	      if (app.options.games[i].id == game_id) {
@@ -267,11 +285,16 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game += tmpmod.slice(1);
 	  this.showMonitor();
 
-          game_id = tx.transaction.from[0].add + tx.transaction.ts + tx.transaction.to[0].add;
+          game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
 
           if (this.browser_active == 1) {
 	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div>';
-	    $('.lightbox_message_from_address').html(tx.transaction.from[0].add);
+	    let tmpadd = "";
+            for (let b = 0; b < tx.transaction.to.length; b++) {
+	      if (b > 0) { tmpadd += "_"; }
+	      tmpadd += tx.transaction.to[b].add;
+	    }
+	    $('.lightbox_message_from_address').html(tmpadd);
 	    $('.manage_invitations').html(html);
 	    $('.manage_invitations').show();
             this.attachEvents(this.app);
@@ -291,6 +314,12 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
         let game_self = app.modules.returnModule(txmsg.module);
         game_self.game = game_self.loadGame(txmsg.game_id);
+
+	if (game_self.game.accept === 0) { 
+	  $('.status').html("other players are accepting the game...");
+	  $('.status').show();
+	  return; 
+	}
 
         if (game_self.game.initializing == 1) {
 
@@ -441,7 +470,7 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 ///////////////////
 // Attach Events //
 ///////////////////
-Arcade.prototype.attachEvents = function attachEvents(app) {
+Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
 
@@ -519,66 +548,90 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
 
 
   $('.invite_button').off();
-  $('.invite_button').on('click', function() {
+  $('.invite_button').on('click', async function() {
 
-    let address = $('.opponent_address').val();
+    let address    = [];
+        address[0] = $('#opponent_address').val();
+        address[1] = $('#opponent_address2').val();
+        address[2] = $('#opponent_address3').val();
 
-    if (address == app.wallet.returnPublicKey()) {
+    address[0] = address[0].trim();
+    address[1] = address[1].trim();
+    address[2] = address[2].trim();
+
+    if (address[0] == app.wallet.returnPublicKey()) {
       alert("You cannot invite yourself to play a game -- if you really want to try, use two browsers!");
       return;
     }
-
-    if (arcade_self.app.crypto.isPublicKey(address) == 0) {
-
-      arcade_self.app.dns.fetchPublicKey(address, function(answer) {
-        if (arcade_self.app.dns.isRecordValid(answer) == 0) {
-	  alert("Cannot find publickey of specified user. Are you connected to a DNS server?");
-          return;
-        }
-
-        dns_response = JSON.parse(answer);
-
-        arcade_self.app.keys.addKey(dns_response.publickey, dns_response.identifier, 0, "Arcade");
-        arcade_self.app.keys.saveKeys();
-
-	address = dns_response.publickey;
-
-        var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
-        if (newtx == null) {
-          alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
-          return;
-        }
-        newtx.transaction.msg.module  = arcade_self.active_game;
-        newtx.transaction.msg.request = "invite";
-        newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
-        newtx = arcade_self.app.wallet.signTransaction(newtx);
-        arcade_self.app.network.propagateTransaction(newtx);
-        $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
-
-        let game_id = newtx.transaction.to[0].add + newtx.transaction.ts + newtx.transaction.from[0].add;
-        arcade_self.startInitializationTimer(game_id);
-
-	return;
-
-      });
-    } else {
-
-      var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
-      if (newtx == null) {
-        alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+    if (address[1] == app.wallet.returnPublicKey()) {
+      alert("You cannot invite yourself to play a game -- if you really want to try, use two browsers!");
+      return;
+    }
+    if (address[2] == app.wallet.returnPublicKey()) {
+      alert("You cannot invite yourself to play a game -- if you really want to try, use two browsers!");
+      return;
+    }
+    if (address[1] != "" && address[2] != "") {
+      if (address[1] === address[2] || address[0] === address[1] || address[0] === address[2]) {
+        alert("You cannot invite the same player twice");
         return;
       }
-      newtx.transaction.msg.module  = arcade_self.active_game;
-      newtx.transaction.msg.request = "invite";
-      newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
-      newtx = arcade_self.app.wallet.signTransaction(newtx);
-      arcade_self.app.network.propagateTransaction(newtx);
-      $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
-
-      let game_id = newtx.transaction.from[0].add + newtx.transaction.ts + newtx.transaction.to[0].add;
-      arcade_self.startInitializationTimer(game_id);
-
     }
+
+
+    if (arcade_self.app.crypto.isPublicKey(address[0]) == 0) {
+      if (address[0].indexOf("@saito") == -1) {
+	alert("All invited players must be identified by publickey or Saito email address");
+	return;
+      }
+      address[0] = await arcade_self.app.dns.fetchPublicKeyPromise(address[0]);
+    }
+    if (arcade_self.app.crypto.isPublicKey(address[1]) == 0) {
+      if (address[1].indexOf("@saito") == -1) {
+	alert("All invited players must be identified by publickey or Saito email address");
+	return;
+      }
+      address[1] = await arcade_self.app.dns.fetchPublicKeyPromise(address[1]);
+    }
+    if (arcade_self.app.crypto.isPublicKey(address[2]) == 0) {
+      if (address[2].indexOf("@saito") == -1) {
+	alert("All invited players must be identified by publickey or Saito email address");
+	return;
+      }
+      address[2] = await arcade_self.app.dns.fetchPublicKeyPromise(address[2]);
+    }
+
+console.log("ADDRESSES: " + JSON.stringify(address));
+
+    var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address[0], 0.0);
+    if (newtx == null) {
+      alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+      return;
+    }
+
+console.log("IS PUBLICKEY: " + arcade_self.app.crypto.isPublicKey(address[1]));
+
+    if (arcade_self.app.crypto.isPublicKey(address[1]) == 1) {
+console.log("PUSHING 1 NEW TX!");
+      newtx.transaction.to.push(new saito.slip(address[1], 0.0));
+    }
+console.log("IS PUBLICKEY: " + arcade_self.app.crypto.isPublicKey(address[2]));
+    if (arcade_self.app.crypto.isPublicKey(address[2]) == 1) {
+console.log("PUSHING 2 NEW TX!");
+      newtx.transaction.to.push(new saito.slip(address[2], 0.0));
+    }
+
+    newtx.transaction.msg.module  = arcade_self.active_game;
+    newtx.transaction.msg.request = "invite";
+    newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
+    newtx = arcade_self.app.wallet.signTransaction(newtx);
+    arcade_self.app.network.propagateTransaction(newtx);
+    $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+
+console.log("TX: " + JSON.stringify(newtx.transaction));
+
+    let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
+    arcade_self.startInitializationTimer(game_id);
 
   });
 
@@ -598,12 +651,17 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
 
     arcade_self.startInitializationTimer(game_id);
 
-    let remote_address  = $('.lightbox_message_from_address').text();
+    let remote_address = $('.lightbox_message_from_address').text();
+    tmpar = remote_address.split("_");
+    for (let z = 0; z < tmpar.length; z++) { tmpar[z] = tmpar[z].trim(); }
 
     game_self = arcade_self.app.modules.returnModule(game_module);
 
     game_self.saveGame(game_id);
-    game_self.addOpponent(remote_address);
+    for (let i = 0; i < tmpar.length; i++) {
+      game_self.addOpponent(tmpar[i]);
+    }
+    game_self.game.accept = 1;
     game_self.game.player = 2;
     game_self.game.module = game_module;
     game_self.saveGame(game_id);
@@ -611,9 +669,9 @@ Arcade.prototype.attachEvents = function attachEvents(app) {
     //
     // send official message accepting
     //
-    var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(game_self.game.opponents[0], 0.0);
-    for (let i = 1; i < game_self.game.opponents.length; i++) {
-       newtx.transaction.to.push(new saito.slip(game_self.game.opponents[0], 0.0));
+    var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(tmpar[0], 0.0);
+    for (let i = 1; i < tmpar.length; i++) {
+      newtx.transaction.to.push(new saito.slip(tmpar[i], 0.0));
     }
     if (newtx == null) {
       alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
