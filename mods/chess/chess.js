@@ -82,10 +82,13 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   //
   this.loadGame(game_id);
 
-  this.game.captured = {}
+  if (this.game.captured == undefined) {
+    this.game.captured = {}
 
-  this.game.captured.white = "";
-  this.game.captured.black = "";
+    this.game.captured.white = "";
+    this.game.captured.black = "";
+
+  }
 
 
   //
@@ -301,6 +304,22 @@ Chessgame.prototype.attachEvents = function attachEvents() {
   $(window).resize(function () {
     if (this_chess.board) {
       this_chess.board.resize();
+    }
+    if ($(window).innerWidth() <= 1500) {
+      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 600);
+      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 90);
+    } else {
+      $('.controls').outerHeight($('.board-space').outerHeight());
+    }
+  });
+
+  $(document).ready(function () {
+    this_chess.board.resize();
+    if ($(window).innerWidth() <= 1500) {
+      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 600);
+      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 90);
+    } else {
+      $('.controls').outerHeight($('.board-space').outerHeight());
     }
   });
 
