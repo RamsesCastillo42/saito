@@ -268,7 +268,7 @@ Welcome.prototype.updateControlPanel = function updateControlPanel(app, blk=null
 
   $('#saito_email').html(saito_email);
   $('#saito_address').html(saito_address);
-  $('#saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
+  $('#saito_balance').html(numeral(saito_balance).format('0,0.[00000000]').toString()+ " SAITO");
   //$('#saito_fee').html(saito_fee);
 
 }
