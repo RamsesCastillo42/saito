@@ -240,9 +240,9 @@ Welcome.prototype.updateControlPanel = function updateControlPanel(app, blk=null
 
     let bts = new Date(blk.block.ts);
     saito_blocktime = bts.getHours() + ":" + ("0" + bts.getMinutes()).substr(-2) + ":" + ("0" + bts.getSeconds()).substr(-2);
-    saito_burnfee = numeral(blk.block.bf.start).format('0,0.00000');
-    saito_difficulty = numeral(blk.block.difficulty).format('0.00000'); 
-    saito_paysplit = numeral(blk.block.paysplit).format('0.00000');
+    saito_burnfee = numeral(blk.block.bf.start).format('0,0.[00000]');
+    saito_difficulty = numeral(blk.block.difficulty).format('0.[00000]'); 
+    saito_paysplit = numeral(blk.block.paysplit).format('0.[00000]');
     saito_latest_block = numeral(blk.block.id).format('0,0');
 
   }
@@ -268,7 +268,7 @@ Welcome.prototype.updateControlPanel = function updateControlPanel(app, blk=null
 
   $('#saito_email').html(saito_email);
   $('#saito_address').html(saito_address);
-  $('#saito_balance').html(numeral(saito_balance).format('0,0.00000'));
+  $('#saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
   //$('#saito_fee').html(saito_fee);
 
 }
