@@ -56,7 +56,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
     </div>
 
     <div class="funding_alert">
-      Transfer tokens to this address or <a href="https://games.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
+      Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
     </div>
 
     <div class="manage_invitations" style="display:none">
