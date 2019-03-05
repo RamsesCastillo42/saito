@@ -126,7 +126,8 @@ td {
   text-decoration: none;
 }
 .publisher_message {
-
+  clear: both;
+  padding-top: 20px;
 }
 
 th {
