@@ -580,21 +580,21 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
 
     if (arcade_self.app.crypto.isPublicKey(address[0]) == 0) {
-      if (address[0].indexOf("@saito") == -1) {
+      if (address[0].indexOf("@saito") == -1 && address[0].length > 0) {
 	alert("All invited players must be identified by publickey or Saito email address");
 	return;
       }
       address[0] = await arcade_self.app.dns.fetchPublicKeyPromise(address[0]);
     }
     if (arcade_self.app.crypto.isPublicKey(address[1]) == 0) {
-      if (address[1].indexOf("@saito") == -1) {
+      if (address[1].indexOf("@saito") == -1 && address[1].length > 0) {
 	alert("All invited players must be identified by publickey or Saito email address");
 	return;
       }
       address[1] = await arcade_self.app.dns.fetchPublicKeyPromise(address[1]);
     }
     if (arcade_self.app.crypto.isPublicKey(address[2]) == 0) {
-      if (address[2].indexOf("@saito") == -1) {
+      if (address[2].indexOf("@saito") == -1 && address[2].length > 0) {
 	alert("All invited players must be identified by publickey or Saito email address");
 	return;
       }

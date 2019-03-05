@@ -102,7 +102,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.queue.push("DECKXOR\t2");
       this.game.queue.push("DECKXOR\t1");
     }
-    if (this.game.opponents.length == 1) {
+    if (this.game.opponents.length == 3) {
       this.game.queue.push("EMAIL\tready");
       this.game.queue.push("DEAL\t4\t7");
       this.game.queue.push("DEAL\t3\t7");
