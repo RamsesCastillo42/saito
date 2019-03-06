@@ -536,8 +536,18 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     game_self.resignGame();
 
     for (let i = 0; arcade_self.app.options.games.length; i++) {
-      if (arcade_self.app.options.games[i].id == gameid) {
+      if (arcade_self.app.options.games[i].id == undefined) {
 	arcade_self.app.options.games.splice(i, 1);
+	i--;
+      } else {
+        if (arcade_self.app.options.games[i].id == gameid) {
+    	  arcade_self.app.options.games.splice(i, 1);
+	  i--;
+        }
+      }
+      if (arcade_self.app.options.games[i].opponents.length == 0) {
+    	arcade_self.app.options.games.splice(i, 1);
+	i--;
       }
     }
     arcade_self.app.storage.saveOptions();

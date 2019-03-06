@@ -304,6 +304,12 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
         //
         var blk = new saito.block(this.app);
         blk.block.creator = this.app.wallet.returnPublicKey();
+	//
+	// used elsewhere in mempool to ensure that we are
+	// adding our block as the longest chain and that the
+	// transactions will not be orphaned
+	//
+	blk.created_on_empty_mempool = 1;
         if (prevblk != null) {
           blk.block.prevhash = prevblk.returnHash();
           blk.block.vote = this.app.voter.returnPaysplitVote(prevblk.block.paysplit);
@@ -459,7 +465,36 @@ Mempool.prototype.processBlocks = async function processBlocks() {
     this.processing_timer = setInterval(async () => {
       if (this.app.monitor.canBlockchainAddBlockToBlockchain()) {
         if (this.blocks.length > 0) {
-          await this.app.blockchain.addBlockToBlockchain(this.blocks.shift());
+
+	  let block_to_add = this.blocks.shift();
+
+	  //
+	  // if we created this block
+	  //
+	  if (block_to_add.created_on_empty_mempool == 1) {
+
+	    //
+	    // check it is still getting added to the longest chain, otherwise
+	    // we will need to dissolve it to recapture the transactions as 
+	    // we will not notice if this block is pushed off the longest-chain
+	    // by someone else
+	    //
+	    if (this.app.blockchain.returnLatestBlockHash() != block_to_add.block.prevhash) {
+
+              for (let i = 0; i < block_to_add.transactions.length; i++) {
+                console.log("RECOVERING TRANSACTIONS FROM BADLY-TIMED BLOCK WE PRODUCED: ");
+                this.app.mempool.recoverTransaction(block_to_add.transactions[i]);
+		this.app.mempool.reinsertRecoveredTransactions();
+              }
+
+	    } else {
+              await this.app.blockchain.addBlockToBlockchain(block_to_add);
+	    }
+	
+	  } else {
+            await this.app.blockchain.addBlockToBlockchain(block_to_add);
+	  }
+
         }
       } 
       // if we have emptied our queue
