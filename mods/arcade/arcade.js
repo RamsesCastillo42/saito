@@ -531,9 +531,13 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let tmpar = tmpid.split("_");
     let gameid = tmpar[0];
     let game_module = tmpar[1];
-    let game_self = app.modules.returnModule(game_module);
-    game_self.loadGame(gameid);
-    game_self.resignGame();
+    let game_self = null;
+
+    try {
+      game_self = app.modules.returnModule(game_module);
+      game_self.loadGame(gameid);
+      game_self.resignGame();
+    } catch (err) {}
 
     for (let i = 0; arcade_self.app.options.games.length; i++) {
       if (arcade_self.app.options.games[i].id == undefined) {
