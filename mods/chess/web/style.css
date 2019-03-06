@@ -84,7 +84,7 @@ h1 {
 
 #status_display {
     font-size: 2.5vw;
-    line-height: 0px;
+    margin: 0;
 }
 
 #status_opponent {
@@ -137,7 +137,7 @@ img.captured {
     }
     #status_display {
         font-size: 4.5vw;
-        line-height: 0px;
+        margin: 0;
     }
     #status_opponent {
         font-size: 3.5vw;
