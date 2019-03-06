@@ -549,10 +549,12 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 	  i--;
         }
       }
+try {
       if (arcade_self.app.options.games[i].opponents.length == 0) {
     	arcade_self.app.options.games.splice(i, 1);
 	i--;
       }
+} catch(err) {}
     }
     arcade_self.app.storage.saveOptions();
     window.location = '/arcade';
