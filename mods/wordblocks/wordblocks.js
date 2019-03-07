@@ -257,12 +257,15 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // if the browser is active, shift to the game that way
   //
-  if (this.browser_active == 1) {
-    let msg = {};
-    msg.extra = {};
-    msg.extra.target = this.game.target;
-    this.handleGame(msg);
-  }
+  // now obsolete -- keeping as temp reference -- game.js handles
+  //
+  //if (this.browser_active == 1) {
+  //  let msg = {};
+  //  msg.extra = {};
+  //  msg.extra.target = this.game.target;
+  //  this.handleGame(msg);
+  //}
+
 }
 
 
