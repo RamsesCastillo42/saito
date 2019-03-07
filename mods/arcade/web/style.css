@@ -1,4 +1,11 @@
 
+.ads {
+  max-width: 300px;
+  position: absolute;
+  top: 90px;
+  left: 1100px;
+}
+
 .opponent_address2 {
   display:none;
   margin-top:20px;
@@ -97,15 +104,30 @@ td {
     margin-right: none;
     width: 700px;
   }
+  .ads {
+    max-width: 300px;
+    margin-top:200px;
+  }
+
 }
 @media only screen and (max-width: 400px) {
   .arcade {
     max-width:390px;
   }
+  .ads {
+    max-width: 300px;
+    margin-top:200px;
+    position: relative;
+  }
 }
 @media only screen and (max-width: 370px) {
   .arcade {
     max-width:370px;
+  }
+  .ads {
+    max-width: 300px;
+    margin-top:200px;
+    position: relative;
   }
 }
 
