@@ -24,6 +24,9 @@ lib/saito/web/browser.js
 lib/saito/web/client.options
 lib/modules/mods/*
 
+
+mods/imperium
+mods/imperium/*
 mods/pandemic
 mods/pandemic/*
 mods/twilight
