@@ -127,6 +127,7 @@ Wallet.prototype.initialize = function initialize(app) {
   //////////////////
   // import slips //
   //////////////////
+  this.wallet.spends = []
   if (this.app.options.wallet != null) {
     if (this.app.options.wallet.inputs != null) {
       for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
@@ -175,9 +176,6 @@ Wallet.prototype.initialize = function initialize(app) {
         this.outputs_hmap_counter++;
 
       }
-    }
-    if (this.app.options.wallet.spends != null) {
-      this.wallet.spends = this.app.options.wallet.spends;
     }
   }
 
