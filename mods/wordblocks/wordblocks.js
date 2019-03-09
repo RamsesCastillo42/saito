@@ -73,51 +73,50 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
 
-
   //
   // deal cards 
   //
-  if (this.game.deck.cards.length == 0 && this.game.step.game == 0) {
+  if (this.game.deck.length == 0 && this.game.step.game == 0) {
 
     this.updateStatus("Generating the Game");
 
     if (this.game.opponents.length == 1) {
       this.game.queue.push("EMAIL\tready");
-      this.game.queue.push("DEAL\t2\t7");
-      this.game.queue.push("DEAL\t1\t7");
-      this.game.queue.push("DECKENCRYPT\t2");
-      this.game.queue.push("DECKENCRYPT\t1");
-      this.game.queue.push("DECKXOR\t2");
-      this.game.queue.push("DECKXOR\t1");
+      this.game.queue.push("DEAL\t1\t2\t7");
+      this.game.queue.push("DEAL\t1\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
     }
     if (this.game.opponents.length == 2) {
       this.game.queue.push("EMAIL\tready");
-      this.game.queue.push("DEAL\t3\t7");
-      this.game.queue.push("DEAL\t2\t7");
-      this.game.queue.push("DEAL\t1\t7");
-      this.game.queue.push("DECKENCRYPT\t3");
-      this.game.queue.push("DECKENCRYPT\t2");
-      this.game.queue.push("DECKENCRYPT\t1");
-      this.game.queue.push("DECKXOR\t3");
-      this.game.queue.push("DECKXOR\t2");
-      this.game.queue.push("DECKXOR\t1");
+      this.game.queue.push("DEAL\t1\t3\t7");
+      this.game.queue.push("DEAL\t1\t2\t7");
+      this.game.queue.push("DEAL\t1\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t1\t3");
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t3");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
     }
     if (this.game.opponents.length == 3) {
       this.game.queue.push("EMAIL\tready");
-      this.game.queue.push("DEAL\t4\t7");
-      this.game.queue.push("DEAL\t3\t7");
-      this.game.queue.push("DEAL\t2\t7");
-      this.game.queue.push("DEAL\t1\t7");
-      this.game.queue.push("DECKENCRYPT\t4");
-      this.game.queue.push("DECKENCRYPT\t3");
-      this.game.queue.push("DECKENCRYPT\t2");
-      this.game.queue.push("DECKENCRYPT\t1");
-      this.game.queue.push("DECKXOR\t4");
-      this.game.queue.push("DECKXOR\t3");
-      this.game.queue.push("DECKXOR\t2");
-      this.game.queue.push("DECKXOR\t1");
+      this.game.queue.push("DEAL\t1\t4\t7");
+      this.game.queue.push("DEAL\t1\t3\t7");
+      this.game.queue.push("DEAL\t1\t2\t7");
+      this.game.queue.push("DEAL\t1\t1\t7");
+      this.game.queue.push("DECKENCRYPT\t1\t4");
+      this.game.queue.push("DECKENCRYPT\t1\t3");
+      this.game.queue.push("DECKENCRYPT\t1\t2");
+      this.game.queue.push("DECKENCRYPT\t1\t1");
+      this.game.queue.push("DECKXOR\t1\t4");
+      this.game.queue.push("DECKXOR\t1\t3");
+      this.game.queue.push("DECKXOR\t1\t2");
+      this.game.queue.push("DECKXOR\t1\t1");
     }
-    this.game.queue.push("DECK\t"+JSON.stringify(this.returnDeck()));
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
   }
 
@@ -329,8 +328,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       wordblocks_self.removeTilesFromHand(tiles);
       wordblocks_self.addMove("turn\t"+wordblocks_self.game.player);
       let cards_needed = 7;
-      cards_needed = cards_needed - wordblocks_self.game.hand.length;
-      if (cards_needed > wordblocks_self.game.deck.cards.length) { cards_needed = wordblocks_self.game.deck.cards.length-1; }
+      cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
+      if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length-1; }
       if (cards_needed > 0) { wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed); }
 
       wordblocks_self.showTiles();
@@ -408,8 +407,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 	  // get new cards
 	  //
 	  let cards_needed = 7;
-          cards_needed = cards_needed - wordblocks_self.game.hand.length;
-	  if (cards_needed > wordblocks_self.game.deck.cards.length) { cards_needed = wordblocks_self.game.deck.cards.length-1; }
+          cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
+	  if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length-1; }
 	
 	  if (cards_needed > 0) {
             wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed);
@@ -441,10 +440,10 @@ Wordblocks.prototype.removeTilesFromHand = function removeTilesFromHand(word) {
     let tmpx = word[0];
     tmpx = tmpx.toUpperCase();
 
-    for (let i = 0; i < this.game.hand.length; i++) {
-      if (this.game.cards[this.game.hand[i]].name == tmpx) {
-	this.game.hand.splice(i, 1);
-	i = this.game.hand.length;
+    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+      if (this.game.cards[this.game.deck[0].hand[i]].name == tmpx) {
+	this.game.deck[0].hand.splice(i, 1);
+	i = this.game.deck[0].hand.length;
       }
     }
 
@@ -467,7 +466,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
 
   let valid_placement = 1;
 
-  let tmphand = JSON.parse(JSON.stringify(this.game.hand));
+  let tmphand = JSON.parse(JSON.stringify(this.game.deck[0].hand));
 
   x = parseInt(x);
   y = parseInt(y);
@@ -529,7 +528,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       let letter_found = 0;
 
       for (let k = 0; k < tmphand.length; k++) {
-	if (this.game.cards[tmphand[k]].name == letter) {
+	if (this.game.deck[0].cards[tmphand[k]].name == letter) {
 	  k = tmphand.length+1;
 	  tmphand.splice(k, 1);
 	  letter_found = 1;
@@ -1100,8 +1099,6 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
       let thisletter = this.game.board[boardslot].letter;
-console.log("LETTER: " + tmpb + " -- " + this.game.board[boardslot] + " >>>>>> " + thisletter + " -- " + boardslot);
-console.log(JSON.stringify(this.game.board));
       score += (this.letters[thisletter].score * letter_bonus);
     }
 
@@ -1336,7 +1333,7 @@ Wordblocks.prototype.checkForEndGame = function checkForEndGame() {
   //
   // the game ends when one player has no cards left
   //
-  if (this.game.hand.length == 0 && this.game.deck.cards.length == 0) {
+  if (this.game.deck[0].hand.length == 0 && this.game.deck[0].crypt.length == 0) {
     this.addMove("gameover");
     this.endTurn();
     return 1;
@@ -1399,9 +1396,8 @@ Wordblocks.prototype.endTurn = function endTurn() {
   let extra = {};
       extra.target = this.returnNextPlayer(this.game.player);
   this.game.turn = this.moves;
-  this.sendMessage("game", extra);
   this.moves = [];
-  this.saveGame(this.game.id);
+  this.sendMessage("game", extra);
 
 }
 

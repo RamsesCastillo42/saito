@@ -799,6 +799,16 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
       if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
 	this.wallet.pending.splice(i, 1);
 	i--;
+      } else {
+
+	//
+	// 20% chance of deletion
+	//
+	if (Math.random() <= 0.2) {
+	  this.wallet.pending.splice(i, 1);
+	  i--;
+	}
+
       }
     }
   }
