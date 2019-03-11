@@ -30,6 +30,7 @@ function Arcade(app) {
 
   this.currently_playing = 0;
   this.currently_viewing_monitor = 0;
+  this.monitor_shown_already = 0;
 
   return this;
 
@@ -102,7 +103,11 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 }
 Arcade.prototype.showMonitor = function showMonitor(html) {
 
+  this.monitor_shown_already = 1;
   this.currently_viewing_monitor = 1;
+
+console.log("showing monitor!");
+
 
   $('.game_monitor').html(this.returnGameMonitor(this.app));
   this.updateBalance(this.app);
@@ -275,7 +280,11 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           if (app.options.games != undefined) {
             for (let i = 0; i < app.options.games.length; i++) {
 	      if (app.options.games[i].id == game_id) {
-	        return;
+		if (app.options.games[i].invitation == 0) {
+		  if (this.monitor_shown_already == 1) {
+	            return;
+		  }
+		}
 	      }
             }
           }
@@ -627,7 +636,6 @@ console.log("ERROR DELETING GAME!");
         return;
       }
     }
-
 
     if (arcade_self.app.crypto.isPublicKey(address[0]) == 0) {
       if (address[0].indexOf("@saito") == -1 && address[0].length > 0) {
