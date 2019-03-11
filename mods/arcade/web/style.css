@@ -1,9 +1,7 @@
 
 .ads {
   max-width: 300px;
-  position: absolute;
-  top: 90px;
-  left: 1100px;
+  padding: 1em;
 }
 
 .opponent_address2 {
@@ -41,21 +39,18 @@
   text-decoration: underline;
 }
 .joingamelink {
-  float:left; 
+  float:left;
   margin-bottom:20px;
   margin-top:20px;
 }
-.deletegamelink { 
-  float:left; 
+.deletegamelink {
+  float:left;
   margin-bottom:20px;
   margin-top:20px;
 }
 
 .single_activegame {
-  margin-bottom:20px;
-  margin-right:20px;
-  margin-top:20px;
-  float:left;
+  width: 300px;
   padding:14px;
   border: 1px dashed #888;
   background-color: #efefef;
@@ -76,14 +71,15 @@ td {
 }
 
 .arcade {
- max-width:700px;
+ display: inherit;
+ padding: 1em;
 }
 
 .gamelist {
- clear: both;
- margin-left: auto;
- margin-right: auto;
- width: 350px;
+  display: grid;
+  row-gap: 1em;
+  column-gap: 1.5em;
+  grid-template-columns: repeat(auto-fit, 300px);
 }
 
 .gametitle {
@@ -95,54 +91,19 @@ td {
 }
 
 
-@media only screen and (min-width: 700px) {
-  .arcade {
-    max-width:700px;
-  }
-  .gamelist {
-    margin-left: none;
-    margin-right: none;
-    width: 700px;
-  }
-  .ads {
-    max-width: 300px;
-    margin-top:200px;
-  }
-
-}
-@media only screen and (max-width: 400px) {
-  .arcade {
-    max-width:390px;
-  }
-  .ads {
-    max-width: 300px;
-    margin-top:200px;
-    position: relative;
-  }
-}
-@media only screen and (max-width: 370px) {
-  .arcade {
-    max-width:370px;
-  }
-  .ads {
-    max-width: 300px;
-    margin-top:200px;
-    position: relative;
-  }
-}
-
-
-
-
-
-
 .link {
   display:inline;
   text-decoration:underline;
   cursor:pointer;
 }
 .game_monitor {
- display:none;
+  display:none;
+  width: 100%;
+  max-width: 750px;
+}
+.game_options {
+  display: inherit;
+  row-gap: 1em
 }
 .nonlink {
   text-decoration: none;
@@ -160,7 +121,10 @@ td {
  padding-right:45px;
 }
 #gametable {
- font-size:1.0em;
+  font-size: 1.0em;
+  display: grid;
+  row-gap: 1em;
+  grid-template-columns: repeat(auto-fit, 330px);
 }
 .active_games {
   display:none;
@@ -184,10 +148,6 @@ td {
   padding-bottom: 2px;
 }
 
-.gamebox {
-
-}
-
 .address_box {
   width: 700px;
   padding: 15px;
@@ -195,26 +155,20 @@ td {
   border: 2px dashed #888;
   margin-bottom: 15px;
 }
-.funding_alert {
-
-}
 
 
 .game {
-  margin-top:20px;
   width: 300px;
-  float:left;
-  margin-right:30px;
   height: 250px;
 }
 
 .gamename {
- font-weight: bold;
- width: 100%;
- text-align: center;
- margin-bottom: 10px;
- font-size: 1.15em;
- text-transform: uppercase;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.15em;
+  text-transform: uppercase;
 }
 
 .gameimage {
@@ -269,36 +223,40 @@ td {
 
 
 .main {
- display: none;
+ display: grid;
+ grid-template-columns: 3fr 1fr;
+ grid-column-gap: 1em;
  width: 100%;
+ max-width: 1600px;
  font-size:1.6em;
- padding:30px;
- max-width:990px;
+ margin-left: auto;
+ margin-right: auto;
+
 }
 .manage_invitations {
  line-height:1.4em;
 }
 
 .compose {
- clear: both;
- max-width: 140px;
- margin-left: auto;
- margin-right: auto;
- margin-top: 20px;
- color: #ffffff;
- background-color: #d14836;
- text-align: center;
- padding-left: 10px;
- padding-bottom: 5px;
- padding-top: 5px;
- padding-right: 10px;
- line-height: 27px;
- height: 27px;
- font-weight: bold;
- font-size: 1.25rem;
- background-image: linear-gradient(to bottom, #dd4b39, #d14836);
- border: 1px solid #b0281a;
- cursor: pointer;
+  clear: both;
+  max-width: 140px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  color: #ffffff;
+  background-color: #d14836;
+  text-align: center;
+  padding-left: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  padding-right: 10px;
+  line-height: 27px;
+  height: 27px;
+  font-weight: bold;
+  font-size: 1.25rem;
+  background-image: linear-gradient(to bottom, #dd4b39, #d14836);
+  border: 1px solid #b0281a;
+  cursor: pointer;
 }
 .compose:hover {
  background-image: linear-gradient(to bottom, #dd4b39, #c53727);
@@ -306,4 +264,40 @@ td {
 }
 
 
+@media only screen and (max-width: 750px) {
+
+  .main {
+    grid-template-columns: 1fr;
+  }
+
+  .gamelist {
+    justify-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  #gametable {
+    justify-items: center;
+    grid-template-columns: 1fr;
+  }
+
+}
+@media only screen and (max-width: 425px) {
+
+  .saito_address {
+    font-size: 0.6em;
+  }
+
+  .address_box {
+    width: 90%;
+    padding: 15px;
+    background-color: #E7E7E7;
+    border: 2px dashed #888;
+    margin-bottom: 15px;
+  }
+}
+@media only screen and (max-width: 370px) {
+  .ads {
+    max-width: 300px;
+  }
+}
 
