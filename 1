@@ -608,12 +608,10 @@ this.updateLog("deck restore...");
 	let deckidx = gmv[1];
 
         for (let i = game_self.old_crypt.length - 1; i >= 0; i--) {
-console.log("UNSHIFT: " + game_self.old_crypt[i] + " --- " + game_self.old_keys[i]);
           game_self.game.deck[deckidx-1].crypt.unshift(game_self.old_crypt[i]);
           game_self.game.deck[deckidx-1].keys.unshift(game_self.old_keys[i]);
         }
         for (var b in game_self.old_cards) {
-console.log("RE-ADD: " + game_self.old_cards[b]);
           game_self.game.deck[deckidx-1].cards[b] = game_self.old_cards[b];
         }
         game_self.old_cards = {};
@@ -643,13 +641,9 @@ this.updateLog("deck processing...");
         let deckidx = gmv[1];
         let cards = JSON.parse(gmv[2]);
 
-console.log("RECEIVED: "+gmv[2]);
-
 	//
 	// create deck if not exists
 	//
-	game_self.resetDeck(deckidx-1);
-
 	while (game_self.game.deck.length < deckidx) { game_self.addDeck(); }
         game_self.updateStatus("creating deck by importing specified cards...");
         game_self.game.deck[deckidx-1].cards = cards;
@@ -1176,18 +1170,13 @@ Game.prototype.newGame = function newGame(game_id = null) {
 }
 Game.prototype.addDeck = function addDeck() {
   let newIndex = this.game.deck.length;
-  this.resetDeck(newIndex);
-}
-Game.prototype.resetDeck = function resetDeck(newIndex=0) {
   this.game.deck[newIndex] = {};
   this.game.deck[newIndex].cards    = {};
   this.game.deck[newIndex].crypt    = [];
   this.game.deck[newIndex].keys     = [];
   this.game.deck[newIndex].hand     = [];
   this.game.deck[newIndex].xor      = "";
-  this.game.deck[newIndex].discards = {};
 }
-
 Game.prototype.saveGame = function saveGame(game_id = null) {
 
   if (this.app.options.games == undefined) { this.app.options.games = []; }
