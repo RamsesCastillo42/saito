@@ -46,8 +46,8 @@ Wordblocks.prototype.showTiles = function showTiles() {
 
   let html = "";
 
-  for (let i = 0; i < this.game.hand.length; i++) {
-    html += this.returnTile(this.game.cards[this.game.hand[i]].name);
+  for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+    html += this.returnTile(this.game.cards[this.game.deck[0].hand[i]].name);
   }
 
   $('.tiles').html(html);
