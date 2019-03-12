@@ -152,7 +152,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
       for (let i = 0; i < app.options.games.length; i++) {
 
-        let opponent   = "none";
+        let opponent   = "unknown";
         let gameid     = app.options.games[i].id;
         let player     = app.options.games[i].player;
         let gamename   = app.options.games[i].module;
@@ -163,8 +163,11 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
-	if (app.options.games[i].opponents.length > 0) {
-	  opponent = app.options.games[i].opponents[0];
+
+        if (app.options.games[i].opponents != undefined) {
+	  if (app.options.games[i].opponents.length > 0) {
+	    opponent = app.options.games[i].opponents[0];
+          }
         }
 	if (gamename === "") {
 	  gamename = "Unknown";
