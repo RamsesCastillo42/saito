@@ -83,7 +83,7 @@ class Chat extends ChatCore {
         for (let i = 0; i < rooms.length; i++) {
           let addresses = await this.app.storage.db.all("SELECT publickey from mod_chat_rooms WHERE uuid = $uuid", {$uuid: rooms[i].uuid});
           let messages = await this.app.storage.db.all("SELECT * FROM mod_chat_records WHERE room_id = $room_id ORDER BY id DESC LIMIT 50", {$room_id: rooms[i].uuid});
-          payload["rooms"].push({ room_id: rooms[i].uuid, name: rooms[i].name, addresses: addresses.map(address => address.publickey), mesasges: messages.reverse() });
+          payload["rooms"].push({ room_id: rooms[i].uuid, name: rooms[i].name, addresses: addresses.map(address => address.publickey), messages: messages.reverse() });
         }
         res.set({"Content-Type": "application/json"})
         res.send(payload);
