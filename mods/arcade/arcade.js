@@ -299,54 +299,38 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	      }
             }
           }
-console.log("1");
 
           let tmpmod = txmsg.module;
           this.active_game = tmpmod.charAt(0).toUpperCase();
           this.active_game += tmpmod.slice(1);
 
-console.log("2");
 
 	  //
 	  // add it to our table too
 	  //
           let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'">ACCEPT</div>';
 
-console.log("2 - 0");
 	  let html = "";
-console.log("2 1");
           html  = '<div class="single_activegame">';
-console.log("2 2");
           html += '<div id="'+game_id+'_game">';
-console.log("2 3");
           html += '<b>' + this.active_game + '</b></br>';
-console.log("2 4");
           html += remote_address.substring(0,15) + '</div>';
-console.log("2 5");
           html += '<p></p>Game Invitation!<p></p>';
-console.log("2 6");
           html += '<div class="acceptgamelink">'+acceptgame+'</div>';
-console.log("2 7");
           html += '</div>';
-console.log("2 8");
           $('.active_games').show();
 	  let thisdivname = "#" + game_id + "_game";
 	  try {
-console.log("3");
             if ($(thisdivname).length) {
 
-console.log("4");
 	    } else {
-console.log("5");
 	      this.showMonitor();
               $('#gametable').prepend(html);
 	    }
 	  } catch (err) {
-console.log("6");
 	    this.showMonitor();
             $('#gametable').prepend(html);
 	  }
-console.log("7");
 
 
           if (this.browser_active == 1) {
@@ -357,24 +341,17 @@ console.log("7");
 	      tmpadd += tx.transaction.to[b].add;
 	    }
 
-console.log("8");
 
 	    $('.lightbox_message_from_address').html(tmpadd);
-console.log("9");
 	    $('.manage_invitations').html(html);
-console.log("10");
 	    $('.manage_invitations').show();
-console.log("11");
             this.attachEvents(this.app);
-console.log("12");
 	  }
 	} catch (err) {
-console.log("!3 - " + JSON.stringify(err));
 	}
       }
     }
 
-console.log("15");
 
     //
     // ACCEPT
@@ -777,6 +754,7 @@ console.log("ERROR DELETING GAME!");
     for (let i = 0; i < tmpar.length; i++) {
       game_self.addOpponent(tmpar[i]);
     }
+    game_self.game.invitation = 0;
     game_self.game.accept = 1;
     game_self.game.player = 2;
     game_self.game.module = game_module;
