@@ -176,7 +176,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 	if (app.options.games[i].over == 1) {
 	  status = "Game Over";
 	}
-        if (status == "") {
+        if (status == "" || status == undefined) {
 	  status = "Game Underway";
 	}
 
