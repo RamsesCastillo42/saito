@@ -116,8 +116,7 @@ Game.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, app
 
           if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) { return; }
 
-          let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
-
+          let game_id    = tx.transaction.from[0].add + "&" + tx.transaction.ts;
           if (game_self.app.options.games != undefined) {
             for (let i = 0; i < game_self.app.options.games.length; i++) {
               if (game_self.app.options.games[i].id == game_id) {
@@ -126,21 +125,19 @@ Game.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, app
             }
           }
 
+
 	  ////////////
 	  // create //
 	  ////////////
+
 console.log("CREATING THE GAME HERE: " + JSON.stringify(txmsg));
           game_self.loadGame(game_id);
-	  for (let i = 0; i < tx.transaction.to.length; i++) {
-	    game_self.addOpponent(tx.transaction.to[i].add);
-	  }
           game_self.game.module = txmsg.module;
-console.log("GAME NOW: " + JSON.stringify(game_self.game));
+
 
 	  //////////////////
 	  // update email //
 	  //////////////////
-/*
           if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
             let email_self = app.modules.returnModule("Email");
             let title      = game_self.emailAppName + " Invitation";
@@ -167,12 +164,12 @@ console.log("GAME NOW: " + JSON.stringify(game_self.game));
             let data       = 'You have invited ' + opponentshtml + ' to a game of ' + game_self.emailAppName + '. Please wait for them to initiate the game.';
             email_self.receiveMail(title, data, tx);
           }
-*/
 
-          game_self.saveGame(game_id);
-          //app.storage.saveOptions();
+
+          app.storage.saveOptions();
 console.log("STILL HERE: " + JSON.stringify(game_self.game));
 
+          game_self.saveGame(game_id);
           return;
         }
 
@@ -192,7 +189,6 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
           if (game_self.game.over == 1) {
             return;
           }
-
 
           if (game_self.game.step.game == 0) {
 
@@ -1145,11 +1141,7 @@ Game.prototype.loadGame = function loadGame(game_id = null) {
     }
   }
 
-  //
-  // otherwise subsequent save will be blank
-  //
   this.game = this.newGame(game_id);
-  this.saveGame(game_id);
   return this.game;
 
 }
@@ -1204,15 +1196,11 @@ Game.prototype.resetDeck = function resetDeck(newIndex=0) {
 
 Game.prototype.saveGame = function saveGame(game_id = null) {
 
-  if (this.app.options.games == undefined) { 
-console.log("games is undefined!");
-    this.app.options.games = []; 
-  }
+  if (this.app.options.games == undefined) { this.app.options.games = []; }
 
   if (game_id != null) {
     for (let i = 0; i < this.app.options.games.length; i++) {
       if (this.app.options.games[i].id == game_id) {
-console.log("... saving game: " + game_id);
         this.app.options.games[i] = JSON.parse(JSON.stringify(this.game));
         this.app.storage.saveOptions();
         return;
@@ -1220,12 +1208,8 @@ console.log("... saving game: " + game_id);
     }
   }
 
-  if (this.game.id == game_id) {
-    this.app.options.games.push(this.game);
-  } else {
-    this.game = this.newGame(game_id);
-  }
-
+  this.game = this.newGame(game_id);
+  this.app.options.games.push(this.game);
   this.app.storage.saveOptions();
   return;
 
@@ -1322,6 +1306,7 @@ Game.prototype.displayEmailForm = function displayEmailForm(app) {
 Game.prototype.formatEmailTransaction = function formatEmailTransaction(tx, app) {
   tx.transaction.msg.module = this.name;
   tx.transaction.msg.request = "invite";
+  tx.transaction.msg.secret = app.wallet.returnPublicKey();
   return tx;
 };
 Game.prototype.attachEmailEvents = function attachEmailEvents(app) {
@@ -1368,6 +1353,7 @@ Game.prototype.attachEmailEvents = function attachEmailEvents(app) {
 
       newtx.transaction.msg.module   = game_self.game.module;
       newtx.transaction.msg.game_id  = game_self.game.id;
+      newtx.transaction.msg.secret   = game_self.game.secret;
       newtx.transaction.msg.request  = "accept";
       newtx = app.wallet.signTransaction(newtx);
       app.network.propagateTransaction(newtx);

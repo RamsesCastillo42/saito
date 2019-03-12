@@ -106,9 +106,6 @@ Arcade.prototype.showMonitor = function showMonitor(html) {
   this.monitor_shown_already = 1;
   this.currently_viewing_monitor = 1;
 
-console.log("showing monitor!");
-
-
   $('.game_monitor').html(this.returnGameMonitor(this.app));
   this.updateBalance(this.app);
   $('.game_monitor').slideDown(500, function() {});
@@ -160,6 +157,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let player     = app.options.games[i].player;
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
+        let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'">ACCEPT</div>';
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">JOIN</div>';
         let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'">DELETE</div>';
 
@@ -168,7 +166,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 	if (app.options.games[i].opponents.length > 0) {
 	  opponent = app.options.games[i].opponents[0];
         }
-	if (gamename == "") {
+	if (gamename === "") {
 	  gamename = "Unknown";
 	}
 
@@ -188,13 +186,26 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
 	if (app.options.games[i].over == 0) {
 
-          html  = '<div class="single_activegame">';
-          html += '<div id="'+gameid+'_game">';
-          html += '<b>' + gamename + '</b></br>';
-          html += opponent + '</div>';
-	  html += '<div class="joingamelink">'+joingame+'</div>';
-	  html += '<div class="deletegamelink">'+deletegame+'</div>';
-	  html += '</div>';
+	  if (app.options.games[i].invitation == 1) {
+
+            html  = '<div class="single_activegame">';
+            html += '<div id="'+gameid+'_game">';
+            html += '<b>' + gamename + '</b></br>';
+            html += opponent + '</div>';
+            html += '<p></p>Game Invitation!<p></p>';
+	    html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+	    html += '</div>';
+
+	  } else {
+
+            html  = '<div class="single_activegame">';
+            html += '<div id="'+gameid+'_game">';
+            html += '<b>' + gamename + '</b></br>';
+            html += opponent + '</div>';
+	    html += '<div class="joingamelink">'+joingame+'</div>';
+	    html += '<div class="deletegamelink">'+deletegame+'</div>';
+	    html += '</div>';
+	  }
 
 	} else {
 
@@ -202,8 +213,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
           html += '<div id="'+gameid+'_game">';
           html += '<b>' + gamename + '</b></br>';
           html += opponent + '</div>';
-          html += '<p></p>Opponent Resigned<p></p>';
-	  html += '<div class="joingamelink">'+joingame+'</div>';
+          html += '<p></p>Opponent Resigned!<p></p>';
 	  html += '<div class="deletegamelink">'+deletegame+'</div>';
 	  html += '</div>';
 
@@ -277,6 +287,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	try {
 
           let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+
           if (app.options.games != undefined) {
             for (let i = 0; i < app.options.games.length; i++) {
 	      if (app.options.games[i].id == game_id) {
@@ -288,31 +299,82 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	      }
             }
           }
+console.log("1");
 
           let tmpmod = txmsg.module;
           this.active_game = tmpmod.charAt(0).toUpperCase();
           this.active_game += tmpmod.slice(1);
-	  this.showMonitor();
 
-          game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+console.log("2");
+
+	  //
+	  // add it to our table too
+	  //
+          let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'">ACCEPT</div>';
+
+console.log("2 - 0");
+	  let html = "";
+console.log("2 1");
+          html  = '<div class="single_activegame">';
+console.log("2 2");
+          html += '<div id="'+game_id+'_game">';
+console.log("2 3");
+          html += '<b>' + this.active_game + '</b></br>';
+console.log("2 4");
+          html += remote_address.substring(0,15) + '</div>';
+console.log("2 5");
+          html += '<p></p>Game Invitation!<p></p>';
+console.log("2 6");
+          html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+console.log("2 7");
+          html += '</div>';
+console.log("2 8");
+          $('.active_games').show();
+	  let thisdivname = "#" + game_id + "_game";
+	  try {
+console.log("3");
+            if ($(thisdivname).length) {
+
+console.log("4");
+	    } else {
+console.log("5");
+	      this.showMonitor();
+              $('#gametable').prepend(html);
+	    }
+	  } catch (err) {
+console.log("6");
+	    this.showMonitor();
+            $('#gametable').prepend(html);
+	  }
+console.log("7");
+
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div>';
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div><p></p><div class="return_to_arcade" id="return_to_arcade">Return to Arcade</div>';
 	    let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
 	      if (b > 0) { tmpadd += "_"; }
 	      tmpadd += tx.transaction.to[b].add;
 	    }
+
+console.log("8");
+
 	    $('.lightbox_message_from_address').html(tmpadd);
+console.log("9");
 	    $('.manage_invitations').html(html);
+console.log("10");
 	    $('.manage_invitations').show();
+console.log("11");
             this.attachEvents(this.app);
+console.log("12");
 	  }
-	} catch (err) {}
+	} catch (err) {
+console.log("!3 - " + JSON.stringify(err));
+	}
       }
     }
 
-
+console.log("15");
 
     //
     // ACCEPT
@@ -688,6 +750,11 @@ console.log("ERROR DELETING GAME!");
 
   $('.accept_game').off();
   $('.accept_game').on('click', function() {
+
+    //
+    // if this is the main screen
+    //
+    arcade_self.showMonitor();
    
     //
     // clone of code in game.js
