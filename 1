@@ -100,83 +100,75 @@ Game.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, app
 
       if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
 
-        /////////////////////////
-        // check SAITO balance //
-        /////////////////////////
-        if (game_self.low_balance_alert_sent == 0 && Big(app.wallet.returnBalance()).lt(80)) {
-          if (game_self.browser_active == 1) { alert("Your SAITO balance ("+app.wallet.returnBalance()+") is running low. Your game may act unpredictably if you run out of tokens"); }
-          game_self.updateLog("Your SAITO balance ("+app.wallet.returnBalance()+") is running low. Please visit the <a href='/faucet' target='_faucet'>token faucet</a> to refill your account. Remember not to leave your game mid-turn.</a>'");
-          game_self.low_balance_alert_sent = 1;
-        }
+	/////////////////////////
+	// check SAITO balance //
+	/////////////////////////
+	if (game_self.low_balance_alert_sent == 0 && Big(app.wallet.returnBalance()).lt(80)) {
+	  if (game_self.browser_active == 1) { alert("Your SAITO balance ("+app.wallet.returnBalance()+") is running low. Your game may act unpredictably if you run out of tokens"); }
+	  game_self.updateLog("Your SAITO balance ("+app.wallet.returnBalance()+") is running low. Please visit the <a href='/faucet' target='_faucet'>token faucet</a> to refill your account. Remember not to leave your game mid-turn.</a>'");
+	  game_self.low_balance_alert_sent = 1;
+	}
 
         ////////////
         // INVITE //
         ////////////
         if (txmsg.request == "invite") {
 
-          if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) { return; }
+	  if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) { return; }
 
-          let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+          let game_id    = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+	  if (game_self.app.options.games != undefined) {
+	    for (let i = 0; i < game_self.app.options.games.length; i++) {
+	      if (game_self.app.options.games[i].id == game_id) {
+		return;
+	      }
+	    }
+	  }
 
-          if (game_self.app.options.games != undefined) {
-            for (let i = 0; i < game_self.app.options.games.length; i++) {
-              if (game_self.app.options.games[i].id == game_id) {
-                return;
-              }
-            }
-          }
 
 	  ////////////
 	  // create //
 	  ////////////
-console.log("CREATING THE GAME HERE: " + JSON.stringify(txmsg));
-          game_self.loadGame(game_id);
-	  for (let i = 0; i < tx.transaction.to.length; i++) {
-	    game_self.addOpponent(tx.transaction.to[i].add);
-	  }
+          game_id = game_id;
+          game_self.game = game_self.loadGame(game_id);
           game_self.game.module = txmsg.module;
-console.log("GAME NOW: " + JSON.stringify(game_self.game));
+          game_self.saveGame(game_id);
+
 
 	  //////////////////
 	  // update email //
 	  //////////////////
-/*
           if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
             let email_self = app.modules.returnModule("Email");
             let title      = game_self.emailAppName + " Invitation";
             let opponentshtml = "";
             for (let z = 0; z < tx.transaction.to.length; z++) {
-              if (z > 0) { opponentshtml += ", "; }
-              opponentshtml += tx.transaction.to[z].add;
+	      if (z > 0) { opponentshtml += ", "; }
+	      opponentshtml += tx.transaction.to[z].add;
             }
             let data       = 'You have been invited to a game of '+game_self.emailAppName+'. <div class="accept_invite link" id="'+game_id+'_'+txmsg.module+'">click here to accept</div>.';
             if (opponentshtml.length > tx.transaction.to[0].add.length) {
-              opponentshtml += ", ";
-              opponentshtml += tx.transaction.from[0].add;
-              data       = 'You have been invited to a group game of '+game_self.emailAppName+' ('+opponentshtml+'). <div class="accept_invite link" id="'+game_id+'_'+txmsg.module+'">click here to accept</div>.';
-            }
+	      opponentshtml += ", ";
+	      opponentshtml += tx.transaction.from[0].add;
+	      data       = 'You have been invited to a group game of '+game_self.emailAppName+' ('+opponentshtml+'). <div class="accept_invite link" id="'+game_id+'_'+txmsg.module+'">click here to accept</div>.';
+	    }
             email_self.receiveMail(title, data, tx);
           } else {
             let email_self = app.modules.returnModule("Email");
             let title      = game_self.emailAppName + " Invitation Sent";
             let opponentshtml = "";
             for (let z = 0; z < tx.transaction.to.length; z++) {
-              if (z > 0) { opponentshtml += ", "; }
-              opponentshtml += tx.transaction.to[z].add;
+	      if (z > 0) { opponentshtml += ", "; }
+	      opponentshtml += tx.transaction.to[z].add;
             }
             let data       = 'You have invited ' + opponentshtml + ' to a game of ' + game_self.emailAppName + '. Please wait for them to initiate the game.';
             email_self.receiveMail(title, data, tx);
           }
-*/
 
-          game_self.saveGame(game_id);
-          //app.storage.saveOptions();
-console.log("STILL HERE: " + JSON.stringify(game_self.game));
 
+          app.storage.saveOptions();
           return;
         }
-
-
 
 
         ////////////
@@ -189,12 +181,9 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
           game_self.game.module = txmsg.module;
           game_self.saveGame(game_id);
 
-          if (game_self.game.over == 1) {
-            return;
-          }
+	  if (game_self.game.over == 1) { return; }
 
-
-          if (game_self.game.step.game == 0) {
+	  if (game_self.game.step.game == 0) {
 
             if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
               game_self.game.accept = 1;
@@ -265,19 +254,18 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
 	  }
 	  players.sort();
 
-
           for (let i = 0; i < players.length; i++) {
-            if (players[i] === game_self.app.wallet.returnPublicKey()) {
-              game_self.game.player = i+1;
-              game_self.saveGame(game_id);
-            }
-          }
+	    if (players[i] === game_self.app.wallet.returnPublicKey()) {
+	      game_self.game.player = i+1;
+	      game_self.saveGame(game_id);
+	    }
+	  }
 
 
-          //
-          // if we hit this point, everyone has accepted the game
-          // so we can move into handleGame
-          //
+	  //
+	  // if we hit this point, everyone has accepted the game
+	  // so we can move into handleGame
+	  //
           if ( game_self.initializeGameFeeder(game_id) == 1 ) {	  
 
             let title = game_self.emailAppName + " Accepted";
@@ -301,22 +289,22 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
           let module     = txmsg.module;
 
           let email_self = app.modules.returnModule("Email");
-          let game_self  = app.modules.returnModule(module);
+	  let game_self  = app.modules.returnModule(module);
 
           let title      = "Game Over";
           let data       = "Your game has finished.";
           email_self.receiveMail(title, data, tx);
 
-          game_self.loadGame(game_id);
+	  game_self.loadGame(game_id);
           game_self.game.over = 1;
 
-          // only sender sets last block
-          if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
+	  // only sender sets last block
+	  if (tx.transaction.from[0].add == app.wallet.returnPublicKey()) {
             game_self.game.last_block = app.blockchain.returnLatestBlockId();
-          }
+	  }
 
-          game_self.updateStatus("Opponent Resigned");
-          game_self.updateLog("Opponent Resigned");
+	  game_self.updateStatus("Opponent Resigned");
+	  game_self.updateLog("Opponent Resigned");
           game_self.saveGame(game_self.game.id);
 
           return;
@@ -324,33 +312,33 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
         }
 
 
-        //
-        // at this point, we check to make sure
-        // that this is not a game move that we 
-        // have already dealt with
-        //
-        try {
-          if (txmsg.step == undefined) { txmsg.step = {}; }
+	//
+	// at this point, we check to make sure
+	// that this is not a game move that we 
+	// have already dealt with
+	//
+	try {
+	  if (txmsg.step == undefined) { txmsg.step = {}; }
           if (txmsg.step.game != undefined) {
             if (txmsg.step.game <= game_self.game.step.game) {
               return;
             }
           } else {
-            txmsg.step.game = 0;
+	    txmsg.step.game = 0;
             if (game_self.game.step.game > 0) {
               return;
             }
-          }
+	  }
           if (txmsg.extra != undefined) {
             if (txmsg.extra.target != undefined) {
               game_self.game.target = txmsg.extra.target;
             }
           } else { txmsg.extra = {}; }
-          if (txmsg.turn == undefined) { txmsg.turn = []; }
+	  if (txmsg.turn == undefined) { txmsg.turn = []; }
           game_self.game.step.game = txmsg.step.game;
-        } catch (err) {
-          console.log("Error Checking Game Step: " + JSON.stringify(err));
-        }
+	} catch (err) {
+	  console.log("Error Checking Game Step: " + JSON.stringify(err));
+	}
 
 
         ///////////
@@ -358,7 +346,7 @@ console.log("STILL HERE: " + JSON.stringify(game_self.game));
         ///////////
         if (game_self.game.queue != undefined) {
           for (let i = 0; i < txmsg.turn.length; i++) { game_self.game.queue.push(txmsg.turn[i]); }
-          game_self.runQueue(txmsg);
+	  game_self.runQueue(txmsg);
         }
       }
 
@@ -410,7 +398,7 @@ Game.prototype.runQueue = function runQueue(txmsg={}) {
 
       let gqe = game_self.game.queue.length-1;
       let gmv = game_self.game.queue[gqe].split("\t");
-        
+	
       //
       // core game engine
       // SHUFFLE [decknum] 
@@ -445,7 +433,7 @@ Game.prototype.runQueue = function runQueue(txmsg={}) {
         if (gmv[1] == "ready") {
           game_self.game.initializing = 0;
 
-          let title = game_self.emailAppName + " Game Ready";
+	  let title = game_self.emailAppName + " Game Ready";
           let data  = 'Your game of ' + game_self.emailAppName + ' is ready to begin.<p></p><div id="'+game_self.game.id+'_'+game_self.game.module+'" class="open_game link">Click here to open or continue this game.</div>';
           let email_self = game_self.app.modules.returnModule("Email");
 
@@ -458,7 +446,7 @@ Game.prototype.runQueue = function runQueue(txmsg={}) {
           email_self.receiveMail(title, data, newtx, function() {});
           game_self.saveGame(game_self.game.id);
 
-        }
+	}
         game_self.game.queue.splice(gqe, 1);
       }
 
@@ -479,7 +467,7 @@ Game.prototype.runQueue = function runQueue(txmsg={}) {
         let recipient = gmv[2];
         let cards = gmv[3];
 
-        this.updateLog("resolving deal for "+recipient+"...");
+	this.updateLog("resolving deal for "+recipient+"...");
 
         if (game_self.game.player == recipient) {
           for (let i = 0; i < cards; i++) {
@@ -488,13 +476,13 @@ Game.prototype.runQueue = function runQueue(txmsg={}) {
             newcard = game_self.app.crypto.hexToString(newcard);
             console.log("PLAYER: " + game_self.game.player + " finally decoded: " + newcard);
             game_self.game.deck[deckidx-1].hand.push(newcard);
-          }
-        }
+	  }
+	}
 
 
-        //
-        // everyone purges their spent keys
-        //
+	//
+	// everyone purges their spent keys
+	//
         game_self.game.deck[deckidx-1].keys = game_self.game.deck[deckidx-1].keys.splice(cards, game_self.game.deck[deckidx-1].keys.length - cards);
         game_self.game.deck[deckidx-1].crypt = game_self.game.deck[deckidx-1].crypt.splice(cards, game_self.game.deck[deckidx-1].crypt.length - cards);
 
@@ -526,8 +514,8 @@ this.updateLog("dealing cards to "+recipient+"...");
         for (let i = 1; i < total_players+1; i++) {
           if (i != recipient) {
             game_self.game.queue.push("REQUESTKEYS\t"+deckidx+"\t"+i+"\t"+recipient+"\t"+cards);
-          }
-        }
+	  }
+	}
       }
 
 
@@ -536,21 +524,21 @@ this.updateLog("dealing cards to "+recipient+"...");
 
         let deckidx = gmv[1];
         let sender = gmv[2];
-        let recipient = gmv[3];
-        let cards = gmv[4];
+	let recipient = gmv[3];
+	let cards = gmv[4];
 
 this.updateLog("requesting keys for "+recipient+"...");
 
-        //
-        // sender then sends keys
-        //
-          if (game_self.game.player == sender) {
+	//
+	// sender then sends keys
+	//
+  	if (game_self.game.player == sender) {
           game_self.game.turn = [];
-          game_self.game.turn.push("RESOLVE");
+	  game_self.game.turn.push("RESOLVE");
           for (let i = 0; i < cards; i++) { game_self.game.turn.push(game_self.game.deck[deckidx-1].keys[i]); }
-          game_self.game.turn.push("ISSUEKEYS\t"+deckidx+"\t"+sender+"\t"+recipient+"\t"+cards);
+	  game_self.game.turn.push("ISSUEKEYS\t"+deckidx+"\t"+sender+"\t"+recipient+"\t"+cards);
           game_self.sendMessage("game", {});
-        }
+	}
 
         //
         // execution stops
@@ -575,13 +563,13 @@ this.updateLog("issuing keys to "+recipient+"...");
         game_self.game.queue.splice(gqe, 1);
 
         if (game_self.game.player == recipient) {
-             for (let i = 0; i < cards; i++) {
+   	  for (let i = 0; i < cards; i++) {
             game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.decodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.queue[keyidx+i]);
           }
         }
 
         game_self.game.queue.splice(keyidx, cards);
-        game_self.saveGame(game_self.game.id);
+	game_self.saveGame(game_self.game.id);
 
       }
 
@@ -594,7 +582,7 @@ this.updateLog("issuing keys to "+recipient+"...");
       if (gmv[0] === "DECKBACKUP") {
 
 this.updateLog("deck backup...");
-        let deckidx = gmv[1];
+	let deckidx = gmv[1];
 
         game_self.old_cards = {};
         game_self.old_crypt = [];
@@ -617,15 +605,13 @@ this.updateLog("deck backup...");
       if (gmv[0] === "DECKRESTORE") {
 
 this.updateLog("deck restore...");
-        let deckidx = gmv[1];
+	let deckidx = gmv[1];
 
         for (let i = game_self.old_crypt.length - 1; i >= 0; i--) {
-console.log("UNSHIFT: " + game_self.old_crypt[i] + " --- " + game_self.old_keys[i]);
           game_self.game.deck[deckidx-1].crypt.unshift(game_self.old_crypt[i]);
           game_self.game.deck[deckidx-1].keys.unshift(game_self.old_keys[i]);
         }
         for (var b in game_self.old_cards) {
-console.log("RE-ADD: " + game_self.old_cards[b]);
           game_self.game.deck[deckidx-1].cards[b] = game_self.old_cards[b];
         }
         game_self.old_cards = {};
@@ -635,11 +621,11 @@ console.log("RE-ADD: " + game_self.old_cards[b]);
 
       }
 
-            
+	    
 
 
       if (gmv[0] === "CARDS") {
-        let deckidx = gmv[1];
+	let deckidx = gmv[1];
         game_self.game.queue.splice(gqe, 1);
         for (let i = 0; i < gmv[2]; i++) {
           game_self.game.deck[deckidx-1].crypt[(gmv[2]-1-i)] = game_self.game.queue[gqe-1-i];
@@ -648,7 +634,7 @@ console.log("RE-ADD: " + game_self.old_cards[b]);
       }
 
 
-            
+	    
       if (gmv[0] === "DECK") {
 
 this.updateLog("deck processing...");
@@ -658,8 +644,6 @@ this.updateLog("deck processing...");
 	//
 	// create deck if not exists
 	//
-	game_self.resetDeck(deckidx-1);
-
 	while (game_self.game.deck.length < deckidx) { game_self.addDeck(); }
         game_self.updateStatus("creating deck by importing specified cards...");
         game_self.game.deck[deckidx-1].cards = cards;
@@ -668,17 +652,17 @@ this.updateLog("deck processing...");
 
       }
 
-            
+	    
 
       if (gmv[0] === "DECKXOR") {
 
 this.updateLog("deck initial card xor...");
 
-        let deckidx = gmv[1];
+	let deckidx = gmv[1];
 
         if (game_self.game.player == gmv[2]) {
 
-          game_self.updateStatus("encrypting deck for blind card shuffle");
+	  game_self.updateStatus("encrypting deck for blind card shuffle");
 
           if (game_self.game.deck[deckidx-1].xor == "") { game_self.game.deck[deckidx-1].xor = game_self.app.crypto.hash(Math.random()); }
 
@@ -686,7 +670,7 @@ this.updateLog("deck initial card xor...");
             game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.encodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.deck[deckidx-1].xor);
             game_self.game.deck[deckidx-1].keys[i] = game_self.app.crypto.generateKeys();
           }
-                
+	        
           //
           // shuffle the encrypted deck
           //
@@ -694,18 +678,18 @@ this.updateLog("deck initial card xor...");
 
           game_self.game.turn = [];
           game_self.game.turn.push("RESOLVE");
-          for (let i = 0; i < game_self.game.deck[deckidx-1].crypt.length; i++) { game_self.game.turn.push(game_self.game.deck[deckidx-1].crypt[i]); }
-          game_self.game.turn.push("CARDS\t"+deckidx+"\t"+game_self.game.deck[deckidx-1].crypt.length);
+	  for (let i = 0; i < game_self.game.deck[deckidx-1].crypt.length; i++) { game_self.game.turn.push(game_self.game.deck[deckidx-1].crypt[i]); }
+	  game_self.game.turn.push("CARDS\t"+deckidx+"\t"+game_self.game.deck[deckidx-1].crypt.length);
 
-          let extra = {};
+	  let extra = {};
 
-          game_self.sendMessage("game", extra);
+	  game_self.sendMessage("game", extra);
 
-        } else {
-          game_self.updateStatus("opponent encrypting deck for blind card shuffle");
-        }
+	} else {
+	  game_self.updateStatus("opponent encrypting deck for blind card shuffle");
+	}
 
-        cont = 0;
+	cont = 0;
       }
 
 
@@ -715,33 +699,33 @@ this.updateLog("deck initial card xor...");
       if (gmv[0] === "DECKENCRYPT") {
 
 this.updateLog("deck initial card encrypt...");
-        let deckidx = gmv[1];
+	let deckidx = gmv[1];
 
         if (game_self.game.player == gmv[2]) {
 
           game_self.updateStatus("encrypting shuffled deck for dealing to players...");
 
-                for (let i = 0; i < game_self.game.deck[deckidx-1].crypt.length; i++) {
-                  game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.decodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.deck[deckidx-1].xor);
-                  game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.encodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.deck[deckidx-1].keys[i]);
-                }
+      	  for (let i = 0; i < game_self.game.deck[deckidx-1].crypt.length; i++) {
+      	    game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.decodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.deck[deckidx-1].xor);
+      	    game_self.game.deck[deckidx-1].crypt[i] = game_self.app.crypto.encodeXOR(game_self.game.deck[deckidx-1].crypt[i], game_self.game.deck[deckidx-1].keys[i]);
+      	  }
 
           game_self.game.turn = [];
           game_self.game.turn.push("RESOLVE");
           for (let i = 0; i < game_self.game.deck[deckidx-1].crypt.length; i++) { game_self.game.turn.push(game_self.game.deck[deckidx-1].crypt[i]); }
           game_self.game.turn.push("CARDS\t"+deckidx+"\t"+game_self.game.deck[deckidx-1].crypt.length);
 
-                let extra = {};
-                game_self.sendMessage("game", extra);
+      	  let extra = {};
+      	  game_self.sendMessage("game", extra);
 
-        } else {
-                game_self.updateStatus("opponent encrypting shuffled deck for dealing to players...");
-        }
+	} else {
+      	  game_self.updateStatus("opponent encrypting shuffled deck for dealing to players...");
+	}
 
-        cont = 0;
+	cont = 0;
       }
 
-            
+	    
 
       //
       // if we hit this point, kick our
@@ -1022,8 +1006,8 @@ Game.prototype.sendMessage = function sendMessage(type = "game", extra = {}, myc
     setTimeout(() => {
       game_self.app.network.sendOffChainMessageWithCallback(game_self.game.opponents[0], mymsg, function() {
 
-        // clear timer to avoid disconnection message
-        game_self.flagConnectionStable();
+	// clear timer to avoid disconnection message
+	game_self.flagConnectionStable();
         clearInterval(game_self.connection_monitor_timer);
 
       });
@@ -1040,7 +1024,7 @@ Game.prototype.sendMessage = function sendMessage(type = "game", extra = {}, myc
       game_self.game.last_txmsg = "";
       game_self.saveGame(game_self.game.id);
       if (mycallback != null) { 
-        mycallback();
+	mycallback();
       }
       game_self.onConfirmation(null, newtx, 0, game_self.app);
 
@@ -1073,11 +1057,11 @@ Game.prototype.sendMessage = function sendMessage(type = "game", extra = {}, myc
         console.log("ERROBJ: " + JSON.stringify(errobj));
         if (errobj.length > 2) {
           if (errobj.length > 2) {
-              let obj = JSON.parse(errobj);
-            if (obj.err != "") {
-              console.log("Broadcasting Status Uncertain!");
-              return;
-            }
+  	    let obj = JSON.parse(errobj);
+	    if (obj.err != "") {
+	      console.log("Broadcasting Status Uncertain!");
+	      return;
+	    }
           }
         }
       }
@@ -1145,11 +1129,7 @@ Game.prototype.loadGame = function loadGame(game_id = null) {
     }
   }
 
-  //
-  // otherwise subsequent save will be blank
-  //
   this.game = this.newGame(game_id);
-  this.saveGame(game_id);
   return this.game;
 
 }
@@ -1190,29 +1170,20 @@ Game.prototype.newGame = function newGame(game_id = null) {
 }
 Game.prototype.addDeck = function addDeck() {
   let newIndex = this.game.deck.length;
-  this.resetDeck(newIndex);
-}
-Game.prototype.resetDeck = function resetDeck(newIndex=0) {
   this.game.deck[newIndex] = {};
   this.game.deck[newIndex].cards    = {};
   this.game.deck[newIndex].crypt    = [];
   this.game.deck[newIndex].keys     = [];
   this.game.deck[newIndex].hand     = [];
   this.game.deck[newIndex].xor      = "";
-  this.game.deck[newIndex].discards = {};
 }
-
 Game.prototype.saveGame = function saveGame(game_id = null) {
 
-  if (this.app.options.games == undefined) { 
-console.log("games is undefined!");
-    this.app.options.games = []; 
-  }
+  if (this.app.options.games == undefined) { this.app.options.games = []; }
 
   if (game_id != null) {
     for (let i = 0; i < this.app.options.games.length; i++) {
       if (this.app.options.games[i].id == game_id) {
-console.log("... saving game: " + game_id);
         this.app.options.games[i] = JSON.parse(JSON.stringify(this.game));
         this.app.storage.saveOptions();
         return;
@@ -1220,12 +1191,8 @@ console.log("... saving game: " + game_id);
     }
   }
 
-  if (this.game.id == game_id) {
-    this.app.options.games.push(this.game);
-  } else {
-    this.game = this.newGame(game_id);
-  }
-
+  this.game = this.newGame(game_id);
+  this.app.options.games.push(this.game);
   this.app.storage.saveOptions();
   return;
 
@@ -1322,6 +1289,7 @@ Game.prototype.displayEmailForm = function displayEmailForm(app) {
 Game.prototype.formatEmailTransaction = function formatEmailTransaction(tx, app) {
   tx.transaction.msg.module = this.name;
   tx.transaction.msg.request = "invite";
+  tx.transaction.msg.secret = app.wallet.returnPublicKey();
   return tx;
 };
 Game.prototype.attachEmailEvents = function attachEmailEvents(app) {
@@ -1368,6 +1336,7 @@ Game.prototype.attachEmailEvents = function attachEmailEvents(app) {
 
       newtx.transaction.msg.module   = game_self.game.module;
       newtx.transaction.msg.game_id  = game_self.game.id;
+      newtx.transaction.msg.secret   = game_self.game.secret;
       newtx.transaction.msg.request  = "accept";
       newtx = app.wallet.signTransaction(newtx);
       app.network.propagateTransaction(newtx);

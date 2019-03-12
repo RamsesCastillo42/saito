@@ -36,6 +36,8 @@
   margin-bottom: 10px;
   clear: both;
   padding-top: 40px;
+}
+.active_games_header {
   text-decoration: underline;
 }
 .joingamelink {
