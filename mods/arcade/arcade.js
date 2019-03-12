@@ -322,10 +322,15 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           html += '<div class="acceptgamelink">'+acceptgame+'</div>';
           html += '</div>';
           $('.active_games').show();
-	  let thisdivname = "#" + game_id + "_game";
-	  try {
-            if ($(thisdivname).length) {
 
+
+	  var thisdivname = game_id + "_game";
+	  try {
+            if (document.getElementById(thisdivname) !== null) {
+	      //
+	      // old invitation
+	      // 
+	      return;
 	    } else {
 	      this.showMonitor();
               $('#gametable').prepend(html);
@@ -371,9 +376,12 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	//
 	if (game_self.game.over == 1) { return; }
 
-	if (game_self.game.accept === 0) { 
-	  $('.status').html("other players are accepting the game...");
-	  $('.status').show();
+	//
+	// if I have accepted...
+	//
+	if (game_self.game.accept === 1) { 
+	  //$('.status').html("other players are accepting the game...");
+	  //$('.status').show();
 	  return; 
 	}
 
@@ -389,7 +397,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  if (this.currently_viewing_monitor == 1) {
 
 	    let active_module = txmsg.module;
-	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a>.`;
+	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a><p></p><div id="return_to_arcade" class="return_to_arcade">Return to Arcade</div>.`;
 	    this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
@@ -551,6 +559,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   //
   $('.return_to_arcade').off();
   $('.return_to_arcade').on('click', function() {
+    arcade_self.currently_viewing_monitor = 0;
     arcade_self.hideMonitor();
   });
 
