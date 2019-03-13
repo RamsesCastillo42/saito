@@ -191,12 +191,19 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
 	  if (app.options.games[i].invitation == 1) {
 
+            let remote_address = "";
+	    for (let z = 0; z < app.options.games[i].opponents.length; z++) {;
+              if (z > 0) { remote_address += "_"; }
+              remote_address += app.options.games[i].opponents[z];
+            }
+
             html  = '<div class="single_activegame">';
             html += '<div id="'+gameid+'_game">';
             html += '<b>' + gamename + '</b></br>';
             html += opponent + '</div>';
             html += '<p></p>Game Invitation!<p></p>';
 	    html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+            html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
 	    html += '</div>';
 
 	  } else {
@@ -313,6 +320,13 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  //
           let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'">ACCEPT</div>';
 
+	  let remote_address = "";
+	  for (let i = 0; i < tx.transaction.to.length; i++) {
+	    if (i > 0) { remote_address += "_"; }
+	    remote_address += tx.transaction.to[i].add;
+	  }
+
+
 	  let html = "";
           html  = '<div class="single_activegame">';
           html += '<div id="'+game_id+'_game">';
@@ -320,6 +334,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           html += remote_address.substring(0,15) + '</div>';
           html += '<p></p>Game Invitation!<p></p>';
           html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+          html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
           html += '</div>';
           $('.active_games').show();
 
@@ -757,6 +772,11 @@ console.log("ERROR DELETING GAME!");
     arcade_self.startInitializationTimer(game_id);
 
     let remote_address = $('.lightbox_message_from_address').text();
+
+    if (remote_address == "") {
+      remote_address = $(this).parent().parent().find('.acceptgameopponents').attr("id");
+    }
+
     tmpar = remote_address.split("_");
     for (let z = 0; z < tmpar.length; z++) { tmpar[z] = tmpar[z].trim(); }
 
@@ -784,10 +804,10 @@ console.log("ERROR DELETING GAME!");
       return;
     }
 
-    newtx.transaction.msg.module   = game_self.game.module;
-    newtx.transaction.msg.game_id  = game_self.game.id;
-    newtx.transaction.msg.secret   = game_self.game.secret;
+    newtx.transaction.msg.module   = game_module;
+    newtx.transaction.msg.game_id  = game_id;
     newtx.transaction.msg.request  = "accept";
+
     newtx = arcade_self.app.wallet.signTransaction(newtx);
     arcade_self.app.network.propagateTransaction(newtx);
 
