@@ -44,13 +44,14 @@
   float:left;
   margin-bottom:20px;
   margin-top:20px;
+  color: -webkit-link;
 }
 .deletegamelink {
   float:left;
   margin-bottom:20px;
   margin-top:20px;
+  color: -webkit-link;
 }
-
 .single_activegame {
   width: 300px;
   padding:14px;
@@ -97,6 +98,7 @@ td {
   display:inline;
   text-decoration:underline;
   cursor:pointer;
+  color: -webkit-link;
 }
 .game_monitor {
   display:none;

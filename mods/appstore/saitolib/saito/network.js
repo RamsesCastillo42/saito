@@ -599,7 +599,10 @@ console.log("WE HAVE A PROXYMOD CONNECTION: " + JSON.stringify(proxy));
  * sends an offchain message if possible, returns 0 if not possible
  *
 **/
-Network.prototype.sendOffChainMessage = async function sendOffChainMessageWithCallback(publickey, message, mycallback=null) {
+Network.prototype.sendOffChainMessage = async function sendOffChainMessage(publickey, message) {
+  return this.sendOffChainMessageWithCallback(publickey, message);
+}
+Network.prototype.sendOffChainMessageWithCallback = async function sendOffChainMessageWithCallback(publickey, message, mycallback=null) {
 
   let send_direct = 0;
   let send_proxy  = 0;
