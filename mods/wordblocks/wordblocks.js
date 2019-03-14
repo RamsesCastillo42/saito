@@ -693,7 +693,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['18']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['19']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['20']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
-/*
+
   deck['21']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['22']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['23']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
@@ -780,7 +780,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['107']  = { img : "/wordblocks/img/Y.jpg" , name : "Y" };
   deck['108']  = { img : "/wordblocks/img/Y.jpg" , name : "Y" };
   deck['109']  = { img : "/wordblocks/img/Z.jpg" , name : "Z" };
-*/
+
   return deck;
 
 }
