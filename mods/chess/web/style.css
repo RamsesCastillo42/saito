@@ -1,7 +1,3 @@
-html, body {
-    overflow: hidden;
-}
-
 body {
     font-family: arial, helvetica, sans-serif;
     font-size: 13px;
@@ -145,6 +141,12 @@ img.captured {
     .controls {
         overflow-y: auto;
         overflow-x: hidden;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    html, body {
+        overflow: hidden;
     }
 }
 
