@@ -44,10 +44,12 @@ util.inherits(Wordblocks, Game);
 ////////////////
 Wordblocks.prototype.showTiles = function showTiles() {
 
+  if (this.game.deck.length == 0) { return; }
+
   let html = "";
 
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-    html += this.returnTile(this.game.cards[this.game.deck[0].hand[i]].name);
+    html += this.returnTile(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
 
   $('.tiles').html(html);
@@ -329,8 +331,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       wordblocks_self.addMove("turn\t"+wordblocks_self.game.player);
       let cards_needed = 7;
       cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
-      if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length-1; }
-      if (cards_needed > 0) { wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed); }
+      if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length; }
+      if (cards_needed > 0) { wordblocks_self.addMove("DEAL\t1\t"+wordblocks_self.game.player+"\t"+cards_needed); }
 
       wordblocks_self.showTiles();
       wordblocks_self.endTurn();
@@ -408,10 +410,10 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 	  //
 	  let cards_needed = 7;
           cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
-	  if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length-1; }
+	  if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length; }
 	
 	  if (cards_needed > 0) {
-            wordblocks_self.addMove("DEAL\t"+wordblocks_self.game.player+"\t"+cards_needed);
+            wordblocks_self.addMove("DEAL\t1\t"+wordblocks_self.game.player+"\t"+cards_needed);
 	  }
 
 	  myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
@@ -441,7 +443,7 @@ Wordblocks.prototype.removeTilesFromHand = function removeTilesFromHand(word) {
     tmpx = tmpx.toUpperCase();
 
     for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.game.cards[this.game.deck[0].hand[i]].name == tmpx) {
+      if (this.game.deck[0].cards[this.game.deck[0].hand[i]].name == tmpx) {
 	this.game.deck[0].hand.splice(i, 1);
 	i = this.game.deck[0].hand.length;
       }
@@ -691,7 +693,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['18']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['19']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['20']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
-
+/*
   deck['21']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['22']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
   deck['23']   = { img : "/wordblocks/img/E.jpg" , name : "E" };
@@ -778,7 +780,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['107']  = { img : "/wordblocks/img/Y.jpg" , name : "Y" };
   deck['108']  = { img : "/wordblocks/img/Y.jpg" , name : "Y" };
   deck['109']  = { img : "/wordblocks/img/Z.jpg" , name : "Z" };
-
+*/
   return deck;
 
 }
@@ -1270,6 +1272,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
 
+console.log("HERE WE ARE: 1");
+
 	  if (wordblocks_self.checkForEndGame() == 1) { return; }
 
           wordblocks_self.updateStatus("Your turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
@@ -1285,6 +1289,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
 
       if (mv[0] === "turn") {
+
+console.log("HERE WE ARE: 2");
 
 	if (wordblocks_self.checkForEndGame() == 1) { return; }
 
@@ -1329,6 +1335,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 
 Wordblocks.prototype.checkForEndGame = function checkForEndGame() {
+
+console.log("HERE WE ARE: 3 " +this.game.deck[0].hand.length + " -- " + this.game.deck[0].crypt.length );
 
   //
   // the game ends when one player has no cards left
