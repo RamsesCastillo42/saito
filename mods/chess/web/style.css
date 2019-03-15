@@ -1,5 +1,5 @@
 html, body {
-    height: 99%;
+    height: 100%;
 }
 
 body {
@@ -128,27 +128,45 @@ img.captured {
 }
 
 @media only screen and (max-width: 900px) {
+    .logo {
+        width: 25px;
+        margin-top: 5px;
+        margin-left: 5x;
+        margin-right: 10px;
+        float: left;
+    }
+    .header {
+        font-size: 20px;
+        height: 40px;
+    }
     .row {
         grid-template-columns: 100%;
-        grid-template-rows: auto 90%;
+        grid-template-rows: auto 85%;
+    }
+    .column{
+        border-radius: 0;
     }
     .module_container {
-        height: 90%;
+        height: 99%;
+        margin-top: 0;
     }
     #board {
-        max-width: 550px;
+        max-width: 500px;
     }
     #status_display {
-        font-size: 4.5vw;
+        font-size: 24px;
         margin: 0;
     }
     #status_opponent {
-        font-size: 3.5vw;
+        font-size: 20px;
     }
     .controls {
         overflow-y: auto;
         overflow-x: hidden;
         min-height: 200px;
+    }
+    #opponent_id {
+        font-size: 20px;
     }
 }
 
