@@ -23,8 +23,17 @@ body {
 .tosstiles {
   border-bottom: 1px dashed;
 }
+.backboard {
+ position:absolute;
+ z-index: -1;
+ top: 0;
+ left: 0;
+ width: 1590px;
+ height: 1500px;
+}
 .gameboard {
-  position: absolute;
+  float:left;
+//  position: absolute;
   background-image: url("img/game0.jpg");
   background-size: cover;
   //width: 2677px;
@@ -35,15 +44,15 @@ body {
 .card {
   cursor:pointer;
 }
-
 .leftcol {
-  position: absolute;
-  left: 1338px;
+  position: fixed;
+  right: 0px;
   top: 0px;
   line-height:1.7;
+  z-index: 50000;
 }
 .score {
-  position:relative;
+  clear:both;
   font-size: 1.8em;
   padding:10px;
   #left: 1338px;
@@ -53,7 +62,6 @@ body {
   #background-color: #fffccd;
   #border: 2px solid #948f8b;
 }
-
 .tiles {
   position:relative;
   font-size: 1.8em;
