@@ -25,7 +25,6 @@ body {
 }
 .backboard {
  position:absolute;
- z-index: -1;
  top: 0;
  left: 0;
  width: 1590px;
@@ -33,11 +32,8 @@ body {
 }
 .gameboard {
   float:left;
-//  position: absolute;
   background-image: url("img/game0.jpg");
   background-size: cover;
-  //width: 2677px;
-  //height: 2907px;
   width: 1338px;
   height: 1458px;
 }
@@ -55,30 +51,20 @@ body {
   clear:both;
   font-size: 1.8em;
   padding:10px;
-  #left: 1338px;
-  #top: 445px;
   width: 225px;
   height: 200px;
-  #background-color: #fffccd;
-  #border: 2px solid #948f8b;
 }
 .tiles {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  #top: 200px;
-  #left: 1338px;
   width: 225px;
   height: 242px;
-  #background-color: #fffccd;
-  #border: 2px solid #948f8b;
 }
 .status {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  #left: 1338px;
-  #top: 0px;
   width: 225px;
   height: 200px;
   background-color: #fffccd;
