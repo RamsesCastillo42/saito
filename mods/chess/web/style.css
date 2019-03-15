@@ -1,3 +1,7 @@
+html, body {
+    height: 99%;
+}
+
 body {
     font-family: arial, helvetica, sans-serif;
     font-size: 13px;
@@ -48,19 +52,25 @@ h1 {
     color: black;
 }
 
+.container {
+    width: 100%;
+    height: 100%;
+}
+
 .module_container {
-    max-width: 1500px
+    max-width: 1200px;
+    margin: auto;
+    display: block;
+    margin-top: 10px;
 }
 
 .row {
-    margin: 15px;
     display: grid;
     grid-gap: 10px;
     grid-template-columns: 50% 50%;
-    grid-template-rows: auto 50%;
+    grid-template-rows: 100%;
     background-color: #fff;
     color: #555;
-    width: 95%;
 }
 
 .column {
@@ -84,7 +94,14 @@ h1 {
 }
 
 #status_opponent {
-    font-size: 1.4vw;
+    font-size: 1.2vw;
+    overflow: hidden;
+    display: block;
+}
+
+#opponent_id {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2vw;
 }
 
 #log {
@@ -101,35 +118,25 @@ img.captured {
     width: 32px;
 }
 
-.row {
-    margin: 15px;
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: 50% 50%;
-    background-color: #fff;
-    color: #555;
-}
-
-.column {
-    background-color: #555;
-    color: #fff;
-    border-radius: 5px;
-    padding: 20px;
-    font-size: 1.7em;
-}
-
 .chess_button {
     background-color: #999;
     font-size: 3vw;
     padding: 10px;
     border-radius: 5px;
     color: #DDD;
+    max-height: 100px;
 }
 
-@media only screen and (max-width: 1500px) {
+@media only screen and (max-width: 900px) {
     .row {
         grid-template-columns: 100%;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto 90%;
+    }
+    .module_container {
+        height: 90%;
+    }
+    #board {
+        max-width: 550px;
     }
     #status_display {
         font-size: 4.5vw;
@@ -141,6 +148,7 @@ img.captured {
     .controls {
         overflow-y: auto;
         overflow-x: hidden;
+        min-height: 200px;
     }
 }
 

@@ -302,27 +302,8 @@ Chessgame.prototype.attachEvents = function attachEvents() {
   });
 
   $(window).resize(function () {
-    if (this_chess.board) {
-      this_chess.board.resize();
-    }
-    if ($(window).innerWidth() <= 1500) {
-      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 600);
-      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 90);
-    } else {
-      $('.controls').outerHeight($('.board-space').outerHeight());
-    }
-  });
-
-  $(document).ready(function () {
     this_chess.board.resize();
-    if ($(window).innerWidth() <= 1500) {
-      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 600);
-      $('.controls').outerHeight($('body').outerHeight() - $('.board-space').outerHeight() - 90);
-    } else {
-      $('.controls').outerHeight($('.board-space').outerHeight());
-    }
   });
-
 }
 
 

@@ -1,81 +1,94 @@
-
 .ads {
   max-width: 300px;
   padding: 1em;
 }
 
 .opponent_address2 {
-  display:none;
-  margin-top:20px;
+  display: none;
+  margin-top: 20px;
 }
+
 .opponent_address3 {
-  display:none;
-  margin-top:20px;
+  display: none;
+  margin-top: 20px;
 }
+
 .opponent_address4 {
-  display:none;
-  margin-top:20px;
+  display: none;
+  margin-top: 20px;
 }
+
 .opponent_address5 {
-  display:none;
-  margin-top:20px;
+  display: none;
+  margin-top: 20px;
 }
+
 .opponent_address6 {
-  display:none;
-  margin-top:20px;
+  display: none;
+  margin-top: 20px;
 }
+
 .return_to_arcade {
-  clear:both;
-  padding-top:20px;
+  clear: both;
+  padding-top: 20px;
   color: -webkit-link;
   cursor: pointer;
   text-decoration: underline;
 }
+
 .active_games {
   font-size: 1.2em;
   margin-bottom: 10px;
   clear: both;
   padding-top: 40px;
 }
+
 .active_games_header {
   text-decoration: underline;
+  margin-bottom: 10px;
 }
+
 .joingamelink {
-  float:left;
-  margin-bottom:20px;
-  margin-top:20px;
+  float: left;
+  margin-bottom: 20px;
+  margin-top: 20px;
   color: -webkit-link;
 }
+
 .deletegamelink {
-  float:left;
-  margin-bottom:20px;
-  margin-top:20px;
+  float: left;
+  margin-bottom: 20px;
+  margin-top: 20px;
   color: -webkit-link;
 }
+
 .single_activegame {
   width: 300px;
-  padding:14px;
+  padding: 14px;
   border: 1px dashed #888;
   background-color: #efefef;
 }
 
 .gamelink {
-  float:keft;
-  margin-top:15px;
+  float: keft;
+  margin-top: 15px;
 }
+
 .delete_game {
- margin-left:30px;
+  margin-left: 30px;
 }
+
 .join {
- margin-left:10px;
+  margin-left: 10px;
 }
+
 td {
- padding-bottom:10px;
+  padding-bottom: 10px;
 }
 
 .arcade {
- display: inherit;
- padding: 1em;
+  display: inherit;
+  padding: 1em;
 }
 
 .gamelist {
@@ -86,62 +99,70 @@ td {
 }
 
 .gametitle {
- font-size: 1.2em;
- font-weight: bold;
- margin-top: 6px;
- text-align: center;
- cursor:pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 6px;
+  text-align: center;
+  cursor: pointer;
 }
-
 
 .link {
-  display:inline;
-  text-decoration:underline;
-  cursor:pointer;
+  display: inline;
+  text-decoration: underline;
+  cursor: pointer;
   color: -webkit-link;
 }
+
 .game_monitor {
-  display:none;
+  display: none;
   width: 100%;
   max-width: 750px;
 }
+
 .game_options {
   display: inherit;
   row-gap: 1em
 }
+
 .nonlink {
   text-decoration: none;
 }
+
 .publisher_message {
   clear: both;
   padding-top: 20px;
 }
 
 th {
- text-align: left;
+  text-align: left;
 }
+
 td {
- text-align: left;
- padding-right:45px;
+  text-align: left;
+  padding-right: 45px;
 }
+
 #gametable {
   font-size: 1.0em;
   display: grid;
   row-gap: 1em;
   grid-template-columns: repeat(auto-fit, 330px);
 }
+
 .active_games {
-  display:none;
+  display: none;
 }
+
 .status {
-  display:none;
+  display: none;
 }
 
 .invitation_player1 {
- display: block;
+  display: block;
 }
+
 .invitation_player2 {
- display: block;
+  display: block;
 }
 
 .invite_button {
@@ -160,7 +181,6 @@ td {
   margin-bottom: 15px;
 }
 
-
 .game {
   width: 300px;
   height: 250px;
@@ -176,69 +196,68 @@ td {
 }
 
 .gameimage {
- width: 300px;
- width: 100%;
- text-align: center;
- border: 3px solid #888;
- cursor:pointer;
+  width: 300px;
+  width: 100%;
+  text-align: center;
+  border: 3px solid #888;
+  cursor: pointer;
 }
 
 .body, body {
- font-family: arial, helvetica, sans-serif, sans;
- font-size: 13px;
- padding:0px;
- margin:0px;
+  font-family: arial, helvetica, sans-serif, sans;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
 }
 
 .logo {
- width:35px;
- margin-top:10px;
- margin-left:25px;
- margin-right:10px;
- float:left;
+  width: 35px;
+  margin-top: 10px;
+  margin-left: 25px;
+  margin-right: 10px;
+  float: left;
 }
 
 .logo_link {
- text-decoration:none;
- color:inherits
+  text-decoration: none;
+  color: inherits
 }
 
 .logo_text {
- font-family:Georgia;
- padding-top:6px;
- font-size:1.2em;
- color:#444;
+  font-family: Georgia;
+  padding-top: 6px;
+  font-size: 1.2em;
+  color: #444;
 }
 
 .header {
- font-size: 2em;
- width: 100%;
- height: 50px;
- border-bottom: 1px solid #a5a5a5;
+  font-size: 2em;
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #a5a5a5;
 }
 
 .loader {
- width: 100%;
- max-width: 600px;
- font-size: 2em;
- line-height: 1.8em;
- padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  font-size: 2em;
+  line-height: 1.8em;
+  padding: 30px;
 }
-
 
 .main {
- display: grid;
- grid-template-columns: 3fr 1fr;
- grid-column-gap: 1em;
- width: 100%;
- max-width: 1600px;
- font-size:1.6em;
- margin-left: auto;
- margin-right: auto;
-
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-column-gap: 1em;
+  width: 100%;
+  max-width: 1600px;
+  font-size: 1.6em;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 .manage_invitations {
- line-height:1.4em;
+  line-height: 1.4em;
 }
 
 .compose {
@@ -262,35 +281,30 @@ td {
   border: 1px solid #b0281a;
   cursor: pointer;
 }
+
 .compose:hover {
- background-image: linear-gradient(to bottom, #dd4b39, #c53727);
- border: 1px solid #b0281a;
+  background-image: linear-gradient(to bottom, #dd4b39, #c53727);
+  border: 1px solid #b0281a;
 }
 
-
 @media only screen and (max-width: 750px) {
-
   .main {
     grid-template-columns: 1fr;
   }
-
   .gamelist {
     justify-items: center;
     grid-template-columns: 1fr;
   }
-
   #gametable {
     justify-items: center;
     grid-template-columns: 1fr;
   }
-
 }
-@media only screen and (max-width: 425px) {
 
+@media only screen and (max-width: 425px) {
   .saito_address {
     font-size: 0.6em;
   }
-
   .address_box {
     width: 90%;
     padding: 15px;
@@ -299,9 +313,9 @@ td {
     margin-bottom: 15px;
   }
 }
+
 @media only screen and (max-width: 370px) {
   .ads {
     max-width: 300px;
   }
 }
-
