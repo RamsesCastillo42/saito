@@ -23,54 +23,48 @@ body {
 .tosstiles {
   border-bottom: 1px dashed;
 }
+.backboard {
+ position:absolute;
+ top: 0;
+ left: 0;
+ width: 1590px;
+ height: 1500px;
+}
 .gameboard {
-  position: absolute;
+  float:left;
   background-image: url("img/game0.jpg");
   background-size: cover;
-  //width: 2677px;
-  //height: 2907px;
   width: 1338px;
   height: 1458px;
 }
 .card {
   cursor:pointer;
 }
-
 .leftcol {
-  position: absolute;
-  left: 1338px;
+  position: fixed;
+  right: 0px;
   top: 0px;
   line-height:1.7;
+  z-index: 50000;
 }
 .score {
-  position:relative;
+  clear:both;
   font-size: 1.8em;
   padding:10px;
-  #left: 1338px;
-  #top: 445px;
   width: 225px;
   height: 200px;
-  #background-color: #fffccd;
-  #border: 2px solid #948f8b;
 }
-
 .tiles {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  #top: 200px;
-  #left: 1338px;
   width: 225px;
   height: 242px;
-  #background-color: #fffccd;
-  #border: 2px solid #948f8b;
 }
 .status {
   position:relative;
   font-size: 1.8em;
   padding:10px;
-  #left: 1338px;
-  #top: 0px;
   width: 225px;
   height: 200px;
   background-color: #fffccd;

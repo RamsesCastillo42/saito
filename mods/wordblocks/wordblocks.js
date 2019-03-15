@@ -417,6 +417,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 	  }
 
 	  myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
+
 	  wordblocks_self.exhaustWord(word, orientation, x, y);
 	  wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
 
