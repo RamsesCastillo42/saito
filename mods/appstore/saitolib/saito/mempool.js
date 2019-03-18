@@ -194,7 +194,7 @@ Mempool.prototype.fetchBlock = function fetchBlock(peer, bhash) {
           //
           this.downloads.splice(0, 1);
           this.downloading_active = 0;
-          console.error(error);
+          console.error(error.response);
           return;
         });
       } else {

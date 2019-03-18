@@ -319,7 +319,7 @@ Registry.prototype.formatEmailTransaction = function formatEmailTransaction(tx, 
 //////////////////
 // Confirmation //
 //////////////////
-Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, app) {
+Registry.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
 
   var registry_self = app.modules.returnModule("Registry");
 
@@ -448,7 +448,7 @@ Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
         let full_identifier = tx.transaction.msg.requested_identifier.toLowerCase() + "@" + app.modules.returnModule("Registry").domain;
         if (full_identifier.indexOf("'") > 0) { return; }
         full_identifier = full_identifier.replace(/\s/g, '');
-        await registry_self.addDatabaseRecord(tx, blk, full_identifier);
+        registry_self.addDatabaseRecord(tx, blk, full_identifier);
 
       }
     }
@@ -893,7 +893,7 @@ Registry.prototype.insertSavedHandles = async function insertSavedHandles() {
 //
 // the master record does this ...
 //
-Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk, identifier) {
+Registry.prototype.addDatabaseRecord = function addDatabaseRecord(tx, blk, identifier) {
 
   console.log("IN addDatabaseRecord FUNCTION")
   var registry_self = this;
@@ -901,79 +901,90 @@ Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk,
   var tmsql = "SELECT count(*) AS count FROM mod_registry_addresses WHERE identifier = $identifier";
   var params = { $identifier : identifier }
 
-  try {
-    console.log("GETTING IDENTIFIER FROM DB")
-    var row = await registry_self.db.get(tmsql, params);
-  } catch (err) {
-    console.log("DB err in addDatabaseRecord in Registry", err)
-  }
+  registry_self.db.get(tmsql, params)
+    .then((row) => {
+      if (row.count == 0) {
+        var msgtosign   = identifier + tx.transaction.from[0].add + blk.block.id + blk.returnHash();
+        var registrysig = registry_self.app.crypto.signMessage(msgtosign, registry_self.app.wallet.returnPrivateKey());
+        var sql = `INSERT OR IGNORE INTO mod_registry_addresses (identifier, publickey, unixtime, block_id, block_hash, signature, signer, longest_chain)
+          VALUES ($identifier, $publickey, $unixtime, $block_id, $block_hash, $sig, $signer, $longest_chain)`;
 
-  if (row != null) {
+        var params = {
+          $identifier : identifier,
+          $publickey : tx.transaction.from[0].add,
+          $unixtime : tx.transaction.ts ,
+          $block_id : blk.returnId(),
+          $block_hash : blk.returnHash(),
+          $sig : registrysig ,
+          $signer : registry_self.app.wallet.returnPublicKey(),
+          $longest_chain : 1
+        };
 
-    if (row.count == 0) {
+        var sqlwrite =
+        `INSERT\t${identifier}\t${blk.block.id}\t${blk.returnHash()}\t${tx.transaction.from[0].add}\t${tx.transaction.ts}\t${registrysig}\t${registry_self.app.wallet.returnPublicKey()}\n`
+        //"INSERT" + "\t" + identifier + "\t" + blk.block.id + "\t" + blk.returnHash() + "\t" + tx.transaction.from[0].add + "\t" + tx.transaction.ts + "\t" + registrysig + "\t" + registry_self.app.wallet.returnPublicKey() + "\n";
+        fs.appendFileSync((__dirname + "/web/addresses.txt"), sqlwrite, function(err) { if (err) { return console.log(err); } });
 
-      var msgtosign   = identifier + tx.transaction.from[0].add + blk.block.id + blk.returnHash();
-      var registrysig = registry_self.app.crypto.signMessage(msgtosign, registry_self.app.wallet.returnPrivateKey());
-      var sql = "INSERT OR IGNORE INTO mod_registry_addresses (identifier, publickey, unixtime, block_id, block_hash, signature, signer, longest_chain) VALUES ($identifier, $publickey, $unixtime, $block_id, $block_hash, $sig, $signer, $longest_chain)";
-      var params = { $identifier : identifier, $publickey : tx.transaction.from[0].add, $unixtime : tx.transaction.ts , $block_id : blk.returnId(), $block_hash : blk.returnHash(), $sig : registrysig , $signer : registry_self.app.wallet.returnPublicKey(), $longest_chain : 1 };
-
-      var sqlwrite = "INSERT" + "\t" + identifier + "\t" + blk.block.id + "\t" + blk.returnHash() + "\t" + tx.transaction.from[0].add + "\t" + tx.transaction.ts + "\t" + registrysig + "\t" + registry_self.app.wallet.returnPublicKey() + "\n";
-      fs.appendFileSync((__dirname + "/web/addresses.txt"), sqlwrite, function(err) { if (err) { return console.log(err); } });
-
-      try {
-        console.log("ADDING IDENTIFIER TO DB")
-        await registry_self.db.run(sql, params);
-      } catch(err) {
-        console.log(err)
-      }
-
-      if (tx.transaction.to[0].add == registry_self.publickey && registry_self.publickey == registry_self.app.wallet.returnPublicKey()) {
-
-        console.log("SENDING CONFIRMATION EMAIL OUT")
-        var to = tx.transaction.from[0].add;
-        var from = registry_self.app.wallet.returnPublicKey();
-        var amount = 0.0;
-        var fee = 2;
-
-        server_email_html = 'You can now receive emails (and more!) at this address:<p></p>'+tx.transaction.msg.requested_identifier+'@'+registry_self.domain+'<p></p>Your Saito client should have automatically updated to recognize this address.';
-
-        newtx = registry_self.app.wallet.createUnsignedTransaction(to, amount, fee);
-
-        if (newtx == null) {
-          console.log("NULL TX CREATED IN REGISTRY MODULE")
-          return;
+        registry_self.db.run(sql, params)
+          .then((row) => {
+            if (tx.transaction.to[0].add == registry_self.publickey &&
+              registry_self.publickey == registry_self.app.wallet.returnPublicKey()) {
+              registry_self.sendRegistrySuccessEmail(registry_self, tx, sqlwrite);
+            }
+          })
+          .catch(err => console.log(err))
+      } else {
+        if (registry_self.publickey == registry_self.app.wallet.returnPublicKey()) {
+          registry_self.sendRegistryFailureEmail(registry_self, tx, sqlwrite);
         }
-
-        newtx.transaction.msg.module   = "Email";
-        newtx.transaction.msg.data     = server_email_html;
-        newtx.transaction.msg.title    = "Address Registration Success!";
-        newtx.transaction.msg.sig      = sqlwrite;
-        newtx.transaction.msg.markdown = 0;
-        newtx = registry_self.app.wallet.signTransaction(newtx);
-        registry_self.app.mempool.addTransaction(newtx);
       }
-    } else {
-
-      if (registry_self.publickey == registry_self.app.wallet.returnPublicKey()) {
-        // identifier already registered
-
-        to = tx.transaction.from[0].add;
-        from = registry_self.app.wallet.returnPublicKey();
-        amount = 0;
-
-        server_email_html = identifier + ' is already registered';
-
-        newtx = registry_self.app.wallet.createUnsignedTransactionWithDefaultFee(to, amount);
-        if (newtx == null) { return; }
-        newtx.transaction.msg.module = "Email";
-        newtx.transaction.msg.data   = server_email_html;
-        newtx.transaction.msg.title  = "Address Registration Failure!";
-        newtx = registry_self.app.wallet.signTransaction(newtx);
-        registry_self.app.mempool.addTransaction(newtx);
-
-      }
-    }
-  };
+    })
+    .catch(err => console.log(err))
 }
 
 
+Registry.prototype.sendRegistrySuccessEmail = function sendRegistrySuccessEmail(registry_self, tx, sqlwrite) {
+  console.log("SENDING CONFIRMATION EMAIL OUT")
+  var to = tx.transaction.from[0].add;
+  var from = registry_self.app.wallet.returnPublicKey();
+  var amount = 0.0;
+  var fee = 2;
+
+  server_email_html = `You can now receive emails (and more!) at this address:
+    <p></p>${tx.transaction.msg.requested_identifier}@${registry_self.domain}<p></p>
+    Your Saito client should have automatically updated to recognize this address.`;
+
+  newtx = registry_self.app.wallet.createUnsignedTransaction(to, amount, fee);
+
+  if (newtx == null) {
+    console.log("NULL TX CREATED IN REGISTRY MODULE")
+    return;
+  }
+
+  newtx.transaction.msg.module   = "Email";
+  newtx.transaction.msg.data     = server_email_html;
+  newtx.transaction.msg.title    = "Address Registration Success!";
+  newtx.transaction.msg.sig      = sqlwrite;
+  newtx.transaction.msg.markdown = 0;
+
+  newtx = registry_self.app.wallet.signTransaction(newtx);
+  registry_self.app.mempool.addTransaction(newtx);
+}
+
+
+Registry.prototype.sendRegistryFailureEmail = function sendRegistryFailureEmail(registry_self, tx) {
+  // identifier already registered
+  var to = tx.transaction.from[0].add;
+  var from = registry_self.app.wallet.returnPublicKey();
+  var amount = 0;
+
+  var server_email_html = identifier + ' is already registered';
+
+  newtx = registry_self.app.wallet.createUnsignedTransactionWithDefaultFee(to, amount);
+  if (newtx == null) { return; }
+  newtx.transaction.msg.module = "Email";
+  newtx.transaction.msg.data   = server_email_html;
+  newtx.transaction.msg.title  = "Address Registration Failure!";
+  newtx = registry_self.app.wallet.signTransaction(newtx);
+  registry_self.app.mempool.addTransaction(newtx);
+}
