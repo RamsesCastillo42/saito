@@ -895,7 +895,6 @@ Registry.prototype.insertSavedHandles = async function insertSavedHandles() {
 //
 Registry.prototype.addDatabaseRecord = function addDatabaseRecord(tx, blk, identifier) {
 
-  console.log("IN addDatabaseRecord FUNCTION")
   var registry_self = this;
 
   var tmsql = "SELECT count(*) AS count FROM mod_registry_addresses WHERE identifier = $identifier";
@@ -922,7 +921,7 @@ Registry.prototype.addDatabaseRecord = function addDatabaseRecord(tx, blk, ident
 
         var sqlwrite =
         `INSERT\t${identifier}\t${blk.block.id}\t${blk.returnHash()}\t${tx.transaction.from[0].add}\t${tx.transaction.ts}\t${registrysig}\t${registry_self.app.wallet.returnPublicKey()}\n`
-        //"INSERT" + "\t" + identifier + "\t" + blk.block.id + "\t" + blk.returnHash() + "\t" + tx.transaction.from[0].add + "\t" + tx.transaction.ts + "\t" + registrysig + "\t" + registry_self.app.wallet.returnPublicKey() + "\n";
+
         fs.appendFileSync((__dirname + "/web/addresses.txt"), sqlwrite, function(err) { if (err) { return console.log(err); } });
 
         registry_self.db.run(sql, params)
@@ -944,7 +943,6 @@ Registry.prototype.addDatabaseRecord = function addDatabaseRecord(tx, blk, ident
 
 
 Registry.prototype.sendRegistrySuccessEmail = function sendRegistrySuccessEmail(registry_self, tx, sqlwrite) {
-  console.log("SENDING CONFIRMATION EMAIL OUT")
   var to = tx.transaction.from[0].add;
   var from = registry_self.app.wallet.returnPublicKey();
   var amount = 0.0;
@@ -969,7 +967,6 @@ Registry.prototype.sendRegistrySuccessEmail = function sendRegistrySuccessEmail(
 
   newtx = registry_self.app.wallet.signTransaction(newtx);
 
-  console.log("ADD TX TO MEMPOOL")
   registry_self.app.mempool.addTransaction(newtx);
 }
 
