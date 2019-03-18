@@ -968,6 +968,8 @@ Registry.prototype.sendRegistrySuccessEmail = function sendRegistrySuccessEmail(
   newtx.transaction.msg.markdown = 0;
 
   newtx = registry_self.app.wallet.signTransaction(newtx);
+
+  console.log("ADD TX TO MEMPOOL")
   registry_self.app.mempool.addTransaction(newtx);
 }
 
