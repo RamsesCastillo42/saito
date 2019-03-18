@@ -46,12 +46,12 @@ MrCharles.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app)
 
   if (app.BROWSER == 1) { return; }
 
-  console.log("#####################################################################");
-  console.log("######################### Mr Charles ################################");
-  console.log("#####################################################################");
-
   if (tx.transaction.msg.module != "Registry") { return; }
   if (conf == 0) {
+    console.log("#####################################################################");
+    console.log("######################### Mr Charles ################################");
+    console.log("#####################################################################");
+
     var requestor = tx.returnSender();
     if (tx.returnMessage().requested_identifier) {
       var requested = tx.returnMessage().requested_identifier;
@@ -72,7 +72,7 @@ MrCharles.prototype.notify = function notify(tonotify, requested, requestor) {
 
   //var from = this.app.wallet.returnPublicKey();
   var amount = 0.0;
-  var fee = 0.5;
+  var fee = 0.001;
 
   email_html = 'Someone at Address: ' + requestor + ' requested identifier: ' + requested + '@' + domain;
 

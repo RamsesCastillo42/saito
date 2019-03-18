@@ -435,9 +435,13 @@ Registry.prototype.onConfirmation = async function onConfirmation(blk, tx, conf,
       //
       if (txmsg.module == "Registry") {
 
-        registry_self.app.logger.logInfo(`Logging outcome of onConfirmation`)
-        registry_self.app.logger.logInfo(`TRANSACTION TO ADD: ${tx.transaction.to[0].add}`)
-        registry_self.app.logger.logInfo(`REGISTRY PUBKEY: ${registry_self.publickey}`)
+        // registry_self.app.logger.logInfo(`Logging outcome of onConfirmation`)
+        // registry_self.app.logger.logInfo(`TRANSACTION TO ADD: ${tx.transaction.to[0].add}`)
+        // registry_self.app.logger.logInfo(`REGISTRY PUBKEY: ${registry_self.publickey}`)
+
+        console.log(`Logging outcome of onConfirmation`)
+        console.log(`TRANSACTION TO ADD: ${tx.transaction.to[0].add}`)
+        console.log(`REGISTRY PUBKEY: ${registry_self.publickey}`)
         if (tx.transaction.to[0].add != registry_self.publickey) { return; }
         if (txmsg.requested_identifier === "") { return; }
 
