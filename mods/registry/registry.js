@@ -895,14 +895,18 @@ Registry.prototype.insertSavedHandles = async function insertSavedHandles() {
 //
 Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk, identifier) {
 
+  console.log("IN addDatabaseRecord FUNCTION")
   var registry_self = this;
-
-  try {
 
   var tmsql = "SELECT count(*) AS count FROM mod_registry_addresses WHERE identifier = $identifier";
   var params = { $identifier : identifier }
 
-  let row = await registry_self.db.get(tmsql, params);
+  try {
+    console.log("GETTING IDENTIFIER FROM DB")
+    var row = await registry_self.db.get(tmsql, params);
+  } catch (err) {
+    console.log("DB err in addDatabaseRecord in Registry", err)
+  }
 
   if (row != null) {
 
@@ -916,10 +920,16 @@ Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk,
       var sqlwrite = "INSERT" + "\t" + identifier + "\t" + blk.block.id + "\t" + blk.returnHash() + "\t" + tx.transaction.from[0].add + "\t" + tx.transaction.ts + "\t" + registrysig + "\t" + registry_self.app.wallet.returnPublicKey() + "\n";
       fs.appendFileSync((__dirname + "/web/addresses.txt"), sqlwrite, function(err) { if (err) { return console.log(err); } });
 
-      registry_self.db.run(sql, params);
+      try {
+        console.log("ADDING IDENTIFIER TO DB")
+        await registry_self.db.run(sql, params);
+      } catch(err) {
+        console.log(err)
+      }
 
       if (tx.transaction.to[0].add == registry_self.publickey && registry_self.publickey == registry_self.app.wallet.returnPublicKey()) {
 
+        console.log("SENDING CONFIRMATION EMAIL OUT")
         var to = tx.transaction.from[0].add;
         var from = registry_self.app.wallet.returnPublicKey();
         var amount = 0.0;
@@ -928,7 +938,12 @@ Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk,
         server_email_html = 'You can now receive emails (and more!) at this address:<p></p>'+tx.transaction.msg.requested_identifier+'@'+registry_self.domain+'<p></p>Your Saito client should have automatically updated to recognize this address.';
 
         newtx = registry_self.app.wallet.createUnsignedTransaction(to, amount, fee);
-        if (newtx == null) { return; }
+
+        if (newtx == null) {
+          console.log("NULL TX CREATED IN REGISTRY MODULE")
+          return;
+        }
+
         newtx.transaction.msg.module   = "Email";
         newtx.transaction.msg.data     = server_email_html;
         newtx.transaction.msg.title    = "Address Registration Success!";
@@ -959,11 +974,6 @@ Registry.prototype.addDatabaseRecord = async function addDatabaseRecord(tx, blk,
       }
     }
   };
-
-
-  } catch (err) {
-    console.log(err);
-  }
 }
 
 
