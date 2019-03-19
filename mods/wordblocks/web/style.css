@@ -1,82 +1,108 @@
 body {
- font-family: arial, helvetica, sans-serif;
- font-size: 13px;
- padding:0px;
- margin:0px;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
 }
+
 .connection_monitor {
- display:none;
- min-height: 30px;
- z-index: 90000;
- position: absolute;
- background: #ef6666;
- font-size: 1.8em;
- padding: 15px;
+  display: none;
+  min-height: 30px;
+  z-index: 90000;
+  position: absolute;
+  background: #ef6666;
+  font-size: 1.8em;
+  padding: 15px;
 }
+
 .player {
-  margin-bottom:6px;
+  margin-bottom: 6px;
 }
+
 .link {
   border-bottom: 1px dashed;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .tosstiles {
   border-bottom: 1px dashed;
 }
-.backboard {
- position:absolute;
- top: 0;
- left: 0;
- width: 1590px;
- height: 1500px;
-}
+
 .gameboard {
-  float:left;
   background-image: url("img/game0.jpg");
   background-size: cover;
   width: 1338px;
   height: 1458px;
+  margin-bottom: 130px;
 }
+
 .card {
-  cursor:pointer;
+  cursor: pointer;
 }
-.leftcol {
+
+#controls {
   position: fixed;
-  right: 0px;
-  top: 0px;
-  line-height:1.7;
-  z-index: 50000;
+  bottom: 0px;
+  min-height: 120px;
+  display: inline-block;
+  background-color: #555;
+  padding: 5px;
+  border: 2px solid #333;
+  border-radius: 3px;
+  color: #EEE;
+  width: 100%;
+  max-width: 1324px;
 }
+
+#controls > div {
+  height: 120px;
+  overflow-y: auto;
+}
+
 .score {
-  clear:both;
   font-size: 1.8em;
-  padding:10px;
-  width: 225px;
-  height: 200px;
+  padding: 10px;
+  width: 175px;
+  display: inline-block;
 }
+
 .tiles {
-  position:relative;
   font-size: 1.8em;
-  padding:10px;
-  width: 225px;
-  height: 242px;
+  padding: 10px;
+  width: 520px;
+  display: inline-block;
 }
+
 .status {
-  position:relative;
-  font-size: 1.8em;
-  padding:10px;
-  width: 225px;
-  height: 200px;
-  background-color: #fffccd;
-  border: 2px solid #948f8b;
+  font-size: 1.4em;
+  padding: 10px;
+  width: auto;
+  display: inline-block;
+  min-width: 250px;
+  max-width: 560px;
+  height: 225px;
 }
+
 .slot {
- position: absolute;
- cursor: pointer;
+  position: absolute;
+  cursor: pointer;
 }
+
 .slot:hover {
- background-color: blue;
- opacity: 0.8;
+  background-color: blue;
+  opacity: 0.8;
 }
 
 
+
+@media only screen and (max-width: 920px) {
+  .gameboard {
+    margin-bottom: 250px;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .gameboard {
+    margin-bottom: 370px;
+  }
+}
