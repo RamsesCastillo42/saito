@@ -33,15 +33,14 @@ body {
   background-size: cover;
   width: 1338px;
   height: 1458px;
-  margin-bottom: 130px;
-}
+  }
 
 .card {
   cursor: pointer;
 }
 
 #controls {
-  position: fixed;
+  position: unset;
   bottom: 0px;
   min-height: 120px;
   display: inline-block;
@@ -56,7 +55,6 @@ body {
 
 #controls > div {
   height: 120px;
-  overflow-y: auto;
 }
 
 .score {
@@ -93,16 +91,8 @@ body {
   opacity: 0.8;
 }
 
-
-
-@media only screen and (max-width: 920px) {
-  .gameboard {
-    margin-bottom: 250px;
-  }
-}
-
-@media only screen and (max-width: 750px) {
-  .gameboard {
-    margin-bottom: 370px;
+@media only screen and (max-height: 1615px) {
+  #controls {
+    position: fixed;
   }
 }
