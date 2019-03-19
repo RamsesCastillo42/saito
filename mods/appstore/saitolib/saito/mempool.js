@@ -306,12 +306,12 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
         //
         var blk = new saito.block(this.app);
         blk.block.creator = this.app.wallet.returnPublicKey();
-	//
-	// used elsewhere in mempool to ensure that we are
-	// adding our block as the longest chain and that the
-	// transactions will not be orphaned
-	//
-	blk.created_on_empty_mempool = 1;
+        //
+        // used elsewhere in mempool to ensure that we are
+        // adding our block as the longest chain and that the
+        // transactions will not be orphaned
+        //
+        blk.created_on_empty_mempool = 1;
         if (prevblk != null) {
           blk.block.prevhash = prevblk.returnHash();
           blk.block.vote = this.app.voter.returnPaysplitVote(prevblk.block.paysplit);
@@ -468,37 +468,37 @@ Mempool.prototype.processBlocks = async function processBlocks() {
       if (this.app.monitor.canBlockchainAddBlockToBlockchain()) {
         if (this.blocks.length > 0) {
 
-	  let block_to_add = this.blocks.shift();
+          let block_to_add = this.blocks.shift();
 
-	  //
-	  // if we created this block
-	  //
-	  if (block_to_add.created_on_empty_mempool == 1) {
+          //
+          // if we created this block
+          //
+          if (block_to_add.created_on_empty_mempool == 1) {
 
-	    //
-	    // check it is still getting added to the longest chain, otherwise
-	    // we will need to dissolve it to recapture the transactions as 
-	    // we will not notice if this block is pushed off the longest-chain
-	    // by someone else
-	    //
-	    if (this.app.blockchain.returnLatestBlockHash() != block_to_add.block.prevhash) {
+            //
+            // check it is still getting added to the longest chain, otherwise
+            // we will need to dissolve it to recapture the transactions as
+            // we will not notice if this block is pushed off the longest-chain
+            // by someone else
+            //
+            if (this.app.blockchain.returnLatestBlockHash() != block_to_add.block.prevhash) {
 
               for (let i = 0; i < block_to_add.transactions.length; i++) {
                 console.log("RECOVERING TRANSACTIONS FROM BADLY-TIMED BLOCK WE PRODUCED: ");
                 this.app.mempool.recoverTransaction(block_to_add.transactions[i]);
-		this.app.mempool.reinsertRecoveredTransactions();
+                this.app.mempool.reinsertRecoveredTransactions();
               }
 
-	    } else {
+            } else {
               await this.app.blockchain.addBlockToBlockchain(block_to_add);
-	    }
-	
-	  } else {
+            }
+
+          } else {
             await this.app.blockchain.addBlockToBlockchain(block_to_add);
-	  }
+          }
 
         }
-      } 
+      }
       // if we have emptied our queue
       if (this.blocks.length == 0) {
         clearInterval(this.processing_timer);
@@ -702,12 +702,12 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
         //
         // add to mempool before propagating
         //
-        console.log("ADDING TO MEMPOOL", JSON.stringify(tx));
+        // console.log("ADDING TO MEMPOOL", JSON.stringify(tx));
         this.transactions.push(tx);
         this.transactions_size_current += tx.size;
         this.transactions_hmap[tx.transaction.sig] = 1;
         for (let i = 0; i < tx.transaction.from.length; i++) {
-          console.log("ADDING TO HMAP: ", tx.transaction.from[i].returnIndex());
+          // console.log("ADDING TO HMAP: ", tx.transaction.from[i].returnIndex());
           this.transactions_inputs_hmap[tx.transaction.from[i].returnIndex()] = 1;
         }
 
@@ -732,10 +732,10 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
           this.transactions_size_current += tx.size;
           this.transactions.push(tx);
 
-          console.log("ADDING TO MEMPOOL", JSON.stringify(tx));
+          // console.log("ADDING TO MEMPOOL", JSON.stringify(tx));
           this.transactions_hmap[tx.transaction.sig] = 1;
           for (let i = 0; i < tx.transaction.from.length; i++) {
-            console.log("ADDING TO HMAP: ", tx.transaction.from[i].returnIndex());
+            // console.log("ADDING TO HMAP: ", tx.transaction.from[i].returnIndex());
             this.transactions_inputs_hmap[tx.transaction.from[i].returnIndex()] = 1;
           }
 
@@ -779,6 +779,8 @@ Mempool.prototype.removeBlockAndTransactions = function removeBlockAndTransactio
 
   this.clearing_active = true;
 
+  // console.log("CURRENT TX IN MEMPOOL", this.transactions);
+
   //
   // lets make some hmaps
   //
@@ -806,8 +808,10 @@ Mempool.prototype.removeBlockAndTransactions = function removeBlockAndTransactio
   //
   // fill our replacement array
   //
-  for (let t = 0; t < this.transactions.length-1; t++) {
+  for (let t = 0; t < this.transactions.length; t++) {
     if (this.transactions[t].is_valid != 0) {
+      // console.log("TX RE-ADDED");
+      // console.log(this.transactions[t]);
       replacement.push(this.transactions[t]);
     } else {
       // console.log("TX DROPPED");
@@ -835,9 +839,9 @@ Mempool.prototype.removeBlockAndTransactions = function removeBlockAndTransactio
 
   this.removeBlock(blk);
 
-  //console.log("TX IN MEMPOOL", this.transactions.length);
-  //console.log("TX INPUTS IN HMAP");
-  //console.log(JSON.stringify(this.transactions_inputs_hmap));
+  // console.log("TX IN MEMPOOL", this.transactions.length);
+  // console.log("TX INPUTS IN HMAP");
+  // console.log(JSON.stringify(this.transactions_inputs_hmap));
 }
 
 
@@ -863,7 +867,7 @@ Mempool.prototype.removeGoldenTicket = function removeGoldenTicket() {
  */
 Mempool.prototype.purgeExpiredGoldenTickets = function purgeExpiredGoldenTickets(prevblk_hash="") {
   for (let i = this.transactions.length - 1; i >= 0; i--) {
-    if (this.transactions[i].transaction.type == 1) {
+    if (this.transactions[i].transaction.type === 1) {
       if (this.transactions[i].transaction.msg.target != prevblk_hash) {
         this.removeTransaction(this.transactions[i]);
       }
