@@ -91,8 +91,17 @@ body {
   opacity: 0.8;
 }
 
+@media only screen and (min-height: 1615px) {
+  .gameboard {
+    margin-bottom: 0;
+  }
+}
+
 @media only screen and (max-height: 1615px) {
   #controls {
     position: fixed;
   }
+  .gameboard {
+    margin-bottom: 215px;
+    }
 }
