@@ -520,6 +520,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
   }
 
 
+
   for (let i = 0; i < word.length; i++) {
 
     let boardslot = "";
@@ -807,7 +808,7 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   letters['J'] = { score: 8 };
   letters['K'] = { score: 4 };
   letters['L'] = { score: 2 };
-  letters['M'] = { score: 4 };
+  letters['M'] = { score: 2 };
   letters['N'] = { score: 1 };
   letters['O'] = { score: 1 };
   letters['P'] = { score: 2 };
@@ -1033,7 +1034,6 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
             let thisletter = this.game.board[boardslot].letter;
-
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
           score += (wordscore * word_bonus);
@@ -1041,9 +1041,6 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       }
     }
   }
-
-
-
 
 
 
@@ -1107,12 +1104,12 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
+
       let thisletter = this.game.board[boardslot].letter;
       score += (this.letters[thisletter].score * letter_bonus);
     }
 
     score *= word_bonus;
-
 
 
     //
@@ -1159,14 +1156,18 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         boardslot = current_y + "_" + current_x;
         divname = "#" + boardslot;
 
+
         if (current_x > 15) {
 
           orth_end = 15;
 
         } else {
 
-          while (this.game.board[boardslot].letter != "_" && current_x < 15) {
-            end_of_word = current_x;
+//
+// >= instead of greater than
+//
+          while (this.game.board[boardslot].letter != "_" && current_x <= 15) {
+            orth_end = current_x;
             current_x++;
             boardslot = current_y + "_" + current_x;
             if (current_x > 15) { break; }
@@ -1177,14 +1178,13 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         let wordscore = 0;
         let word_bonus = 1;
 
-
         //
         // score this word
         //
         if (orth_start != orth_end) {
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
-            boardslot = y + "_" + w;
+            boardslot = i + "_" + w;
 
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
