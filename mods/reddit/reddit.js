@@ -2,8 +2,8 @@ const saito = require('../../lib/saito/saito');
 const h2m = require('h2m');
 const sqlite = require('sqlite');
 const ModTemplate = require('../../lib/templates/template');
-const util = require('util');
 const fs   = require('fs');
+const util = require('util');
 const URL  = require('url-parse');
 const path = require('path');
 const markdown = require( "markdown" ).markdown;
@@ -1443,6 +1443,51 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
       return;
     }
 
+
+    // loads list of posts
+    if (msg.request === "reddit load all") {
+
+      var sr = msg.data.subreddit.toLowerCase();
+      var so = msg.data.offset;
+
+      var sql    = "SELECT * FROM posts ORDER BY unixtime_rank DESC LIMIT $ppp OFFSET $offset";
+      var params = { $ppp : this.reddit.posts_per_page , $offset : so };
+      if (sr != "" && sr != null) {
+        sql = "SELECT * FROM posts WHERE subreddit = $sr ORDER BY unixtime_rank DESC LIMIT $ppp OFFSET $offset";
+        params = { $sr : sr ,$ppp : this.reddit.posts_per_page ,  $offset : so };
+      }
+      try {
+        var rows = await this.db.all(sql, params);
+      } catch(err) {
+        console.log(err);
+      }
+      if (rows != null) {
+        if (rows.length != 0) {
+          let message                 = {};
+              message.request         = "reddit payload";
+              message.data            = [];
+
+          for (var fat = 0; fat < rows.length; fat++) {
+            let {id, tx, subreddit, post_id, unixtime, comments, votes} = rows[fat];
+            message.data.push({
+              id: id,
+              tx: tx,
+              subreddit: subreddit ? subreddit : "",
+              post_id: post_id,
+              unixtime: unixtime,
+              comments: comments,
+              votes: votes,
+            })
+          }
+          message.data.sort((a,b) => b.votes - a.votes)
+          peer.sendRequest(message.request, message.data);
+        }
+      } else {
+        peer.sendRequest("reddit load null", {});
+      }
+      return;
+    }
+
     /////////////////////////////////////
     // server -- report TOS violations //
     /////////////////////////////////////
@@ -1587,6 +1632,61 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
         message.request         = "reddit post null";
         message.data            = {};
         message.data.msg        = "There don't seem to be any posts. Be the first to post!"
+        peer.sendRequest(message.request, message.data);
+      }
+      return;
+    }
+
+
+
+    if (msg.request === "reddit load comments") {
+
+      var pid = msg.data.post_id;
+
+      var sql = "SELECT * FROM comments WHERE post_id = $pid ORDER BY unixtime ASC";
+      try {
+        var rows = await this.db.all(sql, { $pid : pid });
+      } catch(err) {
+        console.log(err);
+      }
+      if (rows != null) {
+        var message             = {};
+        message.request         = "reddit comments";
+        message.data            = [];
+        for (var fat = 0; fat <= rows.length-1; fat++) {
+          let {id, tx, unixtime, votes} = rows[fat];
+          tx = JSON.parse(tx)
+          let {identifier, post_id, parent_id, subreddit, text} = tx.msg;
+
+          let comment = {
+            id: id,
+            text: text,
+            author: identifier,
+            votes: votes,
+            unixtime: unixtime,
+            post_id: post_id,
+            parent_id: parent_id,
+            subreddit: subreddit,
+            sig: tx.sig
+          }
+
+          if (comment.parent_id === '0') {
+            message.data = [...message.data, {
+              data: comment,
+              children: []
+            }]
+            message.data.sort((a,b) =>  b.data.votes - a.data.votes)
+          } else {
+            this.branchTraverse(message.data, comment)
+          }
+        }
+        peer.sendRequest(message.request, message.data);
+      }
+      else {
+        var message             = {};
+        message.request         = "reddit comment null";
+        message.data            = {};
+        message.data.msg        = "There don't seem to be any comments. Be the first to post!"
         peer.sendRequest(message.request, message.data);
       }
       return;
@@ -1749,7 +1849,6 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
       return;
     }
 
-
     ////////////////////////////////
     // client -- moderate comment //
     ////////////////////////////////
@@ -1767,6 +1866,24 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
       tx = msg.data.tx;
       newtx = new saito.transaction(tx);
       app.modules.returnModule("Reddit").addModerate(newtx, msg, app, "post");
+      return;
+    }
+
+    // New better routes
+    if (msg.request == "reddit payload") {
+      tx = msg.data.tx;
+      newtx = new saito.transaction(tx);
+    }
+
+    if (msg.request == "reddit comments") {
+      tx = msg.data.tx;
+      newtx = new saito.transaction(tx);
+      // app.modules.returnModule("Reddit").addComment(newtx, msg, app, 1);
+
+      // recache main
+      // reddit_self.generateCachedPagePosts("main");
+      // reddit_self.lastCached = new Date().getTime();
+
       return;
     }
 
@@ -1817,6 +1934,22 @@ Reddit.prototype.updatePostImg = async function updatePostImg(post_id, imgurl) {
   }
 ****/
 
+}
+
+Reddit.prototype.branchTraverse = function branchTraverse(branch, comment) {
+  branch.forEach(node => {
+    if (node.data.sig === comment.parent_id) {
+      node.children.push({
+        data: comment,
+        children: []
+      })
+      node.children.sort((a,b) =>  b.data.votes - a.data.votes)
+      return
+    }
+    else if (node.children !== []) {
+      this.branchTraverse(node.children, comment)
+    }
+  })
 }
 
 Reddit.prototype.savePost = async function savePost(tx) {
