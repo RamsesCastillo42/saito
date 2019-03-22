@@ -1479,7 +1479,6 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
               votes: votes,
             })
           }
-          message.data.sort((a,b) => b.votes - a.votes)
           peer.sendRequest(message.request, message.data);
         }
       } else {
@@ -1866,24 +1865,6 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
       tx = msg.data.tx;
       newtx = new saito.transaction(tx);
       app.modules.returnModule("Reddit").addModerate(newtx, msg, app, "post");
-      return;
-    }
-
-    // New better routes
-    if (msg.request == "reddit payload") {
-      tx = msg.data.tx;
-      newtx = new saito.transaction(tx);
-    }
-
-    if (msg.request == "reddit comments") {
-      tx = msg.data.tx;
-      newtx = new saito.transaction(tx);
-      // app.modules.returnModule("Reddit").addComment(newtx, msg, app, 1);
-
-      // recache main
-      // reddit_self.generateCachedPagePosts("main");
-      // reddit_self.lastCached = new Date().getTime();
-
       return;
     }
 
