@@ -65,14 +65,14 @@ body {
 }
 
 .tiles {
-  font-size: 1.8em;
+  font-size: 1.9em;
   padding: 10px;
   width: 520px;
   display: inline-block;
 }
 
 .status {
-  font-size: 1.4em;
+  font-size: 1.6em;
   padding: 10px;
   width: auto;
   display: inline-block;

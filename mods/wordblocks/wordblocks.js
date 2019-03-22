@@ -70,6 +70,14 @@ Wordblocks.prototype.showTiles = function showTiles() {
 ////////////////
 Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
+  //
+  // enable chat
+  //
+  if (this.browser_active == 1) {
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+  }
+
   this.updateStatus("loading game...");
   this.loadGame(game_id);
 
@@ -943,8 +951,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
       let letter_bonus = 1;
 
-      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = 3; }
-      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = 2; }
+      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
+      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
@@ -1028,8 +1036,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
 
-            if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = 3; }
-            if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = 2; }
+            if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
+            if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
             if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
@@ -1099,8 +1107,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       let tmpb = this.returnBonus(boardslot);
       let letter_bonus = 1;
 
-      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = 3; }
-      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = 2; }
+      
+      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
+      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
@@ -1189,8 +1198,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
 
-            if (tmpb === "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = 3; }
-            if (tmpb === "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = 2; }
+            if (tmpb === "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
+            if (tmpb === "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
             if (tmpb === "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb === "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
