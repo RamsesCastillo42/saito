@@ -1,6 +1,11 @@
 const io = require('socket.io-client');
 const saito = require('./saito');
 
+const EventEmitter = require('events');
+var util = require('util');
+
+
+
 /**
  * Peer Constructor
  * @param {*} app
@@ -20,7 +25,7 @@ function Peer(app, peerjson = "") {
   this.peer.publickey = "";
   this.peer.protocol = "http";
   this.peer.synctype = "full";         // full = full blocks
- 				       // lite = spv client
+  // lite = spv client
 
   this.peer.endpoint = {};
   this.peer.endpoint.host = "localhost";
@@ -81,25 +86,22 @@ function Peer(app, peerjson = "") {
   //
   // manage blockchain sync queue
   //
-  this.message_queue_timer = setInterval( () => {
+  this.message_queue_timer = setInterval(() => {
     if (this.message_queue.length > 0) {
       if (this.socket != null) {
         if (this.socket.connected == true) {
-          this.socket.emit('request',this.message_queue[0]);
+          this.socket.emit('request', this.message_queue[0]);
           this.message_queue.splice(0, 1);
         }
       }
     }
   }, this.message_queue_speed);
 
-
-
   return this;
 
 }
+
 module.exports = Peer;
-
-
 
 /**
  * Initialize Peer
@@ -142,16 +144,16 @@ Peer.prototype.connect = function connect() {
     // long-polling should hit here, as isConnected() needs
     // to be false for the network class to attempt a reconnect
     //
-  // } else if (this.socket != null) {
+    // } else if (this.socket != null) {
 
-  //   try {
-  //     this.socket.connect();
-  //   } catch(err) {
-  //     console.log(err);
+    //   try {
+    //     this.socket.connect();
+    //   } catch(err) {
+    //     console.log(err);
 
-  //   //
-  //   // our connection
-  //   //
+    //   //
+    //   // our connection
+    //   //
   } else {
 
     console.log("CONNECT RUNNING... no socket, time to open one.");
@@ -163,20 +165,20 @@ Peer.prototype.connect = function connect() {
     // var socket = io(serverAddress);
     // this.socket = socket;
 
-    if( this.socket ) {
+    if (this.socket) {
       try {
         this.socket.destroy();
-      } catch(err) {
+      } catch (err) {
         console.log(err);
       }
       delete this.socket;
       this.socket = null;
     }
 
-    this.socket = io.connect( `${this.peer.protocol}://${this.peer.host}:${this.peer.port}`, {
+    this.socket = io.connect(`${this.peer.protocol}://${this.peer.host}:${this.peer.port}`, {
       reconnection: true,
       reconnectionDelay: 1000,
-      reconnectionDelayMax : 5000,
+      reconnectionDelayMax: 5000,
       reconnectionAttempts: Infinity
     });
 
@@ -322,13 +324,13 @@ Peer.prototype.sendRequestWithCallback = function sendRequestWithCallback(messag
   //
   if (this.socket != null) {
     if (this.socket.connected == true) {
-console.log("EMITTING!");
-      this.socket.emit('request',JSON.stringify(userMessage), mycallback);
+      console.log("EMITTING!");
+      this.socket.emit('request', JSON.stringify(userMessage), mycallback);
       return;
     } else {
       this.message_queue.push(JSON.stringify(userMessage));
       tmperr = {}; tmperr.err = "message queued for broadcast";
-console.log("QUEUEING!");
+      console.log("QUEUEING!");
       mycallback(JSON.stringify(tmperr));
       return;
     }
@@ -339,7 +341,7 @@ console.log("QUEUEING!");
   // to the peer above
   //
   tmperr = {}; tmperr.err = "peer not connected";
-console.log("NOT CONNECTED!");
+  console.log("NOT CONNECTED!");
   mycallback(JSON.stringify(tmperr));
 
 }
@@ -397,6 +399,7 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
     ////////////////
     this.socket.on('disconnect', () => {
       console.log("client disconnect");
+      this.app.connection.emit('connection_dropped');
     });
 
     ///////////
@@ -551,24 +554,24 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
           //
           // if the client is completely off-chain, let them know
           //
-          if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid) ) {
+          if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
             this.promptOffChainUpdate();
           } else {
-	    //
-	    // lite-client -- even if last_shared_bid is 0 because the 
-	    // fork_id situation is wrong, we will send them everything
-	    // from the latest block they request -- this avoids lite-clients
-	    // that pop onto the network but do not stick around long-enough
-	    // to generate a fork ID from being treated as new lite-clients
-	    // and only sent the last 10 blocks.
-	    //
-	    if (last_shared_bid == 0 && peer_last_bid > 0 && (peer_last_bid-last_shared_bid > 9)) {
-	      if (peer_last_bid-10 < 0) { peer_last_bid = 0; } else { peer_last_bid = peer_last_bid-10; }
+            //
+            // lite-client -- even if last_shared_bid is 0 because the 
+            // fork_id situation is wrong, we will send them everything
+            // from the latest block they request -- this avoids lite-clients
+            // that pop onto the network but do not stick around long-enough
+            // to generate a fork ID from being treated as new lite-clients
+            // and only sent the last 10 blocks.
+            //
+            if (last_shared_bid == 0 && peer_last_bid > 0 && (peer_last_bid - last_shared_bid > 9)) {
+              if (peer_last_bid - 10 < 0) { peer_last_bid = 0; } else { peer_last_bid = peer_last_bid - 10; }
               this.sendBlockchain(peer_last_bid, message.data.synctype);
- 	    } else {
+            } else {
               this.sendBlockchain(last_shared_bid, message.data.synctype);
-	    }
+            }
           }
 
         }
@@ -669,32 +672,32 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
       ////////////////
       if (message.request == "slip check") {
         let validres = {};
-	if (message.data == undefined) { 
-	  validres.valid = 0;
-	} else {
-	  if (message.data.slip == undefined) { 
-	    validres.valid = 0;
+        if (message.data == undefined) {
+          validres.valid = 0;
+        } else {
+          if (message.data.slip == undefined) {
+            validres.valid = 0;
           } else {
 
             let slip = new saito.slip();
-	        slip.add = message.data.slip.add;
-	        slip.amt = message.data.slip.amt;
-	        slip.type = message.data.slip.type;
-	        slip.bid = message.data.slip.bid;
-	        slip.tid = message.data.slip.tid;
-	        slip.sid = message.data.slip.sid;
-	        slip.bhash = message.data.slip.bhash;
+            slip.add = message.data.slip.add;
+            slip.amt = message.data.slip.amt;
+            slip.type = message.data.slip.type;
+            slip.bid = message.data.slip.bid;
+            slip.tid = message.data.slip.tid;
+            slip.sid = message.data.slip.sid;
+            slip.bhash = message.data.slip.bhash;
             let bid = this.app.blockchain.returnLatestBlockId();
 
             if (this.app.storage.validateTransactionInput(slip, bid) == 1) {
-  	      validres.valid = 1;
+              validres.valid = 1;
             } else {
-	      validres.valid = 0;
-	    }
+              validres.valid = 0;
+            }
           }
         }
         if (mycallback != null) { mycallback(JSON.stringify(validres)); }
-	return;
+        return;
       }
 
 
@@ -844,7 +847,7 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
       ////////////
       if (message.request == "module") {
         let mod_exists = this.app.modules.mods.some((mod) => {
-           return mod.name == message.data
+          return mod.name == message.data
         });
         if (mycallback) {
           mycallback(mod_exists);
@@ -853,7 +856,7 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
 
 
       if (mycallback != null) {
-	mycallback();
+        mycallback();
       }
 
     });
@@ -966,10 +969,10 @@ Peer.prototype.addPathToTransaction = function addPathToTransaction(tx) {
   tmptx.transaction = JSON.parse(JSON.stringify(tx.transaction));
 
   // add our path
-  var tmppath      = new saito.path();
-      tmppath.from = this.app.wallet.returnPublicKey();
-      tmppath.to   = this.returnPublicKey();
-      tmppath.sig  = this.app.crypto.signMessage(tmppath.to, this.app.wallet.returnPrivateKey());
+  var tmppath = new saito.path();
+  tmppath.from = this.app.wallet.returnPublicKey();
+  tmppath.to = this.returnPublicKey();
+  tmppath.sig = this.app.crypto.signMessage(tmppath.to, this.app.wallet.returnPrivateKey());
 
   tmptx.transaction.path.push(tmppath);
   return tmptx;

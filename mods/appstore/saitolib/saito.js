@@ -6,6 +6,7 @@ saito.block          = require('./block');
 saito.blockchain     = require('./blockchain');
 saito.burnfee        = require('./burnfee');
 saito.browser        = require('./browser');
+saito.connection     = require('./connection');
 saito.cluster        = require('./cluster');
 saito.crypto         = require('./crypto');
 saito.dns            = require('./dns');

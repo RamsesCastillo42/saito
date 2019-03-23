@@ -17,6 +17,7 @@ async function initSaito() {
   ////////////////////
   try {
     app.crypto     = new saito.crypto();
+    app.connection = new saito.connection();
     app.cluster    = new saito.cluster(app);
     app.logger     = new saito.logger(app);
     app.storage    = new saito.storage(app);
