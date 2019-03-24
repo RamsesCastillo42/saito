@@ -1,6 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
+var circleType = require('circletype');
 
 
 //////////////////
@@ -25,7 +26,9 @@ function Wordblocks(app) {
   // the size of the original pieces
   //
   this.gameboardWidth = 2677;
-
+  this.tileHeight = 163;
+  this.tileWidth = 148;
+  
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
@@ -57,8 +60,8 @@ Wordblocks.prototype.showTiles = function showTiles() {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
 }
@@ -187,8 +190,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // initialize interface
   //
-  $('.slot').css('height', this.scale(163) + "px");
-  $('.slot').css('width', this.scale(148) + "px");
+  $('.slot').css('height', this.scale(this.tileHeight) + "px");
+  $('.slot').css('width', this.scale(this.tileWidth) + "px");
 
   //
   // set x/y positions
@@ -240,8 +243,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
   //
@@ -263,12 +266,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.target == this.game.player) {
     this.addEventsToBoard();
   }
-  $('#tiles').on('click', function () {
-    for (var i = this.children.length; i >= 0; i--) {
-      this.appendChild(this.children[Math.random() * i | 0]);
+  $('#shuffle').on('click', function () {
+    for (var i = $('#tiles').children.length; i >= 0; i--) {
+      $('#tiles')[0].appendChild($('#tiles')[0].childNodes[Math.random() * i | 0]);
     }
   });
-
+  $('#tiles').sortable();
+  const circleShuffle = new circleType($('#shuffle')[0]);
 
 
   //
@@ -663,8 +667,8 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
     }
   }
 
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 }
 
@@ -689,8 +693,8 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
     }
   }
 
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 }
 
@@ -1349,6 +1353,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
       if (player != wordblocks_self.game.player) {
         this.addWordToBoard(word, orient, x, y);
+        this.setBoard(word, orient, x, y);
         score = this.scoreWord(word, player, orient, x, y);
         this.exhaustWord(word, orient, x, y);
         this.addScoreToPlayer(player, score);
