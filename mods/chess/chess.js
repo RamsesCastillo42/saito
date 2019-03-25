@@ -53,14 +53,6 @@ util.inherits(Chessgame, ModTemplate);
 ////////////////////
 Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 
-  //
-  // enable chat
-  //
-  if (this.browser_active == 1) {
-    const chat = this.app.modules.returnModule("Chat");
-    chat.addPopUpChat();
-  }
-
 
   console.log('######################################################');
   console.log('######################################################');
@@ -71,6 +63,11 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   console.log('######################################################');
 
   if (this.browser_active == 1) {
+
+    // enable chat
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+
     chess = require('chess.js');
     chessboard = require("../chess/web/chessboard");
     this.board = new chessboard('board', { pieceTheme: 'chess/pieces/{piece}.png' });

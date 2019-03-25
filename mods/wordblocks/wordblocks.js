@@ -73,13 +73,12 @@ Wordblocks.prototype.showTiles = function showTiles() {
 ////////////////
 Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
-  //
-  // enable chat
-  //
+  // enable chat - but only if we are looking at the game
   if (this.browser_active == 1) {
     const chat = this.app.modules.returnModule("Chat");
     chat.addPopUpChat();
   }
+
 
   this.updateStatus("loading game...");
   this.loadGame(game_id);
@@ -182,7 +181,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   // who can go?
   //
   if (this.game.target == this.game.player) {
-    this.updateStatus("Your  turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+    this.updateStatus("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
     this.enableEvents();
   } else {
     this.updateStatus("Waiting for Player " + this.game.target + " to move.");
@@ -382,7 +381,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       }
       if (action2 == "cancel") {
         $('.card').off();
-        $('.status').html("Your  turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+        $('.status').html("Your  turn!<p></p><div style=\"font-size:1.0em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
         wordblocks_self.addEventsToBoard();
         return;
       }
@@ -1316,11 +1315,29 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     //
     if (mv[0] === "gameover") {
       if (wordblocks_self.browser_active == 1) {
-        alert("Game Over");
+        wordblocks_self.updateStatus("Game Over!");
+        wordblocks_self.updateLog("Game Over!");
       }
+
+      //
+      // pick the winner
+      //
+      let x = 0;
+      let idx = 0;
+      for (let i = 0; i < wordblocks_self.game.score.length; i++) {
+	if (wordblocks_self.game.score[i] > x) {
+	  x = wordblocks_self.game.score[i];
+	  idx = i;
+	}
+      }
+
+      wordblocks_self.game.winner = idx+1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
-      return;
+      wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
+ 
+     return 0;
+
     }
 
 
@@ -1349,13 +1366,19 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
         this.addScoreToPlayer(player, score);
       }
 
+
+      if (wordblocks_self.game.over == 1) {
+	this.updateStatus("Game Over");
+	return;
+      }
+
       if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
 
         console.log("HERE WE ARE: 1");
 
         if (wordblocks_self.checkForEndGame() == 1) { return; }
 
-        wordblocks_self.updateStatus("Your turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+        wordblocks_self.updateStatus("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
         wordblocks_self.enableEvents();
 
       } else {
@@ -1376,7 +1399,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       let player = mv[1];
 
       if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
-        wordblocks_self.updateStatus("Your turn!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+        wordblocks_self.updateStatus("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
         wordblocks_self.enableEvents();
       } else {
         wordblocks_self.updateStatus("Player " + wordblocks_self.returnNextPlayer(player) + " turn");

@@ -14,10 +14,10 @@ h1 {
 }
 
 .connection_monitor {
+    position: fixed;
     display: none;
     min-height: 30px;
     z-index: 90000;
-    position: absolute;
     background: #ef6666;
     font-size: 1.8em;
     padding: 15px;
