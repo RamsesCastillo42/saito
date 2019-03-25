@@ -63,6 +63,11 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   console.log('######################################################');
 
   if (this.browser_active == 1) {
+
+    // enable chat
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+
     chess = require('chess.js');
     chessboard = require("../chess/web/chessboard");
     this.board = new chessboard('board', { pieceTheme: 'chess/pieces/{piece}.png' });
@@ -143,13 +148,6 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
 
   }
 
-}
-
-
-Chessgame.prototype.initializeHTML = function initializeHTML() {
-  // enable chat
-  const chat = this.app.modules.returnModule("Chat");
-  chat.addPopUpChat();
 }
 
 
