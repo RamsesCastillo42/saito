@@ -663,8 +663,16 @@ Happy Chatting!`
   * MAILCHAT INTEGRATION
   */
 
+  /**
+   * THIS FUNCTION SHOULD ***ONLY*** BE CALLED IN
+   * ***initializeHTML***
+   */
   addPopUpChat() {
     if ($(window).width() < 600){
+      return;
+    }
+
+    if ($('.mail_chat_popup')[0]) {
       return;
     }
 
