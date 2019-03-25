@@ -1,6 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
+var circleType = require('circletype');
 
 
 //////////////////
@@ -25,7 +26,9 @@ function Wordblocks(app) {
   // the size of the original pieces
   //
   this.gameboardWidth = 2677;
-
+  this.tileHeight = 163;
+  this.tileWidth = 148;
+  
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
@@ -57,8 +60,8 @@ Wordblocks.prototype.showTiles = function showTiles() {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
 }
@@ -179,8 +182,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // initialize interface
   //
-  $('.slot').css('height', this.scale(163) + "px");
-  $('.slot').css('width', this.scale(148) + "px");
+  $('.slot').css('height', this.scale(this.tileHeight) + "px");
+  $('.slot').css('width', this.scale(this.tileWidth) + "px");
 
   //
   // set x/y positions
@@ -221,6 +224,9 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       let divname = "#" + i;
       let letter = this.game.board[i].letter;
       $(divname).html(this.returnTile(letter));
+      if (!(letter == "_") && !(letter == "")) {
+      $(divname).addClass("set");
+      }
     }
 
   }
@@ -229,8 +235,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
   //
@@ -252,12 +258,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.target == this.game.player) {
     this.addEventsToBoard();
   }
-  $('#tiles').on('click', function () {
-    for (var i = this.children.length; i >= 0; i--) {
-      this.appendChild(this.children[Math.random() * i | 0]);
+  $('#shuffle').on('click', function () {
+    for (var i = $('#tiles').children.length; i >= 0; i--) {
+      $('#tiles')[0].appendChild($('#tiles')[0].childNodes[Math.random() * i | 0]);
     }
   });
-
+  $('#tiles').sortable();
+  const circleShuffle = new circleType($('#shuffle')[0]);
 
 
   //
@@ -354,7 +361,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
   });
 
 
- 
+
   $('.slot').off();
   $('.slot').on('click', function () {
 
@@ -404,40 +411,45 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
           let myscore = 0;
 
-          //
-          // place word on board
-          //
-          wordblocks_self.addMove("place\t" + word + "\t" + wordblocks_self.game.player + "\t" + x + "\t" + y + "\t" + orientation);
-
           wordblocks_self.addWordToBoard(word, orientation, x, y);
-
-          //
-          // discard tiles
-          //
-          wordblocks_self.discardTiles(word, orientation, x, y);
-
-          //
-          // get new cards
-          //
-          let cards_needed = 7;
-          cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
-          if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length; }
-
-          if (cards_needed > 0) {
-            wordblocks_self.addMove("DEAL\t1\t" + wordblocks_self.game.player + "\t" + cards_needed);
-          }
 
           myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
 
-          wordblocks_self.exhaustWord(word, orientation, x, y);
-          wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
+          if (myscore <= 1) {
+            wordblocks_self.removeWordFromBoard(word, orientation, x, y);
+            wordblocks_self.updateStatus("Try again!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+          } else {
+            wordblocks_self.setBoard(word, orientation, x, y);
+            //
+            // place word on board
+            //
+            wordblocks_self.addMove("place\t" + word + "\t" + wordblocks_self.game.player + "\t" + x + "\t" + y + "\t" + orientation);
+            //
+            // discard tiles
+            //
+            wordblocks_self.discardTiles(word, orientation, x, y);
 
-          if (wordblocks_self.checkForEndGame() == 1) { return; }
+            //
+            // get new cards
+            //
+            let cards_needed = 7;
+            cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
+            if (cards_needed > wordblocks_self.game.deck[0].crypt.length) { cards_needed = wordblocks_self.game.deck[0].crypt.length; }
 
-          wordblocks_self.endTurn();
+            if (cards_needed > 0) {
+              wordblocks_self.addMove("DEAL\t1\t" + wordblocks_self.game.player + "\t" + cards_needed);
+            }
 
-        };
+            //myscore = wordblocks_self.scoreWord(word, wordblocks_self.game.player, orientation, x, y);
 
+            wordblocks_self.exhaustWord(word, orientation, x, y);
+            wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
+
+            if (wordblocks_self.checkForEndGame() == 1) { return; }
+
+            wordblocks_self.endTurn();
+          };
+        }
       }
     });
   });
@@ -654,11 +666,53 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
     }
   }
 
-  $('.tile').css('height', this.scale(163) + "px");
-  $('.tile').css('width', this.scale(148) + "px");
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 }
 
+Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, orientation, x, y) {
+
+  x = parseInt(x);
+  y = parseInt(y);
+
+  for (let i = 0; i < word.length; i++) {
+
+    let boardslot = "";
+    let divname = "";
+    let letter = word[i].toUpperCase();
+
+    if (orientation == "horizontal") { boardslot = y + "_" + (x + i); }
+    if (orientation == "vertical") { boardslot = (y + i) + "_" + x; }
+    divname = "#" + boardslot;
+
+    if ($(divname).hasClass("set") != true) {
+      this.game.board[boardslot].letter = "_";
+      $(divname).html("");
+    }
+  }
+
+  $('.tile').css('height', this.scale(this.tileHeight) + "px");
+  $('.tile').css('width', this.scale(this.tileWidth) + "px");
+
+}
+
+Wordblocks.prototype.setBoard = function setBoard(word, orientation, x, y) {
+
+  x = parseInt(x);
+  y = parseInt(y);
+
+  for (let i = 0; i < word.length; i++) {
+
+    let boardslot = "";
+    let divname = "";
+
+    if (orientation == "horizontal") { boardslot = y + "_" + (x + i); }
+    if (orientation == "vertical") { boardslot = (y + i) + "_" + x; }
+    divname = "#" + boardslot;
+    $(divname).addClass("set");
+  }
+}
 
 
 //////////////////
@@ -892,6 +946,12 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
   let score = 0;
 
+  if (allWords.indexOf(word.toLowerCase()) <= 0) {
+    alert(word + " is not a playable word.");
+    score = -1;
+    return score;
+  }
+
   x = parseInt(x);
   y = parseInt(y);
 
@@ -950,8 +1010,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
       let letter_bonus = 1;
 
-      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
-      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
+      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 3; }
+      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 2; }
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
@@ -1029,21 +1089,27 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         // score this word
         //
         if (orth_start != orth_end) {
+          let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
             let boardslot = w + "_" + i;
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
 
-            if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
-            if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
+            if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 3; }
+            if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 2; }
             if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
             let thisletter = this.game.board[boardslot].letter;
+            thisword += thisletter;
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
           score += (wordscore * word_bonus);
+          if (allWords.indexOf(thisword.toLowerCase()) <= 0) {
+            alert(thisword + " is not a playable word.");
+            return -1;
+          }
         }
       }
     }
@@ -1106,9 +1172,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       let tmpb = this.returnBonus(boardslot);
       let letter_bonus = 1;
 
-      
-      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
-      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
+
+      if (tmpb == "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 3; }
+      if (tmpb == "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 2; }
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
@@ -1171,9 +1237,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
         } else {
 
-//
-// >= instead of greater than
-//
+          //
+          // >= instead of greater than
+          //
           while (this.game.board[boardslot].letter != "_" && current_x <= 15) {
             orth_end = current_x;
             current_x++;
@@ -1190,6 +1256,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         // score this word
         //
         if (orth_start != orth_end) {
+          let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
             boardslot = i + "_" + w;
@@ -1197,16 +1264,21 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             let tmpb = this.returnBonus(boardslot);
             let letter_bonus = 1;
 
-            if (tmpb === "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*3; }
-            if (tmpb === "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus*2; }
+            if (tmpb === "3W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 3; }
+            if (tmpb === "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 2; }
             if (tmpb === "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb === "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
             let thisletter = this.game.board[boardslot].letter;
+            thisword += thisletter;
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
 
           score += (wordscore * word_bonus);
+          if (allWords.indexOf(thisword.toLowerCase()) <= 0) {
+            alert(thisword + " is not a playable word.");
+            return -1;
+          }
         }
       }
     }
@@ -1280,6 +1352,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
       if (player != wordblocks_self.game.player) {
         this.addWordToBoard(word, orient, x, y);
+        this.setBoard(word, orient, x, y);
         score = this.scoreWord(word, player, orient, x, y);
         this.exhaustWord(word, orient, x, y);
         this.addScoreToPlayer(player, score);
@@ -1387,15 +1460,22 @@ Wordblocks.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + '/web/index.html');
     return;
   });
+
   expressapp.get('/wordblocks/style.css', function (req, res) {
     res.sendFile(__dirname + '/web/style.css');
     return;
   });
+
   expressapp.get('/wordblocks/script.js', function (req, res) {
     res.sendFile(__dirname + '/web/script.js');
     return;
-
   });
+
+  expressapp.get('/wordblocks/sowpods.js', function (req, res) {
+    res.sendFile(__dirname + '/web/sowpods.js');
+    return;
+  });
+
   expressapp.get('/wordblocks/img/:imagefile', function (req, res) {
     var imgf = '/web/img/' + req.params.imagefile;
     if (imgf.indexOf("\/") != false) { return; }
