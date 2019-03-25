@@ -73,14 +73,6 @@ Wordblocks.prototype.showTiles = function showTiles() {
 ////////////////
 Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
-  //
-  // enable chat
-  //
-  if (this.browser_active == 1) {
-    const chat = this.app.modules.returnModule("Chat");
-    chat.addPopUpChat();
-  }
-
   this.updateStatus("loading game...");
   this.loadGame(game_id);
 
@@ -287,6 +279,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //  this.handleGame(msg);
   //}
 
+}
+
+
+Wordblocks.prototype.initializeHTML = function initializeHTML() {
+  // enable chat
+  const chat = this.app.modules.returnModule("Chat");
+  chat.addPopUpChat();
 }
 
 
