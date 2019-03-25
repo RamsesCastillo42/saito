@@ -33,7 +33,7 @@ body {
   background-size: cover;
   width: 1338px;
   height: 1458px;
-  }
+}
 
 .card {
   cursor: pointer;
@@ -53,7 +53,7 @@ body {
   max-width: 1324px;
 }
 
-#controls > div {
+#controls>div {
   height: 120px;
 }
 
@@ -67,7 +67,20 @@ body {
 .tiles {
   font-size: 1.9em;
   padding: 10px;
-  width: 520px;
+  width: 590px;
+  display: inline-flex;
+  overflow: hidden;
+  height: 86px;
+}
+
+.shuffle {
+  display: inline-block;
+  font-size: 20px;
+  width: 75px;
+  cursor: pointer;
+}
+
+.rack {
   display: inline-block;
 }
 
@@ -77,7 +90,7 @@ body {
   width: auto;
   display: inline-block;
   min-width: 250px;
-  max-width: 560px;
+  max-width: 410px;
   height: 225px;
 }
 
@@ -103,5 +116,10 @@ body {
   }
   .gameboard {
     margin-bottom: 215px;
+<<<<<<< HEAD
     }
 }
+=======
+  }
+}
+>>>>>>> d83f52e3b2df0ae4fa5d6c9138e2be46a10c717f

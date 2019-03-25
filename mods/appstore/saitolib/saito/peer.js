@@ -392,6 +392,7 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
     /////////////
     this.socket.on('connect', () => {
       console.log("client connect");
+      this.app.connection.emit('connection_up');
     });
 
     ////////////////

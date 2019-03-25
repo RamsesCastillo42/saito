@@ -79,7 +79,6 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
         <input type="submit" style="margin-top:10px;font-size:1.1em;display:block;cursor:pointer;float:left;clear:both;" id="invite_button" class="invite_button" >
       </div>
 
-
       <p></p>
 
       <div id="publisher_message" class="publisher_message"></div>
@@ -396,7 +395,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	//
 	if (game_self.game.accept === 1) { 
 	  //$('.status').html("other players are accepting the game...");
-	  //$('.status').show();
+	  $('.status').show();
 	  return; 
 	}
 
@@ -417,6 +416,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
             this.attachEvents(this.app);
+
 	  }
 
 	}
@@ -743,7 +743,7 @@ console.log("ERROR DELETING GAME!");
     newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
     newtx = arcade_self.app.wallet.signTransaction(newtx);
     arcade_self.app.network.propagateTransaction(newtx);
-    $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+    $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.<p></p><div class="status" id="status"></div>');
 
     let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
     arcade_self.startInitializationTimer(game_id);
