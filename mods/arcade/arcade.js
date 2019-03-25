@@ -154,6 +154,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let opponent   = "unknown";
         let gameid     = app.options.games[i].id;
         let player     = app.options.games[i].player;
+        let winner     = app.options.games[i].winner;
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
         let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'">ACCEPT</div>';
@@ -222,7 +223,15 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
           html += '<div id="'+gameid+'_game">';
           html += '<b>' + gamename + '</b></br>';
           html += opponent + '</div>';
-          html += '<p></p>Opponent Resigned!<p></p>';
+	  if (winner == player) {
+            html += '<p></p>You Won!<p></p>';
+	  } else {
+	    if (winner == 0) {
+              html += '<p></p>Opponent Resigned!<p></p>';
+	    } else {
+              html += '<p></p>Lost Game!<p></p>';
+	    }
+	  }
 	  html += '<div class="deletegamelink">'+deletegame+'</div>';
 	  html += '</div>';
 

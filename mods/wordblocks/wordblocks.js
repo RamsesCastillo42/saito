@@ -1326,12 +1326,29 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     //
     if (mv[0] === "gameover") {
       if (wordblocks_self.browser_active == 1) {
-	this.game.over = 1;
+        wordblocks_self.updateStatus("Game Over!");
+        wordblocks_self.updateLog("Game Over!");
       }
+
+      //
+      // pick the winner
+      //
+      let x = 0;
+      let idx = 0;
+      for (let i = 0; i < wordblocks_self.game.score.length; i++) {
+	if (wordblocks_self.game.score[i] > x) {
+	  x = wordblocks_self.game.score[i];
+	  idx = i;
+	}
+      }
+
+      wordblocks_self.game.winner = idx+1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
-      this.game.queue.splice(this.game.queue.length - 1, 1);
-      return 1;
+      wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
+ 
+     return 0;
+
     }
 
 
