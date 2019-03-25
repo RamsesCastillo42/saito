@@ -1,8 +1,6 @@
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
-var circleType = require('circletype');
-
 
 //////////////////
 // CONSTRUCTOR  //
@@ -28,10 +26,12 @@ function Wordblocks(app) {
   this.gameboardWidth = 2677;
   this.tileHeight = 163;
   this.tileWidth = 148;
-  
+
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
+
+  this_wordblocks = this;
 
   return this;
 
@@ -60,8 +60,8 @@ Wordblocks.prototype.showTiles = function showTiles() {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(this.tileHeight) + "px");
-  $('.tile').css('width', this.scale(this.tileWidth) + "px");
+  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
+  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
 }
@@ -133,6 +133,14 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
   }
 
+  Wordblocks.prototype.resizeBoard = function resizeBoard() {
+
+    $('.gameboard').outerWidth($('.main').outerWidth() - 2);
+    $('.gameboard').outerHeight($('.main').outerWidth() - 2);
+    $('#controls').outerWidth($('.main').outerWidth() + 6);
+
+  }
+
 
   //
   // show tiles
@@ -190,28 +198,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // initialize interface
   //
-  $('.slot').css('height', this.scale(this.tileHeight) + "px");
-  $('.slot').css('width', this.scale(this.tileWidth) + "px");
-
-  //
-  // set x/y positions
-  //
-  for (let i = 0; i < 15; i++) {
-    for (let j = 0; j < 15; j++) {
-
-      let divname = "#" + (i + 1) + "_" + (j + 1);
-
-      let xpos = (j * 148) + 84 + (j * 21);
-      let ypos = (i * 163) + 84 + (i * 21);
-
-      xpos = this.scale(xpos) + "px";
-      ypos = this.scale(ypos) + "px";
-
-      $(divname).css('top', ypos);
-      $(divname).css('left', xpos);
-
-    }
-  }
+  this.resizeBoard();
 
   //
   // load any existing tiles
@@ -233,7 +220,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       let letter = this.game.board[i].letter;
       $(divname).html(this.returnTile(letter));
       if (!(letter == "_") && !(letter == "")) {
-      $(divname).addClass("set");
+        $(divname).addClass("set");
       }
     }
 
@@ -243,8 +230,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // set tile size
   //
-  $('.tile').css('height', this.scale(this.tileHeight) + "px");
-  $('.tile').css('width', this.scale(this.tileWidth) + "px");
+  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
+  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 
   //
@@ -266,14 +253,17 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.target == this.game.player) {
     this.addEventsToBoard();
   }
+
   $('#shuffle').on('click', function () {
     for (var i = $('#tiles').children.length; i >= 0; i--) {
       $('#tiles')[0].appendChild($('#tiles')[0].childNodes[Math.random() * i | 0]);
     }
   });
   $('#tiles').sortable();
-  const circleShuffle = new circleType($('#shuffle')[0]);
 
+  $(window).resize(function () {
+    this_wordblocks.resizeBoard();
+  });
 
   //
   // if the browser is active, shift to the game that way
@@ -667,8 +657,8 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
     }
   }
 
-  $('.tile').css('height', this.scale(this.tileHeight) + "px");
-  $('.tile').css('width', this.scale(this.tileWidth) + "px");
+  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
+  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 }
 
@@ -693,8 +683,8 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
     }
   }
 
-  $('.tile').css('height', this.scale(this.tileHeight) + "px");
-  $('.tile').css('width', this.scale(this.tileWidth) + "px");
+  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
+  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
 
 }
 

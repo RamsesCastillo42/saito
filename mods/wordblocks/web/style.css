@@ -3,6 +3,7 @@ body {
   font-size: 13px;
   padding: 0px;
   margin: 0px;
+  background-color: #024;
 }
 
 .connection_monitor {
@@ -28,11 +29,22 @@ body {
   border-bottom: 1px dashed;
 }
 
+.main {
+  display: block;
+  max-width: 900px;
+  margin: auto;
+  border: 1px solid orange;
+  padding: 0px;
+}
+
 .gameboard {
-  background-image: url("img/game0.jpg");
-  background-size: cover;
-  width: 1338px;
-  height: 1458px;
+  display: grid;
+  grid-template-columns: repeat(15, 15fr);
+  grid-template-rows: repeat(15, 15fr);
+  grid-gap: 3px;
+  background: #999;
+  border: 10px solid #333;
+  padding: 10px;
 }
 
 .card {
@@ -40,70 +52,101 @@ body {
 }
 
 #controls {
-  position: unset;
-  bottom: 0px;
-  min-height: 120px;
-  display: inline-block;
+  margin: auto;
+  display: block;
+  overflow: hidden;
   background-color: #555;
-  padding: 5px;
   border: 2px solid #333;
-  border-radius: 3px;
   color: #EEE;
-  width: 100%;
-  max-width: 1324px;
-}
-
-#controls>div {
-  height: 120px;
+  height: 300px;
 }
 
 .score {
   font-size: 1.8em;
-  padding: 10px;
-  width: 175px;
+  padding: 10px 20px;
   display: inline-block;
+  width: 20%
 }
 
-.tiles {
-  font-size: 1.9em;
-  padding: 10px;
-  width: 590px;
-  display: inline-flex;
-  overflow: hidden;
-  height: 86px;
+.rack {
+  display: block;
+  padding: 10px 0;
 }
 
 .shuffle {
   display: inline-block;
   font-size: 20px;
-  width: 75px;
+  width: 10%;
   cursor: pointer;
 }
 
-.rack {
+.tiles {
   display: inline-block;
+  font-size: 1.9em;
+  width: 80%
+}
+
+.tile {
+  width: 100%;
+  height: 100%;
+}
+
+.tiles img.tile {
+  height: unset;
+  width: 14%;
 }
 
 .status {
-  font-size: 1.6em;
-  padding: 10px;
-  width: auto;
+  font-size: 1.7em;
   display: inline-block;
-  min-width: 250px;
-  max-width: 410px;
-  height: 225px;
+  vertical-align: top;
+  padding: 10px 20px;
+  width: 65%;
 }
 
 .slot {
-  position: absolute;
   cursor: pointer;
+  background: #666;
+  border: 2px solid #666;
+  display: flex;
 }
 
 .slot:hover {
-  background-color: blue;
+  background-color: #036;
   opacity: 0.8;
 }
 
+.tw {
+  background-image: url(img/tw.png);
+  background-size: cover;
+  border: 2px solid pink;
+}
+
+.dw {
+  background-image: url(img/dw.png);
+  background-size: cover;
+  border: 2px solid lightpink;
+}
+
+.tl {
+  background-image: url(img/tl.png);
+  background-size: cover;
+  border: 2px solid lightblue;
+}
+
+.dl {
+  background-image: url(img/dl.png);
+  background-size: cover;
+  border: 2px solid olive;
+}
+
+.star {
+  background-image: url(img/star.png);
+  background-size: cover;
+  border: 2px solid black;
+}
+
+/*
 @media only screen and (min-height: 1615px) {
   .gameboard {
     margin-bottom: 0;
@@ -118,3 +161,4 @@ body {
     margin-bottom: 215px;
   }
 }
+*/
