@@ -63,7 +63,7 @@ body {
 }
 
 .score {
-  font-size: 1.7em;
+  font-size: 1.6rem;
   padding: 10px 20px;
   display: inline-block;
   width: 20%
@@ -98,7 +98,7 @@ body {
 }
 
 .status {
-  font-size: 1.7em;
+  font-size: 1.5rem;
   padding: 10px;
   width: auto;
   display: inline-block;
@@ -149,6 +149,10 @@ body {
   border: 2px solid black;
 }
 
+#chat_container {
+  display: block;
+}
+
 @media only screen and (max-width: 600px) {
   .status {
     font-size: 1.4em;
@@ -164,7 +168,11 @@ body {
   #controls {
     height: 200px;
   }
-
+  .card {
+    display: inline;
+    padding-left: 10px;
+    text-decoration: underline;
+  }
 }
 
 @media only screen and (max-height: 1200px) {
@@ -181,10 +189,18 @@ body {
   }
   #controls {
     height: 200px;
-    position: fixed;  
+    position: fixed;
     bottom: 0;
   }
   .main {
     margin: 0 0 201px 0;
+  }
+  #chat_container {
+    display: none;
+  }
+  .card {
+    display: inline;
+    padding-left: 10px;
+    text-decoration: underline;
   }
 }
