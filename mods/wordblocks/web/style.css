@@ -32,6 +32,7 @@ body {
 .main {
   display: block;
   max-width: 900px;
+  min-width: 500px;
   margin: auto;
   border: 1px solid orange;
   padding: 0px;
@@ -62,7 +63,7 @@ body {
 }
 
 .score {
-  font-size: 1.8em;
+  font-size: 1.7em;
   padding: 10px 20px;
   display: inline-block;
   width: 20%
@@ -97,7 +98,7 @@ body {
 }
 
 .status {
-  font-size: 1.8em;
+  font-size: 1.7em;
   padding: 10px;
   width: auto;
   display: inline-block;
@@ -148,3 +149,42 @@ body {
   border: 2px solid black;
 }
 
+@media only screen and (max-width: 600px) {
+  .status {
+    font-size: 1.4em;
+    width: 60%;
+  }
+  .score {
+    font-size: 1.4em;
+    width: 20%;
+  }
+  .tiles {
+    width: 60%
+  }
+  #controls {
+    height: 200px;
+  }
+
+}
+
+@media only screen and (max-height: 1200px) {
+  .status {
+    font-size: 1.4em;
+    width: 60%;
+  }
+  .score {
+    font-size: 1.4em;
+    width: 20%;
+  }
+  .tiles {
+    width: 60%
+  }
+  #controls {
+    height: 200px;
+    position: fixed;  
+    bottom: 0;
+  }
+  .main {
+    margin: 0 0 201px 0;
+  }
+}
