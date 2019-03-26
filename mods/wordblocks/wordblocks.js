@@ -39,9 +39,6 @@ function Wordblocks(app) {
 module.exports = Wordblocks;
 util.inherits(Wordblocks, Game);
 
-
-
-
 ////////////////
 // show tiles //
 ////////////////
@@ -57,16 +54,7 @@ Wordblocks.prototype.showTiles = function showTiles() {
 
   $('.tiles').html(html);
 
-  //
-  // set tile size
-  //
-  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
-  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
-
-
-}
-
-
+ }
 
 ////////////////
 // initialize //
@@ -225,14 +213,6 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
   }
 
-
-  //
-  // set tile size
-  //
-  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
-  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
-
-
   //
   // has a move been made
   //
@@ -263,18 +243,6 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   $(window).resize(function () {
     this_wordblocks.resizeBoard();
   });
-
-  //
-  // if the browser is active, shift to the game that way
-  //
-  // now obsolete -- keeping as temp reference -- game.js handles
-  //
-  //if (this.browser_active == 1) {
-  //  let msg = {};
-  //  msg.extra = {};
-  //  msg.extra.target = this.game.target;
-  //  this.handleGame(msg);
-  //}
 
 }
 
@@ -655,10 +623,6 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
       $(divname).html(this.returnTile(letter));
     }
   }
-
-  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
-  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
-
 }
 
 Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, orientation, x, y) {
@@ -681,10 +645,6 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
       $(divname).html("");
     }
   }
-
-  //$('.tile').css('height', this.scale(this.tileHeight) + "px");
-  //$('.tile').css('width', this.scale(this.tileWidth) + "px");
-
 }
 
 Wordblocks.prototype.setBoard = function setBoard(word, orientation, x, y) {
@@ -1005,10 +965,17 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
+      if (this.game.board[boardslot].fresh == 1) { tilesUsed += 1; }
+
       let thisletter = this.game.board[boardslot].letter;
       score += (this.letters[thisletter].score * letter_bonus);
     }
 
+    if (tilesUsed == 7) {
+      score += 10;
+      word_bonus += 1;
+    }
+    
     score *= word_bonus;
 
     //
@@ -1168,9 +1135,15 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
+      if (this.game.board[boardslot].fresh == 1) { tilesUsed += 1; }
 
       let thisletter = this.game.board[boardslot].letter;
       score += (this.letters[thisletter].score * letter_bonus);
+    }
+
+    if (tilesUsed == 7) {
+      score += 10;
+      word_bonus += 1;
     }
 
     score *= word_bonus;
@@ -1245,6 +1218,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         //
         // score this word
         //
+        let tilesUsed = 0;
         if (orth_start != orth_end) {
           let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
@@ -1265,10 +1239,12 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
           }
 
           score += (wordscore * word_bonus);
+
           if (allWords.indexOf(thisword.toLowerCase()) <= 0) {
             alert(thisword + " is not a playable word.");
             return -1;
           }
+
         }
       }
     }
@@ -1325,18 +1301,18 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       let x = 0;
       let idx = 0;
       for (let i = 0; i < wordblocks_self.game.score.length; i++) {
-	if (wordblocks_self.game.score[i] > x) {
-	  x = wordblocks_self.game.score[i];
-	  idx = i;
-	}
+        if (wordblocks_self.game.score[i] > x) {
+          x = wordblocks_self.game.score[i];
+          idx = i;
+        }
       }
 
-      wordblocks_self.game.winner = idx+1;
+      wordblocks_self.game.winner = idx + 1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
       wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
- 
-     return 0;
+
+      return 0;
 
     }
 
@@ -1368,8 +1344,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
 
       if (wordblocks_self.game.over == 1) {
-	this.updateStatus("Game Over");
-	return;
+        this.updateStatus("Game Over");
+        return;
       }
 
       if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
