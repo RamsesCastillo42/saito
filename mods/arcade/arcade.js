@@ -410,10 +410,24 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
         if (game_self.game.initializing == 1) {
 
-          this.startInitializationTimer(txmsg.game_id);
-	  this.showMonitor();
-          $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
-	  $('.status').show();
+	  //
+	  // if i have not accepted, do not show init screen
+	  //
+	  if (game_self.game.accept == 0) {
+
+	    return;
+
+	  //
+	  // otherwise move in
+	  //
+	  } else {
+
+            this.startInitializationTimer(txmsg.game_id);
+	    this.showMonitor();
+            $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+	    $('.status').show();
+
+	  }
 
         } else {
 
