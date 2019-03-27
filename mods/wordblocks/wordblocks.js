@@ -896,11 +896,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
   let score = 0;
 
-  if (allWords.indexOf(word.toLowerCase()) <= 0) {
-    alert(word + " is not a playable word.");
-    score = -1;
-    return score;
-  }
+  if (!checkWord(word)) { return -1; }
 
   x = parseInt(x);
   y = parseInt(y);
@@ -912,6 +908,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
     let beginning_of_word = x;
     let end_of_word = x;
+    let tilesUsed = 0;
+
 
     //
     // find the beginning of the word
@@ -949,7 +947,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     }
 
     let word_bonus = 1;
-
+    
     //
     // score this word
     //
@@ -1063,10 +1061,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
           score += (wordscore * word_bonus);
-          if (allWords.indexOf(thisword.toLowerCase()) <= 0) {
-            alert(thisword + " is not a playable word.");
-            return -1;
-          }
+          
+          if (!checkWord(thisword)) { return -1; }
+
         }
       }
     }
@@ -1078,6 +1075,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
     let beginning_of_word = y;
     let end_of_word = y;
+    let tilesUsed = 0;
 
     //
     // find the beginning of the word
@@ -1218,7 +1216,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         //
         // score this word
         //
-        let tilesUsed = 0;
+        
         if (orth_start != orth_end) {
           let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
@@ -1240,10 +1238,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
           score += (wordscore * word_bonus);
 
-          if (allWords.indexOf(thisword.toLowerCase()) <= 0) {
-            alert(thisword + " is not a playable word.");
-            return -1;
-          }
+          if (!checkWord(thisword)) { return -1; }
 
         }
       }
@@ -1254,7 +1249,18 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
 }
 
-
+checkWord = function checkWord(word) {
+  if (typeof(allWords) != "undefined") {
+    if (allWords.indexOf(word.toLowerCase()) <= 0) {
+      alert(word + " is not a playable word.");
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
 
 
 //

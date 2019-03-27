@@ -191,7 +191,6 @@ Reddit.prototype.initialize = async function initialize() {
         }, 500);
       }
 
-      //console.log("ATTEMPTING TO LOAD POSTS")
       var rdloadtimer = setTimeout(() => {
         message                   = {};
         message.request           = "reddit load post";
@@ -1661,12 +1660,14 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
             id: id,
             text: text,
             author: identifier,
+            publickey: tx.from[0].add,
             votes: votes,
             unixtime: unixtime,
             post_id: post_id,
             parent_id: parent_id,
             subreddit: subreddit,
-            sig: tx.sig
+            sig: tx.sig,
+            tx
           }
 
           if (comment.parent_id === '0') {
@@ -1867,7 +1868,6 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
       app.modules.returnModule("Reddit").addModerate(newtx, msg, app, "post");
       return;
     }
-
 
 }
 
