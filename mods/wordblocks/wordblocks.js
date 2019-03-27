@@ -523,7 +523,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       }
 
       if (letter_found == 0) {
-        alert("INVALID: letter not in hand!");
+        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
         return 0;
       }
 
