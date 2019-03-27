@@ -158,8 +158,8 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
         let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'">ACCEPT</div>';
-        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">JOIN</div>';
-        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'">DELETE</div>';
+        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
+        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -575,6 +575,16 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
+
+  $('#wechat>span').on('click', function () {
+    $('#wechat-qr').css("height", $('#wechat').outerWidth() + 25);
+    $('#wechat-qr-img').css("width", $('#wechat').outerWidth() - 25);
+  })
+
+  $('#wechat-qr').on('click', function () {
+    $('#wechat-qr').css("height", "0");
+    $('#wechat-qr-img').css("width", "0");
+  })
 
   var arcade_self = this;
 

@@ -1,4 +1,5 @@
 <html>
+
 <head>
 
   <meta charset="utf-8">
@@ -18,9 +19,10 @@
   <link rel="stylesheet" type="text/css" href="/chat/style.css" />
   <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
 
-  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
 </head>
+
 <body>
 
   <div id="Arcade_browser_active"></div>
@@ -28,7 +30,9 @@
   <div class="header">
     <a href="/" class="logo_link">
       <img src="/img/saito_logo_black.png" class="logo" />
-      <a href="/arcade" class="nonlink"><div id="saitoname" class="logo_text">saito arcade</div></a>
+      <a href="/arcade" class="nonlink">
+        <div id="saitoname" class="logo_text">saito arcade</div>
+      </a>
     </a>
   </div>
 
@@ -36,45 +40,60 @@
   <div class="loader">
     Saito is currently loading....
     <p></p>
-    We are downloading the application itself into your browser from our server in Los Angeles. The download is reasonably fast in the United States, but can take up to a minute in China due to its size (~1.6 MB). Please be patient.
+    We are downloading the application itself into your browser from our server in Los Angeles. The download is
+    reasonably fast in the United States, but can take up to a minute in China due to its size (~1.6 MB). Please be
+    patient.
   </div>
 
 
   <div class="main">
 
     <div class="arcade">
-    <div class="game_monitor" id="game_monitor"></div>
+      <div class="game_monitor" id="game_monitor"></div>
 
-    <div class="game_options">
-      <div class="arcade-description">
-        Saito Arcade provides a quick way to play blockchain games. Get notified when new games are released by <a href="/arcade/email">clicking here</a>. If you're looking for a game, try asking in our <a href="https://t.me/joinchat/BOSYOk_BR8Epp0X35A54UQ">Telegram group</a>. If you're in China we also have a Wechat group where you can find players -- add David using the id "davidlancashire" and he will add you and invite you in.
-
-      </div>
-
-      <div class="gamelist">
-
-        <div class="game" id="Twilight">
-          <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
-          <div class="gametitle" id="Twilight">Twilight Struggle</div>
+      <div class="game_options">
+        <div class="arcade-description">
+            <div class="active_games_header">Join the Community</div>
+          <div id="outreach" class="outreach">
+            <div id="telegram" class="telegram">
+              <a href="https://t.me/joinchat/BOSYOk_BR8Epp0X35A54UQ" target="_blank">Find an opponent on <br /><span
+                  class="emphasis"><i class="fa fa-telegram"></i> Telegram</span></a>
+            </div>
+            <div id="wechat" class="wechat">
+              Find and opponent on <br /><span class="emphasis"><i class="fa fa-weixin"></i> WeChat</span>
+              <div id="wechat-qr" class="wechat-qr"><i id="close-qr" class="fa fa-window-close"></i><img id="wechat-qr-img" src="/arcade/img/wechat-qr.jpg"/></div>
+            </div>
+            <div id="email" class="email">
+              <a href="/arcade/email">Stay up to date via<br /> <span class="emphasis"><i class="fa fa-envelope"></i>
+                  Email</span></a>
+            </div>
+          </div>
         </div>
+        <hr />
+        <div class="active_games_header">Start a game</div>
+        <div class="gamelist">
+          <div class="game" id="Twilight">
+            <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
+            <div class="gametitle" id="Twilight">Twilight Struggle</div>
+          </div>
 
-        <div class="game" id="Chess">
-          <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
-          <div class="gametitle" id="Chess">Chess</div>
+          <div class="game" id="Chess">
+            <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
+            <div class="gametitle" id="Chess">Chess</div>
+          </div>
+
+          <div class="game" id="Wordblocks">
+            <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
+            <div class="gametitle" id="Wordblocks">Wordblocks</div>
+          </div>
+
         </div>
-
-        <div class="game" id="Wordblocks">
-          <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
-          <div class="gametitle" id="Wordblocks">Wordblocks</div>
+        <hr />
+        <div class="active_games">
+          <div class="active_games_header">Active Games</div>
+          <div id="gametable" class="gametable"></div>
         </div>
-
       </div>
-
-      <div class="active_games">
-        <div class="active_games_header">Active Games</div>
-        <div id="gametable" class="gametable"></div>
-      </div>
-    </div>
 
 
 
@@ -86,10 +105,14 @@
 
   </div>
 
-  <div id="lightbox_message_from_address" class="lightbox_message_from_address" style="display:none" /></div>
-  <div id="lightbox_message_from_address2" class="lightbox_message_from_address2" style="display:none" /></div>
-  <div id="lightbox_message_from_address3" class="lightbox_message_from_address3" style="display:none" /></div>
-  <div id="lightbox_message_from_address4" class="lightbox_message_from_address4" style="display:none" /></div>
+  <div id="lightbox_message_from_address" class="lightbox_message_from_address" style="display:none" />
+  </div>
+  <div id="lightbox_message_from_address2" class="lightbox_message_from_address2" style="display:none" />
+  </div>
+  <div id="lightbox_message_from_address3" class="lightbox_message_from_address3" style="display:none" />
+  </div>
+  <div id="lightbox_message_from_address4" class="lightbox_message_from_address4" style="display:none" />
+  </div>
 
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -97,4 +120,5 @@
   <script src="/arcade/script.js"></script>
 
 </body>
+
 </html>
