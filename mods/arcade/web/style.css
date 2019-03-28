@@ -28,11 +28,7 @@
   margin-top: 20px;
 }
 
-.return_to_arcade {
-  clear: both;
-  padding-top: 20px;
-  cursor: pointer;
-}
+
 
 .active_games {
   margin-bottom: 10px;
@@ -63,6 +59,14 @@
   display: inline-block;
 }
 
+.return_to_arcade {
+  clear: both;
+  padding-top: 20px;
+  padding: 10px;
+  font-size: 1em;
+  display: inline-block;
+  cursor: pointer;
+}
 
 .join {
   margin-left: 10px;
@@ -339,7 +343,7 @@ td {
   margin: 5px;
 }
 
-.emphasis:hover, .link:hover {
+.emphasis:hover, .link:hover, .return_to_arcade:hover {
   border-radius: 5px;
   color: #eee;
   background: #47A;

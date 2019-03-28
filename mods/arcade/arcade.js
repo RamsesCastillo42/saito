@@ -92,7 +92,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
       <p></p>
 
       <div class="return_to_arcade" id="return_to_arcade">
-	Return to Arcade
+      <i class="fa fa-arrow-circle-left"></i> Return to Arcade
       </div>
 
     </div>
@@ -365,7 +365,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game gamelink link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade">Return to Arcade</div>';
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game gamelink link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
 	    let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
 	      if (b > 0) { tmpadd += "_"; }
@@ -434,7 +434,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  if (this.currently_viewing_monitor == 1) {
 
 	    let active_module = txmsg.module;
-	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a><p></p><div id="return_to_arcade" class="return_to_arcade">Return to Arcade</div>.`;
+	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
 	    this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
@@ -605,8 +605,8 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   //
   // return to arcade
   //
-  $('.return_to_arcade').off();
-  $('.return_to_arcade').on('click', function() {
+  $('#return_to_arcade').off();
+  $('#return_to_arcade').on('click', function() {
     arcade_self.currently_viewing_monitor = 0;
     arcade_self.hideMonitor();
   });
