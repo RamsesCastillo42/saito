@@ -157,9 +157,9 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let winner     = app.options.games[i].winner;
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
-        let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
+        let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
-        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
+        let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -326,7 +326,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  //
 	  // add it to our table too
 	  //
-          let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
+          let acceptgame = '<div class="link accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
 
 	  let remote_address = "";
 	  for (let i = 0; i < tx.transaction.to.length; i++) {
@@ -434,7 +434,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  if (this.currently_viewing_monitor == 1) {
 
 	    let active_module = txmsg.module;
-	    let html = `Your game is ready: <a href="/${active_module.toLowerCase()}">click here to open</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+	    let html = `Your game is ready: <a class="link linkbutton" href="/${active_module.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
 	    this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
@@ -538,7 +538,8 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-        let html = `Your game is ready: <a href="/${arcade_self.active_game.toLowerCase()}">click here to open</a>.`;
+        //let html = `Your game is ready: <a href="/${arcade_self.active_game.toLowerCase()}">click here to open</a>.`;
+        let html = `Your game is ready: <a class="link linkbutton" href="/${active_module.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
