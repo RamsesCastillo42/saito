@@ -31,9 +31,7 @@
 .return_to_arcade {
   clear: both;
   padding-top: 20px;
-  color: -webkit-link;
   cursor: pointer;
-  text-decoration: underline;
 }
 
 .active_games {
@@ -61,13 +59,10 @@
   float: left;
   margin: 10px;
   padding: 10px;
-  font-size: 0.9em;
+  font-size: 1em;
   display: inline-block;
 }
 
-.joingamelink {}
-
-.delete_game {}
 
 .join {
   margin-left: 10px;
@@ -142,6 +137,7 @@ td {
   display: grid;
   row-gap: 1em;
   grid-template-columns: repeat(auto-fit, 330px);
+  column-gap: 1em;
 }
 
 .active_games {
@@ -198,6 +194,7 @@ td {
   text-align: center;
   border: 3px solid #888;
   cursor: pointer;
+  max-width: 375px;
 }
 
 .gameimage:hover {
@@ -290,6 +287,7 @@ td {
   border: 1px solid #b0281a;
 }
 
+
 @media only screen and (max-width: 750px) {
   .main {
     grid-template-columns: 1fr;
@@ -361,7 +359,7 @@ a {
 
 .wechat-qr {
   display: block;
-  transition:  0.5s;
+  transition: 0.5s;
   height: 0px;
   overflow: hidden;
   position: fixed;
@@ -369,20 +367,17 @@ a {
   padding: 0 10px;
   background-color: #efefef9e;
   border-radius: 10px;
-
-  }
+}
 
 #wechat-qr-img {
   margin-top: 15px;
   width: 100%;
-  }
+}
 
 #close-qr {
   float: left;
   margin: 5px;
 }
-
-
 
 @media only screen and (max-width: 900px) {
   .saito_address {
@@ -405,14 +400,25 @@ a {
   .wechat-qr {
     top: 20px;
     width: 80%;
-    }
-    #wechat-qr-img {
-      width: 50%;
-     }
+  }
+  #wechat-qr-img {
+    width: 50%;
+  }
 }
 
 @media only screen and (max-width: 370px) {
   .ads {
     max-width: 300px;
   }
+}
+
+.accept_game {
+  color: darkorange;
+  border: darkorange 1px solid;
+  border-radius: 5px;
+}
+
+.accept_game:hover {
+  background: darkorange;
+  color: #efefef;
 }
