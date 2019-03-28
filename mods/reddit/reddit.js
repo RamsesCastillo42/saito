@@ -152,7 +152,6 @@ Reddit.prototype.initialize = async function initialize() {
     }
     if (offset == null) { offset = 0; }
 
-
     ////////////////
     // SUBREDDITS //
     ////////////////
@@ -1467,11 +1466,18 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
               message.data            = [];
 
           for (var fat = 0; fat < rows.length; fat++) {
+
             let {id, tx, subreddit, post_id, unixtime, comments, votes} = rows[fat];
+            tx = JSON.parse(tx)
+            let {text, link, title} = tx.msg;
+
             message.data.push({
               id: id,
               tx: tx,
-              subreddit: subreddit ? subreddit : "",
+              title,
+              link,
+              text,
+              subreddit: subreddit ? subreddit : "main",
               post_id: post_id,
               unixtime: unixtime,
               comments: comments,
@@ -1544,7 +1550,7 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
         params3 = { $pid : docid , $vote_bonus : vote_bonus , $current_time : current_time };
 
         if (vote == -1) {
-          sql3 = "UPDATE posts SET votes = votes + 1, unixtime_rank = cast((unixtime_rank - ($vote_bonus * (2000000/($current_time-unixtime)))) as INTEGER) WHERE post_id = $pid";
+          sql3 = "UPDATE posts SET votes = votes - 1, unixtime_rank = cast((unixtime_rank - ($vote_bonus * (2000000/($current_time-unixtime)))) as INTEGER) WHERE post_id = $pid";
           params3 = { $pid : docid , $vote_bonus : vote_bonus , $current_time : current_time };
         }
       } else {
@@ -1664,7 +1670,7 @@ Reddit.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, 
             votes: votes,
             unixtime: unixtime,
             post_id: post_id,
-            parent_id: parent_id,
+            parent_id: parent_id.toString(),
             subreddit: subreddit,
             sig: tx.sig,
             tx
