@@ -619,7 +619,6 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   //
   $('.gamelink').off();
   $('.gamelink').on('click', function () {
-
     let tmpid = $(this).attr('id');
     let tmpar = tmpid.split("_");
     let game_id = tmpar[0];
@@ -646,6 +645,14 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let game_module = tmpar[1];
     let game_self = null;
 
+    //
+    // if game_moduleis undefined
+    //
+    if (game_module == undefined) {
+
+      return;
+    }
+
     try {
       game_self = app.modules.returnModule(game_module);
       game_self.loadGame(gameid);
@@ -655,11 +662,11 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
         game_self.game.over = 1;
 	game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
       }
+      game_self.saveGame(gameid);
     } catch (err) {
 console.log("ERROR DELETING GAME!");
     }
 
-    game_self.saveGame(gameid);
 
     for (let i = 0; i < arcade_self.app.options.games.length; i++) {
       if (i < 0) { i = 0; }
@@ -782,6 +789,7 @@ console.log("ERROR DELETING GAME!");
     arcade_self.startInitializationTimer(game_id);
 
   });
+
 
 
 
