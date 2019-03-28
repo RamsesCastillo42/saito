@@ -37,46 +37,37 @@
 }
 
 .active_games {
-  font-size: 1.2em;
   margin-bottom: 10px;
   clear: both;
-  padding-top: 40px;
+  padding-top: 10px;
 }
 
 .active_games_header {
+  font-size: 1.2em;
   text-decoration: underline;
   margin-bottom: 10px;
 }
 
-.joingamelink {
-  float: left;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  color: -webkit-link;
-}
-
-.deletegamelink {
-  float: left;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  color: -webkit-link;
-}
+.deletegamelink {}
 
 .single_activegame {
   width: 300px;
   padding: 14px;
-  border: 1px dashed #888;
+  border: 1px dashed #47a;
   background-color: #efefef;
 }
 
 .gamelink {
-  float: keft;
-  margin-top: 15px;
+  float: left;
+  margin: 10px;
+  padding: 10px;
+  font-size: 0.9em;
+  display: inline-block;
 }
 
-.delete_game {
-  margin-left: 30px;
-}
+.joingamelink {}
+
+.delete_game {}
 
 .join {
   margin-left: 10px;
@@ -84,6 +75,11 @@
 
 td {
   padding-bottom: 10px;
+}
+
+hr {
+  border: 1px dashed #444444;
+  width: 80%
 }
 
 .arcade {
@@ -95,7 +91,8 @@ td {
   display: grid;
   row-gap: 1em;
   column-gap: 1.5em;
-  grid-template-columns: repeat(auto-fit, 300px);
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
 }
 
 .gametitle {
@@ -108,9 +105,7 @@ td {
 
 .link {
   display: inline;
-  text-decoration: underline;
   cursor: pointer;
-  color: -webkit-link;
 }
 
 .game_monitor {
@@ -182,8 +177,11 @@ td {
 }
 
 .game {
-  width: 300px;
-  height: 250px;
+  min-width: 150px;
+}
+
+.game:hover {
+  color: #47A;
 }
 
 .gamename {
@@ -196,11 +194,15 @@ td {
 }
 
 .gameimage {
-  width: 300px;
   width: 100%;
   text-align: center;
   border: 3px solid #888;
   cursor: pointer;
+}
+
+.gameimage:hover {
+  border-color: #47A;
+  opacity: 0.75;
 }
 
 .body, body {
@@ -254,6 +256,7 @@ td {
   font-size: 1.6em;
   margin-left: auto;
   margin-right: auto;
+  color: #444;
 }
 
 .manage_invitations {
@@ -301,7 +304,87 @@ td {
   }
 }
 
-@media only screen and (max-width: 425px) {
+.outreach {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  grid-gap: 20px;
+  color: #444;
+  text-decoration: none;
+  margin-top: 25px;
+}
+
+.outreach div {
+  text-align: center;
+}
+
+.telegram {
+  border: 3px solid white;
+}
+
+.wechat {
+  border: 3px solid white;
+}
+
+.email {
+  border: 3px solid white;
+}
+
+#chat_container {
+  width: 25%;
+}
+
+.emphasis {
+  display: inline-block;
+  font-size: larger;
+  padding: 10px 15px;
+  margin: 5px;
+}
+
+.emphasis:hover, .link:hover {
+  border-radius: 5px;
+  color: #eee;
+  background: #47A;
+  cursor: pointer;
+}
+
+h1 {
+  font-family: Monserat, sans-serif, 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #444;
+  font-weight: 100;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.wechat-qr {
+  display: block;
+  transition:  0.5s;
+  height: 0px;
+  overflow: hidden;
+  position: fixed;
+  width: 25%;
+  padding: 0 10px;
+  background-color: #efefef9e;
+  border-radius: 10px;
+
+  }
+
+#wechat-qr-img {
+  margin-top: 15px;
+  width: 100%;
+  }
+
+#close-qr {
+  float: left;
+  margin: 5px;
+}
+
+
+
+@media only screen and (max-width: 900px) {
   .saito_address {
     font-size: 0.6em;
   }
@@ -312,6 +395,20 @@ td {
     border: 2px dashed #888;
     margin-bottom: 15px;
   }
+  .outreach {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  #chat_container {
+    width: 200px;
+  }
+  .wechat-qr {
+    top: 20px;
+    width: 80%;
+    }
+    #wechat-qr-img {
+      width: 50%;
+     }
 }
 
 @media only screen and (max-width: 370px) {

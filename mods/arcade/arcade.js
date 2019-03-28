@@ -86,7 +86,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
       <p></p>
 
       <div class="invitation_player2" id="invitation_player2" style="display:none">
-        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept" id="player2_accept">ACCEPT INVITATION</span> ]
+        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
       </div>
 
       <p></p>
@@ -157,9 +157,9 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         let winner     = app.options.games[i].winner;
         let gamename   = app.options.games[i].module;
         let status     = app.options.games[i].status;
-        let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'">ACCEPT</div>';
-        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'">JOIN</div>';
-        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'">DELETE</div>';
+        let acceptgame = '<div class="link gamelink accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
+        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
+        let deletegame = '<div class="link gamelink delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
 
         let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -326,7 +326,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  //
 	  // add it to our table too
 	  //
-          let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'">ACCEPT</div>';
+          let acceptgame = '<div class="link gamelink accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
 
 	  let remote_address = "";
 	  for (let i = 0; i < tx.transaction.to.length; i++) {
@@ -365,7 +365,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '">Click here to accept this game!</div><p></p><div class="return_to_arcade" id="return_to_arcade">Return to Arcade</div>';
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game gamelink link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade">Return to Arcade</div>';
 	    let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
 	      if (b > 0) { tmpadd += "_"; }
@@ -575,6 +575,16 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
+
+  $('#wechat>span').on('click', function () {
+    $('#wechat-qr').css("height", $('#wechat').outerWidth() + 25);
+    $('#wechat-qr-img').css("width", $('#wechat').outerWidth() - 25);
+  })
+
+  $('#wechat-qr').on('click', function () {
+    $('#wechat-qr').css("height", "0");
+    $('#wechat-qr-img').css("width", "0");
+  })
 
   var arcade_self = this;
 
