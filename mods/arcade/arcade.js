@@ -538,8 +538,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-        //let html = `Your game is ready: <a href="/${arcade_self.active_game.toLowerCase()}">click here to open</a>.`;
-        let html = `Your game is ready: <a class="link linkbutton" href="/${active_module.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+        let html = `Your game is ready: <a class="link linkbutton" href="/${arcade_self.active_game.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
