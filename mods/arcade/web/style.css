@@ -50,7 +50,7 @@
   background-color: #efefef;
 }
 
-.gamelink, .accept_game, .delete_game {
+.gamelink, .accept_game, .delete_game, .joinlink {
   margin: 10px;
   padding: 10px;
   font-size: 1em;
@@ -68,6 +68,7 @@
   font-size: 1em;
   display: inline-block;
   cursor: pointer;
+  margin-left:10px;
 }
 
 .join {
@@ -346,7 +347,7 @@ td {
   margin: 5px;
 }
 
-.emphasis:hover, .link:hover, .return_to_arcade:hover {
+.emphasis:hover, .link:hover, .linkbutton:hover, .return_to_arcade:hover {
   border-radius: 5px;
   color: #eee;
   background: #47A;

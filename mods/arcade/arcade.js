@@ -365,7 +365,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game gamelink link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
 	    let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
 	      if (b > 0) { tmpadd += "_"; }
@@ -434,7 +434,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  if (this.currently_viewing_monitor == 1) {
 
 	    let active_module = txmsg.module;
-	    let html = `Your game is ready: <a class="link linkbutton" href="/${active_module.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+	    let html = `Your game is ready: <p></p><a href="/${active_module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
 	    this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
@@ -538,7 +538,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-        let html = `Your game is ready: <a class="link linkbutton" href="/${arcade_self.active_game.toLowerCase()}"><i class="fa fa-play-circle"></i> JOIN</a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+	let html = `Your game is ready: <p></p><a href="/${arcade_self.active_game.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
@@ -812,14 +812,21 @@ console.log("ERROR DELETING GAME!");
 
     arcade_self.startInitializationTimer(game_id);
 
-    let remote_address = $('.lightbox_message_from_address').text();
+console.log("TMPAR: " + JSON.stringify(tmpar));
 
-    if (remote_address == "") {
-      remote_address = $(this).parent().parent().find('.acceptgameopponents').attr("id");
+    if ($('.lightbox_message_from_address').length > 0) {
+      let remote_address = $('.lightbox_message_from_address').text();
+console.log("RA: " + remote_address);
+      if ($(this).parent().parent().find('.acceptgameopponents').length > 0) {
+        remote_address = $(this).parent().parent().find('.acceptgameopponents').attr("id");
+      }
+      console.log("RA2: " + remote_address);
+      tmpar = remote_address.split("_");
     }
 
-    tmpar = remote_address.split("_");
+
     for (let z = 0; z < tmpar.length; z++) { tmpar[z] = tmpar[z].trim(); }
+console.log("TMPAR2: " + JSON.stringify(tmpar));
 
     game_self = arcade_self.app.modules.returnModule(game_module);
 
