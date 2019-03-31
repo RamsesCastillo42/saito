@@ -64,6 +64,14 @@ body {
   position: relative;
 }
 
+#remainder, #lastmove {
+  display: inline-block;
+  font-size: 1.7em;
+  padding: 10px 10px 0 10px;
+}
+
+
+
 .score {
   font-size: 1.6rem;
   padding: 10px 20px;
@@ -211,3 +219,4 @@ body {
 .mainfixedbottom {
   margin: 0 0 201px 0;
 }
+

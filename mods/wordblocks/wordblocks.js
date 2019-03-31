@@ -413,8 +413,12 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
             wordblocks_self.exhaustWord(word, orientation, x, y);
             wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
-
+            
             if (wordblocks_self.checkForEndGame() == 1) { return; }
+
+            //alert(wordblocks_self.game.deck[0].crypt.length);
+            $('#remainder').html("Tiles left: " + wordblocks_self.game.deck[0].crypt.length);
+
 
             wordblocks_self.endTurn();
           };
@@ -909,6 +913,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   let score = 0;
   let touchesWord = 0;
   let thisword = "";
+  let finalword = "";
 
   x = parseInt(x);
   y = parseInt(y);
@@ -988,6 +993,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     }
 
     if (!checkWord(thisword)) { return -1; }
+
+    finalword += thisword;
 
     if (tilesUsed == 7) {
       score += 10;
@@ -1167,6 +1174,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
     if (!checkWord(thisword)) { return -1; }
 
+    finalword += thisword;
+
     if (tilesUsed == 7) {
       score += 10;
       word_bonus += 1;
@@ -1281,7 +1290,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   }
 
   this.firstmove = 0;
-
+//  alert("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  $('#lastmove').html("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
   return score;
 
 }
