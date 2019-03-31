@@ -34,6 +34,7 @@ body {
   max-width: 900px;
   min-width: 500px;
   margin: auto;
+  margin-bottom: none;
   border: 1px solid orange;
   padding: 0px;
 }
@@ -60,6 +61,7 @@ body {
   border: 2px solid #333;
   color: #EEE;
   height: 300px;
+  position: relative;
 }
 
 .score {
@@ -189,12 +191,8 @@ body {
   }
   #controls {
     height: 200px;
-    position: fixed;
-    bottom: 0;
   }
-  .main {
-    margin: 0 0 201px 0;
-  }
+  
   #chat_container {
     display: none;
   }
@@ -203,4 +201,13 @@ body {
     padding-left: 10px;
     text-decoration: underline;
   }
+}
+
+.fixedbottom {
+  position: fixed !important;
+  bottom: 0;
+}
+
+.mainfixedbottom {
+  margin: 0 0 201px 0;
 }
