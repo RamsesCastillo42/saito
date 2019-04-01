@@ -18,6 +18,7 @@ body {
 
 .player {
   margin-bottom: 6px;
+  white-space: nowrap;
 }
 
 .link {
@@ -70,7 +71,9 @@ body {
   padding: 10px 10px 0 10px;
 }
 
-
+#remainder {
+  width: 33%;
+}
 
 .score {
   font-size: 1.6rem;
@@ -176,7 +179,7 @@ body {
     width: 60%
   }
   #controls {
-    height: 200px;
+    height: 236px;
   }
   .card {
     display: inline;
@@ -198,7 +201,7 @@ body {
     width: 60%
   }
   #controls {
-    height: 200px;
+    height: 236px;
   }
   
   #chat_container {
@@ -217,6 +220,6 @@ body {
 }
 
 .mainfixedbottom {
-  margin: 0 0 201px 0;
+  margin: 0 0 237px 0;
 }
 

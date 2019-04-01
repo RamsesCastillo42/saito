@@ -126,18 +126,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     $('.gameboard').outerHeight($('.main').outerWidth() - 2);
     $('#controls').outerWidth($('.main').outerWidth() + 6);
 
+    responsive();
+    
   }
 
   $(window).resize(function () {
-    if (this.window.innerHeight <= ($('.gameboard').outerHeight() + $('#controls').outerHeight())) {
-      $('#controls').addClass('fixedbottom');
-      $('.main').addClass('mainfixedbottom');
-    } else {
-      $('#controls').removeClass('fixedbottom');
-      $('.main').removeClass('mainfixedbottom');
-    }
+    responsive();
   });
-
 
 
   //
@@ -257,6 +252,15 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 }
 
+responsive = function responsive() {
+  if (this.window.innerHeight <= ($('.gameboard').outerHeight() + $('#controls').outerHeight())) {
+    $('#controls').addClass('fixedbottom');
+    $('.main').addClass('mainfixedbottom');
+  } else {
+    $('#controls').removeClass('fixedbottom');
+    $('.main').removeClass('mainfixedbottom');
+  }
+}
 
 
 /////////////////
@@ -413,7 +417,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
             wordblocks_self.exhaustWord(word, orientation, x, y);
             wordblocks_self.addScoreToPlayer(wordblocks_self.game.player, myscore);
-            
+
             if (wordblocks_self.checkForEndGame() == 1) { return; }
 
             //alert(wordblocks_self.game.deck[0].crypt.length);
@@ -538,7 +542,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       }
 
       if (letter_found == 0) {
-//        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
+        //        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
         alert("INVALID: letter not in hand: " + letter);
         return 0;
       }
@@ -1290,7 +1294,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   }
 
   this.firstmove = 0;
-//  alert("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  //  alert("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
   $('#lastmove').html("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
   $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
   return score;
