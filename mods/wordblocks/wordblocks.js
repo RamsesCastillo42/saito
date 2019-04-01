@@ -671,7 +671,7 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
 
     if ($(divname).hasClass("set") != true) {
       this.game.board[boardslot].letter = "_";
-      $(divname).html("");
+      $(divname).css("background-image", "");
     }
   }
 }
