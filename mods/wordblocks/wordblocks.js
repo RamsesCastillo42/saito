@@ -49,12 +49,12 @@ Wordblocks.prototype.showTiles = function showTiles() {
   let html = "";
 
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-    html += this.returnTile(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
+    html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
 
   $('.tiles').html(html);
 
- }
+}
 
 ////////////////
 // initialize //
@@ -126,7 +126,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     $('.gameboard').outerHeight($('.main').outerWidth() - 2);
     $('#controls').outerWidth($('.main').outerWidth() + 6);
 
+    responsive();
+
   }
+
+  $(window).resize(function () {
+    responsive();
+  });
 
 
   //
@@ -205,7 +211,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     for (var i in this.game.board) {
       let divname = "#" + i;
       let letter = this.game.board[i].letter;
-      $(divname).html(this.returnTile(letter));
+      // $(divname).html(this.returnTile(letter));
+      this.addTile($(divname), letter);
       if (!(letter == "_") && !(letter == "")) {
         $(divname).addClass("set");
       }
@@ -246,12 +253,21 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 }
 
+responsive = function responsive() {
+  if (this.window.innerHeight <= ($('.gameboard').outerHeight() + $('#controls').outerHeight())) {
+    $('#controls').addClass('fixedbottom');
+    $('.main').addClass('mainfixedbottom');
+  } else {
+    $('#controls').removeClass('fixedbottom');
+    $('.main').removeClass('mainfixedbottom');
+  }
+}
 
 
 /////////////////
 // Return Tile //
 /////////////////
-Wordblocks.prototype.returnTile = function returnTile(letter) {
+Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
 
   let html = "";
 
@@ -284,6 +300,12 @@ Wordblocks.prototype.returnTile = function returnTile(letter) {
 
   return html;
 
+}
+
+Wordblocks.prototype.addTile = function (obj, letter) {
+  if (letter !== "_") {
+    obj.css("background-image", "url(wordblocks/img/" + letter.toUpperCase() + ".jpg)");
+  }
 }
 
 
@@ -405,6 +427,10 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
             if (wordblocks_self.checkForEndGame() == 1) { return; }
 
+            //alert(wordblocks_self.game.deck[0].crypt.length);
+            $('#remainder').html("Tiles left: " + wordblocks_self.game.deck[0].crypt.length);
+
+
             wordblocks_self.endTurn();
           };
         }
@@ -493,7 +519,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
         return 0;
       }
     }
-    this.firstmove = 0;
+    //this.firstmove = 0;
   }
 
 
@@ -523,7 +549,8 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       }
 
       if (letter_found == 0) {
-        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
+        //        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
+        alert("INVALID: letter not in hand: " + letter);
         return 0;
       }
 
@@ -616,11 +643,13 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
     if (this.game.board[boardslot].letter != "_") {
       if (this.game.board[boardslot].letter != letter) {
         this.game.board[boardslot].letter = letter;
-        $(divname).html(this.returnTile(letter));
+        //$(divname).html(this.returnTile(letter));
+        this.addTile($(divname), letter);
       }
     } else {
       this.game.board[boardslot].letter = letter;
-      $(divname).html(this.returnTile(letter));
+      //      $(divname).html(this.returnTile(letter));
+      this.addTile($(divname), letter);
     }
   }
 }
@@ -642,7 +671,7 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
 
     if ($(divname).hasClass("set") != true) {
       this.game.board[boardslot].letter = "_";
-      $(divname).html("");
+      $(divname).css("background-image", "");
     }
   }
 }
@@ -895,8 +924,9 @@ Wordblocks.prototype.returnBonus = function returnBonus(pos) {
 Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x, y) {
 
   let score = 0;
-
-  if (!checkWord(word)) { return -1; }
+  let touchesWord = 0;
+  let thisword = "";
+  let finalword = "";
 
   x = parseInt(x);
   y = parseInt(y);
@@ -947,12 +977,16 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     }
 
     let word_bonus = 1;
-    
+
     //
     // score this word
     //
+
+    thisword = "";
+
     for (let i = beginning_of_word, k = 0; i <= end_of_word; i++) {
       boardslot = y + "_" + i;
+
 
       let tmpb = this.returnBonus(boardslot);
 
@@ -964,16 +998,22 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
       if (this.game.board[boardslot].fresh == 1) { tilesUsed += 1; }
+      if (this.game.board[boardslot].fresh != 1) { touchesWord = 1; }
 
       let thisletter = this.game.board[boardslot].letter;
+      thisword += thisletter;
       score += (this.letters[thisletter].score * letter_bonus);
     }
+
+    if (!checkWord(thisword)) { return -1; }
+
+    finalword += thisword;
 
     if (tilesUsed == 7) {
       score += 10;
       word_bonus += 1;
     }
-    
+
     score *= word_bonus;
 
     //
@@ -1043,8 +1083,10 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         //
         // score this word
         //
+
+        thisword = "";
+
         if (orth_start != orth_end) {
-          let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
             let boardslot = w + "_" + i;
@@ -1056,12 +1098,14 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             if (tmpb == "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
+            if (this.game.board[boardslot].fresh != 1) { touchesWord = 1; }
+
             let thisletter = this.game.board[boardslot].letter;
             thisword += thisletter;
             wordscore += (this.letters[thisletter].score * letter_bonus);
           }
           score += (wordscore * word_bonus);
-          
+
           if (!checkWord(thisword)) { return -1; }
 
         }
@@ -1134,10 +1178,16 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (tmpb == "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
 
       if (this.game.board[boardslot].fresh == 1) { tilesUsed += 1; }
+      if (this.game.board[boardslot].fresh != 1) { touchesWord = 1; }
 
       let thisletter = this.game.board[boardslot].letter;
+      thisword += thisletter;
       score += (this.letters[thisletter].score * letter_bonus);
     }
+
+    if (!checkWord(thisword)) { return -1; }
+
+    finalword += thisword;
 
     if (tilesUsed == 7) {
       score += 10;
@@ -1216,9 +1266,10 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         //
         // score this word
         //
-        
+
+        thisword = "";
+
         if (orth_start != orth_end) {
-          let thisword = "";
           for (let w = orth_start, q = 0; w <= orth_end; w++) {
 
             boardslot = i + "_" + w;
@@ -1230,6 +1281,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
             if (tmpb === "2W" && this.game.board[boardslot].fresh == 1) { word_bonus = word_bonus * 2; }
             if (tmpb === "3L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 3; }
             if (tmpb === "2L" && this.game.board[boardslot].fresh == 1) { letter_bonus = 2; }
+
+            if (this.game.board[boardslot].fresh != 1) { touchesWord = 1; }
 
             let thisletter = this.game.board[boardslot].letter;
             thisword += thisletter;
@@ -1244,13 +1297,22 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       }
     }
   }
+  if (this.firstmove == 0 && touchesWord == 0) {
+    alert("Word does not cross our touch an existing word.")
+    return -1
+  }
 
+  this.firstmove = 0;
+  //  alert("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  $('#lastmove').html("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
   return score;
 
 }
 
 checkWord = function checkWord(word) {
-  if (typeof(allWords) != "undefined") {
+  console.log('"' + word + '" Checked')
+  if (word.length >= 1 && typeof (allWords) != "undefined") {
     if (allWords.indexOf(word.toLowerCase()) <= 0) {
       alert(word + " is not a playable word.");
       return false;
@@ -1329,7 +1391,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     //
     if (mv[0] === "place") {
 
-      this.firstmove = 0;
+      //this.firstmove = 0;
 
       let word = mv[1];
       let player = mv[2];
