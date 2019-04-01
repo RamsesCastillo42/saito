@@ -49,7 +49,7 @@ Wordblocks.prototype.showTiles = function showTiles() {
   let html = "";
 
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-    html += this.returnTile(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
+    html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
 
   $('.tiles').html(html);
@@ -127,7 +127,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     $('#controls').outerWidth($('.main').outerWidth() + 6);
 
     responsive();
-    
+
   }
 
   $(window).resize(function () {
@@ -211,7 +211,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     for (var i in this.game.board) {
       let divname = "#" + i;
       let letter = this.game.board[i].letter;
-      $(divname).html(this.returnTile(letter));
+      // $(divname).html(this.returnTile(letter));
+      this.addTile($(divname), letter);
       if (!(letter == "_") && !(letter == "")) {
         $(divname).addClass("set");
       }
@@ -266,7 +267,7 @@ responsive = function responsive() {
 /////////////////
 // Return Tile //
 /////////////////
-Wordblocks.prototype.returnTile = function returnTile(letter) {
+Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
 
   let html = "";
 
@@ -299,6 +300,12 @@ Wordblocks.prototype.returnTile = function returnTile(letter) {
 
   return html;
 
+}
+
+Wordblocks.prototype.addTile = function (obj, letter) {
+  if (letter !== "_") {
+    obj.css("background-image", "url(wordblocks/img/" + letter.toUpperCase() + ".jpg)");
+  }
 }
 
 
@@ -636,11 +643,13 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
     if (this.game.board[boardslot].letter != "_") {
       if (this.game.board[boardslot].letter != letter) {
         this.game.board[boardslot].letter = letter;
-        $(divname).html(this.returnTile(letter));
+        //$(divname).html(this.returnTile(letter));
+        this.addTile($(divname), letter);
       }
     } else {
       this.game.board[boardslot].letter = letter;
-      $(divname).html(this.returnTile(letter));
+      //      $(divname).html(this.returnTile(letter));
+      this.addTile($(divname), letter);
     }
   }
 }
