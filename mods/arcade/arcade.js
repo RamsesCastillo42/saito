@@ -46,7 +46,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="address_box">
 
-      Your address for this game:
+      Send this address to your opponent for invitation:
 
       <p></p>
 
