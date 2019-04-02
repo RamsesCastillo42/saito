@@ -599,7 +599,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     arcade_self.showMonitor();
 
     if (arcade_self.active_game == "Twilight") {
-      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. Please support GMT Games and encourage further development of Twilight Struggle by <a class="border-bottom: 1px dashed;cursor:pointer" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
+      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support GMT Games and encourage further development of Twilight Struggle by <a class=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
     }
 
   });
