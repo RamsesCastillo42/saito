@@ -76,7 +76,10 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
 	  <p></p>
 	</div>
-        <input type="submit" style="margin-top:10px;font-size:1.1em;display:block;cursor:pointer;float:left;clear:both;" id="invite_button" class="invite_button" >
+
+        <div class="invite_button" id="invite_button">
+          <i class="fa fa-envelope"></i> Send Invite
+        </div>
       </div>
 
       <p></p>
