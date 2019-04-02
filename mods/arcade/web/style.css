@@ -127,9 +127,9 @@ hr {
 .publisher_message {
   clear: both;
   padding-top: 20px;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.2em;
-  color: rgb(158, 158, 158)
+  color: 3444;
 }
 
 th {
