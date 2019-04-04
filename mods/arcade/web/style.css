@@ -377,6 +377,7 @@ a {
   padding: 0 10px;
   background-color: #efefef9e;
   border-radius: 10px;
+  z-index: 10;
 }
 
 #wechat-qr-img {
@@ -482,6 +483,7 @@ a {
   text-shadow: 0 1px 1px rgba(0,0,0,.2);
   text-transform: uppercase;
   text-align: center;
+  z-index: 5;
 }
 
 /* top left*/
