@@ -59,7 +59,6 @@ Poker.prototype.initializeGame = function initializeGame(game_id) {
   if (this.game.status != "") { this.updateStatus(this.game.status); }
   if (this.game.dice == "") { this.initializeDice(); }
 
-
   //
   // initialize
   //
@@ -81,7 +80,16 @@ Poker.prototype.initializeGame = function initializeGame(game_id) {
 */
 
     this.game.queue.push("round");
-    this.game.queue.push("DEAL\t1\t1\t2");
+
+      // DECK [decknum] [array of cards]
+      // POOL [poolnum]
+      // FLIPCARD [decknum] [cardnum] [poolnum]
+      // RESOLVEFLIP [decknum] [cardnum] [poolnum]
+
+    this.game.queue.push("FLIPCARD\t1\t2\t1");
+    this.game.queue.push("POOL\t1"); // pool for cards on table
+
+    this.game.queue.push("DEAL\t1\t1\t5");
     this.game.queue.push("SHUFFLE\t1");
     this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
@@ -102,6 +110,8 @@ Poker.prototype.handleGame = function handleGame(msg=null) {
     return 0;
   }
 
+
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 
   ///////////
