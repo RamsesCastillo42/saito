@@ -35,17 +35,15 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/welcome/welcome')(this.app));
   this.mods.push(require('../../mods/wordblocks/wordblocks')(this.app));
   this.mods.push(require('../../mods/twilight/twilight')(this.app));
+  this.mods.push(require('../../mods/poker/poker')(this.app));
   this.mods.push(require('../../mods/dhb/dhb')(this.app));
   //this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
-<<<<<<< HEAD
-  //this.mods.push(require('../../mods/imperium/imperium')(this.app));
-=======
-  this.mods.push(require('../../mods/catan/catan')(this.app));
-  this.mods.push(require('../../mods/imperium/imperium')(this.app));
->>>>>>> 857e6249b507329505f7fe9acd1f8ffdd060f288
+  // this.mods.push(require('../../mods/catan/catan')(this.app));
+  // this.mods.push(require('../../mods/imperium/imperium')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   this.mods.push(require('../../mods/arcade/arcade')(this.app));
   this.mods.push(require('../../mods/proxymod/proxymod')(this.app));
+
 
 
 
