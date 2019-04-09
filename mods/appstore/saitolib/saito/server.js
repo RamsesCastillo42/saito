@@ -349,6 +349,7 @@ Server.prototype.initialize = function initialize() {
 
   app.get('*', (req, res) => {
     res.status(404).sendFile(`${__dirname}/web/404.html`);
+    res.status(404).sendFile(`${__dirname}/web/tabs.html`);
   });
 
   webserver.listen(this.server.port);
