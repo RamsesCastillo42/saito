@@ -62,7 +62,60 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="manage_invitations" style="display:none">
 
-      Provide the address(es) of the player(s) you are inviting. Otherwise wait to confirm an inbound invitation:
+      <div class="game_details">
+
+	<h3>Twilight Struggle: </h3>
+
+	<p></p>
+
+	<form id="options" class="options" style="font-size:1.2em">
+
+ 	  <label for="player1">Play as:</label>
+	  <select name="player1">
+	    <option value="ussr" default>USSR</option>
+	    <option value="us">US</option>
+	  </select>
+
+	  <p></p>
+
+	  <label for="deck">Deck:</label>
+	  <select name="deck">
+	    <option value="original">original</option>
+	    <option value="optional">optional</option>
+	  </select>
+
+	  <p></p>
+
+	  <label for="usbonus">US bonus: </label>
+	  <select name="usbonus">
+	    <option value="0">0</option>
+	    <option value="1">1</option>
+	    <option value="2">2</option>
+	    <option value="3">3</option>
+	    <option value="4">4</option>
+	    <option value="5">5</option>
+	    <option value="6">6</option>
+	    <option value="7">7</option>
+	    <option value="8">8</option>
+	    <option value="9">9</option>
+	    <option value="10">10</option>
+	  </select>
+
+	  <p></p>
+
+	  Add cards to base deck:
+
+	  <p></p>
+
+	  <input type="checkbox" name="kremlinflu" default="off" /> Kremlin Flu
+
+	</form>
+
+
+      </div>
+
+
+      Provide address(es) of player(s) to invite:
 
       <p></p>
 
@@ -599,7 +652,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     arcade_self.showMonitor();
 
     if (arcade_self.active_game == "Twilight") {
-      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support GMT Games and encourage further development of Twilight Struggle by <a class=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
+      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
     }
 
   });
@@ -723,6 +776,15 @@ console.log("ERROR DELETING GAME!");
         address[1] = $('#opponent_address2').val();
         address[2] = $('#opponent_address3').val();
 
+    let options    = {};
+
+    $('form input, form select').each(
+      function(index) {  
+        var input = $(this);
+        options[input.attr('name')] = input.val();
+      }
+    );
+
     address[0] = address[0].trim();
     address[1] = address[1].trim();
     address[2] = address[2].trim();
@@ -783,6 +845,7 @@ console.log("ERROR DELETING GAME!");
 
     newtx.transaction.msg.module  = arcade_self.active_game;
     newtx.transaction.msg.request = "invite";
+    newtx.transaction.msg.options = options;
     newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
     newtx = arcade_self.app.wallet.signTransaction(newtx);
     arcade_self.app.network.propagateTransaction(newtx);
