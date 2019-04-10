@@ -12,15 +12,15 @@
 }
 .status {
   overflow-y: scroll;
-  height: inherit;
   width: 78%;
   height: 48%;
-  /* padding-left: 10px; */
   padding-right: 10px;
 }
 .log {
   overflow-y: scroll;
-  height: inherit;
+  width: 78%;
+  height: 48%;
+  padding-right: 10px;
 }
 .loaded {
   margin-left:20px;
