@@ -1,26 +1,20 @@
 
 #dropdown-button {
   float:right;
-  margin-right: 10px;
   margin-top:6px;
 }
 .hud-clickable {
-  position: fixed;
-  height: 23px;
-  top: 0;
-  width: 100%;
+  cursor: pointer;
+  grid-area: hud-clickable;
+  width: 800px;
 }
 .status {
   overflow-y: scroll;
-  height: inherit;
-  width: 78%;
-  height: 48%;
-  /* padding-left: 10px; */
-  padding-right: 10px;
+  height: 70%;
 }
 .log {
   overflow-y: scroll;
-  height: inherit;
+  height: 70%;
 }
 .loaded {
   margin-left:20px;
@@ -66,8 +60,11 @@
 
 .hud {
   display: grid;
-  grid-template-areas: "hud-header hud-content";
+  grid-template-areas:
+  "hud-clickable hud-clickable"
+  "hud-content hud-content";
   grid-template-columns: 1fr 5fr;
+  grid-template-rows: 20px auto;
 
   position: fixed;
   float: none;
@@ -76,8 +73,10 @@
   color: #eee;
 
   font-size: 1.3rem;
-  padding: 10px;
-  width: 600px;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  width: 800px;
   height: 575px;
   background-color: #707070;
   border: 2px solid #948f8b;
@@ -132,21 +131,30 @@
 
 .hud-content {
   grid-area: hud-content;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 15px;
+  width: 770px;
+  grid-gap: 1em;
 }
 
 
 
 
 
+@media screen and (max-width: 800px) {
+  .hud-content {
+    width: auto;
+    grid-template-columns: 1fr;
+  }
+}
 
 
 
-
-@media screen and (orientation:portrait) and (max-width: 750px) {
+@media screen and (orientation:portrait) and (max-width: 800px) {
   .hud {
     grid-template-areas:
-    "hud-header dropdown"
+    "hud-header hud-clickable"
     "hud-content hud-content";
     grid-template-rows: 60px 4fr;
     grid-template-columns: 1fr 15px;
@@ -165,12 +173,26 @@
     width: 25%;
     float: left;
   }
+
+  .status {
+    width: 95%;
+  }
+
+  #dropdown-button {
+    float: left;
+    margin-right: 5px;
+  }
 }
 
 @media screen and (orientation:landscape) and (max-width: 750px) {
+  #dropdown-button {
+    margin-top: 15px;
+    margin-right: 5px;
+  }
+
   .hud {
     grid-template-areas:
-    "hud-header dropdown"
+    "hud-header hud-clickable"
     "hud-content hud-content";
     grid-template-rows: 60px 4fr;
     grid-template-columns: 1fr 15px;
@@ -178,8 +200,9 @@
     height: 100%;
     padding: 0;
     font-size: 1.2rem;
-    top: 50%;
-    left: 18%;
+
+    top: 75%;
+    left: 17%;
   }
 
   .hud-header ul {
@@ -192,8 +215,16 @@
     float: left;
   }
 
+  .hud-clickable {
+    width: auto;
+  }
+
   .log {
     width: 90%;
     height: 18rem;
+  }
+
+  li {
+    margin-top: 0px;
   }
 }
