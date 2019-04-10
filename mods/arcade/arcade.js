@@ -42,6 +42,16 @@ util.inherits(Arcade, ModTemplate);
 
 Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
+  let game_options = "";
+
+  if (this.active_game != "") {
+    let game_self = app.modules.returnModule(this.active_game);
+    if (game_self != null) {
+      game_options = game_self.returnGameOptionsHTML();
+    }
+  }
+
+
   return `
 
     <div class="address_box">
@@ -62,58 +72,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="manage_invitations" style="display:none">
 
-      <div class="game_details">
-
-	<h3>Twilight Struggle: </h3>
-
-	<p></p>
-
-	<form id="options" class="options" style="font-size:1.2em">
-
- 	  <label for="player1">Play as:</label>
-	  <select name="player1">
-	    <option value="ussr" default>USSR</option>
-	    <option value="us">US</option>
-	  </select>
-
-	  <p></p>
-
-	  <label for="deck">Deck:</label>
-	  <select name="deck">
-	    <option value="original">original</option>
-	    <option value="optional">optional</option>
-	  </select>
-
-	  <p></p>
-
-	  <label for="usbonus">US bonus: </label>
-	  <select name="usbonus">
-	    <option value="0">0</option>
-	    <option value="1">1</option>
-	    <option value="2">2</option>
-	    <option value="3">3</option>
-	    <option value="4">4</option>
-	    <option value="5">5</option>
-	    <option value="6">6</option>
-	    <option value="7">7</option>
-	    <option value="8">8</option>
-	    <option value="9">9</option>
-	    <option value="10">10</option>
-	  </select>
-
-	  <p></p>
-
-	  Add cards to base deck:
-
-	  <p></p>
-
-	  <input type="checkbox" name="kremlinflu" default="off" /> Kremlin Flu
-
-	</form>
-
-
-      </div>
-
+      <div class="game_details">${game_options}</div>
 
       Provide address(es) of player(s) to invite:
 
@@ -895,6 +854,9 @@ console.log("RA: " + remote_address);
 console.log("TMPAR2: " + JSON.stringify(tmpar));
 
     game_self = arcade_self.app.modules.returnModule(game_module);
+    game_self.loadGame(game_id);
+
+console.log("GAME SELF: " + JSON.stringify(game_self.game.options));
 
     game_self.saveGame(game_id);
     for (let i = 0; i < tmpar.length; i++) {
@@ -918,6 +880,7 @@ console.log("TMPAR2: " + JSON.stringify(tmpar));
       return;
     }
 
+    newtx.transaction.msg.options  = game_self.game.options;
     newtx.transaction.msg.module   = game_module;
     newtx.transaction.msg.game_id  = game_id;
     newtx.transaction.msg.request  = "accept";

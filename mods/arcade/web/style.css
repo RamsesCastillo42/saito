@@ -115,6 +115,10 @@ hr {
   max-width: 750px;
 }
 
+.game_details {
+
+}
+
 .game_options {
   display: inherit;
   row-gap: 1em
