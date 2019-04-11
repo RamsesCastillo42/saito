@@ -260,7 +260,8 @@ Happy Chatting!`
     let current_room = $('.chat_messages-list')[0];
     let isPopupHidden = $('.mail_chat_popup').css("bottom") == "40px";
 
-    if ((current_room.id != room.room_id || isPopupHidden || !document.hasFocus()) && room.room_id != this.public_room_id)  {
+    //if ((current_room.id != room.room_id || isPopupHidden || !document.hasFocus()) && room.room_id != this.public_room_id)  {
+    if (current_room.id != room.room_id || isPopupHidden || !document.hasFocus())  {
       let notification_title = lastMessage.author == room.name ? `${lastMessage.author}` :
         `${lastMessage.author} in ${room.name}`
 
