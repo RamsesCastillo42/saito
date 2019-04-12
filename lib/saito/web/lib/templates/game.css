@@ -67,11 +67,11 @@
 }
 .status {
   overflow-y: scroll;
-  height: 65%;
+  height: 100%;
 }
 .log {
   overflow-y: scroll;
-  height: 62%;
+  height: 100%;
 }
 .loaded {
   margin-left:20px;
@@ -121,7 +121,7 @@
   "hud-clickable hud-clickable"
   "hud-content hud-content";
   grid-template-columns: 1fr 5fr;
-  grid-template-rows: 20px auto;
+  grid-template-rows: 1rem auto;
 
   position: fixed;
   float: none;
@@ -134,13 +134,13 @@
   padding-right: 10px;
 
   width: 800px;
-  height: 575px;
+  height: 17.3rem;
   background-color: #707070;
   border: 2px solid #948f8b;
   border-bottom: 0px;
 
-  top: 100%;
   left: 50%;
+  bottom: -18%;
 
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
@@ -190,8 +190,9 @@
   grid-area: hud-content;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 15px;
+  padding: 0.8rem;
   width: 770px;
+  height: 14rem;
   grid-gap: 1em;
 }
 
