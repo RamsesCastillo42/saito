@@ -80,14 +80,14 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
       <div class="invitation_player1" id="invitation_player1">
         <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
-	<div class="opponent_address2">
+        <div class="opponent_address2">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-	  <p></p>
-	</div>
-	<div class="opponent_address3">
+          <p></p>
+        </div>
+        <div class="opponent_address3">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-	  <p></p>
-	</div>
+          <p></p>
+        </div>
 
         <div class="invite_button" id="invite_button">
           <i class="fa fa-envelope"></i> Send Invite
@@ -180,34 +180,34 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         if (tmpid != "") { opponent = tmpid; }
 
         if (app.options.games[i].opponents != undefined) {
-	  if (app.options.games[i].opponents.length > 0) {
-	    opponent = app.options.games[i].opponents[0];
+          if (app.options.games[i].opponents.length > 0) {
+            opponent = app.options.games[i].opponents[0];
           }
         }
-	if (gamename === "") {
-	  gamename = "Unknown";
-	}
+        if (gamename === "") {
+          gamename = "Unknown";
+        }
 
-	if (app.options.games[i].over == 1) {
-	  status = "Game Over";
-	}
+        if (app.options.games[i].over == 1) {
+          status = "Game Over";
+        }
         if (status == "" || status == undefined) {
-	  status = "Game Underway";
-	}
+          status = "Game Underway";
+        }
 
-	if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
-	if (status.length > 50) { status = status.substring(0, 50) + "..."; }
+        if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
+        if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
         this.updateBalance(this.app);
 
-	let html = "";
+        let html = "";
 
-	if (app.options.games[i].over == 0) {
+        if (app.options.games[i].over == 0) {
 
-	  if (app.options.games[i].invitation == 1) {
+          if (app.options.games[i].invitation == 1) {
 
             let remote_address = "";
-	    for (let z = 0; z < app.options.games[i].opponents.length; z++) {;
+            for (let z = 0; z < app.options.games[i].opponents.length; z++) {;
               if (z > 0) { remote_address += "_"; }
               remote_address += app.options.games[i].opponents[z];
             }
@@ -217,45 +217,45 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
             html += '<b>' + gamename + '</b></br>';
             html += opponent + '</div>';
             html += '<p></p>Game Invitation!<p></p>';
-	    html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+            html += '<div class="acceptgamelink">'+acceptgame+'</div>';
             html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
-	    html += '</div>';
+            html += '</div>';
 
-	  } else {
+          } else {
 
             html  = '<div class="single_activegame">';
             html += '<div id="'+gameid+'_game">';
             html += '<b>' + gamename + '</b></br>';
             html += opponent + '</div>';
-	    html += '<div class="joingamelink">'+joingame+'</div>';
-	    html += '<div class="deletegamelink">'+deletegame+'</div>';
-	    html += '</div>';
-	  }
+            html += '<div class="joingamelink">'+joingame+'</div>';
+            html += '<div class="deletegamelink">'+deletegame+'</div>';
+            html += '</div>';
+          }
 
-	} else {
+        } else {
 
           html  = '<div class="single_activegame">';
           html += '<div id="'+gameid+'_game">';
           html += '<b>' + gamename + '</b></br>';
           html += opponent + '</div>';
-	  if (winner == player) {
+          if (winner == player) {
             html += '<p></p>You Won!<p></p>';
-	  } else {
-	    if (winner == 0) {
+          } else {
+            if (winner == 0) {
               html += '<p></p>Opponent Resigned!<p></p>';
-	    } else {
+            } else {
               html += '<p></p>Lost Game!<p></p>';
-	    }
-	  }
-	  html += '<div class="deletegamelink">'+deletegame+'</div>';
-	  html += '</div>';
+            }
+          }
+          html += '<div class="deletegamelink">'+deletegame+'</div>';
+          html += '</div>';
 
-	}
+        }
 
-	if (parseInt(app.options.games[i].last_block) == 0) {
+        if (parseInt(app.options.games[i].last_block) == 0) {
           $('.active_games').show();
           $('#gametable').append(html);
-	}
+        }
 
       }
 
@@ -317,19 +317,19 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     if (txmsg.request == "invite") {
       if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
-	try {
+        try {
 
           let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
 
           if (app.options.games != undefined) {
             for (let i = 0; i < app.options.games.length; i++) {
-	      if (app.options.games[i].id == game_id) {
-		if (app.options.games[i].invitation == 0) {
-		  if (this.monitor_shown_already == 1) {
-	            return;
-		  }
-		}
-	      }
+              if (app.options.games[i].id == game_id) {
+                if (app.options.games[i].invitation == 0) {
+                  if (this.monitor_shown_already == 1) {
+                    return;
+                  }
+                }
+              }
             }
           }
 
@@ -338,19 +338,19 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game += tmpmod.slice(1);
 
 
-	  //
-	  // add it to our table too
-	  //
+          //
+          // add it to our table too
+          //
           let acceptgame = '<div class="link accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
 
-	  let remote_address = "";
-	  for (let i = 0; i < tx.transaction.to.length; i++) {
-	    if (i > 0) { remote_address += "_"; }
-	    remote_address += tx.transaction.to[i].add;
-	  }
+          let remote_address = "";
+          for (let i = 0; i < tx.transaction.to.length; i++) {
+            if (i > 0) { remote_address += "_"; }
+            remote_address += tx.transaction.to[i].add;
+          }
 
 
-	  let html = "";
+          let html = "";
           html  = '<div class="single_activegame">';
           html += '<div id="'+game_id+'_game">';
           html += '<b>' + this.active_game + '</b></br>';
@@ -362,39 +362,38 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           $('.active_games').show();
 
 
-	  var thisdivname = game_id + "_game";
-	  try {
+          var thisdivname = game_id + "_game";
+          try {
             if (document.getElementById(thisdivname) !== null) {
-	      //
-	      // old invitation
-	      // 
-	      return;
-	    } else {
-	      this.showMonitor();
+              //
+              // old invitation
+              // 
+              return;
+            } else {
+              this.showMonitor();
               $('#gametable').prepend(html);
-	    }
-	  } catch (err) {
-	    this.showMonitor();
+            }
+          } catch (err) {
+            this.showMonitor();
             $('#gametable').prepend(html);
-	  }
-
+          }
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
-	    let tmpadd = "";
+            let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
+            let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
-	      if (b > 0) { tmpadd += "_"; }
-	      tmpadd += tx.transaction.to[b].add;
-	    }
+              if (b > 0) { tmpadd += "_"; }
+              tmpadd += tx.transaction.to[b].add;
+            }
 
 
-	    $('.lightbox_message_from_address').html(tmpadd);
-	    $('.manage_invitations').html(html);
-	    $('.manage_invitations').show();
+            $('.lightbox_message_from_address').html(tmpadd);
+            $('.manage_invitations').html(html);
+            $('.manage_invitations').show();
             this.attachEvents(this.app);
-	  }
-	} catch (err) {
-	}
+          }
+        } catch (err) {
+        }
       }
     }
 
@@ -409,55 +408,55 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
         let game_self = app.modules.returnModule(txmsg.module);
         game_self.loadGame(txmsg.game_id);
 
-	//
-	// don't get triggered by closed games
-	//
-	if (game_self.game.over == 1) { return; }
+        //
+        // don't get triggered by closed games
+        //
+        if (game_self.game.over == 1) { return; }
 
-	//
-	// if I have accepted...
-	//
-	if (game_self.game.accept === 1) { 
-	  //$('.status').html("other players are accepting the game...");
-	  $('.status').show();
-	  return; 
-	}
+        //
+        // if I have accepted...
+        //
+        if (game_self.game.accept === 1) { 
+          //$('.status').html("other players are accepting the game...");
+          $('.status').show();
+          return; 
+        }
 
         if (game_self.game.initializing == 1) {
 
-	  //
-	  // if i have not accepted, do not show init screen
-	  //
-	  if (game_self.game.accept == 0) {
+          //
+          // if i have not accepted, do not show init screen
+          //
+          if (game_self.game.accept == 0) {
 
-	    return;
+            return;
 
-	  //
-	  // otherwise move in
-	  //
-	  } else {
+          //
+          // otherwise move in
+          //
+          } else {
 
             this.startInitializationTimer(txmsg.game_id);
-	    this.showMonitor();
+            this.showMonitor();
             $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
-	    $('.status').show();
+            $('.status').show();
 
-	  }
+          }
 
         } else {
 
-	  if (this.currently_viewing_monitor == 1) {
+          if (this.currently_viewing_monitor == 1) {
 
-	    let active_module = txmsg.module;
-	    let html = `Your game is ready: <p></p><a href="/${active_module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
-	    this.showMonitor();
+            let active_module = txmsg.module;
+            let html = `Your game is ready: <p></p><a href="/${active_module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+            this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
             this.attachEvents(this.app);
 
-	  }
+          }
 
-	}
+        }
 
       } catch (err) {
       }
@@ -543,7 +542,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       if (arcade_self.app.options.games != undefined) {
         for (let i = 0; i < arcade_self.app.options.games.length; i++) {
           if (arcade_self.app.options.games[i].id == game_id) {
-  	    pos = i;
+              pos = i;
           }
         }
       }
@@ -553,11 +552,11 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-	let html = `Your game is ready: <p></p><a href="/${arcade_self.active_game.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+        let html = `Your game is ready: <p></p><a href="/${arcade_self.active_game.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
-	clearInterval(arcade_self.initialization_check_timer);
+        clearInterval(arcade_self.initialization_check_timer);
         arcade_self.attachEvents(this.app);
       }
 
@@ -675,7 +674,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
         game_self.resignGame();
       } else {
         game_self.game.over = 1;
-	game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
+        game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
       }
       game_self.saveGame(gameid);
     } catch (err) {
@@ -688,17 +687,17 @@ console.log("ERROR DELETING GAME!");
         if (arcade_self.app.options.games.length == 0) {
         } else {
         if (arcade_self.app.options.games[i].id == undefined) {
-	  arcade_self.app.options.games.splice(i, 1);
-	  i--;
+          arcade_self.app.options.games.splice(i, 1);
+          i--;
         } else {
           if (arcade_self.app.options.games[i].id == gameid) {
-	    //
-	    // delete it if it is too old (i.e. don't need to resync)
-	    //
-	    if ((arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
-    	      arcade_self.app.options.games.splice(i, 1);
-	      i--;
-	    }
+            //
+            // delete it if it is too old (i.e. don't need to resync)
+            //
+            if ((arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
+                  arcade_self.app.options.games.splice(i, 1);
+              i--;
+            }
           }
         }
         try {
@@ -707,8 +706,8 @@ console.log("ERROR DELETING GAME!");
             i--;
           }
           if (arcade_self.app.options.games[i].opponents.length == 0) {
-    	    arcade_self.app.options.games.splice(i, 1);
-	    i--;
+                arcade_self.app.options.games.splice(i, 1);
+            i--;
           }
         } catch(err) {}
       } 
@@ -769,22 +768,22 @@ console.log("ERROR DELETING GAME!");
 
     if (arcade_self.app.crypto.isPublicKey(address[0]) == 0) {
       if (address[0].indexOf("@saito") == -1 && address[0].length > 0) {
-	alert("All invited players must be identified by publickey or Saito email address");
-	return;
+        alert("All invited players must be identified by publickey or Saito email address");
+        return;
       }
       address[0] = await arcade_self.app.dns.fetchPublicKeyPromise(address[0]);
     }
     if (arcade_self.app.crypto.isPublicKey(address[1]) == 0) {
       if (address[1].indexOf("@saito") == -1 && address[1].length > 0) {
-	alert("All invited players must be identified by publickey or Saito email address");
-	return;
+        alert("All invited players must be identified by publickey or Saito email address");
+        return;
       }
       address[1] = await arcade_self.app.dns.fetchPublicKeyPromise(address[1]);
     }
     if (arcade_self.app.crypto.isPublicKey(address[2]) == 0) {
       if (address[2].indexOf("@saito") == -1 && address[2].length > 0) {
-	alert("All invited players must be identified by publickey or Saito email address");
-	return;
+        alert("All invited players must be identified by publickey or Saito email address");
+        return;
       }
       address[2] = await arcade_self.app.dns.fetchPublicKeyPromise(address[2]);
     }
@@ -1023,7 +1022,7 @@ Arcade.prototype.formatAuthor = function formatAuthor(author, app) {
     app.dns.fetchIdentifier(author, function(answer) {
 
       if (app.dns.isRecordValid(answer) == 0) {
-	      return author;
+              return author;
       }
 
       dns_response = JSON.parse(answer);
