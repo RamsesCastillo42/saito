@@ -380,7 +380,10 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
 
           if (this.browser_active == 1) {
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p><div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
+	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
+
+            if (txmsg.options != undefined) { html += `<div id="game_details" class="game_details">OPTIONS: ${JSON.stringify(txmsg.options)}</div><p></p>`; }
+	    html += '<div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
 	    let tmpadd = "";
             for (let b = 0; b < tx.transaction.to.length; b++) {
 	      if (b > 0) { tmpadd += "_"; }
