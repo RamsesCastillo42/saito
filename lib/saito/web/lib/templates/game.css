@@ -4,6 +4,8 @@
   margin-top:6px;
 }
 .menu-dropdown {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   left: 10px;
   top: 10px;
@@ -65,15 +67,18 @@
   grid-area: hud-clickable;
   width: 800px;
 }
+
 .status {
   overflow-y: scroll;
-  height: 100%;
+  height: 13rem;
 }
+
 .log {
   overflow-y: scroll;
-  height: 100%;
+  height: 13rem;
   font-size:0.85em;
 }
+
 .loaded {
   margin-left:20px;
   margin-right:20px;
@@ -218,9 +223,10 @@
     grid-template-rows: 60px 4fr;
     grid-template-columns: 1fr 15px;
     width: 100%;
-    height: 35rem;
+    height: 19.5rem;
     padding: 0;
     font-size: 1.2rem;
+    bottom: -23%;
   }
 
   .hud-header ul {
@@ -235,6 +241,7 @@
 
   .status {
     width: 95%;
+    height: 14rem;
   }
 
   #dropdown-button {
@@ -249,6 +256,11 @@
     margin-right: 5px;
   }
 
+  .menu-dropdown {
+    right: 10px;
+    float: right;
+  }
+
   .hud {
     grid-template-areas:
     "hud-header hud-clickable"
@@ -260,7 +272,7 @@
     padding: 0;
     font-size: 1.2rem;
 
-    top: 75%;
+    top: 50%;
     left: 17%;
   }
 
@@ -276,6 +288,14 @@
 
   .hud-clickable {
     width: auto;
+  }
+
+  .hud-content {
+    height: 63%;
+  }
+
+  .status {
+    height: 100%;
   }
 
   .log {
