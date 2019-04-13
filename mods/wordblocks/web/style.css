@@ -61,7 +61,7 @@ body {
   background-color: #555;
   border: 2px solid #333;
   color: #EEE;
-  height: 300px;
+  height: 340px;
   position: relative;
 }
 
@@ -180,7 +180,7 @@ body {
     width: 60%
   }
   #controls {
-    height: 236px;
+    height: 250px;
   }
   .card {
     display: inline;
@@ -202,7 +202,7 @@ body {
     width: 60%
   }
   #controls {
-    height: 236px;
+    height: 250px;
   }
   
   #chat_container {
