@@ -66,17 +66,26 @@
   cursor: pointer;
   grid-area: hud-clickable;
   width: 800px;
+  height: 35px;
 }
 
 .status {
   overflow-y: scroll;
-  height: 13rem;
+  height: 22rem;
 }
 
 .log {
   overflow-y: scroll;
-  height: 13rem;
+  height: 22rem;
   font-size:0.85em;
+}
+
+.hud_menu_overlay {
+  position:relative;
+  display: none;
+  overflow-y: scroll;
+  height: 22rem;
+  width: 100%;
 }
 
 .loaded {
@@ -124,10 +133,10 @@
 .hud {
   display: grid;
   grid-template-areas:
-  "hud-clickable hud-clickable"
-  "hud-content hud-content";
-  grid-template-columns: 1fr 5fr;
-  grid-template-rows: 1rem auto;
+  "hud-clickable hud-clickable hud-clickable"
+  "hud-header hud-content hud-content";
+  grid-template-columns: 1fr 1fr 5fr;
+  grid-template-rows: 1rem 1rem auto;
 
   position: fixed;
   float: none;
@@ -141,15 +150,16 @@
 
   width: 800px;
   height: 17.3rem;
+  height: 8.3rem;
   background-color: #707070;
   border: 2px solid #948f8b;
   border-bottom: 0px;
 
   left: 50%;
-  bottom: -18%;
+  bottom: -2%;
 
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -0%);
+  transform: translate(-50%, -0%);
 }
 
 .hud-header {
@@ -195,12 +205,17 @@
 .hud-content {
   grid-area: hud-content;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 0.8fr;
   padding: 0.8rem;
   width: 770px;
   height: 14rem;
   grid-gap: 1em;
 }
+
+
+
+
+
 
 
 
