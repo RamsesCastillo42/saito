@@ -2056,12 +2056,14 @@ Reddit.prototype.savePost = async function savePost(tx) {
   }
 }
 
-Reddit.prototype.saveComment = function saveComment(tx, post_id, parent_id) {
+Reddit.prototype.saveComment = async function saveComment(tx, post_id, parent_id) {
 
   var reddit_self = this;
+  console.log("POST ID: ", post_id);
+  console.log("PARENT_ID: ", parent_id);
   var sql = "INSERT OR IGNORE INTO comments (tx, votes, post_id, reported, approved, comment_id, parent_id, unixtime) VALUES ($tx, 1, $post_id, 0, 0, $comment_id, $parent_id, $unixtime)";
   try {
-    this.db.run(sql, {
+    await this.db.run(sql, {
       $tx: JSON.stringify(tx.transaction),
       $post_id: post_id,
       $comment_id: tx.transaction.sig,
@@ -2075,7 +2077,7 @@ Reddit.prototype.saveComment = function saveComment(tx, post_id, parent_id) {
   var sql2 = "UPDATE posts SET comments = comments + 1 WHERE post_id = $pid";
   var params2 = { $pid : post_id };
   try {
-    this.db.run(sql2, params2);
+    await this.db.run(sql2, params2);
   } catch(err) {
     console.log(err);
   }
@@ -2345,7 +2347,7 @@ Reddit.prototype.generateCachedPagePostAndComments = async function generateCach
 
   try {
     let row = await this.db.all(sql, params);
-    if (row != null) {
+    if (row.length > 0) {
 
       var tmptx = new saito.transaction(row[0].tx);
 
