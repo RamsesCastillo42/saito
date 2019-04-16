@@ -122,6 +122,57 @@ Server.prototype.initialize = function initialize() {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
+  ///////////////////////
+  // Multi-block fetch //
+  ///////////////////////
+
+  app.get('/blocks', async (req, res) => {
+    var blocks = [];
+
+    try {
+      var block_hashes = JSON.parse(req.query.blocks);
+    } catch(err) {
+      res.status(404);
+      res.send({
+        payload: {},
+        error: {
+          message: 'Invalid block array passed to route'
+        }
+      });
+      return;
+    }
+
+    blocks = block_hashes.map(async bhash => {
+      if (bhash) {
+        try {
+          let filename = await this.app.storage.returnBlockFilenameByHashPromise(bhash);
+          if (filename != null) {
+            let blkfilename = this.blocks_dir + filename;
+            let blkjson = JSON.parse(fs.readFileSync(blkfilename, 'utf8'));
+            return blkjson;
+          }
+        } catch(err) {
+          res.status(400)
+          res.send({
+            error: {
+              message: "Could not find block on this server"
+            }
+          })
+        }
+      }
+    });
+
+    blocks = await Promise.all(blocks);
+
+    res.status(200)
+    res.send({
+      payload: {
+        blocks
+      },
+      error: {}
+    })
+
+  });
 
   ////////////
   // blocks //
@@ -182,6 +233,74 @@ Server.prototype.initialize = function initialize() {
   /////////////////
   // lite-blocks //
   /////////////////
+
+  app.get('/lite-blocks/:pkey', async (req, res) => {
+    let pkey  = req.params.pkey;
+    if (pkey == null) { return; }
+
+    let peer = this.app.network.returnPeerByPublicKey(pkey);
+    let keylist = [];
+
+    try {
+      var block_hashes = JSON.parse(req.query.blocks);
+    } catch(err) {
+      res.status(404);
+      res.send({
+        payload: {},
+        error: {
+          message: 'Invalid block array passed to route'
+        }
+      });
+      return;
+    }
+
+    if (peer == null) {
+      keylist.push(pkey);
+    } else {
+      keylist = peer.peer.keylist;
+    }
+
+    try {
+      blocks = block_hashes.map(async bhash => {
+        let blk = await this.app.blockchain.returnBlockWithTransactionsByHash(bhash, keylist);
+
+        if (blk == null) {
+          res.write("{}");
+          res.end();
+          return;
+        }
+
+        let tempblk = JSON.parse(JSON.stringify(blk.block));
+
+        var txsjson = [];
+        blk.transactions.forEach((tx, index) => {
+          let { transaction } = tx;
+          let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
+          if (add_tx) {
+            txsjson.push(JSON.stringify({ "transaction": tx.transaction}));
+          }
+        });
+
+        tempblk.txsjson = txsjson
+
+        return tempblk
+      });
+
+      blocks = await Promise.all(blocks);
+
+      res.status(200)
+      res.send({
+        payload: {
+          blocks
+        },
+        error: {}
+      });
+    } catch (err) {
+      console.log("FAILED SERVER REQUEST: could not find block: " + bhash);
+    }
+  });
+
+
   app.get('/lite-blocks/:bhash/:pkey', (req, res) => {
 
     let bhash = req.params.bhash;

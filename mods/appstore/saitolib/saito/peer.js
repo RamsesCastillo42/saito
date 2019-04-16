@@ -772,24 +772,28 @@ Peer.prototype.addSocketEvents = function addSocketEvents() {
         let blocks = message.data;
         let prevhash = blocks.start;
 
+        let block_hashes = [];
+
         for (let i = 0; i < blocks.prehash.length; i++) {
           let bid = blocks.bid[i];
           let hash = this.app.crypto.hash(blocks.prehash[i] + prevhash);
           let ts = blocks.ts[i];
           let txsno = blocks.txs[i];
-          if (this.app.blockchain.isHashIndexed(hash) != 1) {
-            if (txsno == 0) {
-              if (this.app.BROWSER == 1) {
-                this.app.blockchain.addHashToBlockchain(hash, ts, bid, prevhash);
-              } else {
-                this.app.mempool.fetchBlock(this, hash);
-              }
+
+          if (!this.app.blockchain.isHashIndexed(hash)) {
+            if (txsno == 0 && this.app.BROWSER) {
+              this.app.blockchain.addHashToBlockchain(hash, ts, bid, prevhash);
             } else {
-              this.app.mempool.fetchBlock(this, hash);
+              block_hashes.push(hash);
             }
           }
           prevhash = hash;
         }
+
+        if (block_hashes.length > 0) {
+          this.app.mempool.fetchMultipleBlocks(this, block_hashes);
+        }
+
         this.app.blockchain.saveBlockchain();
       }
 
