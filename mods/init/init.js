@@ -75,7 +75,7 @@ Init.prototype.installModule = function installModule(app) {
     //
     // if I have the right publickey, regenerate the signatures
     //
-    if (app.wallet.returnPublicKey() == "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv") {
+    if (app.wallet.returnPublicKey() === "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv") {
 
       //
       // regen sigs
