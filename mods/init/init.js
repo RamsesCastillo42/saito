@@ -71,11 +71,31 @@ Init.prototype.installModule = function installModule(app) {
     //
     tx[14] = new saito.transaction('{"transaction":{"id":1,"from":[{"add":"npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv","amt":"0","type":0,"bid":0,"tid":0,"sid":0,"bhash":"","lc":1}],"to":[{"add":"0","amt":"5100000000","type":5,"bid":0,"tid":0,"sid":0,"bhash":"","lc":1}],"ts":0,"sig":"hKQWvbS2h6hELVW7Le1hpxebQ4Jzx3idRRenhrfKkB989yeN3zM6aFg4Pj63UNmzhq6Kj1Ym5T2PJFCK1DbLv7u","mhash":"4a87bb9d804304a98ce20586bc5cb8ceb0c6f2235653d4259acef8e311fb184c","ver":1,"path":[],"type":5,"msg":{},"ps":0}}')
 
+
     //
-    // add pre-gen transactions
+    // if I have the right publickey, regenerate the signatures
     //
-    for (let i = 0; i < tx.length; i++) {
-      this.app.mempool.transactions.push(tx[i]);
+    if (app.wallet.returnPublicKey() == "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv") {
+
+      //
+      // regen sigs
+      //
+      for (let z = 0; z < tx.length; z++) {
+
+        for (let zz = 0; zz < tx[z].transaction.from.length; zz++) {
+          tx[z].transaction.from[zz].add = app.wallet.returnPublicKey();
+        }
+        tx[z].transaction.sig = "";
+        tx[z] = app.wallet.signTransaction(tx[z]);
+      }
+
+      //
+      // add pre-gen transactions
+      //
+      for (let i = 0; i < tx.length; i++) {
+        this.app.mempool.transactions.push(tx[i]);
+      }
+
     }
 
   }

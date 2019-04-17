@@ -112,7 +112,8 @@ async function initSaito() {
     //
     app.server.initialize();
 
-    if(app.BROWSER == 0) {
+
+    if (app.BROWSER == 0) {
       console.log(`
 
 
