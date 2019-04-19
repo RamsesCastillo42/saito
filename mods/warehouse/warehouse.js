@@ -48,7 +48,7 @@ Warehouse.prototype.installModule = async function installModule() {
           block_time INTEGER, \
           block_id INTEGER, \
           block_hash TEXT, \
-          tx_id TEXT KEY, \
+          tx_id TEXT PRIMARY KEY, \
           tx_time INTEGER, \
           tx_to TEXT, \
           tx_from TEXT, \
@@ -69,7 +69,7 @@ Warehouse.prototype.installModule = async function installModule() {
           CREATE TABLE IF NOT EXISTS mod_warehouse_blocks (\
           block_time INTEGER, \
           block_id INTEGER, \
-          block_hash TEXT KEY, \
+          block_hash TEXT PRIMARY KEY, \
           block_difficulty REAL, \
           block_paysplit REAL, \
           block_treasury REAL, \
