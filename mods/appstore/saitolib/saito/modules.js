@@ -38,7 +38,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/poker/poker')(this.app));
   this.mods.push(require('../../mods/dhb/dhb')(this.app));
   //this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
-  this.mods.push(require('../../mods/catan/catan')(this.app));
+  //this.mods.push(require('../../mods/catan/catan')(this.app));
   // this.mods.push(require('../../mods/imperium/imperium')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   this.mods.push(require('../../mods/arcade/arcade')(this.app));
@@ -96,7 +96,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.affixCallbacks = function affixCallbacks(txindex, message, callbackArray, callbackIndexArray) {
   for (let i = 0; i < this.mods.length; i++) {
@@ -110,7 +110,7 @@ Modules.prototype.affixCallbacks = function affixCallbacks(txindex, message, cal
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.initialize = function initialize() {
   for (let i = 0; i < this.mods.length; i++) {
@@ -119,7 +119,7 @@ Modules.prototype.initialize = function initialize() {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.displayEmailForm = function displayEmailForm(modname) {
   for (let i = 0; i < this.mods.length; i++) {
@@ -138,7 +138,7 @@ Modules.prototype.displayEmailForm = function displayEmailForm(modname) {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.displayEmailMessage = function displayEmailMessage(message_id, modname) {
   for (let i = 0; i < this.mods.length; i++) {
@@ -152,7 +152,7 @@ Modules.prototype.displayEmailMessage = function displayEmailMessage(message_id,
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.attachEvents = function attachEvents() {
   for (imp = 0; imp < this.mods.length; imp++) {
@@ -164,7 +164,7 @@ Modules.prototype.attachEvents = function attachEvents() {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.attachEmailEvents = function attachEmailEvents() {
   for (let imp = 0; imp < this.mods.length; imp++) {
@@ -174,7 +174,7 @@ Modules.prototype.attachEmailEvents = function attachEmailEvents() {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.initializeHTML = function initializeHTML() {
   for (let icb = 0; icb < this.mods.length; icb++) {
@@ -186,7 +186,7 @@ Modules.prototype.initializeHTML = function initializeHTML() {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.formatEmailTransaction = function formatEmailTransaction(tx, modname) {
   for (let i = 0; i < this.mods.length; i++) {
@@ -198,7 +198,7 @@ Modules.prototype.formatEmailTransaction = function formatEmailTransaction(tx, m
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.handleDomainRequest = function handleDomainRequest(message, peer, mycallback) {
   for (let iii = 0; iii < this.mods.length; iii++) {
@@ -210,7 +210,7 @@ Modules.prototype.handleDomainRequest = function handleDomainRequest(message, pe
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.handleMultipleDomainRequest = function handleMultipleDomainRequest(message, peer, mycallback) {
   for (let iii = 0; iii < this.mods.length; iii++) {
@@ -222,7 +222,7 @@ Modules.prototype.handleMultipleDomainRequest = function handleMultipleDomainReq
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.handlePeerRequest = function handlePeerRequest(message, peer, mycallback=null) {
   for (let iii = 0; iii < this.mods.length; iii++) {
@@ -234,7 +234,7 @@ Modules.prototype.handlePeerRequest = function handlePeerRequest(message, peer, 
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.loadFromArchives = function loadFromArchives(tx) {
   for (let iii = 0; iii < this.mods.length; iii++) {
@@ -244,7 +244,7 @@ Modules.prototype.loadFromArchives = function loadFromArchives(tx) {
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.returnModule = function returnModule(modname) {
   for (let i = 0; i < this.mods.length; i++) {
@@ -305,7 +305,7 @@ Modules.prototype.onNewBlock = function onNewBlock(blk, i_am_the_longest_chain) 
 }
 
 /**
- * 
+ *
  */
 Modules.prototype.onChainReorganization = function onChainReorganization(block_id, block_hash, lc) {
   for (let imp = 0; imp < this.mods.length; imp++) {
