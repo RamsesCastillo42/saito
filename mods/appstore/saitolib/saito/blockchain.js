@@ -37,7 +37,7 @@ function Blockchain(app) {
   this.genesis_bid  	        = 0;
   this.genesis_ts   	        = 0;
   this.genesis_period         = 21600;
-  this.fork_guard             = 1;
+  this.fork_guard             = 120;
   this.fork_id                = "";
   this.fork_id_mod            = 10;
 
@@ -602,7 +602,7 @@ console.log("About to Send Request for Missing Block: ");
       // so we reset this to our first block and mark it as part of the longest chain
       // the network will figure this out in time as further blocks build on it.
       //
-      if (newblock.block.prevhash == this.latest_hash && newblock.block.prevhash != "") {
+      if (newblock.block.prevhash == this.last_hash && newblock.block.prevhash != "") {
 
         // reset later blocks to non-longest chain
         for (let h = pos+1; h < this.index.lc.length; h++) {

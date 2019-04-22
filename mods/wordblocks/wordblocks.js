@@ -404,6 +404,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
             // place word on board
             //
             wordblocks_self.addMove("place\t" + word + "\t" + wordblocks_self.game.player + "\t" + x + "\t" + y + "\t" + orientation);
+
             //
             // discard tiles
             //
@@ -427,9 +428,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
             if (wordblocks_self.checkForEndGame() == 1) { return; }
 
-            //alert(wordblocks_self.game.deck[0].crypt.length);
             $('#remainder').html("Tiles left: " + wordblocks_self.game.deck[0].crypt.length);
-
 
             wordblocks_self.endTurn();
           };
@@ -549,7 +548,6 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       }
 
       if (letter_found == 0) {
-        //        alert("INVALID: letter not in hand: " + letter + " - " + JSON.stringify(tmphand));
         alert("INVALID: letter not in hand: " + letter);
         return 0;
       }
@@ -1303,15 +1301,13 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   }
 
   this.firstmove = 0;
-  //  alert("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
-  $('#lastmove').html("Player " + this.game.player + " played " + finalword + " for: " + score + " points.");
+  $('#lastmove').html("Player " + player + " played " + finalword + " for: " + score + " points.");
   $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
   return score;
 
 }
 
 checkWord = function checkWord(word) {
-  console.log('"' + word + '" Checked')
   if (word.length >= 1 && typeof (allWords) != "undefined") {
     if (allWords.indexOf(word.toLowerCase()) <= 0) {
       alert(word + " is not a playable word.");
@@ -1342,8 +1338,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
   // QUEUE //
   ///////////
   if (this.game.queue.length > 0) {
-
-    console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
     //
     // save before we start executing the game queue
@@ -1401,7 +1395,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
       let score = 0;
 
-
       if (player != wordblocks_self.game.player) {
         this.addWordToBoard(word, orient, x, y);
         this.setBoard(word, orient, x, y);
@@ -1416,9 +1409,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
         return;
       }
 
-      if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
 
-        console.log("HERE WE ARE: 1");
+      if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
 
         if (wordblocks_self.checkForEndGame() == 1) { return; }
 
@@ -1435,8 +1427,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     }
 
     if (mv[0] === "turn") {
-
-      console.log("HERE WE ARE: 2");
 
       if (wordblocks_self.checkForEndGame() == 1) { return; }
 
@@ -1459,7 +1449,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     // avoid infinite loops
     //
     if (shd_continue == 0) {
-      console.log("NOT CONTINUING");
       return 0;
     }
 
@@ -1481,8 +1470,6 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
 
 Wordblocks.prototype.checkForEndGame = function checkForEndGame() {
-
-  console.log("HERE WE ARE: 3 " + this.game.deck[0].hand.length + " -- " + this.game.deck[0].crypt.length);
 
   //
   // the game ends when one player has no cards left
