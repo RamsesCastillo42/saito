@@ -126,10 +126,11 @@ Server.prototype.initialize = function initialize() {
   // Multi-block fetch //
   ///////////////////////
 
-  app.get('/blocks', async (req, res) => {
+  app.post('/blocks', async (req, res) => {
     var blocks = [];
 
     try {
+      // req.body.blocks
       var block_hashes = JSON.parse(req.query.blocks);
     } catch(err) {
       res.status(404);
