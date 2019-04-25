@@ -53,6 +53,7 @@ Wordblocks.prototype.showTiles = function showTiles() {
   }
 
   $('.tiles').html(html);
+  $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
 
 }
 
@@ -541,9 +542,9 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
 
       for (let k = 0; k < tmphand.length; k++) {
         if (this.game.deck[0].cards[tmphand[k]].name == letter) {
-          k = tmphand.length + 1;
           tmphand.splice(k, 1);
           letter_found = 1;
+          k = tmphand.length + 1; //or we could use break. this was above the splice command. Endless letters.
         }
       }
 
