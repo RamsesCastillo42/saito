@@ -56,30 +56,17 @@ you should be ready to run Saito.
 
 ## Step 3 - Run Saito
 
-Go into the lib directory where our `start.js` script is found
+Go into the directory where you installed Saito and type:
+
 ```
-cd lib/
+npm run nuke
 ```
 
-And run our `compile` script to refresh the software to a clean state
-for the first time it will run. Then:
+This will "compile" the software, including the scripts that are fed-out
+to browsers that connect to your machine. Once it is complete, you can 
+run the software:
+
 ```
-node start.js
+npm start
 ```
 
-This will start a version of Saito running on LOCALHOST. When we launch
-our testnet we will change this package to connect to testnet by default.
-Until then, connecting to the testnet needs to be manually enabled, but 
-the local version can still be used for testing and app development.
-
-If you wish to run Saito on a server and close your connection to the 
-server while continuing to run Saito in background mode, enter this
-command instead:
-```
-nohup node --max_old_space_size=4144 start.js > saito.log 2 > saito.err &
-```
-
-Wait a few seconds after starting the program and type `Ctrl-C`. You
-will see the `^C` carat printed at the terminal line but get no other
-indications of change. You should then type `exit` to close your 
-terminal. Saito will continue to run in the background.
