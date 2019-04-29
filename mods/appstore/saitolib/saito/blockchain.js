@@ -106,7 +106,9 @@ Blockchain.prototype.saveBlockchain = async function saveBlockchain() {
   this.app.options.blockchain.genesis_bid  = this.genesis_bid;
   this.app.options.blockchain.genesis_ts   = this.genesis_ts;
 
-  this.app.storage.saveOptions();
+  if (this.app.storage.loading_active == false || this.app.BROWSER == 1) {
+    this.app.storage.saveOptions();
+  }
 
 }
 
@@ -633,7 +635,9 @@ console.log("About to Send Request for Missing Block: ");
         // the next block comes in that has a full chain
         // starting from this block
         //
-        this.app.storage.saveOptions();
+        if (this.app.storage.loading_active == false || this.app.BROWSER == 1) {
+          this.app.storage.saveOptions();
+        }
 
       }
     }
@@ -845,8 +849,9 @@ console.log(" .... into wallet: " + new Date().getTime());
     }
     this.app.modules.updateBalance();
     this.app.wallet.resetSpentInputs();
-    this.app.wallet.saveWallet();
-    this.app.storage.saveOptions();
+    if (this.app.storage.loading_active == false || this.app.BROWSER == 1) {
+      this.app.wallet.saveWallet();
+    }
   } else {
     if (i_am_the_longest_chain == 1) {
       this.app.mempool.purgeExpiredGoldenTickets();
@@ -1037,7 +1042,10 @@ Blockchain.prototype.addBlockToBlockchainFailure = function addBlockToBlockchain
   // save state
   //
   this.updateForkId(this.returnLatestBlock());
-  this.app.storage.saveOptions();
+
+  //
+  // save happens here
+  //
   this.saveBlockchain();
 
 

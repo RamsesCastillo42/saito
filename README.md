@@ -7,15 +7,16 @@ information that might be useful for developers getting started.
 
 
 
-## Compiling versus refreshing
-We include two files in the /lib directory that are useful for development. 
-The difference is that "compile" will wipe-out the database and reset your 
-server "options" file. The "refresh" script simply updates the javascript 
-file that is produced for browsers without deleting any information.
+## Nuking versus Compiling
+The two NPM commands can be used to "compile" a location Saito installation. The 
+difference is that "nuking" an installation will wipe-out all existing blockchain
+data and reset every single database. If you are just updating the source code of
+a module, using "compile" will re-generate the javascript without deleting any
+information.
 
 ```
-./compile  (to purge all blockchain data)
-./refresh  (to preserve blockchain data)
+./npm run nuke  (to purge all blockchain data)
+./npm run compile  (to preserve blockchain data)
 ```
 
 
@@ -27,7 +28,9 @@ browser:
 http://localhost:12101
 
 You can find the default start page for this webpage in our source code
-directory at the following location:
+directory at the following location. It is currently auto-generated from
+the "welcome" module which can be found in the mods directory. Edits to 
+the welcome module will persist across compilations.
 ```
 lib/saito/web/index.html
 ```
