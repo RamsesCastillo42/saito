@@ -455,7 +455,7 @@ Happy Chatting!`
   }
 
   _formatMessage({id, timestamp, author, message}){
-    message = linkifyHtml(message);
+    message = linkifyHtml(message, { target: { url: '_self' } });
 
     let d = new Date(timestamp);
     if (author == "") {
