@@ -290,6 +290,16 @@ Network.prototype.isPrivateNetwork = function isPrivateNetwork() {
 
 }
 
+/**
+ * In production, we never want to be freely producing blocks
+ */
+Network.prototype.isProductionNetwork = function isProductionNetwork() {
+  if (this.app.BROWSER === 0) {
+    return process.env.NODE_ENV === 'prod'
+  } else {
+    return false
+  }
+}
 
 
 /**
