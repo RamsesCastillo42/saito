@@ -802,21 +802,21 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
       } else {
 
 	//
-	// 20% chance of deletion
+	// 10% chance of deletion
 	//
-	if (Math.random() <= 0.2) {
+	if (Math.random() <= 0.1) {
 
 	  //
-	  // check that at least 20 minutes have passed
+	  // check that at least 200 minutes have passed
 	  //
 	  let ptx = new saito.transaction(this.wallet.pending[i]);
 	  let ptx_ts = ptx.transaction.ts;
 	  let blk_ts = blk.block.ts;
 
 	  //
-	  // ensures we do not delete pending for 20 minutes
+	  // ensures we do not delete pending for 200 minutes
 	  //
-	  if ((ptx_ts + 1200000) < blk_ts) {
+	  if ((ptx_ts + 12000000) < blk_ts) {
 	    this.wallet.pending.splice(i, 1);
 	    i--;
 	  }
