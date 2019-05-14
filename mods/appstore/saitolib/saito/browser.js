@@ -112,7 +112,7 @@ Browser.prototype.checkForMultipleWindows = function checkForMultipleWindows() {
     }
     if (e.key == "page_available") {
       //alert("One more page already open");
-      window.location.href = "tabs.html";
+      window.location.href = "/tabs.html";
     }
   };
   window.addEventListener('storage', onLocalStorageEvent, false);
