@@ -72,7 +72,22 @@ module.exports = Blockchain;
  **/
 Blockchain.prototype.initialize = async function initialize() {
   try {
-    await this.app.storage.loadBlocksFromDisk(this.genesis_period);
+
+    //
+    // servers will skip wallet updating while syncing the chain, preferring to 
+    // simply validate everything in their existing wallet against the GDHM on 
+    // load.
+    //
+    let fastload_active = 0;
+    if (this.app.wallet.wallet.inputs.length > 0 && this.app.BROWSER == 0) { 
+      fastload_active = 1;
+      this.app.wallet.is_fastload = true; 
+    }
+    await this.app.storage.loadBlocksFromDisk((this.genesis_period*2)+this.fork_guard);
+    if (fastload_active == 1) {
+      this.app.wallet.is_fastload = false; 
+      this.app.wallet.validateWalletSlips();
+    }
 
     this.app.options.blockchain = Object.assign({}, this.app.options.blockchain);
 
@@ -621,7 +636,7 @@ console.log("About to Send Request for Missing Block: ");
         this.app.modules.updateBalance();
 
         this.lowest_acceptable_ts = ts;
-        this.lowest_acceptable_bid = bi;
+        this.lowest_acceptable_bid = bid;
         this.lowest_acceptable_hash = hash;
 
 
@@ -766,7 +781,7 @@ console.log("About to Send Request for Missing Block: ");
     // and wind the new chain. If there is no old chain we will just
     // wind the new chain directly.
     //
-console.log(" .... winding blk: " + new Date().getTime());
+//console.log(" .... winding blk: " + new Date().getTime());
     await this.validateLongestChain(
       newblock,
       pos,
@@ -802,7 +817,7 @@ console.log(" .... winding blk: " + new Date().getTime());
  */
 Blockchain.prototype.addBlockToBlockchainSuccess = async function addBlockToBlockchainSuccess(newblock, pos, i_am_the_longest_chain, force) {
 
-console.log(" .... success:     " + new Date().getTime());
+//console.log(" .... success:     " + new Date().getTime());
   //
   // update newblock
   //
@@ -815,9 +830,9 @@ console.log(" .... success:     " + new Date().getTime());
   // BID, TID, BHASH, etc. If this needs to be moved back down below
   // the wallet update.
   //
-console.log(" .... pre-save:    " + new Date().getTime());
+//console.log(" .... pre-save:    " + new Date().getTime());
   await this.app.storage.saveBlock(newblock, i_am_the_longest_chain);
-console.log(" .... post-save:   " + new Date().getTime());
+//console.log(" .... post-save:   " + new Date().getTime());
 
 
 
@@ -828,7 +843,7 @@ console.log(" .... post-save:   " + new Date().getTime());
     this.app.wallet.onChainReorganization(newblock.block.id, newblock.returnHash(), i_am_the_longest_chain);
   }
 
-console.log(" .... into wallet: " + new Date().getTime());
+//console.log(" .... into wallet: " + new Date().getTime());
 
   // add slips to wallet
   //
@@ -865,7 +880,7 @@ console.log(" .... into wallet: " + new Date().getTime());
     this.app.modules.updateBalance();
   }
 
-console.log(" .... wallet done: " + new Date().getTime());
+//console.log(" .... wallet done: " + new Date().getTime());
 
   //
   // update
@@ -874,18 +889,18 @@ console.log(" .... wallet done: " + new Date().getTime());
 
 
 
-console.log(" .... run rmv txs: " + new Date().getTime());
+//console.log(" .... run rmv txs: " + new Date().getTime());
   // cleanup
   //
   this.app.mempool.removeBlockAndTransactions(newblock);
 
-console.log(" .... run callbks: " + new Date().getTime());
   //
   // affix and run callbacks
   //
   this.blocks[pos].affixCallbacks();
   if (i_am_the_longest_chain == 1) {
     if (this.run_callbacks == 1) {
+//console.log(" .... run callbks: " + new Date().getTime());
       if (!force) {
 
         let our_longest_chain = this.returnLongestChainIndexPosArray(this.callback_limit);
@@ -1002,7 +1017,6 @@ console.log(" .... run callbks: " + new Date().getTime());
 
   this.indexing_active = false;
 console.log(" .... finished:    " + new Date().getTime());
-console.log("\n");
   return 1;
 
 };
@@ -1393,9 +1407,9 @@ Blockchain.prototype.windChain = async function windChain(
   //
   if (this_block_hash == newblock.returnHash()) {
 
-console.log(" .... wind into v: " + new Date().getTime());
+//console.log(" .... wind into v: " + new Date().getTime());
     let block_validates = await newblock.validate();
-console.log(" .... wind out  v: " + new Date().getTime());
+//console.log(" .... wind out  v: " + new Date().getTime());
     if (block_validates == 1) {
 
       //
@@ -1406,14 +1420,14 @@ console.log(" .... wind out  v: " + new Date().getTime());
       // onChainReorganization is run on addBlockToBlockchainSuccess
       //
       newblock.spendInputs();
-console.log(" .... spent input: " + new Date().getTime());
+//console.log(" .... spent input: " + new Date().getTime());
       await this.addBlockToBlockchainSuccess(newblock, pos, i_am_the_longest_chain, force);
-console.log(" .... success add  " + new Date().getTime());
+//console.log(" .... success add  " + new Date().getTime());
       return;
 
     } else {
 
-console.log(" .... block does not validate!");
+//console.log(" .... block does not validate!");
 
       if (current_wind_index == 0) {
 
@@ -1915,7 +1929,7 @@ Blockchain.prototype.returnLongestChainIndexArray = function returnLongestChainI
   for (let c = start_pos; c >= 0; c--) {
     if (this.index.bid[c] == bid) {
 
-console.log("WE HAVE FOUND BID: " + bid + " ---> " + this.index.lc[c]);
+//console.log("WE HAVE FOUND BID: " + bid + " ---> " + this.index.lc[c]);
 
       if (this.index.lc[c] == 1) {
         return c;

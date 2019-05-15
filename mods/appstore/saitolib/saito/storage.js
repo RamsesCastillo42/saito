@@ -157,7 +157,7 @@ Storage.prototype.execDatabase = async function execDatabase(sql, params, mycall
  */
 Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
 
-console.log(" .... updte slips: " + new Date().getTime());
+//console.log(" .... updte slips: " + new Date().getTime());
 
   /////////////////////////////////////////
   // update slips here for wallet insert //
@@ -179,7 +179,7 @@ console.log(" .... updte slips: " + new Date().getTime());
     return;
   }
 
-console.log(" .... updte shsmp: " + new Date().getTime());
+//console.log(" .... updte shsmp: " + new Date().getTime());
 
   ///////////////////////
   // slips to shashmap //
@@ -209,7 +209,7 @@ console.log(" .... updte shsmp: " + new Date().getTime());
     }
   }
 
-console.log(" .... updte blkdb: " + new Date().getTime());
+//console.log(" .... updte blkdb: " + new Date().getTime());
 
   ///////////////////////
   // block to database //
@@ -249,7 +249,8 @@ console.log(" .... updte blkdb: " + new Date().getTime());
   };
 
 
-console.log(" .... save to dsk: " + new Date().getTime());
+
+//console.log(" .... save to dsk: " + new Date().getTime());
 
   ///////////////////
   // block to disk //
@@ -259,11 +260,11 @@ console.log(" .... save to dsk: " + new Date().getTime());
     blk.filename = `${blk.block.id}-${res.lastID}.blk`;
     var tmp_filepath = `${this.directory}/${this.dest}/${blk.filename}`;
 
-console.log(" .... prep r JSON: " + new Date().getTime());
+//console.log(" .... prep r JSON: " + new Date().getTime());
 
     let blkjson = blk.stringify();
 
-console.log(" .... pre JSON wr: " + new Date().getTime());
+//console.log(" .... pre JSON wr: " + new Date().getTime());
     // TODO
     //
     // hand saving to disk over to a child process (if enabled)
@@ -275,7 +276,7 @@ console.log(" .... pre JSON wr: " + new Date().getTime());
 //      writefile.end();
     }
 
-console.log(" .... pst JSON wr  " + new Date().getTime());
+//console.log(" .... pst JSON wr  " + new Date().getTime());
 
     return true;
 
@@ -412,13 +413,9 @@ Storage.prototype.loadBlocksFromDisk = async function loadBlocksFromDisk(mylimit
 
       let fileID = files[i];
 
-console.log("loading " + fileID);
-
       if (fileID !== "empty") {
 
-        console.log("BEFORE OPENING BLOCK:               " + new Date().getTime());
         let blk = this.openBlockByFilename(fileID);
-        console.log("AFTER OPENING BLOCK:                " + new Date().getTime());
 
         if (blk == null || blk.is_valid == 0) {
           console.log("We have saved an invalid block: " + fileID);
@@ -439,10 +436,10 @@ console.log("loading " + fileID);
 
         // LOGGING INFO
         //this.app.logger.logInfo(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
-        console.error(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
-        console.log("BEFORE ADDING BLOCK TO BLOCKCHAIN:  " + new Date().getTime());
+        //console.error(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
+        //console.log("BEFORE ADDING BLOCK TO BLOCKCHAIN:  " + new Date().getTime());
         await this.app.blockchain.addBlockToBlockchain(blk, true);
-        console.log("AFTER ADDING BLOCK TO BLOCKCHAIN:   " + new Date().getTime());
+        //console.log("AFTER ADDING BLOCK TO BLOCKCHAIN:   " + new Date().getTime());
       }
 
     } catch (err) {
