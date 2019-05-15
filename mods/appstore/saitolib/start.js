@@ -7,6 +7,11 @@ var app                   = {};
     app.CHROME            = 0;
     app.GENESIS_PUBLICKEY = "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv";
 
+//
+// set basedir
+//
+global.__webdir = __dirname + "/lib/saito/web/";
+
 initSaito();
 
 
