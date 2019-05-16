@@ -108,7 +108,7 @@ Mempool.prototype.fetchBlock = function fetchBlock(peer, bhash) {
           return this.app.network.hasPeer(download.peer.peer.publickey)
         })
         console.log("downloading is active....");
-        console.log("DOWNLOAD: ---", this.downloads.map(download => { download.peer.peer, download.bhash }))
+        // console.log("DOWNLOAD: ---", this.downloads.map(download => { download.peer.peer, download.bhash }))
         return;
       }
       this.downloading_active = 1;
@@ -286,15 +286,21 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
   if (Big(this.bundling_fees_needed).lte(Big(credits))) {
 
     if (
-      this.app.network.isPrivateNetwork() ||
+      (
+        this.app.network.isPrivateNetwork() &&
+        !this.app.network.isProductionNetwork()
+      ) ||
       this.transactions.length > 0
     ) {
 
       if (this.transactions.length == 1) {
-        if (!this.app.network.isPrivateNetwork()) {
-          if (this.transactions[0].transaction.type == 1) { 
+        let is_private_network = this.app.network.isPrivateNetwork()
+        let is_prod_network = this.app.network.isProductionNetwork()
+        if (!this.app.network.isPrivateNetwork() ||
+            this.app.network.isProductionNetwork()) {
+          if (this.transactions[0].transaction.type == 1) {
             this.bundling_active = false;
-            return; 
+            return;
           }
         }
       }
