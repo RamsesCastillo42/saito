@@ -713,8 +713,10 @@ console.log("ERROR DELETING GAME!");
                 arcade_self.app.options.games.splice(i, 1);
             i--;
           }
-        } catch(err) {}
-      } 
+        } catch(err) {
+          console.log(err)
+        }
+      }
     }
     arcade_self.app.storage.saveOptions();
 

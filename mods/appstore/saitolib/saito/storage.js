@@ -767,7 +767,8 @@ Storage.prototype.onChainReorganization = async function onChainReorganization(b
     let params = { $lc : lc , $block_hash : block_hash };
     console.log(sql + " -- > " + JSON.stringify(params));
     try {
-      await this.db.run(sql, params);
+      let response = await this.db.run(sql, params);
+      console.log("REORG RESPONSE", response);
     } catch(err) {
       console.log("Error thrown in Storage onChainReorganization", err);
     }
