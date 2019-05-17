@@ -50,6 +50,7 @@
     "markdown": "0.5.0",
     "master": "^1.0.1",
     "merkle-tree-gen": "1.1.0",
+    "mousetrap": "^1.6.3",
     "nativefier": "^7.6.8",
     "node-cryptojs-aes": "0.4.0",
     "numeral": "^2.0.6",
