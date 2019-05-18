@@ -4,8 +4,8 @@
 // transactions to speed up block production
 // for testing purposes.`
 //
-var saito = require('../../../saito');
-var ModTemplate = require('../../template');
+const saito = require('../../lib/saito/saito');
+const ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 var crypto = require('crypto');
 const Big      = require('big.js');
@@ -92,7 +92,7 @@ Spammer.prototype.onNewBlock = function onNewBlock(blk) {
   try {
 console.log("-----------------------------------------");
 
-    var thisfee = Big(0.0);
+    var thisfee = Big(2.0);
     var thisamt = Big(1.0);
     var strlength = size_of_mb * size_of_emails_in_mb;
     var random_data = crypto.randomBytes(Math.ceil(strlength/2)).toString('hex').slice(0,strlength);
