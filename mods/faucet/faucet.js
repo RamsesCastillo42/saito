@@ -288,6 +288,9 @@ Faucet.prototype.initializeHTML = function initializeHTML(app) {
 
 Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="saito.tech", source_port="", source_protocol="http", source_app="email", user_email="") {
 
+  let {host, port, protocol} = this.app.network.peers[0].peer
+  let advert_url = `${protocol}://${host}:${port}/faucet/success`
+
   let fhtml = `<html>
     <head>
       <meta charset="utf-8">
@@ -310,7 +313,7 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
       <div class="main" id="main" style="">
         Click the button below to receive 1000 Saito tokens:
         <p></p>(auto-filled with your browser\'s address)<p></p>
-        <form method="get" action="/faucet/success">
+        <form method="get" action="${advert_url}">
           <input type="text" style="padding:2px;width:640px" name="saito_address" id="saito_address" value="${saito_address}" />
           <input type="email" style="padding:2px;width:640px" name="email" id="email" value="youremail@domain.com" />
           <input type="hidden" name="domain" id="source_domain" value="${source_domain}" />
