@@ -337,6 +337,34 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
   }
 
 
+
+  ///////////////////////
+  // remove stragglers //
+  ///////////////////////
+  let sql2 = "SELECT * FROM blocks WHERE block_id < $block_id AND longest_chain = $lc";
+  let params2 = { $block_id : block_id+1 , $lc : 0 };
+  await this.queryDatabaseArray(sql2, params2, function(err, rows) {
+    if (rows != null) {
+      for (let z = 0; z < rows.length; z++) {
+
+        let row = rows[z];
+        let bid = rows[z].block_id;
+        let dbid = rows[z].id;
+
+        let block_filename = `${this.directory}/${this.dest}/${bid}-${dbid}.blk`;
+
+        fs.unlink(block_filename, function(err) {
+          if (err) {
+            this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
+          }
+        });
+
+      }
+    }
+  });
+
+
+
   //////////////
   // database //
   //////////////
