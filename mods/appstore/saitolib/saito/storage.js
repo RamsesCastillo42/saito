@@ -342,13 +342,12 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
   ///////////////////////
   // remove stragglers //
   ///////////////////////
-  let sql2 = "SELECT * FROM blocks WHERE block_id < $block_id AND longest_chain = $lc";
-  let params2 = { $block_id : block_id+1 , $lc : 0 };
-  await this.queryDatabaseArray(sql2, params2, function(err, rows) {
+  let sql2 = "SELECT block_id, id FROM blocks WHERE block_id < $block_id AND longest_chain = $lc";
+  let params2 = { $block_id : block_id+2 , $lc : 0 };
+  this.queryDatabaseArray(sql2, params2, function(err, rows) {
     if (rows != null) {
       for (let z = 0; z < rows.length; z++) {
 
-        let row = rows[z];
         let bid = rows[z].block_id;
         let dbid = rows[z].id;
 
