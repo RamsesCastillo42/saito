@@ -598,7 +598,10 @@ Advert.prototype.fetchAdvert = function fetchAdvert(width, height) {
 
   var advert_self = this;
 
-  $.getJSON('/advert/'+this.app.wallet.returnPublicKey()+'/'+width+'/'+height, function (data) {
+  let {host, port, protocol} = this.app.network.peers[0].peer
+  let advert_url = `${protocol}://${host}:${port}/advert/${this.app.wallet.returnPublicKey()}/${width}/${height}`
+
+  $.getJSON(advert_url, function (data) {
     if (data.id != null) {
       htmlToInsert = '<a href="'+data.link+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/'+data.adfile+'" /></a>';
       //

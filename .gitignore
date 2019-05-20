@@ -4,8 +4,7 @@
 logs
 logs/*
 
-config
-config/
+config/options
 config/options.*
 
 .DS_Store
