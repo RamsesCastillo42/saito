@@ -165,7 +165,7 @@
   "hud-header hud-content hud-content";
   grid-template-columns: 5em 12fr 8fr;
   grid-template-rows: auto;
-
+  
   position: fixed;
   left: 50%;
   bottom: 0%;
@@ -351,49 +351,6 @@
   }
 }
 
-/* and (orientation:landscape) */
-@media screen and (max-width: 700px) {
-  .hud {
-    /* position: absolute; */
-    bottom: 0;
-    width: 100%;
-    grid-template-areas: "hud-header" "hud-content";
-    grid-template-columns: 1fr;
-    grid-template-rows: 3em auto;
-    min-width: 0px;
-    font-size: 2.2em;
-  }
-
-  .hud-header {
-    flex-flow: row;
-  }
-
-  .dragbar {
-    width: 5%;
-  }
-
-  .hud-header ul {
-    list-style-type: none;
-  }
-
-  .hud-header li {
-    float: left;
-    height: 100%;
-    width: 25%;
-    line-height: 58px;
-    font-size: 1em;
-  }
-
-  .hud-header a {
-    padding-left: 15px;
-    padding-right: 15px;
-    line-height: 58px;
-  }
-
-  .short {
-    height: 2.7em;
-  }
-}
 
 .hud {
   scrollbar-face-color: #868686;
@@ -403,7 +360,7 @@
   scrollbar-track-color: #646464;
   scrollbar-arrow-color: #646464;
   scrollbar-shadow-color: #868686;
-  /* scrollbar-dark-shadow-color: #868686; */
+  scrollbar-dark-shadow-color: #868686;
 }
 
 ::-webkit-scrollbar { width: 8px; height: 3px;}
