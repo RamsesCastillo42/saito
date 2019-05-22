@@ -166,7 +166,7 @@ Mempool.prototype.fetchBlock = function fetchBlock(peer, bhash) {
             return;
           }
 
-          blk.size = parseInt(response.headers["content-length"]);
+          // blk.size = parseInt(response.headers["content-length"]);
           blk.peer_publickey = block_to_download.peer.peer.publickey;
 
           //
