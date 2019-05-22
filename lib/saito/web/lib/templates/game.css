@@ -361,7 +361,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: 3em auto;
     min-width: 0px;
-    font-size: 2.2em;
+    font-size: 1.6em;
   }
 
   .hud-header {
@@ -369,7 +369,7 @@
   }
 
   .dragbar {
-    width: 5%;
+    width: 6%;
   }
 
   .hud-header ul {
@@ -391,7 +391,7 @@
   }
 
   .short {
-    height: 2.7em;
+    height: 3.7em;
   }
 }
 
