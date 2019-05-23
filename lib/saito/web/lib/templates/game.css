@@ -2,9 +2,9 @@
   height: unset !important;
 }
 
-.log {
+/* .log {
   width: unset !important;
-}
+} */
 
 #dropdown-button {
   float:right;
@@ -390,8 +390,12 @@
     line-height: 58px;
   }
 
+  .status {
+    margin-bottom: 15px;
+  }
+
   .short {
-    height: 3.7em;
+    height: 3.9em;
   }
 }
 
@@ -413,3 +417,10 @@
 ::-webkit-scrollbar-thumb { height: 50px; background-color: #868686; border-radius: 3px;}
 ::-webkit-scrollbar-corner { background-color: #868686;}
 ::-webkit-resizer { background-color: #646464;}
+
+@media screen and (max-width: 700px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
