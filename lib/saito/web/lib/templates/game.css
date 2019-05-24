@@ -2,6 +2,13 @@
   height: unset !important;
 }
 
+@media screen and (orientation:landscape) and (max-width: 1660px) {
+  .hud {
+    left: 37%;
+    width: 25%;
+  }
+}
+
 /* .log {
   width: unset !important;
 } */
@@ -178,6 +185,8 @@
   width: 40%;
   min-width: 750px;
   max-width: 1000px;
+  max-height: 400px;
+
   background-color: #707070;
   border: 2px solid #948f8b;
   border-bottom: 0px;
@@ -193,6 +202,14 @@
 
 .short {
   height: 6rem;
+}
+
+.wide {
+  width: 17.8em;
+}
+
+.narrow {
+  width: 9.1em;
 }
 
 .short .hud-header {
@@ -336,13 +353,6 @@
   text-align: center;
 }
 
-@media screen and (orientation:landscape) and (max-width: 1660px) {
-  .hud {
-    left: 37%;
-    width: 25%;
-  }
-}
-
 @media screen and (orientation:landscape) and (max-height: 950px) {
   .cardbox {
     position: fixed;
@@ -352,7 +362,7 @@
 }
 
 /* and (orientation:landscape) */
-@media screen and (max-width: 700px) {
+@media screen and (orientation:portrait) and (max-width: 700px) {
   .hud {
     /* position: absolute; */
     bottom: 0;
@@ -361,15 +371,16 @@
     grid-template-columns: 1fr;
     grid-template-rows: 3em auto;
     min-width: 0px;
-    font-size: 1.6em;
+    font-size: 1.3em;
   }
 
   .hud-header {
     flex-flow: row;
+    flex-direction: row-reverse;
   }
 
   .dragbar {
-    width: 6%;
+    width: 12%;
   }
 
   .hud-header ul {
@@ -387,7 +398,11 @@
   .hud-header a {
     padding-left: 15px;
     padding-right: 15px;
-    line-height: 58px;
+    /* line-height: 58px; */
+  }
+
+  .status {
+    margin-bottom: 15px;
   }
 
   .status {
@@ -396,6 +411,37 @@
 
   .short {
     height: 3.9em;
+  }
+
+  .controls {
+    width: unset;
+    float: right;
+  }
+}
+
+
+@media screen and (orientation:landscape) and (max-height: 700px) {
+  .hud {
+    grid-template-areas: "hud-header hud-content";
+    grid-template-columns: 5em auto;
+    grid-template-rows: auto;
+    min-width: unset;
+    height: 100%;
+    right: -9em;
+    left: unset;
+    max-height: unset;
+  }
+
+  /* .dragbar {
+    width: unset;
+  } */
+
+  .controls {
+    width: 9%;
+  }
+
+  .mail_chat_popup {
+    display: none;
   }
 }
 
@@ -419,6 +465,13 @@
 ::-webkit-resizer { background-color: #646464;}
 
 @media screen and (max-width: 700px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 700px) {
   ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
