@@ -29,8 +29,8 @@ module.exports = Modules
  */
 Modules.prototype.pre_initialize = function pre_initialize() {
 
-  // this.mods.push(require('./mods/permanentledger/permanentledger')(this.app));
-  // this.mods.push(require('../../mods/spammer/spammer')(this.app));
+  //this.mods.push(require('./mods/permanentledger/permanentledger')(this.app));
+  //this.mods.push(require('../../mods/spammer/spammer')(this.app));
   this.mods.push(require('../../mods/init/init')(this.app));
 
   this.mods.push(require('../../mods/welcome/welcome')(this.app));
