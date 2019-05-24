@@ -429,11 +429,12 @@
     height: 100%;
     right: -9em;
     left: unset;
+    max-height: unset;
   }
 
-  .dragbar {
+  /* .dragbar {
     width: unset;
-  }
+  } */
 
   .controls {
     width: 9%;
@@ -464,6 +465,13 @@
 ::-webkit-resizer { background-color: #646464;}
 
 @media screen and (max-width: 700px) {
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 700px) {
   ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
