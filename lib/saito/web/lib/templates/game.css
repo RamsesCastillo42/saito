@@ -438,6 +438,11 @@
     max-height: unset;
   }
 
+  .hud-header ul {
+    overflow-y: scroll;
+    margin-bottom: 15px;
+  }
+
   .status {
     margin-bottom: 17px;
   }
