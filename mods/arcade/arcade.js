@@ -43,14 +43,38 @@ util.inherits(Arcade, ModTemplate);
 Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
   let game_options = "";
+  let game_self = app.modules.returnModule(this.active_game);
 
   if (this.active_game != "") {
-    let game_self = app.modules.returnModule(this.active_game);
     if (game_self != null) {
       game_options = game_self.returnGameOptionsHTML();
     }
   }
 
+  let quick_invite =
+  `<div class="quick_invite" id="quick_invite" style="width:94%">
+    <i class="fa fa-magic"></i>Generate Invite Link
+  </div>`
+
+  let multi_invite = `
+    <div class="invitation_player1" id="invitation_player1">
+    <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+    <div class="opponent_address2">
+      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+      <p></p>
+    </div>
+    <div class="opponent_address3">
+      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+      <p></p>
+    </div>
+
+    <div class="invite_button" id="invite_button">
+      <i class="fa fa-envelope"></i> Send Invite
+    </div>
+  </div>
+  `
+
+  let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
 
   return `
 
@@ -78,26 +102,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
       <p></p>
 
-      <div class="quick_invite" id="quick_invite" style="width:94%">
-        <i class="fa fa-magic"></i>Generate Invite Link
-      </div>
-
-    <!-- <div class="invitation_player1" id="invitation_player1">
-        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
-        <div class="opponent_address2">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-          <p></p>
-        </div>
-        <div class="opponent_address3">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-          <p></p>
-        </div>
-
-        <div class="invite_button" id="invite_button">
-          <i class="fa fa-envelope"></i> Send Invite
-        </div>
-      </div>
-    -->
+      ${invite_html}
 
       <p></p>
 
@@ -634,11 +639,24 @@ console.log("HERE: " + JSON.stringify(txmsg));
 
 console.log("HERE: " + base64str);
 
+    $('div').remove('.invite_link_container');
+
     $(this).after(
-      `<p></p><input style="height:50px;width:94%;font-size:1em"value="${window.location.href}/invite/${base64str}" />`
+      `<div class="invite_link_container">
+        <input class="invite_link_input" id="invite_link_input" value="${window.location.href}/invite/${base64str}" />
+        <i class="fa fa-clipboard" id="invite_link_clipboard" aria-hidden="true"></i>
+      </div>`
     )
+
+    arcade_self.attachEvents(arcade_self.app);
   });
 
+  $('#invite_link_clipboard').off();
+  $('#invite_link_clipboard').on('click', () => {
+    let url_input = document.getElementById("invite_link_input");
+    url_input.select();
+    document.execCommand("copy");
+  });
 
   $('.game').off();
   $('.game').on('click', function() {
@@ -665,8 +683,7 @@ console.log("HERE: " + base64str);
 
   $('.find_player_button').off();
   $('.find_player_button').on('click', () => {
-    this.hideMonitor();
-    $('.arcade_description').show();
+    $('.arcade-description').show();
   });
 
 
