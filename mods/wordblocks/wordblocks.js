@@ -123,8 +123,11 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
   Wordblocks.prototype.resizeBoard = function resizeBoard() {
 
-    $('.gameboard').outerWidth($('.main').outerWidth() - 2);
-    $('.gameboard').outerHeight($('.main').outerWidth() - 2);
+//    $('.gameboard').outerWidth($('.main').outerWidth() - 2);
+//    $('.gameboard').outerHeight($('.main').outerWidth() - 2);
+    $('.gameboard').outerWidth("100%");
+    $('.gameboard').outerWidth($('.gameboard').outerWidth() -2);
+    $('.gameboard').outerHeight($('.gameboard').outerWidth() -2);
     $('#controls').outerWidth($('.main').outerWidth() + 6);
 
     responsive();

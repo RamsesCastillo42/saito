@@ -185,7 +185,6 @@
   width: 40%;
   min-width: 750px;
   max-width: 1000px;
-  max-height: 400px;
 
   background-color: #707070;
   border: 2px solid #948f8b;
@@ -223,6 +222,11 @@
   overflow-y: auto;
 }
 
+/* .hud-header::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+} */
+
 .hud-header ul {
   width: 99%;
   list-style: none;
@@ -231,7 +235,6 @@
   padding: 0;
   margin: 0;
   height: 100%;
-  max-height: 395px;
 }
 
 .hud-header li {
@@ -278,7 +281,6 @@
   overflow-y: auto;
   border-right: 1px solid gray;
   padding: 0.8rem;
-  margin-bottom: 3px;
 }
 
 .log {
@@ -401,6 +403,10 @@
     /* line-height: 58px; */
   }
 
+  #sizer {
+    padding: 15px;
+  }
+
   .status {
     margin-bottom: 15px;
   }
@@ -432,12 +438,23 @@
     max-height: unset;
   }
 
-  /* .dragbar {
-    width: unset;
-  } */
+  .hud-header ul {
+    overflow-y: scroll;
+    margin-bottom: 15px;
+  }
+
+  .status {
+    margin-bottom: 17px;
+  }
 
   .controls {
     width: 9%;
+  }
+
+  #sizer {
+    padding-left: 1.7em;
+    padding-right: 2em;
+    padding-top: 0.8em;
   }
 
   .mail_chat_popup {
