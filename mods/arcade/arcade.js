@@ -154,22 +154,88 @@ Arcade.prototype.hideMonitor = function hideMonitor() {
 
 
 
+Arcade.prototype.updateBalance = function updateBalance(app) {
 
+  if (app.BROWSER == 0) { return; }
+
+  let arcade_self = this;
+
+  try {
+  if (invite_page == 1) {
+    $('.invite_play_button').css('background-color','darkorange');
+    $('.invite_play_button').css('border', '1px solid darkorange');
+    $('.invite_play_button').off();
+    $('.invite_play_button').on('click', function() {
+      arcade_self.acceptGameInvitation();
+    });
+  }
+  } catch (err) {}
+
+}
+Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
+
+  let arcade_self = this;
+
+  var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
+  if (newtx == null) {
+    alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+    return;
+  }
+
+  newtx.transaction.to.push(new saito.slip(invite_data.pubkey, 0.0));
+  newtx.transaction.msg.module  = invite_data.module;
+  newtx.transaction.msg.request = "invite";
+  newtx.transaction.msg.options = invite_data.options;
+  newtx.transaction.msg.ts      = invite_data.ts;
+  newtx.transaction.msg.sig     = invite_data.sig;
+
+  newtx = arcade_self.app.wallet.signTransaction(newtx);
+
+console.log("PROPAGATING TX: " + JSON.stringify(newtx.transaction));
+
+  arcade_self.app.network.propagateTransaction(newtx);
+  alert("You have accepted this game. Your browser will be redirected to the Arcade in a few seconds. Once there you can click on this game to open it.");
+
+  //window.location = '/' + invite_data.module;
+  window.location = '/arcade' + invite_data.module;
+
+
+/**
+  let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
+  arcade_self.startInitializationTimer(game_id);
+**/
+
+}
 Arcade.prototype.initializeHTML = function initializeHTML(app) {
+
+  let arcade_self = this;
 
   //
   // invite_page is set inside the javascript as a global variable
   // on invite.html.
   //
-  if (invite_page == 1) {
+  try {
+    if (invite_page == 1) {
 
-    $('.inviting_address').html(invite_data.pubkey);
+      $('.inviting_address').html(invite_data.pubkey);
 
-    alert("ON THE INVITE PAGE!");
-    alert(JSON.stringify(invite_data));
+      if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
+        $('.invite_play_button').css('border', '1px solid grey');
+        $('.invite_play_button').css('background-color','grey');
+        $('.invite_play_button').off();
+        $('.invite_play_button').on('click', function() {
+  	  alert("Your browser requires Saito tokens to accept this invitation. Please wait while our server sends you some!");
+        });
+      } else {
+        $('.invite_play_button').off();
+        $('.invite_play_button').on('click', function() {
+          arcade_self.acceptGameInvitation();
+        });
+      }
+    }
 
     return;
-  }
+  } catch (err) {}
 
 
   //
@@ -624,10 +690,11 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
   //
   // invite page stuff here
   //
+  try {
   if (invite_page == 1) {
-
     return;
   }
+  } catch (err) {}
 
 
   $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
@@ -652,6 +719,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   //
   // invite page
   //
+  try {
   if (invite_page == 1) {
 
     setTimeout(function() {
@@ -671,7 +739,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     return;
   }
-
+  } catch (err) {}
 
 
 
