@@ -2,7 +2,7 @@ var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 var markdown = require("markdown").markdown;
-
+var fs = require('fs');
 
 
 
@@ -156,6 +156,21 @@ Arcade.prototype.hideMonitor = function hideMonitor() {
 
 
 Arcade.prototype.initializeHTML = function initializeHTML(app) {
+
+  //
+  // invite_page is set inside the javascript as a global variable
+  // on invite.html.
+  //
+  if (invite_page == 1) {
+
+    $('.inviting_address').html(invite_data.pubkey);
+
+    alert("ON THE INVITE PAGE!");
+    alert(JSON.stringify(invite_data));
+
+    return;
+  }
+
 
   //
   // add chat
@@ -489,8 +504,23 @@ Arcade.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + '/web/email.html');
     return;
   });
-  expressapp.get('/arcade/invite', function (req, res) {
-    res.sendFile(__dirname + '/web/invite.html');
+  expressapp.get('/arcade/invite/:gameinvite', function (req, res) {
+
+    let gameinvite = req.params.gameinvite;
+    let txmsgstr = "";
+
+    if (gameinvite != null) {
+      txmsgstr = app.crypto.base64ToString(gameinvite);
+    }
+
+console.log("\n\n\n\n"+txmsgstr);
+
+    let data = fs.readFileSync(__dirname + '/web/invite.html', 'utf8', (err, data) => {});
+    data = data.replace('GAME_INVITATION', txmsgstr);
+    res.setHeader('Content-type', 'text/html');
+    res.charset = 'UTF-8';
+    res.write(data);
+    res.end();
     return;
   });
   expressapp.get('/arcade/invite.css', function (req, res) {
@@ -589,6 +619,17 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 Arcade.prototype.updateBalance = function updateBalance(app) {
 
   if (app.BROWSER == 0) { return; }
+
+
+  //
+  // invite page stuff here
+  //
+  if (invite_page == 1) {
+
+    return;
+  }
+
+
   $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
 
   if (app.wallet.returnBalance() >= 2) {
@@ -633,15 +674,12 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     let txmsg = {};
     txmsg.module = arcade_self.active_game;
+    txmsg.pubkey = arcade_self.app.wallet.returnPublicKey();
     txmsg.options = options;
     txmsg.ts = new Date().getTime();
     txmsg.sig = arcade_self.app.wallet.signMessage(txmsg.ts.toString(), arcade_self.app.wallet.returnPrivateKey());
 
-console.log("HERE: " + JSON.stringify(txmsg));
-
     let base64str = arcade_self.app.crypto.stringToBase64(JSON.stringify(txmsg));
-
-console.log("HERE: " + base64str);
 
     $(this).after(
       `<p></p><input style="height:50px;width:94%;font-size:1em"value="${window.location.href}/invite/${base64str}" />`

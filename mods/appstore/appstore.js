@@ -167,9 +167,7 @@ AppStore.prototype.webServer = function webServer(app, expressapp) {
       $searchterm3 : searchterm
     }
     appstore_self.dbAll(sql, params, function(err, rows) {
-console.log(rows + " ----> " + rows.length);
       for (let i = 0; i < rows.length; i++) {
-console.log("assigning values");
         modules[i] = rows[i];
       }
       searchresults.modules = modules;

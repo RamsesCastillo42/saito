@@ -25,6 +25,8 @@
   </head>
 
   <body>
+    <div id="Arcade_browser_active"></div>
+
     <div class="header">
       <a href="/" class="logo_link">
         <img src="/img/saito_logo_black.png" class="logo" />
@@ -39,13 +41,19 @@
       <div class="ads">
         <div class="advert-300-250" id="advert-300-250"></div>
       </div>
-      <p class="invite_description">Publickey has invite you to a game. Would you like to play?</p>
+      <p class="invite_description"><span class="inviting_address" id="inviting_address">publickey</span> has invited you to a game. Would you like to play?</p>
       <button class="invite_play_button">PLAY</button>
     </div>
   </body>
 
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+
+    var invite_page = 1;
+    var invite_data = JSON.parse('GAME_INVITATION');
+
+  </script>
   <script src="/browser.js"></script>
   <script src="/arcade/script.js"></script>
 
