@@ -613,8 +613,21 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   $('.quick_invite').off();
   $('.quick_invite').on('click',  function() {
+
+    let txmsg = {};
+    txmsg.module = arcade_self.active_game;
+    txmsg.options = options;
+    txmsg.ts = new Date().getTime();
+    txmsg.sig = arcade_self.app.wallet.signMessage(txmsg.ts.toString(), arcade_self.app.wallet.returnPrivateKey());
+
+console.log("HERE: " + JSON.stringify(txmsg));
+
+    let base64str = arcade_self.app.crypto.stringToBase64(JSON.stringify(txmsg));
+
+console.log("HERE: " + base64str);
+
     $(this).after(
-      `<p></p><input style="height:50px;width:94%;font-size:1em"value="${window.location.href}/invite" />`
+      `<p></p><input style="height:50px;width:94%;font-size:1em"value="${window.location.href}/invite/${base64str}" />`
     )
   });
 
