@@ -106,18 +106,18 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
       <p></p>
 
+      <div class="return_to_arcade" id="return_to_arcade">
+      <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+      </div>
+
+      <p></p>
+
       <div id="publisher_message" class="publisher_message"></div>
 
       <p></p>
 
       <div class="invitation_player2" id="invitation_player2" style="display:none">
         Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
-      </div>
-
-      <p></p>
-
-      <div class="return_to_arcade" id="return_to_arcade">
-      <i class="fa fa-arrow-circle-left"></i> Return to Arcade
       </div>
 
     </div>
@@ -166,14 +166,16 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   // invite_page is set inside the javascript as a global variable
   // on invite.html.
   //
-  if (invite_page == 1) {
+  if (invite_page != undefined) {
+    if (invite_page == 1) {
 
-    $('.inviting_address').html(invite_data.pubkey);
+      $('.inviting_address').html(invite_data.pubkey);
 
-    alert("ON THE INVITE PAGE!");
-    alert(JSON.stringify(invite_data));
+      alert("ON THE INVITE PAGE!");
+      alert(JSON.stringify(invite_data));
 
-    return;
+      return;
+    }
   }
 
 
@@ -629,9 +631,10 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
   //
   // invite page stuff here
   //
-  if (invite_page == 1) {
-
-    return;
+  if (invite_page != undefined) {
+    if (invite_page == 1) {
+      return;
+    }
   }
 
 
@@ -699,7 +702,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let options    = {};
 
     $('form input, form select').each(
-      function(index) {  
+      function(index) {
         var input = $(this);
         options[input.attr('name')] = input.val();
       }

@@ -65,9 +65,11 @@
   clear: both;
   padding-top: 20px;
   padding: 10px;
-  font-size: 1em;
+  font-size: 0.9em;
   display: inline-block;
   cursor: pointer;
+  border: 1px #444 solid;
+  border-radius: 10px;
 }
 
 .join {
