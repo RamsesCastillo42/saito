@@ -782,8 +782,6 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     let base64str = arcade_self.app.crypto.stringToBase64(JSON.stringify(txmsg));
 
-console.log("HERE: " + base64str);
-
     $('div').remove('.invite_link_container');
 
     $(this).after(
