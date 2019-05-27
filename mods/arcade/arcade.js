@@ -54,7 +54,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
   return `
 
-    <div class="address_box">
+    <!-- <div class="address_box">
 
       Send this address to your opponent for invitation:
 
@@ -64,7 +64,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
       <br />
       <span style="font-family: Courier">BALANCE: </span><span class="saito_balance" id="saito_balance">0.0</span> SAITO
 
-    </div>
+    </div> -->
 
     <div class="funding_alert">
       Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
@@ -78,7 +78,11 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
       <p></p>
 
-      <div class="invitation_player1" id="invitation_player1">
+      <div class="quick_invite" id="quick_invite" style="width:94%">
+        <i class="fa fa-magic"></i>Generate Invite Link
+      </div>
+
+    <!-- <div class="invitation_player1" id="invitation_player1">
         <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
         <div class="opponent_address2">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
@@ -93,6 +97,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
           <i class="fa fa-envelope"></i> Send Invite
         </div>
       </div>
+    -->
 
       <p></p>
 
@@ -606,6 +611,13 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   var arcade_self = this;
 
+  $('.quick_invite').off();
+  $('.quick_invite').on('click',  function() {
+    $(this).after(
+      `<p></p><input style="height:50px;width:94%;font-size:1em"value="${window.location.href}/invite" />`
+    )
+  });
+
 
   $('.game').off();
   $('.game').on('click', function() {
@@ -630,6 +642,11 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   });
 
 
+  $('.find_player_button').off();
+  $('.find_player_button').on('click', () => {
+    this.hideMonitor();
+    $('.arcade_description').show();
+  });
 
 
   //
