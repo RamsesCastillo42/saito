@@ -613,11 +613,7 @@ Advert.prototype.fetchAdvert = function fetchAdvert(width, height) {
         htmlToInsert = '<a href="https://apps.saito.network/registry" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/10.png" /></a>';
       }
       if (advert_self.app.wallet.returnBalance() == 0 && width == 300 && height == 250) {
-        if (invite_page == 1) {
-          htmlToInsert = '<a href="https://apps.saito.network/faucet?source_app=arcade\/invite&source_protocol='+protocol+'&source_port='+port+'&source_domain='+host+'&saito_address='+advert_self.app.wallet.returnPublicKey()+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/19.png" /></a>';
-	} else {
-          htmlToInsert = '<a href="https://apps.saito.network/faucet?source_protocol='+protocol+'&source_port='+port+'&source_domain='+host+'&saito_address='+advert_self.app.wallet.returnPublicKey()+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/19.png" /></a>';
-	}
+        htmlToInsert = '<a id="saito_advert" class="saito_advert" href="https://apps.saito.network/faucet?source_protocol='+protocol+'&source_port='+port+'&source_domain='+host+'&saito_address='+advert_self.app.wallet.returnPublicKey()+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/19.png" /></a>';
       }
     } else {
       htmlToInsert = '<a href="/advert/"><img style="width:'+width+'px;height:'+height+'px" src="/advert/web/001.png" /></a>';

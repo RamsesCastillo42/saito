@@ -648,6 +648,34 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
 
+
+  //
+  // invite page
+  //
+  if (invite_page == 1) {
+
+    setTimeout(function() {
+      $('#saito_advert').off();
+      $('#saito_advert').on('click',function() {
+	alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        return false;
+      });
+    }, 1500);
+    setTimeout(function() {
+      $('#saito_advert').off();
+      $('#saito_advert').on('click',function() {
+	alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        return false;
+      });
+    }, 3000);
+
+    return;
+  }
+
+
+
+
+
   $('#wechat>span').on('click', function () {
     $('#wechat-qr').css("height", $('#wechat').outerWidth() + 25);
     $('#wechat-qr-img').css("width", $('#wechat').outerWidth() - 25);
