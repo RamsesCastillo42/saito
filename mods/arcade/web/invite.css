@@ -1,0 +1,31 @@
+.invite_main {
+  display:grid;
+  justify-content: center;
+  justify-items: center;
+}
+
+.invite_title {
+  font-size: 3em;
+  margin: 0;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.invite_description {
+  font-size: 1.5em;
+  justify-self: center;
+}
+
+.invite_tutorial_cards {}
+
+.invite_play_button {
+  color: white;
+  border: darkorange 1px solid;
+  border-radius: 5px;
+  width: 8em;
+  height: 3em;
+  background-color: darkorange;
+  font-size: 1.5em;
+}
+
+.invite_join_button {}

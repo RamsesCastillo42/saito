@@ -489,6 +489,14 @@ Arcade.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + '/web/email.html');
     return;
   });
+  expressapp.get('/arcade/invite', function (req, res) {
+    res.sendFile(__dirname + '/web/invite.html');
+    return;
+  });
+  expressapp.get('/arcade/invite.css', function (req, res) {
+    res.sendFile(__dirname + '/web/invite.css');
+    return;
+  });
   expressapp.get('/arcade/style.css', function (req, res) {
     res.sendFile(__dirname + '/web/style.css');
     return;
