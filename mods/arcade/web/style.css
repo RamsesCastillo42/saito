@@ -458,6 +458,12 @@ a {
   border-radius: 5px;
 }
 
+.play_button {
+  color: darkorange;
+  border: darkorange 1px solid;
+  border-radius: 5px;
+}
+
 .accept_game:hover {
   background: rgb(255, 140, 0);
   color: #efefef;
