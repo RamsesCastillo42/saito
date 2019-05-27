@@ -614,6 +614,15 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   $('.quick_invite').off();
   $('.quick_invite').on('click',  function() {
 
+    let options    = {};
+
+    $('form input, form select').each(
+      function(index) {  
+        var input = $(this);
+        options[input.attr('name')] = input.val();
+      }
+    );
+
     let txmsg = {};
     txmsg.module = arcade_self.active_game;
     txmsg.options = options;
