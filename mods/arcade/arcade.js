@@ -58,20 +58,20 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
   let multi_invite = `
     <div class="invitation_player1" id="invitation_player1">
-    <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
-    <div class="opponent_address2">
-      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-      <p></p>
-    </div>
-    <div class="opponent_address3">
-      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-      <p></p>
-    </div>
+      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+      <div class="opponent_address2">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+        <p></p>
+      </div>
+      <div class="opponent_address3">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+        <p></p>
+      </div>
 
-    <div class="invite_button" id="invite_button">
-      <i class="fa fa-envelope"></i> Send Invite
+      <div class="invite_button" id="invite_button">
+        <i class="fa fa-envelope"></i> Send Invite
+      </div>
     </div>
-  </div>
   `
 
   let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
@@ -98,11 +98,33 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
       <div class="game_details">${game_options}</div>
 
-      Provide address(es) of player(s) to invite:
+      <div id="invite_link_description">
+        <div>Generate link to invite players or</div><a style="color:darkblue" class="toggle_invite">invite by publickey:</a>
+      </div>
+
+      <div id="invite_publickey_description" style="display:none">
+        <div>Invite player(s) by publickey or</div><a style="color:darkblue" class="toggle_invite">generate a quick play link</a>
+      </div>
 
       <p></p>
 
       ${invite_html}
+
+      <div class="invitation_player1" id="invitation_player1" style="display:none">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+        <div class="opponent_address2">
+          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+          <p></p>
+        </div>
+        <div class="opponent_address3">
+          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+          <p></p>
+        </div>
+
+        <div class="invite_button" id="invite_button">
+          <i class="fa fa-envelope"></i> Send Invite
+        </div>
+      </div>
 
       <p></p>
 
@@ -746,7 +768,18 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   }
   } catch (err) {}
 
+  $('.toggle_invite').off()
+  $('.toggle_invite').on('click', () => {
+    $('.quick_invite').toggle();
+    $('.invitation_player1').toggle();
 
+    $('#invite_link_description').toggle();
+    $('#invite_publickey_description').toggle();
+
+    $('.invite_link_container').toggle();
+
+    this.attachEvents(this.app);
+  })
 
 
   $('#wechat>span').on('click', function () {
