@@ -146,7 +146,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
   `;
 
 }
-Arcade.prototype.showMonitor = function showMonitor(html) {
+Arcade.prototype.showMonitor = function showMonitor() {
 
   this.monitor_shown_already = 1;
   this.currently_viewing_monitor = 1;
@@ -188,15 +188,21 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 
   try {
   if (invite_page == 1) {
+
     $('.invite_play_button').css('background-color','darkorange');
     $('.invite_play_button').css('border', '1px solid darkorange');
     $('.invite_play_button').off();
     $('.invite_play_button').on('click', function() {
+
       arcade_self.acceptGameInvitation();
-      $('.invite_play_button').off();
-      $('.invite_play_button').on('click', function() {
-        alert("You have accepted. Please wait on this page for your opponent to confirm!");
-      });
+
+      alert("You have accepted. Please wait on this page while we initialize your game!");
+      $('.invite_play_button').hide();
+      $('.ads').hide();
+      $('.manage_invitations').css('font-size','1.4em');
+      $('.status').css('font-size','1.25em');
+      $('.invite_description').html("Your game is initializing with your opponent. This usually takes 1-2 minutes to complete. Please do not leave this page -- we will inform you when your game is ready to start: ");
+
     });
   }
   } catch (err) {}
@@ -234,7 +240,7 @@ console.log("PROPAGATING TX: " + JSON.stringify(newtx.transaction));
   let game_self = this.app.modules.returnModule(invite_data.module);
   game_self.saveGame(game_id);
 
-  window.location = '/arcade';
+  //window.location = '/arcade';
   //window.location = '/' + invite_data.module;
 
 }
@@ -249,8 +255,6 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   try {
     if (invite_page == 1) {
 
-console.log("INVITE PAGE IS SET 1");
-
       $('.inviting_address').html(invite_data.pubkey);
 
       if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
@@ -264,6 +268,7 @@ console.log("INVITE PAGE IS SET 1");
         $('.invite_play_button').off();
         $('.invite_play_button').on('click', function() {
           arcade_self.acceptGameInvitation();
+          $('.status').show();
         });
       }
 
@@ -321,8 +326,6 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
         let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
         let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
-
-console.log("HERE B");
 
         let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
@@ -407,6 +410,9 @@ console.log("HERE B");
       }
     }
   }
+
+  this.attachEvents(this.app);
+
 }
 
 
@@ -458,16 +464,14 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             for (let i = 0; i < app.options.games.length; i++) {
               if (app.options.games[i].id == game_id) {
                 if (app.options.games[i].invitation == 0) {
-
                   if (this.monitor_shown_already == 1) {
 	            if (txmsg.ts != "" && txmsg.sig != "") {
 	 	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-       		        let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
        		        this.showMonitor();
-        	        $('.manage_invitations').html(html);
-        	        if (this.browser_active == 1) { $('#status').hide(); }
+            	 	$('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+            		$('.status').show();
         	        this.attachEvents(this.app);
-			this.listActiveGames();
+            		this.startInitializationTimer(game_id);
 			return;
 		      } else {
                         return;
@@ -590,6 +594,7 @@ console.log("NEXT IN LINE 2");
         //
         if (game_self.game.accept === 1) { 
           $('.status').show();
+  	  this.listActiveGames();
           return; 
         }
 
@@ -620,6 +625,7 @@ console.log("NEXT IN LINE 2");
           }
         }
 
+  	this.listActiveGames();
 
       } catch (err) {
       }
