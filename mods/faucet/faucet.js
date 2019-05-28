@@ -321,7 +321,7 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
           <div style="display: flex">
             <div style="margin-right: 10px">Email:</div>
 	  </div>
-          <input type="text" style="padding:2px;width:640px" name="eml" id="eml" value="youremail@domain.com" />
+          <input type="text" style="padding:2px;width:640px" name="eml" id="eml" value="you@domain.com" />
           <input type="hidden" name="domain" id="source_domain" value="${source_domain}" />
           <input type="hidden" name="port" value="${source_port}" />
           <input type="hidden" name="protocol" value="${source_protocol}" />
