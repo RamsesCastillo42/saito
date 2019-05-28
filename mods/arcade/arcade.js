@@ -21,7 +21,6 @@ function Arcade(app) {
   this.browser_active  = 0;
   this.emailAppName    = "Arcade";
 
-
   this.initialization_check_active = true;
   this.initialization_check_timer  = null;
 
@@ -30,6 +29,7 @@ function Arcade(app) {
   this.currently_playing = 0;
   this.currently_viewing_monitor = 0;
   this.monitor_shown_already = 0;
+  this.quick_invite_page = 0;
 
   return this;
 
@@ -204,7 +204,6 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 }
 Arcade.prototype.invitePlayButtonClicked = function invitePlayButtonClicked() {
 
-  alert("You have accepted. Please wait on this page while we initialize your game!");
   $('.invite_play_button').hide();
   $('.ads').hide();
   $('.manage_invitations').css('font-size','1.4em');
@@ -498,7 +497,8 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                         return;
 		      }
 		    }
-                  }
+                  } else {
+		  }
                 }
               }
             }
@@ -514,22 +514,27 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  //
   	  this.listActiveGames();
 
+console.log("HEE WE ARE ON INVITATION RECEIPT....");
 
           if (this.browser_active == 1) {
+
+alert("TESTING THIS!");
 
 	    //
 	    //
 	    //
 	    if (txmsg.ts != "" && txmsg.sig != "") {
-/*****
  	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-                let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
-                this.showMonitor();
-                $('.manage_invitations').html(html);
-                if (this.browser_active == 1) { $('#status').hide(); }
-                this.attachEvents(this.app);
+alert("TESTING THIS 2!");
+		if (this.quick_invite_page == 1) {
+alert("TESTING THIS 3!");
+                  let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+                  this.showMonitor();
+                  $('.manage_invitations').html(html);
+                  if (this.browser_active == 1) { $('#status').hide(); }
+                  this.attachEvents(this.app);
+		}
 	      }
-****/
 	    } else {
 
 	      let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
@@ -880,16 +885,19 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
         <input class="invite_link_input" id="invite_link_input" value="${window.location.href}/invite/${base64str}" />
         <i class="fa fa-clipboard" id="invite_link_clipboard" aria-hidden="true"></i>
       </div>
-      <div id="generate_link_description" style="color: #336699">
+      <div id="generate_link_description" style="color: #444">
         <div>Send this link to your opponent to start the game.</div>
         <div>Please remain on this page while the invitation is accepted.</div>
       </div>
       `
     )
 
+    arcade_self.quick_link_page = 1;
+
     // remove on link generation
     $('#invite_link_description').remove()
     $('.publisher_message').remove();
+    $('.return_to_arcade').hide();
     $('.options').remove()
     $(this).remove();
 
