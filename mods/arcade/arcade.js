@@ -191,7 +191,6 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 
   try {
   if (invite_page == 1) {
-
     $('.invite_play_button').css('background-color','darkorange');
     $('.invite_play_button').css('border', '1px solid darkorange');
     $('.invite_play_button').off();
@@ -233,8 +232,6 @@ Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
 
   newtx = arcade_self.app.wallet.signTransaction(newtx);
 
-console.log("PROPAGATING TX: " + JSON.stringify(newtx.transaction));
-
   arcade_self.app.network.propagateTransaction(newtx);
   alert("You have accepted this game. Your browser will be redirected to the Arcade in a few seconds. Once there you can click on this game to open it.");
 
@@ -244,8 +241,19 @@ console.log("PROPAGATING TX: " + JSON.stringify(newtx.transaction));
 
   this.active_game = invite_data.module;
   let game_self = this.app.modules.returnModule(invite_data.module);
+  //
+  // another game might be loaded already, so we make sure
+  // we are dealing with something fresh
+  //
+  game_self.loadGame(game_id);
+  //
+  // save for good measure
+  //
   game_self.saveGame(game_id);
 
+  //
+  // fast redirects seem to break stuff as old blocks re-run
+  //
   //window.location = '/arcade';
   //window.location = '/' + invite_data.module;
 
@@ -454,6 +462,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
   let txmsg = tx.returnMessage();
   let remote_address = tx.transaction.from[0].add;
 
+
   if (conf == 0) {
 
     //
@@ -474,12 +483,17 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                   if (this.monitor_shown_already == 1) {
 	            if (txmsg.ts != "" && txmsg.sig != "") {
 	 	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-       		        this.showMonitor();
-            	 	$('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
-            		$('.status').show();
-        	        this.attachEvents(this.app);
-            		this.startInitializationTimer(game_id);
-			return;
+			try {
+			  if (invite_page == 1) {
+       		            this.showMonitor();
+            	     	    $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+            		    $('.status').show();
+        	            this.attachEvents(this.app);
+            		    this.startInitializationTimer(game_id);
+			    return;
+		          }
+			} catch (err) {
+			}
 		      } else {
                         return;
 		      }
@@ -495,51 +509,10 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game += tmpmod.slice(1);
 
 
+	  //
+	  // show active games
+	  //
   	  this.listActiveGames();
-
-/****
-          //
-          // add it to our table too
-          //
-          let acceptgame = '<div class="link accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
-
-
-          let remote_address = "";
-          for (let i = 0; i < tx.transaction.to.length; i++) {
-            if (i > 0) { remote_address += "_"; }
-            remote_address += tx.transaction.to[i].add;
-          }
-
-console.log("NEXT IN LINE 2");
-
-          let html = "";
-          html  = '<div class="single_activegame">';
-          html += '<div id="'+game_id+'_game">';
-          html += '<b>' + this.active_game + '</b></br>';
-          html += remote_address.substring(0,15) + '</div>';
-          html += '<p></p>Game Invitation!<p></p>';
-          html += '<div class="acceptgamelink">'+acceptgame+'</div>';
-          html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
-          html += '</div>';
-          $('.active_games').show();
-
-          var thisdivname = game_id + "_game";
-          try {
-            if (document.getElementById(thisdivname) !== null) {
-              //
-              // old invitation
-              // 
-              return;
-            } else {
-              this.showMonitor();
-              $('#gametable').prepend(html);
-            }
-          } catch (err) {
-            this.showMonitor();
-            $('#gametable').prepend(html);
-          }
-
-****/
 
 
           if (this.browser_active == 1) {
@@ -548,6 +521,7 @@ console.log("NEXT IN LINE 2");
 	    //
 	    //
 	    if (txmsg.ts != "" && txmsg.sig != "") {
+/*****
  	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
                 let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
                 this.showMonitor();
@@ -555,6 +529,7 @@ console.log("NEXT IN LINE 2");
                 if (this.browser_active == 1) { $('#status').hide(); }
                 this.attachEvents(this.app);
 	      }
+****/
 	    } else {
 
 	      let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
@@ -626,8 +601,9 @@ console.log("NEXT IN LINE 2");
 
         } else {
           if (this.currently_viewing_monitor == 1) {
-            let active_module = txmsg.module;
-            let html = `
+	    if (game_self.game.over == 0) {
+              let active_module = txmsg.module;
+              let html = `
                 <div id="join_game_description">
                   Your game is ready:<a href="/${active_module.toLowerCase()}">
                 </div>
@@ -637,11 +613,12 @@ console.log("NEXT IN LINE 2");
                   <i class="fa fa-arrow-circle-left"></i>
                   Return to Arcade
                 </div>
-              `;
-            this.showMonitor();
-            $('.manage_invitations').html(html);
-            if (this.browser_active == 1) { $('#status').hide(); }
-            this.attachEvents(this.app);
+                `;
+              this.showMonitor();
+              $('.manage_invitations').html(html);
+              if (this.browser_active == 1) { $('#status').hide(); }
+              this.attachEvents(this.app);
+            }
           }
         }
 
