@@ -50,14 +50,16 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
     }
   }
 
+  let show_game_options = game_options == "" ? "none" : "block";
+
   let quick_invite =
-  `<div class="quick_invite" id="quick_invite" style="width:94%">
+  `<div class="quick_invite" id="quick_invite">
     <i class="fa fa-magic"></i>Generate Invite Link
   </div>`
 
   let multi_invite = `
-    <div class="invitation_player1" id="invitation_player1">
-      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+    <div class="invitation_player1" id="invitation_player1" style="max-width:620px;">
+      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
       <div class="opponent_address2">
         <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
         <p></p>
@@ -74,6 +76,23 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
   `
 
   let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
+
+  var invite_description = ''
+  if (game_self.maxPlayers > 2) {
+    invite_description =
+    `<div id="invite_publickey_description" style="display:block">
+      Invite player(s) by publickey(s)
+    </div>`
+  } else {
+    invite_description =
+      `<div id="invite_link_description" style="display:block">
+        Generate link to invite players or <a style="color:darkblue" class="toggle_invite">invite by publickey:</a>
+      </div>
+
+      <div id="invite_publickey_description" style="display:none">
+        Invite player(s) by publickey or <a style="color:darkblue" class="toggle_invite">generate a quick invite link</a>
+      </div>`
+  }
 
   return `
 
@@ -95,29 +114,19 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="manage_invitations" style="display:none">
 
-      <div class="game_details">${game_options}</div>
+      <div class="game_details" style="display:${show_game_options}">${game_options}</div>
 
-      <div id="invite_link_description">
-        <div>Generate link to invite players or</div><a style="color:darkblue" class="toggle_invite">invite by publickey:</a>
-      </div>
-
-      <div id="invite_publickey_description" style="display:none">
-        <div>Invite player(s) by publickey or</div><a style="color:darkblue" class="toggle_invite">generate a quick play link</a>
-      </div>
-
-      <p></p>
+      ${invite_description}
 
       ${invite_html}
 
-      <div class="invitation_player1" id="invitation_player1" style="display:none">
-        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+      <div class="invitation_player1" id="invitation_player1" style="display:none; max-width:620px">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
         <div class="opponent_address2">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-          <p></p>
         </div>
         <div class="opponent_address3">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-          <p></p>
         </div>
 
         <div class="invite_button" id="invite_button">
@@ -125,17 +134,11 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
         </div>
       </div>
 
-      <p></p>
+      <div id="publisher_message" class="publisher_message" style="display:none"></div>
 
       <div class="return_to_arcade" id="return_to_arcade">
       <i class="fa fa-arrow-circle-left"></i> Return to Arcade
       </div>
-
-      <p></p>
-
-      <div id="publisher_message" class="publisher_message"></div>
-
-      <p></p>
 
       <div class="invitation_player2" id="invitation_player2" style="display:none">
         Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
@@ -862,13 +865,24 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let base64str = arcade_self.app.crypto.stringToBase64(JSON.stringify(txmsg));
 
     $('div').remove('.invite_link_container');
+    $('div').remove('.generate_link_description');
 
     $(this).after(
       `<div class="invite_link_container">
         <input class="invite_link_input" id="invite_link_input" value="${window.location.href}/invite/${base64str}" />
         <i class="fa fa-clipboard" id="invite_link_clipboard" aria-hidden="true"></i>
-      </div>`
+      </div>
+      <div id="generate_link_description" style="color: #336699">
+        <div>Send this link to your opponent to start the game.</div>
+        <div>Please remain on this page while the invitation is accepted.</div>
+      </div>
+      `
     )
+
+    // remove on link generation
+    $('#invite_link_description').remove()
+    $('.options').remove()
+    $(this).remove();
 
     arcade_self.attachEvents(arcade_self.app);
   });
@@ -885,9 +899,11 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     arcade_self.active_game = $(this).attr("id");
     arcade_self.showMonitor();
+    $('.find_player_button').toggle();
 
     if (arcade_self.active_game == "Twilight") {
       $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
+      $('.publisher_message').show();
     }
 
   });
@@ -900,6 +916,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   $('#return_to_arcade').on('click', function() {
     arcade_self.currently_viewing_monitor = 0;
     arcade_self.hideMonitor();
+    $('.find_player_button').toggle();
   });
 
 

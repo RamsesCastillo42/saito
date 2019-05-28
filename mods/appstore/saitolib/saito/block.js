@@ -111,7 +111,7 @@ function Block(app, blkjson = "", confirmations = -1) {
         }
       }
     } catch (err) {
-      //this.app.logger.logError("Error thrown in Block constructor", err);
+      console.error(err)
       this.is_valid = 0;
       return;
     }
