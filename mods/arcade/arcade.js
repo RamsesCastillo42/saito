@@ -196,21 +196,24 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
     $('.invite_play_button').css('border', '1px solid darkorange');
     $('.invite_play_button').off();
     $('.invite_play_button').on('click', function() {
-
       arcade_self.acceptGameInvitation();
-
-      alert("You have accepted. Please wait on this page while we initialize your game!");
-      $('.invite_play_button').hide();
-      $('.ads').hide();
-      $('.manage_invitations').css('font-size','1.4em');
-      $('.status').css('font-size','1.25em');
-      $('.invite_description').html("Your game is initializing with your opponent. This usually takes 1-2 minutes to complete. Please do not leave this page -- we will inform you when your game is ready to start: ");
-
+      arcade_self.invitePlayButtonClicked();
     });
   }
   } catch (err) {}
 
 }
+Arcade.prototype.invitePlayButtonClicked = function invitePlayButtonClicked() {
+
+  alert("You have accepted. Please wait on this page while we initialize your game!");
+  $('.invite_play_button').hide();
+  $('.ads').hide();
+  $('.manage_invitations').css('font-size','1.4em');
+  $('.status').css('font-size','1.25em');
+  $('.invite_description').html("Your game is initializing with your opponent. This usually takes 1-2 minutes to complete. Please do not leave this page -- we will inform you when your game is ready to start: ");
+
+}
+
 Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
 
   let arcade_self = this;
@@ -271,6 +274,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         $('.invite_play_button').off();
         $('.invite_play_button').on('click', function() {
           arcade_self.acceptGameInvitation();
+          arcade_self.invitePlayButtonClicked();
           $('.status').show();
         });
       }

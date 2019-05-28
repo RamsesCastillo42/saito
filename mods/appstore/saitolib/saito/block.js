@@ -112,7 +112,7 @@ function Block(app, blkjson = "", confirmations = -1) {
         }
       }
     } catch (err) {
-      console.error(err)
+      //this.app.logger.logError("Error thrown in Block constructor", err);
       this.is_valid = 0;
       return;
     }
@@ -796,9 +796,6 @@ Block.prototype.validate = async function validate() {
     // do we have a full genesis period
     //
     let do_we_have_a_full_genesis_period = this.app.blockchain.hasFullGenesisPeriod();
-
-
-console.log("DO WE HAVE A FULL GENESIS PERIOD: " + do_we_have_a_full_genesis_period);
 
 
     //
