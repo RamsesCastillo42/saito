@@ -141,6 +141,14 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
       return;
     }
 
+    if (!faucet_self.app.crypto.isPublicKey(req.query.saito_address)) {
+      res.setHeader('Content-type', 'text/html');
+      res.charset = 'UTF-8';
+      res.write("INVALID SAITO ADDRESS - FORM IMPROPERLY SUBMITTED");
+      res.end();
+      return;
+    }
+
     var saito_address              = req.query.saito_address;
 
     // insert into database

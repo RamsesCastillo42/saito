@@ -797,9 +797,6 @@ Block.prototype.validate = async function validate() {
     let do_we_have_a_full_genesis_period = this.app.blockchain.hasFullGenesisPeriod();
 
 
-console.log("DO WE HAVE A FULL GENESIS PERIOD: " + do_we_have_a_full_genesis_period);
-
-
     //
     // my timestamp must be bigger than last timestamp
     //

@@ -69,7 +69,12 @@
   display: inline-block;
   cursor: pointer;
   border: 1px #444 solid;
-  border-radius: 10px;
+  border-radius: 5px;
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
 }
 
 .join {
@@ -88,6 +93,8 @@ hr {
 .arcade {
   display: inherit;
   padding: 1em;
+  /* height: 87vh;
+  grid-template-rows: 1em auto; */
 }
 
 .gamelist {
@@ -115,6 +122,11 @@ hr {
   display: none;
   width: 100%;
   max-width: 750px;
+  height: 87vh;
+}
+
+.game_details {
+  max-width: 420px;
 }
 
 .game_details h3 {
@@ -127,6 +139,14 @@ hr {
   text-align: center;
   font-size: 0.9em;
   background: white;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 5em auto;
+  column-gap: 1em;
+  row-gap: 1em;
+  margin-bottom: 0px;
 }
 
 .game_options {
@@ -144,6 +164,11 @@ hr {
   font-size: 20px;
   line-height: 1.2em;
   color: 3444;
+  height: 120px;
+  overflow-y: scroll;
+  padding: 1em;
+  border: 1px black solid;
+
 }
 
 th {
@@ -178,14 +203,6 @@ td {
 
 .invitation_player2 {
   display: block;
-}
-
-.invite_button {
-  border: 1px solid #444;
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-top: 2px;
-  padding-bottom: 2px;
 }
 
 .address_box {
@@ -301,6 +318,8 @@ td {
 }
 
 .manage_invitations {
+  display: grid;
+  row-gap: 1em;
   line-height: 1.4em;
 }
 
@@ -359,7 +378,6 @@ td {
   grid-gap: 20px;
   color: #444;
   text-decoration: none;
-  margin-top: 25px;
 }
 
 .outreach div {
@@ -461,6 +479,16 @@ a {
   .ads {
     max-width: 300px;
   }
+
+  .publisher_message {
+    height: 100px;
+  }
+}
+
+@media only screen and (min-width: 500px) {
+  .return_to_arcade {
+    max-width: 200px;
+  }
 }
 
 .accept_game {
@@ -487,10 +515,17 @@ a {
   clear: both;
   padding-top: 20px;
   padding: 10px;
-  font-size: 1em;
+  font-size: 0.9em;
   display: inline-block;
   cursor: pointer;
-  margin-top:10px;
+  margin-top: 1em;
+  /* width: 94vw; */
+  max-width: 400px;
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
 }
 
 .quick_invite {
@@ -499,10 +534,10 @@ a {
   border-radius: 5px;
   clear: both;
   padding: 0.5em;
-  font-size: 1em;
+  font-size: 0.9em;
   max-width: 400px;
   cursor: pointer;
-  margin-top:10px;
+  /* margin-top:10px; */
   column-gap: 0.5em;
   display: grid;
   grid-template-columns: 1em auto;
@@ -515,7 +550,7 @@ a {
   grid-template-columns: auto 2em;
   column-gap: 1em;
   align-items: center;
-  margin-top: 1em;
+  /* margin-top: 1em; */
   max-width:425px;
 }
 
@@ -529,6 +564,7 @@ a {
 
 #invite_link_clipboard {
   font-size: 2em;
+  color: darkblue;
 }
 
 .invite_button:hover {
@@ -593,4 +629,3 @@ a {
   top: 30px;
   transform: rotate(-45deg);
 }
-
