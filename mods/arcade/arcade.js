@@ -302,41 +302,41 @@ console.log("HERE A");
 
 Arcade.prototype.listActiveGames = function listActiveGames() {
 
-  $('#gametable').clear();
+  $('#gametable').empty();
 
   //
   // add games to table
   //
-  if (app.options.games != undefined) {
-    if (app.options.games.length > 0) {
+  if (this.app.options.games != undefined) {
+    if (this.app.options.games.length > 0) {
 
-      for (let i = 0; i < app.options.games.length; i++) {
+      for (let i = 0; i < this.app.options.games.length; i++) {
 
         let opponent   = "unknown";
-        let gameid     = app.options.games[i].id;
-        let player     = app.options.games[i].player;
-        let winner     = app.options.games[i].winner;
-        let gamename   = app.options.games[i].module;
-        let status     = app.options.games[i].status;
+        let gameid     = this.app.options.games[i].id;
+        let player     = this.app.options.games[i].player;
+        let winner     = this.app.options.games[i].winner;
+        let gamename   = this.app.options.games[i].module;
+        let status     = this.app.options.games[i].status;
         let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
         let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
 
 console.log("HERE B");
 
-        let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
+        let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
 
-        if (app.options.games[i].opponents != undefined) {
-          if (app.options.games[i].opponents.length > 0) {
-            opponent = app.options.games[i].opponents[0];
+        if (this.app.options.games[i].opponents != undefined) {
+          if (this.app.options.games[i].opponents.length > 0) {
+            opponent = this.app.options.games[i].opponents[0];
           }
         }
         if (gamename === "") {
           gamename = "Unknown";
         }
 
-        if (app.options.games[i].over == 1) {
+        if (this.app.options.games[i].over == 1) {
           status = "Game Over";
         }
         if (status == "" || status == undefined) {
@@ -350,14 +350,14 @@ console.log("HERE B");
 
         let html = "";
 
-        if (app.options.games[i].over == 0) {
+        if (this.app.options.games[i].over == 0) {
 
-          if (app.options.games[i].invitation == 1) {
+          if (this.app.options.games[i].invitation == 1) {
 
             let remote_address = "";
-            for (let z = 0; z < app.options.games[i].opponents.length; z++) {;
+            for (let z = 0; z < this.app.options.games[i].opponents.length; z++) {;
               if (z > 0) { remote_address += "_"; }
-              remote_address += app.options.games[i].opponents[z];
+              remote_address += this.app.options.games[i].opponents[z];
             }
 
             html  = '<div class="single_activegame">';
@@ -400,7 +400,7 @@ console.log("HERE B");
 
         }
 
-        if (parseInt(app.options.games[i].last_block) == 0) {
+        if (parseInt(this.app.options.games[i].last_block) == 0) {
           $('.active_games').show();
           $('#gametable').append(html);
         }
