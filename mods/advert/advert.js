@@ -749,7 +749,7 @@ Advert.prototype.webServer = function webServer(app, expressapp) {
 console.log("\n\n\n############ TX FAILURE ############");
 console.log(" Advert Transaction is Null! Why?");
 console.log("############ TX FAILURE ############\n\n");
-console.log(this.app.wallet.inputs);
+console.log(advert_self.app.wallet.inputs);
 
 return;
 	      }
