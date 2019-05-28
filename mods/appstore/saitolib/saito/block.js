@@ -18,6 +18,7 @@ function Block(app, blkjson = "", confirmations = -1) {
 
   this.app = app || {};
 
+
   /////////////////////////
   // consensus variables //
   /////////////////////////

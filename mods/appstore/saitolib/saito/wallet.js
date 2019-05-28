@@ -250,6 +250,24 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   var total_fees   = Big(amt).plus(Big(fee));
   var wallet_avail = Big(this.returnBalance());
 
+  //
+  // check to-address is ok -- this just keeps a server
+  // that receives an invalid address from forking off
+  // the main chain because it creates its own invalid
+  // transaction.
+  //
+  // this is not strictly necessary, but useful for the demo
+  // server during testnet, which produces a majority of
+  // blocks.
+  //
+  if (!this.app.crypto.isPublicKey(publickey)) {
+    console.log("trying to send message to invalid address");
+    return null;
+  }
+
+
+
+
   if (total_fees.gt(wallet_avail)) {
     return null;
   }
