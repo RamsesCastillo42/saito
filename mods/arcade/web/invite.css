@@ -6,7 +6,7 @@
 }
 
 .invite_title {
-  font-size: 3em;
+  font-size: 2.9em;
   margin: 0;
   margin-top: 0.2em;
   margin-bottom: 0.2em;
@@ -31,3 +31,17 @@
 }
 
 .invite_join_button {}
+
+@media only screen and (max-width: 750px) {
+  #join_game_invite_description {
+    text-align: center;
+  }
+
+  .invite_main {
+    height: 80vh
+  }
+
+  .manage_invitations {
+    text-align: center;
+  }
+}

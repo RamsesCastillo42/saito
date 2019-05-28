@@ -261,7 +261,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   try {
     if (invite_page == 1) {
 
-      $('.inviting_address').html(invite_data.pubkey);
+      $('.inviting_address').html(invite_data.pubkey.substring(0,8));
 
       if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
         $('.invite_play_button').css('border', '1px solid grey');
@@ -616,7 +616,10 @@ console.log("NEXT IN LINE 2");
 
             this.startInitializationTimer(txmsg.game_id);
             this.showMonitor();
-            $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+            $('.manage_invitations').html(
+              `Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+              Please keep your browser open. We will notify you when the game is ready to start.
+              <div id="status" class="status"></div>`);
             $('.status').show();
 
           }
@@ -624,7 +627,17 @@ console.log("NEXT IN LINE 2");
         } else {
           if (this.currently_viewing_monitor == 1) {
             let active_module = txmsg.module;
-            let html = `Your game is ready: <p></p><a href="/${active_module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+            let html = `
+                <div id="join_game_description">
+                  Your game is ready:<a href="/${active_module.toLowerCase()}">
+                </div>
+                <div class="link linkbutton joinlink"><i class="fa fa-play-circle">
+                  </i> Join the Game</div></a>
+                  <div id="return_to_arcade" class="return_to_arcade">
+                  <i class="fa fa-arrow-circle-left"></i>
+                  Return to Arcade
+                </div>
+              `;
             this.showMonitor();
             $('.manage_invitations').html(html);
             if (this.browser_active == 1) { $('#status').hide(); }
@@ -751,7 +764,15 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-        let html = `Your game is ready: <p></p><a href="/${arcade_self.active_game.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+        let html = `
+        <div id="join_game_invite_description">Your game is ready:</div>
+          <a href="/${arcade_self.active_game.toLowerCase()}">
+            <div class="link linkbutton joinlink">
+              <i class="fa fa-play-circle"></i> Join the Game
+            </div>
+          </a>
+        `;
+        //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
@@ -891,6 +912,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     // remove on link generation
     $('#invite_link_description').remove()
+    $('.publisher_message').remove();
     $('.options').remove()
     $(this).remove();
 

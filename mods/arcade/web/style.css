@@ -57,6 +57,12 @@
   display: inline-block;
 }
 
+.joinlink {
+  background: #47A;
+  border-radius: 5px;
+  color: white;
+}
+
 .joingamelink, .acceptgamelink, .deletegamelink {
   display: inline-block;
 }
