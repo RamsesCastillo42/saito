@@ -268,6 +268,30 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   try {
     if (invite_page == 1) {
 
+      //
+      // check that we do not have an existing game with this inviter
+      //
+      let game_exists = 0;
+      if (app.options.games != undefined) {
+        for (let i = 0; i < app.options.games.length; i++) {
+	  if (app.options.games[i].opponents.length > 0) {
+	    if (app.options.games[i].opponents[0] === invite_data.pubkey) {
+	      if (app.options.games[i].over == 0) {
+	        game_exists = 1;
+	      }
+	    }
+	  }
+	}
+      }
+
+
+      if (game_exists == 1) {
+	$('.invite_main').html('You already have a game with this opponent. Please finish it before creating a new one.');
+	return;
+      }
+
+
+
       $('.inviting_address').html(invite_data.pubkey.substring(0,8));
 
       if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
@@ -484,11 +508,14 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                        if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
                         try {
                           if (invite_page == 1) {
-                                   this.showMonitor();
-                                     $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
-                                $('.status').show();
-                            this.attachEvents(this.app);
-                                this.startInitializationTimer(game_id);
+            			this.showMonitor();
+            			$('.manage_invitations').html(
+            			`Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+		   	        Please keep your browser open. We will notify you when the game is ready to start.
+              			<div id="status" class="status"></div>`);
+            			$('.status').show();
+                                this.attachEvents(this.app);
+            			this.startInitializationTimer(game_id);
                             return;
                           }
                         } catch (err) {
@@ -522,6 +549,15 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             if (txmsg.ts != "" && txmsg.sig != "") {
               if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
                 if (this.quick_invite_page == 1) {
+            			this.showMonitor();
+            			$('.manage_invitations').html(
+            			`Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+		   	        Please keep your browser open. We will notify you when the game is ready to start.
+              			<div id="status" class="status"></div>`);
+            			$('.status').show();
+                                this.attachEvents(this.app);
+            			this.startInitializationTimer(game_id);
+/****
                   let html =
                   `Your invitation has been accepted:<a href="/${txmsg.module.toLowerCase()}">
                   <button class="link linkbutton joinlink"><a href="/twilight">PLAY</a></button>
@@ -532,6 +568,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                   $('.manage_invitations').html(html);
                   if (this.browser_active == 1) { $('#status').hide(); }
                   this.attachEvents(this.app);
+****/
                 }
               }
             } else {
