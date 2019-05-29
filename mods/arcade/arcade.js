@@ -275,7 +275,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         $('.invite_play_button').css('background-color','grey');
         $('.invite_play_button').off();
         $('.invite_play_button').on('click', function() {
-  	  alert("Your browser requires Saito tokens to accept this invitation. Please wait while our server sends you some!");
+            alert("Your browser requires Saito tokens to accept this invitation. Please wait while our server sends you some!");
         });
       } else {
         $('.invite_play_button').off();
@@ -480,25 +480,25 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               if (app.options.games[i].id == game_id) {
                 if (app.options.games[i].invitation == 0) {
                   if (this.monitor_shown_already == 1) {
-	            if (txmsg.ts != "" && txmsg.sig != "") {
-	 	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-			try {
-			  if (invite_page == 1) {
-       		            this.showMonitor();
-            	     	    $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
-            		    $('.status').show();
-        	            this.attachEvents(this.app);
-            		    this.startInitializationTimer(game_id);
-			    return;
-		          }
-			} catch (err) {
-			}
-		      } else {
+                    if (txmsg.ts != "" && txmsg.sig != "") {
+                       if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                        try {
+                          if (invite_page == 1) {
+                                   this.showMonitor();
+                                     $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+                                $('.status').show();
+                            this.attachEvents(this.app);
+                                this.startInitializationTimer(game_id);
+                            return;
+                          }
+                        } catch (err) {
+                        }
+                      } else {
                         return;
-		      }
-		    }
+                      }
+                    }
                   } else {
-		  }
+                  }
                 }
               }
             }
@@ -509,33 +509,38 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game += tmpmod.slice(1);
 
 
-	  //
-	  // show active games
-	  //
-  	  this.listActiveGames();
+          //
+          // show active games
+          //
+            this.listActiveGames();
 
           if (this.browser_active == 1) {
 
-	    //
-	    //
-	    //
-	    if (txmsg.ts != "" && txmsg.sig != "") {
- 	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-		if (this.quick_invite_page == 1) {
-                  let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+            //
+            //
+            //
+            if (txmsg.ts != "" && txmsg.sig != "") {
+              if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                if (this.quick_invite_page == 1) {
+                  let html =
+                  `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}">
+                    <div class="link linkbutton joinlink">
+                      <i class="fa fa-play-circle"></i> Join the Game</div></a><p></p>
+                      <div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade
+                    </div>.`;
                   this.showMonitor();
                   $('.manage_invitations').html(html);
                   if (this.browser_active == 1) { $('#status').hide(); }
                   this.attachEvents(this.app);
-		}
-	      }
-	    } else {
+                }
+              }
+            } else {
 
-	      let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
+              let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
 
               if (txmsg.options != undefined) { html += `<div id="game_details" class="game_details">OPTIONS: ${JSON.stringify(txmsg.options)}</div><p></p>`; }
-	      html += '<div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
-	      let tmpadd = "";
+              html += '<div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
+              let tmpadd = "";
               for (let b = 0; b < tx.transaction.to.length; b++) {
                 if (b > 0) { tmpadd += "_"; }
                 tmpadd += tx.transaction.to[b].add;
@@ -547,7 +552,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               $('.manage_invitations').show();
               this.attachEvents(this.app);
 
-	    }
+            }
           }
         } catch (err) {
         }
@@ -575,7 +580,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
         //
         if (game_self.game.accept === 1) { 
           $('.status').show();
-  	  this.listActiveGames();
+            this.listActiveGames();
           return; 
         }
 
@@ -600,7 +605,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
         } else {
           if (this.currently_viewing_monitor == 1) {
-	    if (game_self.game.over == 0) {
+            if (game_self.game.over == 0) {
               let active_module = txmsg.module;
               let html = `
                 <div id="join_game_description">
@@ -621,7 +626,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           }
         }
 
-  	this.listActiveGames();
+          this.listActiveGames();
 
       } catch (err) {
       }
@@ -748,7 +753,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
             </div>
           </a>
         `;
-        //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.
+        //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
         $('.manage_invitations').html(html);
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
@@ -808,14 +813,14 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     setTimeout(function() {
       $('#saito_advert').off();
       $('#saito_advert').on('click',function() {
-	alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
         return false;
       });
     }, 1500);
     setTimeout(function() {
       $('#saito_advert').off();
       $('#saito_advert').on('click',function() {
-	alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
         return false;
       });
     }, 3000);
@@ -913,7 +918,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     $('.find_player_button').toggle();
 
     if (arcade_self.active_game == "Twilight") {
-      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
+      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
       $('.publisher_message').show();
     }
 
