@@ -82,12 +82,12 @@ Welcome.prototype.initializeHTML = function initializeHTML(app) {
   this.updateModList(app);
 
   $('#reset').off();
-  $('#reset').on('click', function() {
+  $('#reset').on('click', async () => {
     let reset_confirm = confirm("Are you sure you want to reset your wallet? You cannot retrieve your keys once you delete them")
     if (reset_confirm ){
       app.archives.resetArchives();
-      app.storage.resetOptions();
-      app.storage.saveOptions();
+      await app.storage.resetOptions();
+      // app.storage.saveOptions();
       alert("Your account has been reset");
       location.reload();
     }

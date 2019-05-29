@@ -846,26 +846,28 @@ Storage.prototype.saveOptions = function saveOptions() {
  */
 Storage.prototype.resetOptions = function resetOptions() {
 
-  // var storage_self = this;
-
   //
   // prevents caching
   //
   let tmpdate = new Date().getTime();
   let loadurl = `/options?x=${tmpdate}`;
 
-  $.ajax({
-    url: loadurl,
-    dataType: 'json',
-    async: false,
-    success: (data) => {
-      this.app.options = data;
-      this.saveOptions();
-    },
-    error: (XMLHttpRequest, textStatus, errorThrown) => {
-      this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
-    }
-  });
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: loadurl,
+      dataType: 'json',
+      async: false,
+      success: (data) => {
+        this.app.options = data;
+        this.saveOptions();
+        resolve();
+      },
+      error: (XMLHttpRequest, textStatus, errorThrown) => {
+        this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
+        reject();
+      }
+    });
+  })
 
 }
 
