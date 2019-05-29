@@ -287,6 +287,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
       if (game_exists == 1) {
 	$('.invite_main').html('You already have a game with this opponent. Please finish it before creating a new one.');
+	$('.invite_main').css('font-size','1.7em');
 	return;
       }
 
