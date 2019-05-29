@@ -37,16 +37,23 @@
   font-size: 1.5em;
 }
 
-.invite_join_button {}
-
 .manage_invitations {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 100%
 }
 
 .status {
   text-align: center;
+}
+
+#join_game_invite_description {
+  text-align: center;
+}
+
+#invite_join_button {
+  margin-top: 1em;
 }
 
 @media only screen and (max-width: 750px) {
@@ -63,13 +70,17 @@
     width: 100%;
   }
 
+  .invite_description {
+    font-size: 1.2em;
+    line-height: 1.4em;
+  }
+
   .invite_play_button {
     width: 100%
   }
 
-  .joinlink {
-    padding: 0.5em;
-    font-size: 1.5em;
+  #invite_join_button {
+    margin-top: unset
   }
 
   .linkbutton {

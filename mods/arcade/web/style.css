@@ -517,6 +517,12 @@ a {
   color: #efefef;
 }
 
+#accept_invitation_container {
+  display:grid;
+  row-gap: 1em;
+  text-align: center;
+}
+
 .invite_button {
   color: rgb(0, 190, 10);
   border: rgb(0, 190, 10) 1px solid;
@@ -535,6 +541,11 @@ a {
   grid-template-columns: 1em auto;
   justify-content: center;
   align-items: center;
+}
+
+#invite_join_button {
+  padding: 1.1em;
+  width: 100%;
 }
 
 .quick_invite {
@@ -560,7 +571,7 @@ a {
   column-gap: 1em;
   align-items: center;
   /* margin-top: 1em; */
-  max-width:425px;
+  max-width:600px;
 }
 
 .invite_link_input {
