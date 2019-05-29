@@ -14,10 +14,11 @@
 }
 
 .invite_description {
-  /* font-size: 1.75em; */
+  line-height: 1.8em;
+  font-size: 1.5em;
   justify-self: center;
   text-align: center;
-  line-height: 1.4em;
+  /* line-height: 1.4em; */
 }
 
 .invite_tutorial_cards {}
