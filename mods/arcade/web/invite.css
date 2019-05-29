@@ -13,6 +13,7 @@
 }
 
 .invite_description {
+  line-height: 1.8em;
   font-size: 1.5em;
   justify-self: center;
   text-align: center;
