@@ -514,20 +514,14 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 	  //
   	  this.listActiveGames();
 
-console.log("HEE WE ARE ON INVITATION RECEIPT....");
-
           if (this.browser_active == 1) {
-
-alert("TESTING THIS!");
 
 	    //
 	    //
 	    //
 	    if (txmsg.ts != "" && txmsg.sig != "") {
  	      if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-alert("TESTING THIS 2!");
 		if (this.quick_invite_page == 1) {
-alert("TESTING THIS 3!");
                   let html = `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
                   this.showMonitor();
                   $('.manage_invitations').html(html);
@@ -892,7 +886,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
       `
     )
 
-    arcade_self.quick_link_page = 1;
+    arcade_self.quick_invite_page = 1;
 
     // remove on link generation
     $('#invite_link_description').remove()
