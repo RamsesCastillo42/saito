@@ -523,11 +523,11 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
                 if (this.quick_invite_page == 1) {
                   let html =
-                  `Your invitation has been accepted: <p></p><a href="/${txmsg.module.toLowerCase()}">
-                    <div class="link linkbutton joinlink">
-                      <i class="fa fa-play-circle"></i> Join the Game</div></a><p></p>
-                      <div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade
-                    </div>`;
+                  `Your invitation has been accepted:<a href="/${txmsg.module.toLowerCase()}">
+                  <button class="link linkbutton joinlink"><a href="/twilight">PLAY</a></button>
+                    <!--<div id="return_to_arcade" class="return_to_arcade">
+                      <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+                    </div>-->`;
                   this.showMonitor();
                   $('.manage_invitations').html(html);
                   if (this.browser_active == 1) { $('#status').hide(); }
@@ -549,7 +549,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
               $('.lightbox_message_from_address').html(tmpadd);
               $('.manage_invitations').html(html);
-              $('.manage_invitations').show();
+              $('.manage_invitations').css("display:flex;");
               this.attachEvents(this.app);
 
             }
@@ -611,9 +611,8 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                 <div id="join_game_description">
                   Your game is ready:<a href="/${active_module.toLowerCase()}">
                 </div>
-                <div class="link linkbutton joinlink"><i class="fa fa-play-circle">
-                  </i> Join the Game</div></a>
-                  <div id="return_to_arcade" class="return_to_arcade">
+                <button href="/twilight" class="link linkbutton joinlink">PLAY</button>
+                <div id="return_to_arcade" class="return_to_arcade">
                   <i class="fa fa-arrow-circle-left"></i>
                   Return to Arcade
                 </div>
@@ -747,15 +746,11 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       if (arcade_self.app.options.games[pos].initializing == 0) {
         let html = `
         <div id="join_game_invite_description">Your game is ready:</div>
-          <a href="/${arcade_self.active_game.toLowerCase()}">
-            <div class="link linkbutton joinlink">
-              <i class="fa fa-play-circle"></i> Join the Game
-            </div>
-          </a>
+        <button class="link linkbutton joinlink"><a href="/twilight">PLAY</a></button>
         `;
         //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
         $('.manage_invitations').html(html);
-        $('.manage_invitations').show();
+        $('.manage_invitations').css('display:flex;');
         if (this.browser_active == 1) { $('#status').hide(); }
         clearInterval(arcade_self.initialization_check_timer);
         arcade_self.attachEvents(this.app);

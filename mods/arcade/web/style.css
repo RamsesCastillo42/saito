@@ -61,6 +61,7 @@
   background: #47A;
   border-radius: 5px;
   color: white;
+  margin: 0;
 }
 
 .joingamelink, .acceptgamelink, .deletegamelink {
@@ -122,6 +123,7 @@ hr {
 .link {
   display: inline-block;
   cursor: pointer;
+  max-width: 310px;
 }
 
 .game_monitor {

@@ -3,6 +3,7 @@
   justify-content: center;
   justify-items: center;
   padding: 2em;
+  grid-template-rows: 5em auto;
 }
 
 .invite_title {
@@ -17,9 +18,14 @@
   font-size: 1.5em;
   justify-self: center;
   text-align: center;
+  /* line-height: 1.4em; */
 }
 
 .invite_tutorial_cards {}
+
+.inviting_address {
+  font-weight: bold;
+}
 
 .invite_play_button {
   color: white;
@@ -33,6 +39,16 @@
 
 .invite_join_button {}
 
+.manage_invitations {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.status {
+  text-align: center;
+}
+
 @media only screen and (max-width: 750px) {
   #join_game_invite_description {
     text-align: center;
@@ -44,5 +60,19 @@
 
   .manage_invitations {
     text-align: center;
+    width: 100%;
+  }
+
+  .invite_play_button {
+    width: 100%
+  }
+
+  .joinlink {
+    padding: 0.5em;
+    font-size: 1.5em;
+  }
+
+  .linkbutton {
+    width:100%;
   }
 }
