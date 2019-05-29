@@ -208,7 +208,7 @@ Arcade.prototype.invitePlayButtonClicked = function invitePlayButtonClicked() {
   $('.ads').hide();
   $('.manage_invitations').css('font-size','1.4em');
   $('.status').css('font-size','1.25em');
-  $('.invite_description').html("Your game is initializing with your opponent. This usually takes 1-2 minutes to complete. Please do not leave this page -- we will inform you when your game is ready to start: ");
+  $('.invite_description').html("Your game is initializing. Please do not leave this page -- it will auto-update when your game is ready to start: ");
 
 }
 
