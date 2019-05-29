@@ -527,7 +527,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                     <div class="link linkbutton joinlink">
                       <i class="fa fa-play-circle"></i> Join the Game</div></a><p></p>
                       <div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade
-                    </div>.`;
+                    </div>`;
                   this.showMonitor();
                   $('.manage_invitations').html(html);
                   if (this.browser_active == 1) { $('#status').hide(); }
