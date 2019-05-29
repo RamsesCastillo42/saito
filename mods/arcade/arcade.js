@@ -651,14 +651,16 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             if (game_self.game.over == 0) {
               let active_module = txmsg.module;
               let html = `
-                <div id="join_game_description">
-                  Your game is ready:<a href="/${active_module.toLowerCase()}">
-                </div>
-                <button href="/twilight" class="link linkbutton joinlink" id="invite_join_button">START</button>
-                <div id="return_to_arcade" class="return_to_arcade">
-                  <i class="fa fa-arrow-circle-left"></i>
-                  Return to Arcade
-                </div>
+                <center id="start_game_container">
+                  <div id="join_game_description">
+                    Your game is ready:<a href="/${active_module.toLowerCase()}">
+                  </div>
+                  <button href="/twilight" class="link linkbutton joinlink" id="invite_join_button">START</button>
+                  <div id="return_to_arcade" class="return_to_arcade">
+                    <i class="fa fa-arrow-circle-left"></i>
+                    Return to Arcade
+                  </div>
+                </center>
                 `;
               this.showMonitor();
               $('.manage_invitations').html(html);
@@ -788,12 +790,14 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
         let html = `
-        <div id="join_game_invite_description">Your game is ready:</div>
-        <a href="/twilight">
-          <button class="link linkbutton joinlink" id="invite_join_button">
-            START
-          </button>
-        </a>
+        <center id="start_game_container">
+          <div id="join_game_invite_description">Your game is ready:</div>
+          <a href="/twilight">
+            <button class="link linkbutton joinlink" id="invite_join_button">
+              START
+            </button>
+          </a>
+        </center>
         `;
         //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
         $('.manage_invitations').html(html);
