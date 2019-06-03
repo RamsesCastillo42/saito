@@ -36,6 +36,10 @@ function Wallet(app) {
   this.outputs_hmap_counter_limit   = 100000;
 
   this.is_testing                   = false;
+  this.is_fastload		    = false; 	// used when loading blocks from disk -- we skip
+						// wallet inserts block-by-block and check the 
+						// integrity of our wallet slips after-the-fact
+						// against the Google Dense Hashmap
 
 }
 module.exports = Wallet;
@@ -245,6 +249,24 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   var tx           = new saito.transaction();
   var total_fees   = Big(amt).plus(Big(fee));
   var wallet_avail = Big(this.returnBalance());
+
+  //
+  // check to-address is ok -- this just keeps a server
+  // that receives an invalid address from forking off
+  // the main chain because it creates its own invalid
+  // transaction.
+  //
+  // this is not strictly necessary, but useful for the demo
+  // server during testnet, which produces a majority of
+  // blocks.
+  //
+  if (!this.app.crypto.isPublicKey(publickey)) {
+    console.log("trying to send message to invalid address");
+    return null;
+  }
+
+
+
 
   if (total_fees.gt(wallet_avail)) {
     return null;
@@ -789,6 +811,8 @@ Wallet.prototype.containsOutput = function containsUtxo(s) {
  */
 Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, from_slips, lc) {
 
+  if (this.is_fastload == true) { return; }
+
   //
   // any txs in pending should be checked to see if
   // we can remove them now that we have received
@@ -935,4 +959,56 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
     }
   }
 }
+
+
+/**
+ * Check the slips in our wallet one-by-one and purge 
+ * any that are considered invalid according to our 
+ * Google Dense Hash Map. This function is used by servers
+ * reloading the blockchain to avoid their need to regenerate
+ * their wallet in real-time as blocks are added -- speeding
+ * up the process of syncing blocks.
+ *
+ */
+Wallet.prototype.validateWalletSlips = function validateWalletSlips() {
+
+  let latest_bid = this.app.blockchain.returnLatestBlockId();
+  let slips_to_check = this.wallet.inputs;
+
+  if (this.app.BROWSER == 1) { return; }
+
+
+  //
+  // delete all previous inputs in order to avoid the 
+  // software needing to iterate through loops to check
+  // for duplicate inserts.
+  //
+  this.wallet.inputs = [];
+  this.wallet.spends = [];
+  this.wallet.outputs = [];
+  this.inputs_hmap                  = [];
+  this.inputs_hmap_counter          = 0;
+  this.outputs_hmap                 = [];
+  this.outputs_hmap_counter         = 0;
+
+  //
+  // go through slips and check them one-by-one
+  // only adding to our wallet if valid according
+  // to the hashmap
+  //
+  for (let i = 0; i < slips_to_check.length; i++) {
+    let slip = slips_to_check[i];
+    if (this.app.storage.validateTransactionInput(slip, latest_bid)) {
+      this.addInput(slip);
+    }
+  }
+
+  //
+  // wallet should now be clean
+  //
+  this.saveWallet();
+
+}
+
+
 

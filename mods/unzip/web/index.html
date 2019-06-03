@@ -1,0 +1,69 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Unzipping Remote Files and Displaying the Image</title>
+
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-buttons.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-buttons.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-media.js"></script>
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-thumbs.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-thumbs.js"></script>
+
+  <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="/unzip/style.css" />
+
+  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+
+</head>
+<body>
+
+  <div id="Unzip_browser_active"></div>
+
+  <div class="header">
+    <a href="/" style="text-decoration:none;color:inherits">
+      <img src="/img/saito_logo_black.png" style="width:35px;margin-top:5px;margin-left:25px;margin-right:10px;float:left;" />
+      <div style="font-family:Georgia;padding-top:5px;font-size:1.2em;color:#444;">saito unzip demo</div>
+    </a>
+  </div>
+
+  <div class="loader" style="loader">
+
+    Loading Unzip Demo....
+
+  </div>
+
+  <div class="main" style="main">
+
+    This is a demo of loading images from a zip file....
+
+    <p></p>
+
+    <div id="zipstatus">yet to download zip...</div>
+
+    <p></p>
+
+    <div id="imageholder"></div>
+
+  </div>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/browser.js"></script>
+  <script src="/unzip/script.js"></script>
+
+</body>
+</html>
+
+
+

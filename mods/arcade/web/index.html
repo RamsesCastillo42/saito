@@ -13,6 +13,7 @@
   <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
   <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="/lib/hammer/hammer.min.js"></script>
 
   <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" type="text/css" media="screen" />
   <link rel="stylesheet" type="text/css" href="/arcade/style.css" />
@@ -34,6 +35,7 @@
         <div id="saitoname" class="logo_text">saito arcade</div>
       </a>
     </a>
+    <button class="find_player_button">Find Player</button>
   </div>
 
 
@@ -52,7 +54,7 @@
       <div class="game_monitor" id="game_monitor"></div>
 
       <div class="game_options">
-        <div class="arcade-description">
+        <div class="arcade-description" style="display:none">
           <div id="outreach" class="outreach">
             <div id="telegram" class="telegram">
               <a href="https://t.me/joinchat/BOSYOk_BR8Epp0X35A54UQ" target="_blank">find an opponent on <br /><span
@@ -71,8 +73,8 @@
           </div>
         </div>
 
-        <div style="margin-bottom:30px;margin-top:20px;width:100%">
-          <center>or choose a game below to start playing</center>
+        <div style="margin-bottom:30px;margin-top:20px;width:100%;font-weight:bold">
+          <center>Choose a game below to start playing</center>
         </div>
 
         <div class="gamelist">
@@ -120,6 +122,10 @@
   </div>
   <div id="lightbox_message_from_address4" class="lightbox_message_from_address4" style="display:none" />
   </div>
+
+  <script type="text/javascript">
+    var invite_page = 0;
+  </script>
 
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>

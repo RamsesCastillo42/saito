@@ -96,6 +96,12 @@ setTimeout(function() { initialize_sidechat(); addEvents();}, chat_init_speed);
 
 
 function initialize_sidechat() {
+    if ($(window).width() <= 900) {
+        $('.mail_chat_popup').hide();
+        $('.sidechat').hide();
+        $('.sidechat_controls').hide();
+        return;
+    }
     $('.sidechat').empty();
     $('.chat_chat-room-option').each(function() {
         chat_messages = $("#ALL > p").length;
@@ -118,11 +124,5 @@ function initialize_sidechat() {
 
         }
     });
-
-    if ($(window).width() <= 500) {
-        $('.mail_chat_popup').hide();
-        $('.sidechat').hide();
-        $('.sidechat_controls').hide();
-    }
 
 }

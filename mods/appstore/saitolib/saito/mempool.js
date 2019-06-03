@@ -134,41 +134,45 @@ Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(peer,
   let url_sync_address = "blocks/";
   let url_sync_pkey    = "";
 
-  bhashes = bhashes.map((hash) => {
-    return '"' + hash + '"';
-  }).join(",");
-
   if (peer.peer.synctype == "lite") {
     url_sync_address   = "lite-blocks/";
     url_sync_pkey      = this.app.wallet.returnPublicKey();
   }
 
   let {protocol, host, port} = peer.peer.endpoint;
-  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}${url_sync_pkey}?blocks=[${bhashes}]`;
+  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}${url_sync_pkey}`;
 
-  try {
-    let response = await axios.get(block_to_download_url)
-    response.data.payload.blocks.forEach(body => {
-      let blk = new saito.block(this.app, body);
+  let block_size = 50;
 
-      if (blk.block.ts > new Date().getTime() + 60000) {
-        console.log("block appears to be from the future, dropping...");
-        return;
-      }
+  for (let i = 0; i < Math.ceil((bhashes.length)/block_size); i++) {
+    let start = i * block_size;
+    let end   = (i + 1) * block_size
 
-      if (blk.is_valid == 0 && this.app.BROWSER == 0) {
-        return;
-      }
+    var blocks = bhashes.slice(start, end);
 
-      blk.size = parseInt(response.headers["content-length"]);
+    try {
+      let response = await axios.post(block_to_download_url, { blocks });
+      response.data.payload.blocks.forEach(body => {
+        let blk = new saito.block(this.app, body);
 
-      this.addBlock(blk)
-    });
+        if (blk.block.ts > new Date().getTime() + 60000) {
+          console.log("block appears to be from the future, dropping...");
+          return;
+        }
 
-    await this.processBlocks();
-  } catch(err) {
-    console.log(err);
+        if (blk.is_valid == 0 && this.app.BROWSER == 0) {
+          return;
+        }
+
+        blk.size = parseInt(response.headers["content-length"]);
+
+        this.addBlock(blk)
+      });
+    } catch(err) {
+      console.log(err);
+    }
   }
+  await this.processBlocks();
 }
 
 

@@ -570,7 +570,9 @@ Block.prototype.calculateRebroadcastTransactions = async function calculateRebro
             txarray.push(newtx);
 
           }
-        }
+        } else {
+console.log("THIS SLIP FAILED: " + JSON.stringify(slip) + " -- " + this.block.id);
+	}
       }
     }
   }
@@ -593,6 +595,8 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
 
   var eliminated_block_id = this.returnId() - this.app.blockchain.returnGenesisPeriod() - 1;
   var goldenticket_block_id = eliminated_block_id + 1;
+
+console.log("ELIMINATED BLOCK ID: " + eliminated_block_id);
 
   //
   // if no blocks to eliminate, return 0.0 and confirm valid
@@ -623,8 +627,11 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
       slip.sid = ii;
 
       if (Big(slip.amt).gt(0)) {
+console.log("validating: " + slip.bid + " / " + slip.tid + " / " + slip.sid);
         if (this.app.storage.validateTransactionInput(slip, this.block.id)) {
+console.log("validated!");
           if (eblk.transactions[i].isAutomaticallyRebroadcast(eblk, this, ii)) {
+console.log("and meets criteria for rebroadcast!");
 
             needs_rebroadcast++;
             let is_tx_in_block = 0;
@@ -642,11 +649,17 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
             // an attack
             //
             if (is_tx_in_block == 0) {
+console.log("eligible tx not in block!");
               return false;
             }
 
           }
-        }
+        } else {
+console.log("SLIP VALUE: " + slip.returnIndex());
+console.log("SHASHMAP VALUE: " + this.app.storage.returnShashmapValue(slip));
+console.log("ERROR VALIDATING SLIP: " + JSON.stringify(slip) + " -- " + this.block.id);
+
+	}
       }
     }
   }
@@ -676,7 +689,7 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
 
 
   if (total_rebroadcast != needs_rebroadcast) {
-    //console.log("Validation Error: unmatched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
+    console.log("Validation Error: unmatched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
     return false;
   } else {
     //console.log("Validation OK: matched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
@@ -783,7 +796,6 @@ Block.prototype.validate = async function validate() {
 
   try {
 
-
     //
     // fetch prev block
     //
@@ -855,14 +867,14 @@ Block.prototype.validate = async function validate() {
     //
     // validate non-rebroadcast transactions
     //
-    console.log(" ---> before sigs: " + new Date().getTime());
+    //console.log(" ---> before sigs: " + new Date().getTime());
     let did_successfully_validate = await this.app.cluster.validateTransactions(this);
     if (did_successfully_validate == 0) {
       console.log('Block invalid: contains invalid transaction -- sig invalid');
       this.app.logger.logError("Block invalid: contains invalid transaction: " + i, { message: "", err: "" });
       return 0;
     }
-    console.log(" ---> after sigs:  " + new Date().getTime());
+    //console.log(" ---> after sigs:  " + new Date().getTime());
 
 
     //
@@ -889,7 +901,6 @@ Block.prototype.validate = async function validate() {
     //
     if (do_we_have_a_full_genesis_period == 1) {
       let block_reclaimed = await this.calculateReclaimedFunds();
-
       if (block_reclaimed.reclaimed !== this.block.reclaimed) {
         console.log("Block invalid: reclaimed funds do not match - " + block_reclaimed.reclaimed + " vs " + this.block.reclaimed)
         return 0;
@@ -897,7 +908,7 @@ Block.prototype.validate = async function validate() {
     }
 
 
-    console.log(" ---> pre merkle:  " + new Date().getTime());
+    //console.log(" ---> pre merkle:  " + new Date().getTime());
     //
     // validate merkle root
     //
@@ -929,7 +940,7 @@ Block.prototype.validate = async function validate() {
           }
         }
       }
-      console.log(" ---> pst merkle:  " + new Date().getTime());
+      //console.log(" ---> pst merkle:  " + new Date().getTime());
     }
 
 
@@ -1140,6 +1151,7 @@ Block.prototype.validate = async function validate() {
       }
     }
   } catch (err) {
+    console.error(err)
     return 0;
   }
 
@@ -1188,11 +1200,17 @@ Block.prototype.returnFeesTotal = function returnFeesTotal() {
  */
 Block.prototype.spendInputs = function spendInputs() {
 
+  if (this.returnHash() == "6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773") {
+console.log("SPEND for 6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773: " + this.transactions.length);
+  }
+
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, this.block.id);
+        let slip = this.transactions[b].transaction.from[bb];
+//console.log("SPENDING INPUT: " + slip.returnIndex() + " -- " + this.app.storage.returnShashmapValue(slip));
       }
     }
   }
@@ -1206,11 +1224,23 @@ Block.prototype.spendInputs = function spendInputs() {
  */
 Block.prototype.unspendInputs = function unspendInputs() {
 
+
+  if (this.returnHash() == "6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773") {
+console.log("UNSPEND for 6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773: " + this.transactions.length);
+console.log(this.stringify());
+  }
+
+//console.log("UNSPENDING INPUTS 111: " + this.transactions.length);
   for (let b = 0; b < this.transactions.length; b++) {
+//console.log("UNSPENDING INPUTS 222: " + this.transactions[b].transaction.from.length);
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
+//console.log("UNSPENDING INPUTS 333: " + this.transactions[b].transaction.from[bb].amt);
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, -1);
+        let slip = this.transactions[b].transaction.from[bb];
+//console.log("UNSPENDING INPUT: " + slip.returnIndex() + " -- " + this.app.storage.returnShashmapValue(slip));
+//console.log("UPDATED VALUE: " + this.app.storage.returnShashmapValue(slip));
       }
     }
   }

@@ -157,7 +157,7 @@ Storage.prototype.execDatabase = async function execDatabase(sql, params, mycall
  */
 Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
 
-console.log(" .... updte slips: " + new Date().getTime());
+//console.log(" .... updte slips: " + new Date().getTime());
 
   /////////////////////////////////////////
   // update slips here for wallet insert //
@@ -179,7 +179,7 @@ console.log(" .... updte slips: " + new Date().getTime());
     return;
   }
 
-console.log(" .... updte shsmp: " + new Date().getTime());
+//console.log(" .... updte shsmp: " + new Date().getTime());
 
   ///////////////////////
   // slips to shashmap //
@@ -209,7 +209,7 @@ console.log(" .... updte shsmp: " + new Date().getTime());
     }
   }
 
-console.log(" .... updte blkdb: " + new Date().getTime());
+//console.log(" .... updte blkdb: " + new Date().getTime());
 
   ///////////////////////
   // block to database //
@@ -249,7 +249,8 @@ console.log(" .... updte blkdb: " + new Date().getTime());
   };
 
 
-console.log(" .... save to dsk: " + new Date().getTime());
+
+//console.log(" .... save to dsk: " + new Date().getTime());
 
   ///////////////////
   // block to disk //
@@ -259,11 +260,11 @@ console.log(" .... save to dsk: " + new Date().getTime());
     blk.filename = `${blk.block.id}-${res.lastID}.blk`;
     var tmp_filepath = `${this.directory}/${this.dest}/${blk.filename}`;
 
-console.log(" .... prep r JSON: " + new Date().getTime());
+//console.log(" .... prep r JSON: " + new Date().getTime());
 
     let blkjson = blk.stringify();
 
-console.log(" .... pre JSON wr: " + new Date().getTime());
+//console.log(" .... pre JSON wr: " + new Date().getTime());
     // TODO
     //
     // hand saving to disk over to a child process (if enabled)
@@ -275,7 +276,7 @@ console.log(" .... pre JSON wr: " + new Date().getTime());
 //      writefile.end();
     }
 
-console.log(" .... pst JSON wr  " + new Date().getTime());
+//console.log(" .... pst JSON wr  " + new Date().getTime());
 
     return true;
 
@@ -335,6 +336,33 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
     });
 
   }
+
+
+
+  ///////////////////////
+  // remove stragglers //
+  ///////////////////////
+  let sql2 = "SELECT block_id, id FROM blocks WHERE block_id < $block_id AND longest_chain = $lc";
+  let params2 = { $block_id : block_id+2 , $lc : 0 };
+  this.queryDatabaseArray(sql2, params2, function(err, rows) {
+    if (rows != null) {
+      for (let z = 0; z < rows.length; z++) {
+
+        let bid = rows[z].block_id;
+        let dbid = rows[z].id;
+
+        let block_filename = `${this.directory}/${this.dest}/${bid}-${dbid}.blk`;
+
+        fs.unlink(block_filename, function(err) {
+          if (err) {
+            this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
+          }
+        });
+
+      }
+    }
+  });
+
 
 
   //////////////
@@ -412,13 +440,9 @@ Storage.prototype.loadBlocksFromDisk = async function loadBlocksFromDisk(mylimit
 
       let fileID = files[i];
 
-console.log("loading " + fileID);
-
       if (fileID !== "empty") {
 
-        console.log("BEFORE OPENING BLOCK:               " + new Date().getTime());
         let blk = this.openBlockByFilename(fileID);
-        console.log("AFTER OPENING BLOCK:                " + new Date().getTime());
 
         if (blk == null || blk.is_valid == 0) {
           console.log("We have saved an invalid block: " + fileID);
@@ -439,10 +463,10 @@ console.log("loading " + fileID);
 
         // LOGGING INFO
         //this.app.logger.logInfo(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
-        console.error(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
-        console.log("BEFORE ADDING BLOCK TO BLOCKCHAIN:  " + new Date().getTime());
+        //console.error(`REPOPULATING: adding block to mempool w/ id: ${blk.block.id} -- ${blk.returnHash()}`)
+        //console.log("BEFORE ADDING BLOCK TO BLOCKCHAIN:  " + new Date().getTime());
         await this.app.blockchain.addBlockToBlockchain(blk, true);
-        console.log("AFTER ADDING BLOCK TO BLOCKCHAIN:   " + new Date().getTime());
+        //console.log("AFTER ADDING BLOCK TO BLOCKCHAIN:   " + new Date().getTime());
       }
 
     } catch (err) {
@@ -672,6 +696,16 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
 
 
 /**
+ * Return Value of Shashmap Entry for Slip
+ */
+Storage.prototype.returnShashmapValue = function returnShashmapValue(slip) {
+  return shashmap.slip_value(slip.returnIndex());
+}
+
+
+
+
+/**
  * Load the options file
  */
 Storage.prototype.loadOptions = async function loadOptions() {
@@ -768,9 +802,9 @@ Storage.prototype.onChainReorganization = async function onChainReorganization(b
     // update database with longest chain information
     let sql = "UPDATE blocks SET longest_chain = $lc WHERE hash = $block_hash";
     let params = { $lc : lc , $block_hash : block_hash };
-    console.log(sql + " -- > " + JSON.stringify(params));
     try {
-      await this.db.run(sql, params);
+      let response = await this.db.run(sql, params);
+      //console.log("REORG RESPONSE", response);
     } catch(err) {
       console.log("Error thrown in Storage onChainReorganization", err);
     }
@@ -821,26 +855,28 @@ Storage.prototype.saveOptions = function saveOptions() {
  */
 Storage.prototype.resetOptions = function resetOptions() {
 
-  // var storage_self = this;
-
   //
   // prevents caching
   //
   let tmpdate = new Date().getTime();
   let loadurl = `/options?x=${tmpdate}`;
 
-  $.ajax({
-    url: loadurl,
-    dataType: 'json',
-    async: false,
-    success: (data) => {
-      this.app.options = data;
-      this.saveOptions();
-    },
-    error: (XMLHttpRequest, textStatus, errorThrown) => {
-      this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
-    }
-  });
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: loadurl,
+      dataType: 'json',
+      async: false,
+      success: (data) => {
+        this.app.options = data;
+        this.saveOptions();
+        resolve();
+      },
+      error: (XMLHttpRequest, textStatus, errorThrown) => {
+        this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
+        reject();
+      }
+    });
+  })
 
 }
 

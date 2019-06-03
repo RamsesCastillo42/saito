@@ -2,7 +2,7 @@ var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/template');
 var util = require('util');
 var markdown = require("markdown").markdown;
-
+var fs = require('fs');
 
 
 
@@ -21,16 +21,15 @@ function Arcade(app) {
   this.browser_active  = 0;
   this.emailAppName    = "Arcade";
 
-
   this.initialization_check_active = true;
   this.initialization_check_timer  = null;
 
   this.active_game     = "";
-  this.active_game_id  = "";
 
   this.currently_playing = 0;
   this.currently_viewing_monitor = 0;
   this.monitor_shown_already = 0;
+  this.quick_invite_page = 0;
 
   return this;
 
@@ -43,18 +42,61 @@ util.inherits(Arcade, ModTemplate);
 Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
   let game_options = "";
+  let game_self = app.modules.returnModule(this.active_game);
 
   if (this.active_game != "") {
-    let game_self = app.modules.returnModule(this.active_game);
     if (game_self != null) {
       game_options = game_self.returnGameOptionsHTML();
     }
   }
 
+  let show_game_options = game_options == "" ? "none" : "block";
+
+  let quick_invite =
+  `<div class="quick_invite" id="quick_invite">
+    <i class="fa fa-magic"></i>Generate Invite Link
+  </div>`
+
+  let multi_invite = `
+    <div class="invitation_player1" id="invitation_player1" style="max-width:620px;">
+      <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
+      <div class="opponent_address2">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+        <p></p>
+      </div>
+      <div class="opponent_address3">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+        <p></p>
+      </div>
+
+      <div class="invite_button" id="invite_button">
+        <i class="fa fa-envelope"></i> Send Invite
+      </div>
+    </div>
+  `
+
+  let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
+
+  var invite_description = ''
+  if (game_self.maxPlayers > 2) {
+    invite_description =
+    `<div id="invite_publickey_description" style="display:block">
+      Invite player(s) by publickey(s)
+    </div>`
+  } else {
+    invite_description =
+      `<div id="invite_link_description" style="display:block">
+        Generate link to invite players or <a style="color:darkblue" class="toggle_invite">invite by publickey:</a>
+      </div>
+
+      <div id="invite_publickey_description" style="display:none">
+        Invite player(s) by publickey or <a style="color:darkblue" class="toggle_invite">generate a quick invite link</a>
+      </div>`
+  }
 
   return `
 
-    <div class="address_box">
+    <!-- <div class="address_box">
 
       Send this address to your opponent for invitation:
 
@@ -64,7 +106,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
       <br />
       <span style="font-family: Courier">BALANCE: </span><span class="saito_balance" id="saito_balance">0.0</span> SAITO
 
-    </div>
+    </div> -->
 
     <div class="funding_alert">
       Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
@@ -72,21 +114,19 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
 
     <div class="manage_invitations" style="display:none">
 
-      <div class="game_details">${game_options}</div>
+      <div class="game_details" style="display:${show_game_options}">${game_options}</div>
 
-      Provide address(es) of player(s) to invite:
+      ${invite_description}
 
-      <p></p>
+      ${invite_html}
 
-      <div class="invitation_player1" id="invitation_player1">
-        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address" class="opponent_address" />
+      <div class="invitation_player1" id="invitation_player1" style="display:none; max-width:620px">
+        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
         <div class="opponent_address2">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-          <p></p>
         </div>
         <div class="opponent_address3">
           <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-          <p></p>
         </div>
 
         <div class="invite_button" id="invite_button">
@@ -94,20 +134,14 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
         </div>
       </div>
 
-      <p></p>
-
-      <div id="publisher_message" class="publisher_message"></div>
-
-      <p></p>
-
-      <div class="invitation_player2" id="invitation_player2" style="display:none">
-        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
-      </div>
-
-      <p></p>
+      <div id="publisher_message" class="publisher_message" style="display:none"></div>
 
       <div class="return_to_arcade" id="return_to_arcade">
       <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+      </div>
+
+      <div class="invitation_player2" id="invitation_player2" style="display:none">
+        Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
       </div>
 
     </div>
@@ -115,7 +149,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
   `;
 
 }
-Arcade.prototype.showMonitor = function showMonitor(html) {
+Arcade.prototype.showMonitor = function showMonitor() {
 
   this.monitor_shown_already = 1;
   this.currently_viewing_monitor = 1;
@@ -149,8 +183,143 @@ Arcade.prototype.hideMonitor = function hideMonitor() {
 
 
 
+Arcade.prototype.updateBalance = function updateBalance(app) {
 
+  if (app.BROWSER == 0) { return; }
+
+  let arcade_self = this;
+
+  try {
+  if (invite_page == 1) {
+    $('.invite_play_button').css('background-color','darkorange');
+    $('.invite_play_button').css('border', '1px solid darkorange');
+    $('.invite_play_button').off();
+    $('.invite_play_button').on('click', function() {
+      arcade_self.acceptGameInvitation();
+      arcade_self.invitePlayButtonClicked();
+    });
+  }
+  } catch (err) {}
+
+}
+Arcade.prototype.invitePlayButtonClicked = function invitePlayButtonClicked() {
+
+  $('.invite_play_button').hide();
+  $('.ads').hide();
+  $('.manage_invitations').css('font-size','1.4em');
+  $('.status').css('font-size','1.25em');
+  $('.invite_description').html(`Your game is initializing with your opponent. Please do not leave this page`);
+
+}
+
+Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
+
+  let arcade_self = this;
+
+  var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
+  if (newtx == null) {
+    alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+    return;
+  }
+
+  newtx.transaction.to.push(new saito.slip(invite_data.pubkey, 0.0));
+  newtx.transaction.msg.module  = invite_data.module;
+  newtx.transaction.msg.request = "invite";
+  newtx.transaction.msg.options = invite_data.options;
+  newtx.transaction.msg.ts      = invite_data.ts;
+  newtx.transaction.msg.sig     = invite_data.sig;
+
+  newtx = arcade_self.app.wallet.signTransaction(newtx);
+
+  arcade_self.app.network.propagateTransaction(newtx);
+  alert("You have accepted this game. Your browser will be redirected to the Arcade in a few seconds. Once there you can click on this game to open it.");
+
+  //
+  let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
+  arcade_self.startInitializationTimer(game_id);
+
+  this.active_game = invite_data.module;
+  let game_self = this.app.modules.returnModule(invite_data.module);
+  //
+  // another game might be loaded already, so we make sure
+  // we are dealing with something fresh
+  //
+  game_self.loadGame(game_id);
+  //
+  // save for good measure
+  //
+  game_self.saveGame(game_id);
+
+  //
+  // fast redirects seem to break stuff as old blocks re-run
+  //
+  //window.location = '/arcade';
+  //window.location = '/' + invite_data.module;
+
+}
 Arcade.prototype.initializeHTML = function initializeHTML(app) {
+
+  let arcade_self = this;
+
+  //
+  // invite_page is set inside the javascript as a global variable
+  // on invite.html.
+  //
+  try {
+    if (invite_page == 1) {
+
+      //
+      // check that we do not have an existing game with this inviter
+      //
+      let game_exists = 0;
+      if (app.options.games != undefined) {
+        for (let i = 0; i < app.options.games.length; i++) {
+	  if (app.options.games[i].opponents.length > 0) {
+	    if (app.options.games[i].opponents[0] === invite_data.pubkey) {
+	      if (app.options.games[i].over == 0) {
+	        game_exists = 1;
+	      }
+	    }
+	  }
+	}
+      }
+
+
+      if (game_exists == 1) {
+	$('.invite_main').html('You already have a game with this opponent. Please finish it before creating a new one.');
+	$('.invite_main').css('font-size','1.7em');
+	return;
+      }
+
+
+
+      $('.inviting_address').html(invite_data.pubkey.substring(0,8));
+
+      if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
+        $('.invite_play_button').css('border', '1px solid grey');
+        $('.invite_play_button').css('background-color','grey');
+        $('.invite_play_button').off();
+        $('.invite_play_button').on('click', function() {
+            alert("Your browser requires Saito tokens to accept this invitation. Please wait while our server sends you some!");
+        });
+      } else {
+        $('.invite_play_button').off();
+        $('.invite_play_button').on('click', function() {
+          arcade_self.acceptGameInvitation();
+          arcade_self.invitePlayButtonClicked();
+          $('.status').show();
+        });
+      }
+
+      return;
+    }
+
+  } catch (err) {
+
+  }
+
+
+console.log("HERE A");
 
   //
   // add chat
@@ -159,36 +328,57 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   chat.addPopUpChat();
 
   //
+  //
+  //
+  this.listActiveGames();
+
+  //
+  // update balance
+  //
+  this.updateBalance(app);
+
+  //
+  // attach events
+  //
+  this.attachEvents(app);
+
+}
+
+Arcade.prototype.listActiveGames = function listActiveGames() {
+
+  $('#gametable').empty();
+
+  //
   // add games to table
   //
-  if (app.options.games != undefined) {
-    if (app.options.games.length > 0) {
+  if (this.app.options.games != undefined) {
+    if (this.app.options.games.length > 0) {
 
-      for (let i = 0; i < app.options.games.length; i++) {
+      for (let i = 0; i < this.app.options.games.length; i++) {
 
         let opponent   = "unknown";
-        let gameid     = app.options.games[i].id;
-        let player     = app.options.games[i].player;
-        let winner     = app.options.games[i].winner;
-        let gamename   = app.options.games[i].module;
-        let status     = app.options.games[i].status;
+        let gameid     = this.app.options.games[i].id;
+        let player     = this.app.options.games[i].player;
+        let winner     = this.app.options.games[i].winner;
+        let gamename   = this.app.options.games[i].module;
+        let status     = this.app.options.games[i].status;
         let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
         let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
         let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
 
-        let tmpid = app.keys.returnIdentifierByPublicKey(opponent);
+        let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
         if (tmpid != "") { opponent = tmpid; }
 
-        if (app.options.games[i].opponents != undefined) {
-          if (app.options.games[i].opponents.length > 0) {
-            opponent = app.options.games[i].opponents[0];
+        if (this.app.options.games[i].opponents != undefined) {
+          if (this.app.options.games[i].opponents.length > 0) {
+            opponent = this.app.options.games[i].opponents[0];
           }
         }
         if (gamename === "") {
           gamename = "Unknown";
         }
 
-        if (app.options.games[i].over == 1) {
+        if (this.app.options.games[i].over == 1) {
           status = "Game Over";
         }
         if (status == "" || status == undefined) {
@@ -202,14 +392,14 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
         let html = "";
 
-        if (app.options.games[i].over == 0) {
+        if (this.app.options.games[i].over == 0) {
 
-          if (app.options.games[i].invitation == 1) {
+          if (this.app.options.games[i].invitation == 1) {
 
             let remote_address = "";
-            for (let z = 0; z < app.options.games[i].opponents.length; z++) {;
+            for (let z = 0; z < this.app.options.games[i].opponents.length; z++) {;
               if (z > 0) { remote_address += "_"; }
-              remote_address += app.options.games[i].opponents[z];
+              remote_address += this.app.options.games[i].opponents[z];
             }
 
             html  = '<div class="single_activegame">';
@@ -252,30 +442,17 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
         }
 
-        if (parseInt(app.options.games[i].last_block) == 0) {
+        if (parseInt(this.app.options.games[i].last_block) == 0) {
           $('.active_games').show();
           $('#gametable').append(html);
         }
-
       }
-
-
     }
   }
 
-  //
-  // update balance
-  //
-  this.updateBalance(app);
-
-  //
-  // attach events
-  //
-  this.attachEvents(app);
+  this.attachEvents(this.app);
 
 }
-
-
 
 
 
@@ -293,7 +470,7 @@ Arcade.prototype.onConfirmation = async function onConfirmation(blk, tx, conf, a
     if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
       arcade_self.handleOnConfirmation(blk, tx, conf, app);
     }
-  } catch (err) { 
+  } catch (err) {
     console.log("Error in Arcade: " + JSON.stringify(err));
     return; 
   }
@@ -309,12 +486,14 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
   let txmsg = tx.returnMessage();
   let remote_address = tx.transaction.from[0].add;
 
+
   if (conf == 0) {
 
     //
     // INVITE
     //
     if (txmsg.request == "invite") {
+
       if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
         try {
@@ -326,7 +505,27 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               if (app.options.games[i].id == game_id) {
                 if (app.options.games[i].invitation == 0) {
                   if (this.monitor_shown_already == 1) {
-                    return;
+                    if (txmsg.ts != "" && txmsg.sig != "") {
+                       if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                        try {
+                          if (invite_page == 1) {
+            			this.showMonitor();
+            			$('.manage_invitations').html(
+            			`Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+		   	        Please keep your browser open. We will notify you when the game is ready to start.
+              			<div id="status" class="status"></div>`);
+            			$('.status').show();
+                                this.attachEvents(this.app);
+            			this.startInitializationTimer(game_id);
+                            return;
+                          }
+                        } catch (err) {
+                        }
+                      } else {
+                        return;
+                      }
+                    }
+                  } else {
                   }
                 }
               }
@@ -339,62 +538,64 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
 
           //
-          // add it to our table too
+          // show active games
           //
-          let acceptgame = '<div class="link accept_game" id="'+game_id+'_'+tmpmod+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
-
-          let remote_address = "";
-          for (let i = 0; i < tx.transaction.to.length; i++) {
-            if (i > 0) { remote_address += "_"; }
-            remote_address += tx.transaction.to[i].add;
-          }
-
-
-          let html = "";
-          html  = '<div class="single_activegame">';
-          html += '<div id="'+game_id+'_game">';
-          html += '<b>' + this.active_game + '</b></br>';
-          html += remote_address.substring(0,15) + '</div>';
-          html += '<p></p>Game Invitation!<p></p>';
-          html += '<div class="acceptgamelink">'+acceptgame+'</div>';
-          html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
-          html += '</div>';
-          $('.active_games').show();
-
-
-          var thisdivname = game_id + "_game";
-          try {
-            if (document.getElementById(thisdivname) !== null) {
-              //
-              // old invitation
-              // 
-              return;
-            } else {
-              this.showMonitor();
-              $('#gametable').prepend(html);
-            }
-          } catch (err) {
-            this.showMonitor();
-            $('#gametable').prepend(html);
-          }
+            this.listActiveGames();
 
           if (this.browser_active == 1) {
 
-	    let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
+            //
+            //
+            //
+            if (txmsg.ts != "" && txmsg.sig != "") {
+              if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                if (this.quick_invite_page == 1) {
+            			this.showMonitor();
+            			$('.manage_invitations').html(
+            			`Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+		   	        Please keep your browser open. We will notify you when the game is ready to start.
+              			<div id="status" class="status"></div>`);
+            			$('.status').show();
+                                this.attachEvents(this.app);
+            			this.startInitializationTimer(game_id);
+/****
+                  let html =
+                  `<div id="accept_invitation_container">
+                    Your invitation has been accepted:
+                    <a href="/${txmsg.module.toLowerCase()}">
+                      <button class="link linkbutton joinlink" id="invite_join_button">
+                        START
+                      </button>
+                    </a>
+                    </div>
+                  </div>`;
+                  this.showMonitor();
+                  $('.manage_invitations').html(html);
+                  if (this.browser_active == 1) { $('#status').hide(); }
+                  this.attachEvents(this.app);
+****/
+                }
+              }
+            } else {
 
-            if (txmsg.options != undefined) { html += `<div id="game_details" class="game_details">OPTIONS: ${JSON.stringify(txmsg.options)}</div><p></p>`; }
-	    html += '<div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
-	    let tmpadd = "";
-            for (let b = 0; b < tx.transaction.to.length; b++) {
-              if (b > 0) { tmpadd += "_"; }
-              tmpadd += tx.transaction.to[b].add;
+              let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
+
+              if (txmsg.options != undefined) { html += `<div id="game_details" class="game_details">OPTIONS: ${JSON.stringify(txmsg.options)}</div><p></p>`; }
+              html += '<div class="accept_game link" id="' + game_id + '_' + txmsg.module + '"><i class="fa fa-check-circle"></i> ACCEPT</div><p></p><div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>';
+              let tmpadd = "";
+              for (let b = 0; b < tx.transaction.to.length; b++) {
+                if (b > 0) { tmpadd += "_"; }
+                tmpadd += tx.transaction.to[b].add;
+              }
+
+
+              $('.lightbox_message_from_address').html(tmpadd);
+              $('.manage_invitations').html(html);
+              //$('.manage_invitations').css("display:flex;");
+              $('.manage_invitations').show();
+              this.attachEvents(this.app);
+
             }
-
-
-            $('.lightbox_message_from_address').html(tmpadd);
-            $('.manage_invitations').html(html);
-            $('.manage_invitations').show();
-            this.attachEvents(this.app);
           }
         } catch (err) {
         }
@@ -421,8 +622,8 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
         // if I have accepted...
         //
         if (game_self.game.accept === 1) { 
-          //$('.status').html("other players are accepting the game...");
           $('.status').show();
+            this.listActiveGames();
           return; 
         }
 
@@ -432,35 +633,44 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           // if i have not accepted, do not show init screen
           //
           if (game_self.game.accept == 0) {
-
             return;
-
-          //
-          // otherwise move in
-          //
           } else {
 
             this.startInitializationTimer(txmsg.game_id);
             this.showMonitor();
-            $('.manage_invitations').html('Your game is initializing. This can take up to about five minutes depending on the complexity of the game. Please keep your browser open. We will notify you when the game is ready to start.<p></p><div id="status" class="status"></div>');
+            $('.manage_invitations').html(
+              `Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
+              Please keep your browser open. We will notify you when the game is ready to start.
+              <div id="status" class="status"></div>`);
             $('.status').show();
 
           }
 
         } else {
-
           if (this.currently_viewing_monitor == 1) {
-
-            let active_module = txmsg.module;
-            let html = `Your game is ready: <p></p><a href="/${active_module.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
-            this.showMonitor();
-            $('.manage_invitations').html(html);
-            if (this.browser_active == 1) { $('#status').hide(); }
-            this.attachEvents(this.app);
-
+            if (game_self.game.over == 0) {
+              let active_module = txmsg.module;
+              let html = `
+                <center id="start_game_container">
+                  <div id="join_game_description">
+                    Your game is ready:<a href="/${active_module.toLowerCase()}">
+                  </div>
+                  <button href="/twilight" class="link linkbutton joinlink" id="invite_join_button">START</button>
+                  <div id="return_to_arcade" class="return_to_arcade">
+                    <i class="fa fa-arrow-circle-left"></i>
+                    Return to Arcade
+                  </div>
+                </center>
+                `;
+              this.showMonitor();
+              $('.manage_invitations').html(html);
+              if (this.browser_active == 1) { $('#status').hide(); }
+              this.attachEvents(this.app);
+            }
           }
-
         }
+
+          this.listActiveGames();
 
       } catch (err) {
       }
@@ -482,6 +692,29 @@ Arcade.prototype.webServer = function webServer(app, expressapp) {
   });
   expressapp.get('/arcade/email', function (req, res) {
     res.sendFile(__dirname + '/web/email.html');
+    return;
+  });
+  expressapp.get('/arcade/invite/:gameinvite', function (req, res) {
+
+    let gameinvite = req.params.gameinvite;
+    let txmsgstr = "";
+
+    if (gameinvite != null) {
+      txmsgstr = app.crypto.base64ToString(gameinvite);
+    }
+
+console.log("\n\n\n\n"+txmsgstr);
+
+    let data = fs.readFileSync(__dirname + '/web/invite.html', 'utf8', (err, data) => {});
+    data = data.replace('GAME_INVITATION', txmsgstr);
+    res.setHeader('Content-type', 'text/html');
+    res.charset = 'UTF-8';
+    res.write(data);
+    res.end();
+    return;
+  });
+  expressapp.get('/arcade/invite.css', function (req, res) {
+    res.sendFile(__dirname + '/web/invite.css');
     return;
   });
   expressapp.get('/arcade/style.css', function (req, res) {
@@ -556,8 +789,19 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
-        let html = `Your game is ready: <p></p><a href="/${arcade_self.active_game.toLowerCase()}"><div class="link linkbutton joinlink"><i class="fa fa-play-circle"></i> Join the Game</div></a><p></p><div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>.`;
+        let html = `
+        <center id="start_game_container">
+          <div id="join_game_invite_description">Your game is ready:</div>
+          <a href="/twilight">
+            <button class="link linkbutton joinlink" id="invite_join_button">
+              START
+            </button>
+          </a>
+        </center>
+        `;
+        //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
         $('.manage_invitations').html(html);
+        // $('.manage_invitations').css('display:flex;');
         $('.manage_invitations').show();
         if (this.browser_active == 1) { $('#status').hide(); }
         clearInterval(arcade_self.initialization_check_timer);
@@ -576,11 +820,23 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 Arcade.prototype.updateBalance = function updateBalance(app) {
 
   if (app.BROWSER == 0) { return; }
+
+
+  //
+  // invite page stuff here
+  //
+  try {
+    if (invite_page == 1) {
+      return;
+    }
+  } catch (err) {}
+
+
   $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
 
   if (app.wallet.returnBalance() >= 2) {
     $('.funding_alert').hide();
-    $('.manage_invitations').show();    
+    $('.manage_invitations').show();
   }
 
 }
@@ -594,6 +850,46 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
 
+
+  //
+  // invite page
+  //
+  try {
+  if (invite_page == 1) {
+
+    setTimeout(function() {
+      $('#saito_advert').off();
+      $('#saito_advert').on('click',function() {
+        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        return false;
+      });
+    }, 1500);
+    setTimeout(function() {
+      $('#saito_advert').off();
+      $('#saito_advert').on('click',function() {
+        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
+        return false;
+      });
+    }, 3000);
+
+    return;
+  }
+  } catch (err) {}
+
+  $('.toggle_invite').off()
+  $('.toggle_invite').on('click', () => {
+    $('.quick_invite').toggle();
+    $('.invitation_player1').toggle();
+
+    $('#invite_link_description').toggle();
+    $('#invite_publickey_description').toggle();
+
+    $('.invite_link_container').toggle();
+
+    this.attachEvents(this.app);
+  })
+
+
   $('#wechat>span').on('click', function () {
     $('#wechat-qr').css("height", $('#wechat').outerWidth() + 25);
     $('#wechat-qr-img').css("width", $('#wechat').outerWidth() - 25);
@@ -606,15 +902,71 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   var arcade_self = this;
 
+  $('.quick_invite').off();
+  $('.quick_invite').on('click',  function() {
+
+    let options    = {};
+
+    $('form input, form select').each(
+      function(index) {
+        var input = $(this);
+        options[input.attr('name')] = input.val();
+      }
+    );
+
+    let txmsg = {};
+    txmsg.module = arcade_self.active_game;
+    txmsg.pubkey = arcade_self.app.wallet.returnPublicKey();
+    txmsg.options = options;
+    txmsg.ts = new Date().getTime();
+    txmsg.sig = arcade_self.app.wallet.signMessage(txmsg.ts.toString(), arcade_self.app.wallet.returnPrivateKey());
+
+    let base64str = arcade_self.app.crypto.stringToBase64(JSON.stringify(txmsg));
+
+    $('div').remove('.invite_link_container');
+    $('div').remove('.generate_link_description');
+
+    $(this).after(
+      `<div class="invite_link_container">
+        <input class="invite_link_input" id="invite_link_input" value="${window.location.href}/invite/${base64str}" />
+        <i class="fa fa-clipboard" id="invite_link_clipboard" aria-hidden="true"></i>
+      </div>
+      <div id="generate_link_description" style="color: #444">
+        <div>Send this link to your opponent to start the game.</div>
+        <div>Please remain on this page while the invitation is accepted.</div>
+      </div>
+      `
+    )
+
+    arcade_self.quick_invite_page = 1;
+
+    // remove on link generation
+    $('#invite_link_description').remove()
+    $('.publisher_message').remove();
+    $('.return_to_arcade').hide();
+    $('.options').remove()
+    $(this).remove();
+
+    arcade_self.attachEvents(arcade_self.app);
+  });
+
+  $('#invite_link_clipboard').off();
+  $('#invite_link_clipboard').on('click', () => {
+    let url_input = document.getElementById("invite_link_input");
+    url_input.select();
+    document.execCommand("copy");
+  });
 
   $('.game').off();
   $('.game').on('click', function() {
 
     arcade_self.active_game = $(this).attr("id");
     arcade_self.showMonitor();
+    $('.find_player_button').toggle();
 
     if (arcade_self.active_game == "Twilight") {
-      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>.");
+      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
+      $('.publisher_message').show();
     }
 
   });
@@ -627,9 +979,14 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
   $('#return_to_arcade').on('click', function() {
     arcade_self.currently_viewing_monitor = 0;
     arcade_self.hideMonitor();
+    $('.find_player_button').toggle();
   });
 
 
+  $('.find_player_button').off();
+  $('.find_player_button').on('click', () => {
+    $('.arcade-description').show();
+  });
 
 
   //
@@ -713,8 +1070,10 @@ console.log("ERROR DELETING GAME!");
                 arcade_self.app.options.games.splice(i, 1);
             i--;
           }
-        } catch(err) {}
-      } 
+        } catch(err) {
+          console.log(err)
+        }
+      }
     }
     arcade_self.app.storage.saveOptions();
 
@@ -808,7 +1167,7 @@ console.log("ERROR DELETING GAME!");
     newtx.transaction.msg.module  = arcade_self.active_game;
     newtx.transaction.msg.request = "invite";
     newtx.transaction.msg.options = options;
-    newtx.transaction.msg.secret  = arcade_self.app.wallet.returnPublicKey();
+    newtx.transaction.msg.pubkey  = arcade_self.app.wallet.returnPublicKey();
     newtx = arcade_self.app.wallet.signTransaction(newtx);
     arcade_self.app.network.propagateTransaction(newtx);
     $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.<p></p><div class="status" id="status"></div>');

@@ -57,6 +57,13 @@
   display: inline-block;
 }
 
+.joinlink {
+  background: #47A;
+  border-radius: 5px;
+  color: white;
+  margin: 0;
+}
+
 .joingamelink, .acceptgamelink, .deletegamelink {
   display: inline-block;
 }
@@ -65,9 +72,16 @@
   clear: both;
   padding-top: 20px;
   padding: 10px;
-  font-size: 1em;
+  font-size: 0.9em;
   display: inline-block;
   cursor: pointer;
+  border: 1px #444 solid;
+  border-radius: 5px;
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
 }
 
 .join {
@@ -86,6 +100,8 @@ hr {
 .arcade {
   display: inherit;
   padding: 1em;
+  /* height: 87vh;
+  grid-template-rows: 1em auto; */
 }
 
 .gamelist {
@@ -107,16 +123,38 @@ hr {
 .link {
   display: inline-block;
   cursor: pointer;
+  max-width: 310px;
 }
 
 .game_monitor {
   display: none;
   width: 100%;
   max-width: 750px;
+  height: 87vh;
 }
 
 .game_details {
+  max-width: 420px;
+}
 
+.game_details h3 {
+  margin-top: 0.2em;
+}
+
+.game_details select {
+  border: 1px black solid;
+  padding: 5px;
+  text-align: center;
+  font-size: 0.9em;
+  background: white;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 5em auto;
+  column-gap: 1em;
+  row-gap: 1em;
+  margin-bottom: 0px;
 }
 
 .game_options {
@@ -134,6 +172,11 @@ hr {
   font-size: 20px;
   line-height: 1.2em;
   color: 3444;
+  height: 120px;
+  overflow-y: scroll;
+  padding: 1em;
+  border: 1px black solid;
+
 }
 
 th {
@@ -168,14 +211,6 @@ td {
 
 .invitation_player2 {
   display: block;
-}
-
-.invite_button {
-  border: 1px solid #444;
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-top: 2px;
-  padding-bottom: 2px;
 }
 
 .address_box {
@@ -225,10 +260,11 @@ td {
 
 .logo {
   width: 35px;
-  margin-top: 10px;
+  margin-left: 0.5em;
+  /* margin-top: 10px;
   margin-left: 25px;
-  margin-right: 10px;
-  float: left;
+  margin-right: 10px; */
+  /* float: left; */
 }
 
 .logo_link {
@@ -238,7 +274,7 @@ td {
 
 .logo_text {
   font-family: Georgia;
-  padding-top: 6px;
+  /* padding-top: 6px; */
   font-size: 1.2em;
   color: #444;
 }
@@ -248,6 +284,25 @@ td {
   width: 100%;
   height: 50px;
   border-bottom: 1px solid #a5a5a5;
+  display: grid;
+  grid-template-columns: 60px auto 4em;
+  align-items: center;
+}
+
+.find_player_button {
+  color: white;
+  border: white 1px solid;
+  border-radius: 5px;
+  clear: both;
+  padding-top: 20px;
+  padding: 10px;
+  font-size: 0.45em;
+  display: inline-block;
+  cursor: pointer;
+  height: 40px;
+  margin-right: 5px;
+  font-weight: bold;
+  background: darkorange;
 }
 
 .loader {
@@ -271,7 +326,10 @@ td {
 }
 
 .manage_invitations {
+  display: grid;
+  row-gap: 1em;
   line-height: 1.4em;
+  max-width: 800px;
 }
 
 .compose {
@@ -314,6 +372,12 @@ td {
     justify-items: center;
     grid-template-columns: 1fr;
   }
+  .ads {
+    justify-self: center;
+  }
+  .logo {
+    margin-left: 0.5em;
+  }
 }
 
 .outreach {
@@ -323,7 +387,6 @@ td {
   grid-gap: 20px;
   color: #444;
   text-decoration: none;
-  margin-top: 25px;
 }
 
 .outreach div {
@@ -425,9 +488,25 @@ a {
   .ads {
     max-width: 300px;
   }
+
+  .publisher_message {
+    height: 100px;
+  }
+}
+
+@media only screen and (min-width: 500px) {
+  .return_to_arcade {
+    max-width: 200px;
+  }
 }
 
 .accept_game {
+  color: darkorange;
+  border: darkorange 1px solid;
+  border-radius: 5px;
+}
+
+.play_button {
   color: darkorange;
   border: darkorange 1px solid;
   border-radius: 5px;
@@ -438,6 +517,19 @@ a {
   color: #efefef;
 }
 
+#accept_invitation_container {
+  display:grid;
+  row-gap: 1em;
+  text-align: center;
+}
+
+#start_game_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
 .invite_button {
   color: rgb(0, 190, 10);
   border: rgb(0, 190, 10) 1px solid;
@@ -445,10 +537,62 @@ a {
   clear: both;
   padding-top: 20px;
   padding: 10px;
-  font-size: 1em;
+  font-size: 0.9em;
   display: inline-block;
   cursor: pointer;
-  margin-top:10px;
+  margin-top: 1em;
+  /* width: 94vw; */
+  max-width: 400px;
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
+}
+
+#invite_join_button {
+  padding: 1.1em;
+  margin-top: 1em;
+  width: 100%;
+}
+
+.quick_invite {
+  color: rgb(0, 190, 10);
+  border: rgb(0, 190, 10) 1px solid;
+  border-radius: 5px;
+  clear: both;
+  padding: 0.5em;
+  font-size: 0.9em;
+  max-width: 400px;
+  cursor: pointer;
+  /* margin-top:10px; */
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.invite_link_container {
+  display: grid;
+  grid-template-columns: auto 2em;
+  column-gap: 1em;
+  align-items: center;
+  /* margin-top: 1em; */
+  max-width:600px;
+}
+
+.invite_link_input {
+  height: 50px;
+  width: 100%;
+  font-size: 1em;
+  border: 1px black solid;
+  padding: 10px;
+}
+
+#invite_link_clipboard {
+  font-size: 2em;
+  color: darkblue;
 }
 
 .invite_button:hover {
@@ -513,4 +657,3 @@ a {
   top: 30px;
   transform: rotate(-45deg);
 }
-

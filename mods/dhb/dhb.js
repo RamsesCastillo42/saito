@@ -17,7 +17,7 @@ function DHB(app) {
   this.app             = app;
 
   this.name            = "DHB";
-  this.emailAppName    = "BloodBank Clinic";
+  this.emailAppName    = "DHB Clinic Report";
   this.browser_active  = 0;
   this.handlesEmail    = 1;
 
@@ -69,7 +69,7 @@ console.log("____________________");
 console.log("_______LOADING______");
 console.log("____________________");
 console.log("____________________");
-console.log(JSON.stringify(this.app.options.bloodbank));
+console.log(JSON.stringify(this.app.options.dhb));
 
   this.updateClinicTable();
 
@@ -79,15 +79,15 @@ console.log(JSON.stringify(this.app.options.bloodbank));
 
 DHB.prototype.updateClinicTable = function updateClinicTable() {
 
-  if (this.app.options.bloodbank == undefined) { this.app.options.bloodbank = []; }
+  if (this.app.options.dhb == undefined) { this.app.options.dhb = []; }
   if (this.browser_active == 1) {
 
     $('#clinic_table').empty();
-    for (let i = 0; i < this.app.options.bloodbank.length; i++) {
+    for (let i = 0; i < this.app.options.dhb.length; i++) {
 
       let html  = '<tr>';
 	  html += '<td>' + i + '</td>';
-	  html += '<td>' + JSON.stringify(this.app.options.bloodbank[i]) + '</td>';
+	  html += '<td>' + JSON.stringify(this.app.options.dhb[i]) + '</td>';
 	  html += '</tr>';
 
       $('#clinic_table').append(html);
@@ -140,8 +140,8 @@ DHB.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
           var newtx = app.wallet.createUnsignedTransaction(app.wallet.returnPublicKey(), 0.0, 0.0);
           if (newtx == null) { return; }
           newtx.transaction.msg.module  = "Email";
-          newtx.transaction.msg.title   = "Bloodbank Clinic Report Submitted";
-          newtx.transaction.msg.data    = "You have submitted a bloodbank report into the Bloodbank Clini Network.\n\n"+tx.transaction.msg.title+"\n\n"+tx.transaction.msg.description+"\n\n"+tx.transaction.msg.version+"\n\n"+tx.transaction.msg.app_id;
+          newtx.transaction.msg.title   = "DHB Clinic Report Submitted";
+          newtx.transaction.msg.data    = "You have submitted a report into the DHB Network.\n\n"+JSON.stringify(tx.transaction.msg);
           newtx = app.wallet.signTransaction(newtx);
           app.archives.saveTransaction(newtx);
           if (app.modules.returnModule("Email") != null) {
@@ -157,37 +157,26 @@ DHB.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
     // app submission
     if (txmsg.request === "upload clinic") {
 
-      var publisher   = tx.transaction.from[0].add;
-      var title       = txmsg.title;
-      var description = txmsg.description;
-      var version     = txmsg.version;
-      var app_id      = txmsg.app_id;
-
-      if (dhb_self.app.options.bloodbank == undefined) {
-        dhb_self.app.options.bloodbank = [];
-      }
-
       let clinic_report = {};
-      clinic_report.publisher = publisher;
-      clinic_report.title = title;
-      clinic_report.description = description;
-      clinic_report.version = version;
-      clinic_report.app_id = app_id;
+      clinic_report.publisher = tx.transaction.from[0].add;
+      clinic_report.content = JSON.stringify(txmsg);
+
+      if (dhb_self.app.options.dhb == undefined) { dhb_self.app.options.dhb = []; }
 
       let new_clinic = 1;
       let clinic_idx = 0;
 
-      for (let i = 0; i < dhb_self.app.options.bloodbank.length; i++) {
-	if (dhb_self.app.options.bloodbank[i].publisher === clinic_report.publisher) {
+      for (let i = 0; i < dhb_self.app.options.dhb.length; i++) {
+	if (dhb_self.app.options.dhb[i].publisher === clinic_report.publisher) {
 	  new_clinic = 0;
 	  clinic_idx = i;
 	}
       }
 
       if (new_clinic == 1) {
-	dhb_self.app.options.bloodbank.push(clinic_report);
+	dhb_self.app.options.dhb.push(clinic_report);
       } else {
-	dhb_self.app.options.bloodbank[clinic_idx] = clinic_report;
+	dhb_self.app.options.dhb[clinic_idx] = clinic_report;
       }
 
       dhb_self.app.storage.saveOptions();
@@ -217,18 +206,65 @@ DHB.prototype.displayEmailForm = function displayEmailForm(app) {
 
   element_to_edit = $('#module_editable_space');
 
-  element_to_edit_html =  '';
-  element_to_edit_html += '<p></p>';
-  element_to_edit_html += '<div style="font-size:0.8em">Submit a DBH Clinic Transaction to the blockchain.</div>';
-  element_to_edit_html += '<p></p>';
-  element_to_edit_html +=  'Clinic: <br /><input type="text" class="app_title email_title" style="width:300px" id="app_title" value="" />';
-  element_to_edit_html += '<p></p>';
-  element_to_edit_html += 'Clinic ID: <br /><input type="text" class="app_id email_title" style="width:300px" id="app_id" value="" />';
-  element_to_edit_html += '<p></p>';
-  element_to_edit_html += 'Administrator: <br /><input type="text" class="app_version email_title" style="width:300px" id="app_version" value="" />';
-  element_to_edit_html += '<p></p>';
-  element_to_edit_html += 'Additional Comments: <br /><textarea class="app_description email_description" style="width:300px; height:150px" id="app_description" name="app_description"></textarea>';
-  element_to_edit_html += '<p></p>';
+  element_to_edit_html =  `
+
+    <b>Add New Patient Data:</b>
+
+    <p></p>
+
+    <label for="patient_name">Patient Name</label>
+    <br />
+    <input type="text" id="patient_name" name="patient_name">
+
+    <p></p>
+
+    <label for="patient_birthdate">Birthday</label>
+    <br />
+    <input type="text" id="patient_birthdate" name="patient_birthdate">
+
+    <p></p>
+
+    <label for="patient_gender">Gender</label>
+    <br />
+    <select id="patient_gender" name="patient_gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <p></p>
+
+    <label for="patient_height">Height</label>
+    <br />
+    <input type="text" id="patient_height" name="patient_height">
+
+    <p></p>
+
+    <label for="patient_weight">Weight</label>
+    <br />
+    <input type="text" id="patient_weight" name="patient_weight">
+
+    <p></p>
+
+    <label for="patient_condition">Condition</label>
+    <br />
+    <select id="patient_condition" name="patient_condition">
+      <option value="type-1-diabetes">Type 1 Diabetes</option>
+      <option value="type-2-diabetes">Type 2 Diabetes</option>
+      <option value="high-cholesterol">High Cholesterol</option>
+      <option value="high-blood-pressure">High Blood Pressure</option>
+      <option value="other">Other</option>
+    </select>
+
+    <p></p>
+
+    <label for="patient_history">Medical History</label>
+    <br />
+    <textarea id="patient_history"></textarea>
+
+    <p></p>
+
+  `;
+
   element_to_edit_html += '<input type="hidden" name="app_attachments" id="app_attachments">';
   element_to_edit_html += '<div id="app-file-wrap">';
   element_to_edit_html += '<div id="app-file-upload-shim" class="app-addfile">Attach Clinic Report</div></div>';
@@ -240,7 +276,7 @@ DHB.prototype.displayEmailForm = function displayEmailForm(app) {
 
   element_to_edit.html(element_to_edit_html);
   $('#app_attachments').val("unset");
-  $('.app_id').val(dhb_self.app.crypto.hash(Math.random().toString().substring(2, 15)));
+  //$('.app_id').val(dhb_self.app.crypto.hash(Math.random().toString().substring(2, 15)));
 
   var files = {};
   var filecount = 0;
@@ -289,10 +325,13 @@ DHB.prototype.formatEmailTransaction = function formatEmailTransaction(tx, app) 
   // always set the message.module to the name of the app
   tx.transaction.msg.module                = this.name;
   tx.transaction.msg.request               = "upload clinic";
-  tx.transaction.msg.title                 = $('#app_title').val();
-  tx.transaction.msg.description           = $('#app_description').val();
-  tx.transaction.msg.version               = $('#app_version').val();
-  tx.transaction.msg.app_id                = $('#app_id').val();
+  tx.transaction.msg.patient_name          = $('#patient_name').val();
+  tx.transaction.msg.patient_birthdate     = $('#patient_birthdate').val();
+  tx.transaction.msg.patient_gender        = $('#patient_gender').val();
+  tx.transaction.msg.patient_height        = $('#patient_height').val();
+  tx.transaction.msg.patient_weight        = $('#patient_weight').val();
+  tx.transaction.msg.patient_history       = $('#patient_history').val();
+  tx.transaction.msg.patient_condition     = $('#patient_condition').val();
   tx.transaction.msg.attachments           = $('#app_attachments').val();
 
   return tx;

@@ -598,7 +598,10 @@ Advert.prototype.fetchAdvert = function fetchAdvert(width, height) {
 
   var advert_self = this;
 
-  $.getJSON('/advert/'+this.app.wallet.returnPublicKey()+'/'+width+'/'+height, function (data) {
+  let {host, port, protocol} = this.app.network.peers[0].peer
+  let advert_url = `${protocol}://${host}:${port}/advert/${this.app.wallet.returnPublicKey()}/${width}/${height}`
+
+  $.getJSON(advert_url, function (data) {
     if (data.id != null) {
       htmlToInsert = '<a href="'+data.link+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/'+data.adfile+'" /></a>';
       //
@@ -610,7 +613,7 @@ Advert.prototype.fetchAdvert = function fetchAdvert(width, height) {
         htmlToInsert = '<a href="https://apps.saito.network/registry" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/10.png" /></a>';
       }
       if (advert_self.app.wallet.returnBalance() == 0 && width == 300 && height == 250) {
-        htmlToInsert = '<a href="https://apps.saito.network/faucet" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/19.png" /></a>';
+        htmlToInsert = '<a id="saito_advert" class="saito_advert" href="https://apps.saito.network/faucet?source_protocol='+protocol+'&source_port='+port+'&source_domain='+host+'&saito_address='+advert_self.app.wallet.returnPublicKey()+'" target="_blank"><img style="border:1px solid #39579a;width:'+width+'px;height:'+height+'px" src="/advert/cache/19.png" /></a>';
       }
     } else {
       htmlToInsert = '<a href="/advert/"><img style="width:'+width+'px;height:'+height+'px" src="/advert/web/001.png" /></a>';
@@ -746,7 +749,7 @@ Advert.prototype.webServer = function webServer(app, expressapp) {
 console.log("\n\n\n############ TX FAILURE ############");
 console.log(" Advert Transaction is Null! Why?");
 console.log("############ TX FAILURE ############\n\n");
-console.log(this.app.wallet.inputs);
+console.log(advert_self.app.wallet.inputs);
 
 return;
 	      }

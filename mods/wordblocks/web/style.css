@@ -182,11 +182,6 @@ body {
   #controls {
     height: 250px;
   }
-  .card {
-    display: inline;
-    padding-left: 10px;
-    text-decoration: underline;
-  }
 }
 
 @media only screen and (max-height: 1200px) {
@@ -208,11 +203,6 @@ body {
   #chat_container {
     display: none;
   }
-  .card {
-    display: inline;
-    padding-left: 10px;
-    text-decoration: underline;
-  }
 }
 
 .fixedbottom {
@@ -221,6 +211,6 @@ body {
 }
 
 .mainfixedbottom {
-  margin: 0 0 237px 0;
+  margin: 0 0 250px 0;
 }
 

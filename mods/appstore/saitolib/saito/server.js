@@ -130,8 +130,7 @@ Server.prototype.initialize = function initialize() {
     var blocks = [];
 
     try {
-      // req.body.blocks
-      var block_hashes = JSON.parse(req.query.blocks);
+      var block_hashes = req.body.blocks;
     } catch(err) {
       res.status(404);
       res.send({
@@ -235,7 +234,7 @@ Server.prototype.initialize = function initialize() {
   // lite-blocks //
   /////////////////
 
-  app.get('/lite-blocks/:pkey', async (req, res) => {
+  app.post('/lite-blocks/:pkey', async (req, res) => {
     let pkey  = req.params.pkey;
     if (pkey == null) { return; }
 
@@ -243,7 +242,7 @@ Server.prototype.initialize = function initialize() {
     let keylist = [];
 
     try {
-      var block_hashes = JSON.parse(req.query.blocks);
+      var block_hashes = req.body.blocks;
     } catch(err) {
       res.status(404);
       res.send({

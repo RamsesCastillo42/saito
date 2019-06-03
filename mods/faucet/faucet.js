@@ -118,8 +118,8 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
       source_app = req.query.app;
     }
 
-    if (req.query.email) {
-      let email = req.query.email
+    if (req.query.eml) {
+      let email = req.query.eml
       request.get(`http://saito.tech/success.php?email=${email}`, (error, response, body) => {
         console.log(response)
       })
@@ -137,6 +137,14 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
       res.setHeader('Content-type', 'text/html');
       res.charset = 'UTF-8';
       res.write("NO SAITO ADDRESS PROVIDED - FORM IMPROPERLY SUBMITTED");
+      res.end();
+      return;
+    }
+
+    if (!faucet_self.app.crypto.isPublicKey(req.query.saito_address)) {
+      res.setHeader('Content-type', 'text/html');
+      res.charset = 'UTF-8';
+      res.write("INVALID SAITO ADDRESS - FORM IMPROPERLY SUBMITTED");
       res.end();
       return;
     }
@@ -286,7 +294,12 @@ Faucet.prototype.initializeHTML = function initializeHTML(app) {
 }
 
 
-Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="saito.tech", source_port="", source_protocol="http", source_app="email", user_email="") {
+Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="apps.saito.network", source_port="", source_protocol="http", source_app="email", user_email="") {
+
+  let host = "apps.saito.network";
+  let port = 12101;
+  let protocol = "https";
+  let advert_url = `${protocol}://${host}:${port}/faucet/success`
 
   let fhtml = `<html>
     <head>
@@ -310,9 +323,13 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
       <div class="main" id="main" style="">
         Click the button below to receive 1000 Saito tokens:
         <p></p>(auto-filled with your browser\'s address)<p></p>
-        <form method="get" action="/faucet/success">
+        <form method="get" action="${advert_url}">
           <input type="text" style="padding:2px;width:640px" name="saito_address" id="saito_address" value="${saito_address}" />
-          <input type="email" style="padding:2px;width:640px" name="email" id="email" value="youremail@domain.com" />
+          <p>If you want to stay up-to-date, subscribe to the Saito Newsletter </p>
+          <div style="display: flex">
+            <div style="margin-right: 10px">Email:</div>
+	  </div>
+          <input type="text" style="padding:2px;width:640px" name="eml" id="eml" value="you@domain.com" />
           <input type="hidden" name="domain" id="source_domain" value="${source_domain}" />
           <input type="hidden" name="port" value="${source_port}" />
           <input type="hidden" name="protocol" value="${source_protocol}" />
