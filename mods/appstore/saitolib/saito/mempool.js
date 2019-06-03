@@ -110,7 +110,6 @@ Mempool.prototype.fetchBlock = async function fetchBlock(peer, bhash) {
         return;
       }
 
-      blk.size = parseInt(response.headers["content-length"]);
       blk.peer_publickey = peer.peer.publickey;
 
       this.addBlock(blk)
@@ -163,8 +162,6 @@ Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(peer,
         if (blk.is_valid == 0 && this.app.BROWSER == 0) {
           return;
         }
-
-        blk.size = parseInt(response.headers["content-length"]);
 
         this.addBlock(blk)
       });
