@@ -236,7 +236,9 @@ Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
 
   //
   let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
-  arcade_self.startInitializationTimer(game_id);
+  let game_module = newtx.transaction.msg.module;
+
+  arcade_self.startInitializationTimer(game_id, game_module);
 
   this.active_game = invite_data.module;
   let game_self = this.app.modules.returnModule(invite_data.module);
@@ -499,6 +501,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
         try {
 
           let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+          let game_module = tx.transaction.msg.module;
 
           if (app.options.games != undefined) {
             for (let i = 0; i < app.options.games.length; i++) {
@@ -516,7 +519,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               			<div id="status" class="status"></div>`);
             			$('.status').show();
                                 this.attachEvents(this.app);
-            			this.startInitializationTimer(game_id);
+            			this.startInitializationTimer(game_id, game_module);
                             return;
                           }
                         } catch (err) {
@@ -557,7 +560,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
               			<div id="status" class="status"></div>`);
             			$('.status').show();
                                 this.attachEvents(this.app);
-            			this.startInitializationTimer(game_id);
+            			this.startInitializationTimer(game_id, txmsg.module);
 /****
                   let html =
                   `<div id="accept_invitation_container">
@@ -636,7 +639,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             return;
           } else {
 
-            this.startInitializationTimer(txmsg.game_id);
+            this.startInitializationTimer(txmsg.game_id, txmsg.module);
             this.showMonitor();
             $('.manage_invitations').html(
               `Your game is initializing. This can take up to about five minutes depending on the complexity of the game.
@@ -655,7 +658,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
                   <div id="join_game_description">
                     Your game is ready:<a href="/${active_module.toLowerCase()}">
                   </div>
-                  <button href="/twilight" class="link linkbutton joinlink" id="invite_join_button">START</button>
+                  <button class="link linkbutton joinlink" id="invite_join_button">START</button>
                   <div id="return_to_arcade" class="return_to_arcade">
                     <i class="fa fa-arrow-circle-left"></i>
                     Return to Arcade
@@ -767,7 +770,7 @@ Arcade.prototype.loadAllFromArchives = function loadAllFromArchives(app) {
 
 
 
-Arcade.prototype.startInitializationTimer = function startInitializationTimer(game_id) {
+Arcade.prototype.startInitializationTimer = function startInitializationTimer(game_id, game_module) {
 
   let arcade_self = this;
 
@@ -784,15 +787,15 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
         }
       }
 
-      if (pos == -1) { 
-        return; 
+      if (pos == -1) {
+        return;
       }
 
       if (arcade_self.app.options.games[pos].initializing == 0) {
         let html = `
         <center id="start_game_container">
           <div id="join_game_invite_description">Your game is ready:</div>
-          <a href="/twilight">
+          <a href="/${game_module.toLowerCase()}">
             <button class="link linkbutton joinlink" id="invite_join_button">
               START
             </button>
@@ -1173,7 +1176,8 @@ console.log("ERROR DELETING GAME!");
     $('.manage_invitations').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.<p></p><div class="status" id="status"></div>');
 
     let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
-    arcade_self.startInitializationTimer(game_id);
+    let active_module = newtx.transaction.msg.module;
+    arcade_self.startInitializationTimer(game_id, active_module);
 
   });
 
@@ -1197,7 +1201,7 @@ console.log("ERROR DELETING GAME!");
     let game_id = tmpar[0];
     let game_module = tmpar[1];
 
-    arcade_self.startInitializationTimer(game_id);
+    arcade_self.startInitializationTimer(game_id, game_module);
 
 console.log("TMPAR: " + JSON.stringify(tmpar));
 
