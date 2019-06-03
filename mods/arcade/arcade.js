@@ -917,6 +917,9 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
       }
     );
 
+    game_module = arcade_self.app.modules.returnModule(arcade_self.active_game);
+    options = game_module.returnQuickLinkGameOptions(options)
+
     let txmsg = {};
     txmsg.module = arcade_self.active_game;
     txmsg.pubkey = arcade_self.app.wallet.returnPublicKey();
