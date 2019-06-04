@@ -34,17 +34,22 @@
           <div id="saitoname" class="logo_text">saito invite</div>
         </a>
       </a>
-      <!-- <button class="find_player_button">Find Player</button> -->
     </div>
     <div class="invite_main">
       <h3 class="invite_title">Twilight Struggle</h3>
-      <div class="ads">
+      <!-- <div class="ads">
         <div class="advert-300-250" id="advert-300-250"></div>
-      </div>
+      </div> -->
+      <div class="loader" id="game_spinner"></div>
       <div id="manage_invitations" class="manage_invitations">
         <p class="invite_description"><span class="inviting_address" id="inviting_address">publickey</span> has invited you to a game. Would you like to play?</p>
+        <center><button class="get_tokens_button">GET TOKENS</button></center>
+        <center><div class="loader" id="token_spinner"></div></center>
+        <!-- <center style="margin-bottom: 1em;"> -->
+          <i class="fa fa-check" id="token-success"></i>
+        <!-- </center> -->
         <center><button class="invite_play_button">PLAY</button></center>
-	<div id="status" class="status"></div>
+	      <div id="status" class="status"></div>
       </div>
 
     </div>

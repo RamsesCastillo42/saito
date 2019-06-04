@@ -182,33 +182,15 @@ Arcade.prototype.hideMonitor = function hideMonitor() {
 }
 
 
-
-Arcade.prototype.updateBalance = function updateBalance(app) {
-
-  if (app.BROWSER == 0) { return; }
-
-  let arcade_self = this;
-
-  try {
-  if (invite_page == 1) {
-    $('.invite_play_button').css('background-color','darkorange');
-    $('.invite_play_button').css('border', '1px solid darkorange');
-    $('.invite_play_button').off();
-    $('.invite_play_button').on('click', function() {
-      arcade_self.acceptGameInvitation();
-      arcade_self.invitePlayButtonClicked();
-    });
-  }
-  } catch (err) {}
-
-}
 Arcade.prototype.invitePlayButtonClicked = function invitePlayButtonClicked() {
-
+  $('#token-success').hide();
   $('.invite_play_button').hide();
+  $('.get_tokens_button').hide();
   $('.ads').hide();
   $('.manage_invitations').css('font-size','1.4em');
   $('.status').css('font-size','1.25em');
   $('.invite_description').html(`Your game is initializing with your opponent. Please do not leave this page`);
+  $('#game_spinner').show();
 
 }
 
@@ -232,9 +214,7 @@ Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
   newtx = arcade_self.app.wallet.signTransaction(newtx);
 
   arcade_self.app.network.propagateTransaction(newtx);
-  alert("You have accepted this game. Your browser will be redirected to the Arcade in a few seconds. Once there you can click on this game to open it.");
 
-  //
   let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
   let game_module = newtx.transaction.msg.module;
 
@@ -302,9 +282,25 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         $('.invite_play_button').css('background-color','grey');
         $('.invite_play_button').off();
         $('.invite_play_button').on('click', function() {
-            alert("Your browser requires Saito tokens to accept this invitation. Please wait while our server sends you some!");
+          alert("Your browser requires Saito tokens to accept this invitation. Please press the 'GET TOKENS' button to get some!");
         });
+
+        $('.get_tokens_button').off();
+        $('.get_tokens_button').on('click', () => {
+          $('#token_spinner').show();
+          $.get(`/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
+            $('#token_spinner').hide();
+            if (response.payload.status) {
+              $('#token-success').show();
+            } else {
+              alert("We're sorry, we were unable to retrieve your tokens. If you're having difficulties, regenerate the link and try again");
+            }
+          });
+          $('.get_tokens_button').hide();
+        });
+        // $('#token_spinner').hide();
       } else {
+        $('.get_tokens_button').hide();
         $('.invite_play_button').off();
         $('.invite_play_button').on('click', function() {
           arcade_self.acceptGameInvitation();
@@ -806,7 +802,7 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
         $('.manage_invitations').html(html);
         // $('.manage_invitations').css('display:flex;');
         $('.manage_invitations').show();
-        if (this.browser_active == 1) { $('#status').hide(); }
+        if (this.browser_active == 1) { $('#status').hide(); $('#game_spinner').hide()}
         clearInterval(arcade_self.initialization_check_timer);
         arcade_self.attachEvents(this.app);
       }
@@ -819,7 +815,6 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 
 }
 
-
 Arcade.prototype.updateBalance = function updateBalance(app) {
 
   if (app.BROWSER == 0) { return; }
@@ -830,6 +825,13 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
   //
   try {
     if (invite_page == 1) {
+      $('.invite_play_button').css('background-color','darkorange');
+      $('.invite_play_button').css('border', '1px solid darkorange');
+      $('.invite_play_button').off();
+      $('.invite_play_button').on('click', () => {
+        this.acceptGameInvitation();
+        this.invitePlayButtonClicked();
+      });
       return;
     }
   } catch (err) {}
@@ -916,6 +918,9 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
         options[input.attr('name')] = input.val();
       }
     );
+
+    game_module = arcade_self.app.modules.returnModule(arcade_self.active_game);
+    options = game_module.returnQuickLinkGameOptions(options)
 
     let txmsg = {};
     txmsg.module = arcade_self.active_game;

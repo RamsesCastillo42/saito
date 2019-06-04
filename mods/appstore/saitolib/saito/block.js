@@ -407,9 +407,9 @@ for (let m = 0; m < rebroadcast_txarray.length; m++) {
   }
 }
 
-console.log("\n\nCALCULATE REBROADCAST TXS: " + rebroadcast_amt.toFixed(8));
+//console.log("\n\nCALCULATE REBROADCAST TXS: " + rebroadcast_amt.toFixed(8));
 //console.log(JSON.stringify(rebroadcast_txarray));
-console.log("\n\n");
+// console.log("\n\n");
 
   for (let i = 0; i < rebroadcast_txarray.length; i++) {
     this.transactions.push(rebroadcast_txarray[i]);
@@ -570,7 +570,9 @@ Block.prototype.calculateRebroadcastTransactions = async function calculateRebro
             txarray.push(newtx);
 
           }
-        }
+        } else {
+// console.log("THIS SLIP FAILED: " + JSON.stringify(slip) + " -- " + this.block.id);
+	}
       }
     }
   }
@@ -593,6 +595,8 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
 
   var eliminated_block_id = this.returnId() - this.app.blockchain.returnGenesisPeriod() - 1;
   var goldenticket_block_id = eliminated_block_id + 1;
+
+console.log("ELIMINATED BLOCK ID: " + eliminated_block_id);
 
   //
   // if no blocks to eliminate, return 0.0 and confirm valid
@@ -646,7 +650,9 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
             }
 
           }
-        }
+        } else {
+
+	}
       }
     }
   }
@@ -676,7 +682,7 @@ Block.prototype.validateRebroadcastTransactions = async function validateRebroad
 
 
   if (total_rebroadcast != needs_rebroadcast) {
-    //console.log("Validation Error: unmatched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
+    console.log("Validation Error: unmatched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
     return false;
   } else {
     //console.log("Validation OK: matched rebroadcast transactions: " + total_rebroadcast + " - " + needs_rebroadcast);
@@ -1186,12 +1192,12 @@ Block.prototype.returnFeesTotal = function returnFeesTotal() {
  * update Google Dense Hashmap to spend inputs in block
  */
 Block.prototype.spendInputs = function spendInputs() {
-
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, this.block.id);
+        let slip = this.transactions[b].transaction.from[bb];
       }
     }
   }
@@ -1204,17 +1210,16 @@ Block.prototype.spendInputs = function spendInputs() {
  * update Google Dense Hashmap to unspend inputs in block
  */
 Block.prototype.unspendInputs = function unspendInputs() {
-
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, -1);
+        let slip = this.transactions[b].transaction.from[bb];
       }
     }
   }
   return 1;
-
 }
 
 

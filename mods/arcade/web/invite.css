@@ -56,9 +56,61 @@
   margin-top: 1em;
 }
 
+.get_tokens_button {
+  color: white;
+  border: #00b004 1px solid;
+  border-radius: 5px;
+  width: 100%;
+  height: 3em;
+  background-color: #00b004;
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+#game_spinner {
+  width: 50px;
+  height: 50px;
+  align-self: center;
+  display: none;
+}
+
+#token_spinner {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 1em;
+  /* display: none; */
+}
+
+#token-success {
+  display: none;
+  font-size: 4em;
+  width: 50px;
+  height: 50px;
+  padding: 12px;
+  color: green;
+  border: 5px solid green;
+  border-radius: 100px;
+  align-self: center;
+  margin-bottom: 1em;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(720deg); }
+}
+
 @media only screen and (max-width: 750px) {
   #join_game_invite_description {
     text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 1em;
   }
 
   .invite_main {
