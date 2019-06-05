@@ -330,6 +330,7 @@ td {
   row-gap: 1em;
   line-height: 1.4em;
   max-width: 800px;
+  /* text-align: center; */
 }
 
 .compose {
@@ -528,6 +529,7 @@ a {
   flex-direction: column;
   justify-content: flex-end;
   height: 100%;
+  justify-content: center;
 }
 
 .invite_button {
@@ -599,6 +601,25 @@ a {
   background: rgb(0, 190, 10);
   color: #efefef;
   cursor: pointer;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+#game_spinner {
+  width: 50px;
+  height: 50px;
+  align-self: center;
+  /* display: none; */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(720deg); }
 }
 
 /* ribbon common */
