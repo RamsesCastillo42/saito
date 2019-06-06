@@ -407,9 +407,9 @@ for (let m = 0; m < rebroadcast_txarray.length; m++) {
   }
 }
 
-console.log("\n\nCALCULATE REBROADCAST TXS: " + rebroadcast_amt.toFixed(8));
+//console.log("\n\nCALCULATE REBROADCAST TXS: " + rebroadcast_amt.toFixed(8));
 //console.log(JSON.stringify(rebroadcast_txarray));
-console.log("\n\n");
+// console.log("\n\n");
 
   for (let i = 0; i < rebroadcast_txarray.length; i++) {
     this.transactions.push(rebroadcast_txarray[i]);
@@ -655,10 +655,6 @@ console.log("eligible tx not in block!");
 
           }
         } else {
-console.log("SLIP VALUE: " + slip.returnIndex());
-console.log("SHASHMAP VALUE: " + this.app.storage.returnShashmapValue(slip));
-console.log("ERROR VALIDATING SLIP: " + JSON.stringify(slip) + " -- " + this.block.id);
-
 	}
       }
     }
@@ -1200,17 +1196,12 @@ Block.prototype.returnFeesTotal = function returnFeesTotal() {
  */
 Block.prototype.spendInputs = function spendInputs() {
 
-  if (this.returnHash() == "6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773") {
-console.log("SPEND for 6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773: " + this.transactions.length);
-  }
-
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, this.block.id);
         let slip = this.transactions[b].transaction.from[bb];
-//console.log("SPENDING INPUT: " + slip.returnIndex() + " -- " + this.app.storage.returnShashmapValue(slip));
       }
     }
   }
@@ -1224,28 +1215,16 @@ console.log("SPEND for 6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a4
  */
 Block.prototype.unspendInputs = function unspendInputs() {
 
-
-  if (this.returnHash() == "6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773") {
-console.log("UNSPEND for 6c8db0e6f8e3feadafea38c56a301350a1a7cb47037970693326969a44613773: " + this.transactions.length);
-console.log(this.stringify());
-  }
-
-//console.log("UNSPENDING INPUTS 111: " + this.transactions.length);
   for (let b = 0; b < this.transactions.length; b++) {
-//console.log("UNSPENDING INPUTS 222: " + this.transactions[b].transaction.from.length);
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
-//console.log("UNSPENDING INPUTS 333: " + this.transactions[b].transaction.from[bb].amt);
       if (this.transactions[b].transaction.from[bb].amt > 0) {
         let slip_map_index = this.transactions[b].transaction.from[bb].returnIndex();
         this.app.storage.updateShashmap(slip_map_index, -1);
         let slip = this.transactions[b].transaction.from[bb];
-//console.log("UNSPENDING INPUT: " + slip.returnIndex() + " -- " + this.app.storage.returnShashmapValue(slip));
-//console.log("UPDATED VALUE: " + this.app.storage.returnShashmapValue(slip));
       }
     }
   }
   return 1;
-
 }
 
 
