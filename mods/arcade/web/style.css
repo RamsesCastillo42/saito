@@ -305,14 +305,6 @@ td {
   background: darkorange;
 }
 
-.loader {
-  width: 100%;
-  max-width: 600px;
-  font-size: 2em;
-  line-height: 1.8em;
-  padding: 30px;
-}
-
 .main {
   display: grid;
   grid-template-columns: 3fr 1fr;
