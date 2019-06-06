@@ -750,21 +750,23 @@ Transaction.prototype.isAutomaticallyRebroadcast = function isAutomaticallyRebro
   //
   // fee-capture and golden tickets never rebroadcast
   //
-  // if (this.transaction.type == 1) 				         { return false; }
-  // if (this.transaction.type == 2) 				         { return false; }
-  // if (this.transaction.type == 3) 				         { return false; }
+  // if (this.transaction.type == 1) 				         { console.log('no 1'); return false; }
+  // if (this.transaction.type == 2) 				         { console.log('no 2'); return false; }
+  // if (this.transaction.type == 3) 				         { console.log('no 3'); return false; }
   //
   // Golden Chunk transactions must point to the trapdoor address in order to be considered valid
   //
   if (this.transaction.to[slip_id].add  == this.atr_trapdoor_address) {
     if (this.transaction.to[slip_id].type == 5) { return true; }
+    console.log('no 4'); 
     return false;
   }
 
-  if (this.transaction.to.length == 0) 				         { return false; }
+  if (this.transaction.to.length == 0) 				         { console.log('no 5');  return false; }
   if (this.transaction.type == 4) 				         { return true; }
   if (Big(this.transaction.to[slip_id].amt).gt(this.atr_rebroadcasting_limit)) { return true; }
 
+  console.log('no 6'); 
   return false;
 
 }

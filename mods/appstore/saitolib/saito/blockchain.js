@@ -50,7 +50,6 @@ function Blockchain(app) {
 
   if (this.callback_limit > this.genesis_period+this.fork_guard) { this.callback_limit = this.genesis_period+this.fork_guard; }
 
-  this.callback_limit         = 5;  // run callbacks on 100 blocks
   this.lc                     = 0;
   this.old_lc                 = 0;
   this.indexing_active        = false;
@@ -286,6 +285,7 @@ console.log("ADDED BLOCK - " + blk.block.id + " -- " + blk.returnHash());
 Blockchain.prototype.addBlockToBlockchain = async function addBlockToBlockchain(newblock=null, force=false) {
 
   this.indexing_active = true;
+
 
   //
   // sanity check
@@ -606,7 +606,9 @@ console.log("About to Send Request for Missing Block: ");
         }
       }
     } else {
+
       console.log("EDGE CASE WITH UNORDERED BLOCKS");
+      console.log("BID: " + bid + " and this.lc: " + this.lc + " -- and " + this.index.bid[this.lc]);
       //
       // this catches an edge case that happens if we ask for blocks starting from
       // id = 132, but the first block we RECEIVE is a later block in that chain,
@@ -890,6 +892,7 @@ console.log(" .... wallet done: " + new Date().getTime());
 
 
 console.log(" .... run rmv txs: " + new Date().getTime());
+  //
   // cleanup
   //
   this.app.mempool.removeBlockAndTransactions(newblock);
@@ -906,7 +909,10 @@ console.log(" .... run callbks: " + new Date().getTime());
         let our_longest_chain = this.returnLongestChainIndexPosArray(this.callback_limit);
         for (let i = 0; i < our_longest_chain.length && i < this.callback_limit; i++) {
 
-          var blk = await this.returnBlockByHash(this.index.hash[our_longest_chain[i]]);
+	  //
+	  // insist on TXS
+	  //
+          var blk = await this.returnBlockByHash(this.index.hash[our_longest_chain[i]], 2);
           if (blk != null) {
 
             //
@@ -947,7 +953,6 @@ console.log(" .... run callbks: " + new Date().getTime());
 
   // delete transactions
   //
-  //
   // we delete transaction data once blocks are old enough that
   // we no longer need their data for callbacks.
   //
@@ -955,15 +960,35 @@ console.log(" .... run callbks: " + new Date().getTime());
   // limit is too short and we don't have the block data actively
   // stored in memory.
   //
+  // TODO -- we do not delete EVERY block with this approach
+  // 
   if (this.blocks.length > this.callback_limit) {
     let blk2clear = this.blocks.length - this.callback_limit-1;
+    let id2clear = this.blocks[this.blocks.length-1].block.id - this.callback_limit-1;
     if (blk2clear >= 0) {
-      this.blocks[blk2clear].transactions = [];
-      this.blocks[blk2clear].block.txsjson = [];
-      // sanity check for blocks added earlier
+      while (this.blocks[blk2clear].block.id > id2clear && blk2clear > 0) {
+	blk2clear--;
+      }
+
+      // sanity check if we have added a really old block
       if (pos < blk2clear) {
         this.blocks[pos].transactions = [];
         this.blocks[pos].block.txsjson = [];
+      }
+
+      if (this.blocks[blk2clear].block.id <= id2clear) {
+	
+	let keep_deleting = 1;
+	for (let z = blk2clear; z >= 0 && keep_deleting == 1; z--) {
+	  if (this.blocks[z].transactions.length > 0) {
+
+            this.blocks[blk2clear].transactions = [];
+            this.blocks[blk2clear].block.txsjson = [];
+            // sanity check for blocks added earlier
+	  } else {
+	    keep_deleting = 0;
+	  }
+	}
       }
     }
   }
@@ -1229,10 +1254,11 @@ Blockchain.prototype.unwindChain = async function unwindChain(
 
   if (old_block_hashes.length > 0) {
 
-    let blk = await this.returnBlockByHash(old_block_hashes[current_unwind_index]);
+    let blk = await this.returnBlockByHash(old_block_hashes[current_unwind_index], 2);
     if (blk == null) {
 
       console.log("We cannot find a block on disk that should exist in unwindChain");
+      console.log("HASH: " + old_block_hashes[current_unwind_index]);
 
       //
       // we need to unwind some of our previously
@@ -1504,7 +1530,7 @@ console.log(" .... block does not validate!");
   //
   } else {
 
-    var blk = await this.returnBlockByHash(new_block_hashes[current_wind_index]);
+    var blk = await this.returnBlockByHash(new_block_hashes[current_wind_index], 2);
     if (blk == null) {
        console.log("Cannot open block that should exist in windChain");
        this.app.logger.logError("Cannot open block that should exist in windChain", { message: "", stack: "" });
@@ -1736,34 +1762,45 @@ console.log("FORKID NOW: " + fork_id);
  */
 Blockchain.prototype.returnBlockByHash = async function returnBlockByHash(hash, txjson=0) {
 
+  // txjson type chart
+  // 0 -- fetch block from memory if available
+  // 1 -- fetch block from disk IF txsjson is empty array
+  // 2 -- fetch block from disk IF transactions is empty array
+
   //
-  // first check our in-memory blocks
+  // check our in-memory blocks
   //
   if (this.isHashIndexed(hash)) {
     for (let v = this.blocks.length-1; v >= 0; v-- ) {
       if (this.blocks[v].hash == hash) {
-        if (txjson == 0) {
-          return this.blocks[v];
-        } else {
-
-          //
-          // user is requesting this block only
-          // if it has the txjson, which means
-          // we should fetch from disk.
-          //
-          v = -1;
-
+        switch (txjson) {
+          case 0:
+            return this.blocks[v];
+          case 1:
+            if (this.blocks[v].txjson == []) {
+              return await this.app.storage.loadSingleBlockFromDisk(hash);
+            } else {
+              return this.blocks[v];
+            }
+          case 2:
+            if (this.blocks[v].transactions == []) {
+              return await this.app.storage.loadSingleBlockFromDisk(hash);
+            } else {
+              return this.blocks[v];
+            }
+          default:
+            break;
         }
       }
     }
   }
+ 
 
   //
   // or fetch from disk
   //
-  let blk = await this.app.storage.loadSingleBlockFromDisk(hash);
-
-  return blk;
+  console.log("reloading from disk...");
+  return await this.app.storage.loadSingleBlockFromDisk(hash);
 
 }
 /**
