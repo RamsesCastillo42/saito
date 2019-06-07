@@ -30,6 +30,9 @@ function Warehouse(app) {
 module.exports = Warehouse;
 util.inherits(Warehouse, ModTemplate);
 
+
+
+
 ////////////////////
 // Install Module //
 ////////////////////

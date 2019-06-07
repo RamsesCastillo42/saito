@@ -571,7 +571,7 @@ Block.prototype.calculateRebroadcastTransactions = async function calculateRebro
 
           }
         } else {
-console.log("THIS SLIP FAILED: " + JSON.stringify(slip) + " -- " + this.block.id);
+// console.log("THIS SLIP FAILED: " + JSON.stringify(slip) + " -- " + this.block.id);
 	}
       }
     }
@@ -627,11 +627,8 @@ console.log("ELIMINATED BLOCK ID: " + eliminated_block_id);
       slip.sid = ii;
 
       if (Big(slip.amt).gt(0)) {
-console.log("validating: " + slip.bid + " / " + slip.tid + " / " + slip.sid);
         if (this.app.storage.validateTransactionInput(slip, this.block.id)) {
-console.log("validated!");
           if (eblk.transactions[i].isAutomaticallyRebroadcast(eblk, this, ii)) {
-console.log("and meets criteria for rebroadcast!");
 
             needs_rebroadcast++;
             let is_tx_in_block = 0;
@@ -649,12 +646,12 @@ console.log("and meets criteria for rebroadcast!");
             // an attack
             //
             if (is_tx_in_block == 0) {
-console.log("eligible tx not in block!");
               return false;
             }
 
           }
         } else {
+
 	}
       }
     }
@@ -1195,7 +1192,6 @@ Block.prototype.returnFeesTotal = function returnFeesTotal() {
  * update Google Dense Hashmap to spend inputs in block
  */
 Block.prototype.spendInputs = function spendInputs() {
-
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
@@ -1214,7 +1210,6 @@ Block.prototype.spendInputs = function spendInputs() {
  * update Google Dense Hashmap to unspend inputs in block
  */
 Block.prototype.unspendInputs = function unspendInputs() {
-
   for (let b = 0; b < this.transactions.length; b++) {
     for (let bb = 0; bb < this.transactions[b].transaction.from.length; bb++) {
       if (this.transactions[b].transaction.from[bb].amt > 0) {
