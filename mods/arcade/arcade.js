@@ -5,7 +5,6 @@ var markdown = require("markdown").markdown;
 var fs = require('fs');
 
 
-
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -289,7 +288,8 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         $('.get_tokens_button').off();
         $('.get_tokens_button').on('click', () => {
           $('#token_spinner').show();
-          $.get(`/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
+          let {host, port, protocol} = this.app.network.peers[0].peer
+          $.get(`${protocol}://${host}:${port}/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
             $('#token_spinner').hide();
             if (response.payload.status) {
               $('#token-success').show();
@@ -539,11 +539,10 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.active_game = tmpmod.charAt(0).toUpperCase();
           this.active_game += tmpmod.slice(1);
 
-
           //
           // show active games
           //
-            this.listActiveGames();
+          this.listActiveGames();
 
           if (this.browser_active == 1) {
 
@@ -563,22 +562,6 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
             			$('.status').show();
                                 this.attachEvents(this.app);
             			this.startInitializationTimer(game_id, txmsg.module);
-/****
-                  let html =
-                  `<div id="accept_invitation_container">
-                    Your invitation has been accepted:
-                    <a href="/${txmsg.module.toLowerCase()}">
-                      <button class="link linkbutton joinlink" id="invite_join_button">
-                        START
-                      </button>
-                    </a>
-                    </div>
-                  </div>`;
-                  this.showMonitor();
-                  $('.manage_invitations').html(html);
-                  if (this.browser_active == 1) { $('#status').hide(); }
-                  this.attachEvents(this.app);
-****/
                 }
               }
             } else {
@@ -596,7 +579,6 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
 
               $('.lightbox_message_from_address').html(tmpadd);
               $('.manage_invitations').html(html);
-              //$('.manage_invitations').css("display:flex;");
               $('.manage_invitations').show();
               this.attachEvents(this.app);
 
@@ -626,10 +608,10 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
         //
         // if I have accepted...
         //
-        if (game_self.game.accept === 1) { 
+        if (game_self.game.accept === 1) {
           $('.status').show();
-            this.listActiveGames();
-          return; 
+          this.listActiveGames();
+          return;
         }
 
         if (game_self.game.initializing == 1) {
@@ -677,7 +659,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           }
         }
 
-          this.listActiveGames();
+        this.listActiveGames();
 
       } catch (err) {
       }
@@ -864,32 +846,6 @@ Arcade.prototype.updateBalance = function updateBalance(app) {
 Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   if (app.BROWSER == 0) { return; }
-
-
-  //
-  // invite page
-  //
-  try {
-  if (invite_page == 1) {
-
-    setTimeout(function() {
-      $('#saito_advert').off();
-      $('#saito_advert').on('click',function() {
-        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
-        return false;
-      });
-    }, 1500);
-    setTimeout(function() {
-      $('#saito_advert').off();
-      $('#saito_advert').on('click',function() {
-        alert("Your account will receive tokens shortly. Once you receive these tokens, you will be able to accept this game invite!");
-        return false;
-      });
-    }, 3000);
-
-    return;
-  }
-  } catch (err) {}
 
   $('.toggle_invite').off()
   $('.toggle_invite').on('click', () => {
@@ -1425,19 +1381,9 @@ Arcade.prototype.formatAuthor = function formatAuthor(author, app) {
 
 }
 
-
-
-
-
-
 Arcade.prototype.shouldAffixCallbackToModule = function shouldAffixCallbackToModule(modname) {
   if (modname === "Twilight") { return 1; }
   if (modname === "Chess") { return 1; }
   if (modname === "Wordblocks") { return 1; }
   return 0;
 }
-
-
-
-
-
