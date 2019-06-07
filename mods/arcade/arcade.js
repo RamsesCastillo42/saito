@@ -289,7 +289,8 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
         $('.get_tokens_button').off();
         $('.get_tokens_button').on('click', () => {
           $('#token_spinner').show();
-          $.get(`/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
+          let {host, port, protocol} = this.app.network.peers[0].peer
+          $.get(`${protocol}://${host}:${port}/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
             $('#token_spinner').hide();
             if (response.payload.status) {
               $('#token-success').show();
