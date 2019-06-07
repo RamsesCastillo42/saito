@@ -124,7 +124,7 @@
   grid-area: hud-clickable;
   background-color: #333;
   padding-left: 5px;
-  padding-right: 4px;
+  padding-right: 5px;
 }
 
 .loaded {
