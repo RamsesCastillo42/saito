@@ -123,9 +123,60 @@ Server.prototype.initialize = function initialize() {
     next();
   });
 
-  ////////////
-  // blocks //
-  ////////////
+  ///////////////////////////
+  // full-node multi-block //
+  ///////////////////////////
+  app.post('/blocks', async (req, res) => {
+    var blocks = [];
+
+    // obtain the blocks and publickeys needed for fetching
+    try {
+      var block_hashes = req.body.blocks;
+    } catch(err) {
+      res.status(404);
+      res.send({
+        payload: {},
+        error: {
+          message: 'Invalid block or publickey array passed to route'
+        }
+      });
+      return;
+    }
+
+    blocks = block_hashes.map(async bhash => {
+      if (bhash) {
+        try {
+          let filename = await this.app.storage.returnBlockFilenameByHashPromise(bhash);
+          if (filename != null) {
+            return JSON.parse(fs.readFileSync(this.blocks_dir + filename, 'utf8'));
+          }
+        } catch(err) {
+          console.error("FETCH BLOCKS ERROR: ", err);
+          res.status(400)
+          res.send({
+            error: {
+              message: "Could not find block on this server"
+            }
+          })
+        }
+      }
+    });
+
+    blocks = await Promise.all(blocks);
+
+    res.status(200)
+    res.send({
+      payload: {
+        blocks
+      },
+      error: {}
+    });
+
+  });
+
+  ////////////////////////////
+  // full-node single block //
+  ////////////////////////////
   app.get('/blocks/:bhash', (req, res) => {
     let bhash = req.params.bhash;
     if (bhash == null) { return; }
@@ -157,6 +208,7 @@ Server.prototype.initialize = function initialize() {
       //
       this.app.storage.returnBlockFilenameByHash(bhash, (filename, err) => {
         if (err) {
+          console.error("FETCH BLOCKS ERROR IN BLOCK FILENAME HASH: ", err);
           res.status(400)
           res.send({
             error: {
@@ -173,16 +225,88 @@ Server.prototype.initialize = function initialize() {
       });
 
     } catch (err) {
-      console.log("FAILED SERVER REQUEST: could not find block: " + bhash);
+      console.error(`FAILED SERVER REQUEST: could not find block: ${bhash}`);
+      console.error("FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ", err);
+      res.status(400)
+      res.send({
+        error: {
+          message: `FAILED SERVER REQUEST: could not find block: ${bhash}`
+        }
+      })
     }
-    return;
   });
 
 
   /////////////////
   // lite-blocks //
   /////////////////
-  app.get('/lite-blocks/:bhash/:pkey', (req, res) => {
+  /////////////////
+  // lite-blocks //
+  /////////////////
+
+  app.post('/lite-blocks/:pkey', async (req, res) => {
+    let pkey  = req.params.pkey;
+    if (pkey == null) { return; }
+
+    let peer = this.app.network.returnPeerByPublicKey(pkey);
+    let keylist = [];
+
+    try {
+      var block_hashes = req.body.blocks;
+    } catch(err) {
+      res.status(404);
+      res.send({
+        payload: {},
+        error: {
+          message: 'Invalid block array passed to route'
+        }
+      });
+      return;
+    }
+
+    if (peer == null) {
+      keylist.push(pkey);
+    } else {
+      keylist = peer.peer.keylist;
+    }
+
+    try {
+      blocks = block_hashes.map(async bhash => {
+        let blk = await this.app.blockchain.returnBlockWithTransactionsByHash(bhash, keylist);
+
+        if (blk == null) {
+          res.write("{}");
+          res.end();
+          return;
+        }
+
+        return blk.returnFilteredBlockByKeys(keylist)
+      });
+
+      blocks = await Promise.all(blocks);
+
+      res.status(200)
+      res.send({
+        payload: {
+          blocks
+        },
+        error: {}
+      });
+    } catch (err) {
+      console.error(`FAILED SERVER REQUEST: could not find block: ${bhash}`);
+      console.error("FETCH LITE BLOCKS ERROR: ", err);
+      res.status(400)
+      res.send({
+        error: {
+          message: "FAILED SERVER REQUEST: could not find block: "
+        }
+      })
+    }
+  });
+
+
+
+  app.get('/lite-blocks/:bhash/:pkey', async (req, res) => {
 
     let bhash = req.params.bhash;
     let pkey  = req.params.pkey;
@@ -200,90 +324,30 @@ Server.prototype.initialize = function initialize() {
 
     try {
 
-      //
-      // serve from mempool if exists
-      //
-      for (let i = 0; i < this.app.mempool.blocks.length; i++) {
-        let blk = this.app.mempool.blocks[i];
-        if (blk.returnHash() == bhash) {
+      let blk = await this.app.blockchain.returnBlockWithTransactionsByHash(bhash, keylist);
 
-          for (let i = 0; i < keylist.length && keylist[i] != undefined && blk != null; i++) {
-            if (blk.hasTransactionsInBloomFilter(keylist[i]) == true) {
-
-              let tempblk = JSON.parse(JSON.stringify(blk.block));
-
-              var txsjson = [];
-              blk.transactions.forEach((tx, index) => {
-                let { transaction } = tx;
-                let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
-                if (add_tx) {
-                  txsjson.push(JSON.stringify({ "transaction": tx.transaction}));
-                }
-              });
-
-              tempblk.txsjson = txsjson
-
-              let blkjson = JSON.stringify(tempblk).toString('utf8');
-              res.write(blkjson);
-              res.end();
-              return;
-
-            } else {
-
-              let tempblk = JSON.parse(JSON.stringify(blk.block));
-              tempblk.txsjson = [];
-              let blkjson = JSON.stringify(tempblk).toString('utf8');
-              res.write(blkjson);
-              res.end();
-              return;
-
-            }
-          }
-
-          return;
-        }
-      }
-
-
-      //
-      // return file requested
-      //
-      // TODO - this uses a callback, is it possible to change over 
-      // to using a promise, or are we unable to do this because we
-      // would need to change the Express server function to operate
-      // asynchronously.
-      //
-      this.app.blockchain.returnBlockByHashFullOnlyIfContainsTransactionsWithCallback(bhash, keylist, (blk) => {
-
-        if (blk == null) {
-          res.write("{}");
-          res.end();
-          return;
-        }
-
-        let tempblk = JSON.parse(JSON.stringify(blk.block));
-
-        var txsjson = [];
-        blk.transactions.forEach((tx, index) => {
-          let { transaction } = tx;
-          let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
-          if (add_tx) {
-            txsjson.push(JSON.stringify({ "transaction": tx.transaction}));
-          }
-        });
-
-        tempblk.txsjson = txsjson
-
-        let blkjson = JSON.stringify(tempblk).toString('utf8');
-        res.write(blkjson);
+      if (blk == null) {
+        res.write("{}");
         res.end();
         return;
+      }
 
-      });
+      let new_blk = blk.returnFilteredBlockByKeys(keylist);
+      let stringified_blk = new_blk.stringify(1);
+      res.write(stringified_blk);
+      res.end();
+      return;
+
     } catch (err) {
-      console.log("FAILED SERVER REQUEST: could not find block: " + bhash);
+      console.error(`FAILED SERVER REQUEST: could not find block: ${bhash}`);
+      console.error("FETCH LITE BLOCKS ERROR: ", err);
+      res.status(400)
+      res.send({
+        error: {
+          message: "FAILED SERVER REQUEST: could not find block: "
+        }
+      })
     }
-    return;
   });
 
 

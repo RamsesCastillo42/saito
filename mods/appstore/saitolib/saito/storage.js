@@ -899,7 +899,7 @@ Storage.prototype.resetOptions = function resetOptions() {
 Storage.prototype.saveClientOptions = function saveClientOptions() {
 
   if (this.app.BROWSER == 1) { return; }
-
+  let client_peer = Object.assign({}, this.app.server.server.endpoint, {synctype: "lite"});
   //
   // mostly empty, except that we tell them what our latest
   // block_id is and send them information on where our
@@ -913,8 +913,8 @@ Storage.prototype.saveClientOptions = function saveClientOptions() {
       t.blockchain           = {};
       t.registry             = this.app.options.registry;
       t.dns                  = this.app.dns.dns.domains;
-      t.peers.push(this.app.server.server.endpoint);
-      t.proxymod.push(this.app.server.server.endpoint);
+      t.peers.push(client_peer);
+      t.proxymod.push(client_peer);
 
   //
   // write file
@@ -959,6 +959,15 @@ Storage.prototype.returnBlockFilenameByHash = async function returnBlockFilename
 
 }
 
+
+Storage.prototype.returnBlockFilenameByHashPromise = function returnBlockFilenameByHashPromise(block_hash) {
+  return new Promise((resolve, reject) => {
+    this.returnBlockFilenameByHash(block_hash, (filename, err) => {
+      if (err) { reject(err) }
+      resolve(filename);
+    })
+  })
+}
 
 
 
