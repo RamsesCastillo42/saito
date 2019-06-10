@@ -296,9 +296,7 @@ Faucet.prototype.initializeHTML = function initializeHTML(app) {
 
 Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="apps.saito.network", source_port="", source_protocol="http", source_app="email", user_email="") {
 
-  let host = "apps.saito.network";
-  let port = 12101;
-  let protocol = "https";
+  let {host, port, protocol} = this.app.network.peers[0].peer;
   let advert_url = `${protocol}://${host}:${port}/faucet/success`
 
   let fhtml = `<html>
