@@ -490,6 +490,22 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
   if (conf == 0) {
 
     //
+    // DECLINE
+    //
+    if (txmsg.request == "decline") {
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
+        if (this.monitor_shown_already == 1) {
+          $('.manage_invitations').html(`
+                    <center>Your opponent has declined the game as they have already started one!</center>
+          `);
+          $('.status').show();
+          this.attachEvents(this.app);
+	}
+      }
+    }
+
+
+    //
     // INVITE
     //
     if (txmsg.request == "invite") {
@@ -975,6 +991,10 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let game_self = app.modules.returnModule(game_module);
     game_self.game = game_self.loadGame(game_id);
     game_self.game.ts = new Date().getTime();
+    //
+    // ensure init happens appropriately
+    // 
+    game_self.game.initialize_game_run = 0;
     game_self.game.module = game_module;
     game_self.saveGame(game_id);
     window.location = '/' + game_module.toLowerCase();
