@@ -23,6 +23,7 @@ function Arcade(app) {
   this.is_initializing = false;
   this.initialization_check_active = true;
   this.initialization_check_timer  = null;
+  this.initialization_check_timer_ellapsed = 0;
 
   this.active_game     = "";
 
@@ -490,6 +491,32 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
   if (conf == 0) {
 
     //
+    // DECLINE
+    //
+    if (txmsg.request == "decline") {
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
+        if (this.monitor_shown_already == 1 || invite_page == 1) {
+          $('.manage_invitations').html(`
+                    <center>Your opponent has declined the game as they have already started one!</center>
+          `);
+          $('.status').show();
+          $('#game_spinner').hide();
+          this.attachEvents(this.app);
+	}
+      }
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
+        if (this.monitor_shown_already == 1 || invite_page == 1) {
+          $('.manage_invitations').html(`
+                    <center>You have received multiple acceptances to your game. Refusing all but the first acceptance.</center>
+          `);
+          $('.status').show();
+          this.attachEvents(this.app);
+	}
+      }
+    }
+
+
+    //
     // INVITE
     //
     if (txmsg.request == "invite") {
@@ -762,8 +789,25 @@ Arcade.prototype.startInitializationTimer = function startInitializationTimer(ga
 
   try {
 
+    if (arcade_self.is_initializing == false) { this.initialization_check_timer_ellapsed = 0; }
+
     arcade_self.is_initializing = true;
     arcade_self.initialization_check_timer = setInterval(() => {
+
+      arcade_self.initialization_check_timer_ellapsed++;
+
+      if (invite_page == 1) {
+        if ($('.status').html() === "") {
+          if (arcade_self.initialization_check_timer_ellapsed == 3) { $('.invite_description').html(`<center>Checking to Confirm that Opponent is Online....</center>`); }
+          if (arcade_self.initialization_check_timer_ellapsed == 8) { $('.invite_description').html(`<center>Still Checking to Confirm that Opponent is Online....</center>`); }
+          if (arcade_self.initialization_check_timer_ellapsed == 12) { $('.invite_description').html(`<center>Waiting for Response from Opponent....</center>`); }
+          if (arcade_self.initialization_check_timer_ellapsed == 20) { $('.invite_description').html(`<center>Still Waiting for Response from Opponent....</center>`); }
+          if (arcade_self.initialization_check_timer_ellapsed == 32) { $('.invite_description').html(`<center>Still, Still Waiting for Response from Opponent....</center>`); }
+          if (arcade_self.initialization_check_timer_ellapsed == 45) { $('.invite_description').html(`<center>One More Minute. Have you checked they are still online...?</center>`); }
+	} else {
+          $('.invite_description').html(`<center>Initializing Game with Opponent. Please stay on this page....</center>`);
+	}
+      }
 
       let pos = -1;
       if (arcade_self.app.options.games != undefined) {
@@ -975,6 +1019,10 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     let game_self = app.modules.returnModule(game_module);
     game_self.game = game_self.loadGame(game_id);
     game_self.game.ts = new Date().getTime();
+    //
+    // ensure init happens appropriately
+    // 
+    game_self.game.initialize_game_run = 0;
     game_self.game.module = game_module;
     game_self.saveGame(game_id);
     window.location = '/' + game_module.toLowerCase();
