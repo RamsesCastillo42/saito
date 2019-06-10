@@ -167,14 +167,6 @@ Block.prototype.hasKeylistTransactionsInBloomFilter = function hasKeylistTransac
     if (this.transactions_bloom_hmap[keylist[i]] == 1) { return true; }
   }
   return false;
-
-  //  if (this.transactions_bloom == null) { return false; }
-  //  for (let i = 0; i < keylist.length; i++) {
-  //    if (this.transactions_bloom.contains(new Buffer(keylist[i], 'utf8')) != false) {
-  //      return true;
-  //    }
-  //  }
-  return false;
 }
 
 /**
@@ -183,9 +175,6 @@ Block.prototype.hasKeylistTransactionsInBloomFilter = function hasKeylistTransac
 Block.prototype.hasTransactionsInBloomFilter = function hasTransactionsInBloomFilter(add) {
   if (this.transactions_bloom_hmap[add] == 1) { return true; }
   return false;
-
-  //  if (this.transactions_bloom == null) { return false; }
-  //  return this.transactions_bloom.contains(new Buffer(add, 'utf8'));
 }
 
 
@@ -1149,6 +1138,25 @@ Block.prototype.validate = async function validate() {
   }
 
   return 1;
+}
+
+/**
+ * return a block with only the relevant transactions according to the keylist
+ */
+
+Block.prototype.returnFilteredBlockByKeys = function returnFilteredBlockByKeys(keylist) {
+  let tempblk = new saito.block(this.app, JSON.stringify(this.block));
+
+  var txsjson = [];
+  this.transactions.forEach((tx) => {
+    let { transaction } = tx;
+    let add_tx = transaction.from.some(slip => keylist.includes(slip.add)) || transaction.to.some(slip => keylist.includes(slip.add));
+    if (add_tx) { txsjson.push(tx.stringify(1)); }
+  });
+
+  tempblk.block.txsjson = txsjson
+
+  return tempblk
 }
 
 

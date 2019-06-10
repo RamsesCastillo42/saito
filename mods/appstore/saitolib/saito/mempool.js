@@ -18,7 +18,7 @@ function Mempool(app) {
 
   this.directory                = path.join(__dirname, '../../data/');
   this.blocks                   = [];
-  this.downloads                = [];
+  this.downloads_hmap           = {};
   this.transactions             = [];
   this.goldentickets            = [];
   this.recovered                = [];
@@ -49,10 +49,6 @@ function Mempool(app) {
   this.processing_speed         = 500;
   this.processing_timer         = null;
 
-  this.downloading_active       = false;
-  this.downloading_speed        = 500;
-  this.downloading_timer        = null;
-
   this.clearing_active          = false;
 
   return this;
@@ -74,138 +70,113 @@ Mempool.prototype.fetchBlock = async function fetchBlock(peer, bhash) {
   //
   // avoid dupes
   //
-  for (let i = 0; i < this.downloads.length; i++) {
-    if (this.downloads[i].bhash == bhash) { return; }
-  }
   if (this.app.blockchain.isHashIndexed(bhash) == 1) {
     return;
   }
+  if (this.downloads_hmap[bhash] == 1) {
+    return;
+  }
+
+  this.downloads_hmap[bhash] = 1;
 
   //
   // avoid enqueuing from peers w/o endpoints
   //
   if (peer.peer.endpoint.protocol == "" || peer.peer.endpoint.host == "") { return; }
 
-  //
-  // enqueue
-  //
-  this.downloads.push({ peer : peer , bhash : bhash });
+  let url_sync_address = "blocks/";
+  let url_sync_pkey    = "";
+
+  if (peer.peer.synctype == "lite") {
+    url_sync_address   = "lite-blocks/";
+    url_sync_pkey      = "/" + this.app.wallet.returnPublicKey();
+  }
+
+  let {protocol, host, port} = peer.peer.endpoint
+  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}${bhash}${url_sync_pkey}`;
 
   //
-  // start timer
+  // check we have space
   //
-  if (this.downloading_timer == null) {
-    this.downloading_timer = setInterval( () => {
+  if ( this.block_size_current <= this.block_size_cap ) {
 
-      if (this.downloads.length == 0) {
-        clearInterval(this.downloading_timer);
-        this.downloading_timer = null;
-        this.downloading_active = 0;
+    try {
+      let response = await axios.get(block_to_download_url);
+      let body = response.data;
+
+      let blk = new saito.block(this.app, body);
+
+      if (blk.block.ts > new Date().getTime() + 60000) {
+        console.log("block appears to be from the future, dropping...");
         return;
       }
-      if (this.downloading_active == 1) {
-        this.downloads = this.downloads.filter(download => {
-          return this.app.network.hasPeer(download.peer.peer.publickey)
-        })
-        console.log("downloading is active....");
-        // console.log("DOWNLOAD: ---", this.downloads.map(download => { download.peer.peer, download.bhash }))
+
+      if (blk.is_valid == 0 && this.app.BROWSER == 0) {
         return;
       }
-      this.downloading_active = 1;
 
-      //
-      // check we have space
-      //
-      if ( this.block_size_current <= this.block_size_cap ) {
+      blk.peer_publickey = peer.peer.publickey;
 
-        let url_sync_address = "blocks/";
-        let url_sync_pkey    = "";
-        let block_to_download = this.downloads[0];
+      this.addBlock(blk)
+    } catch(err) {
+      console.error(err);
+    }
 
-        if (block_to_download.peer.peer.synctype == "lite") {
-          url_sync_address   = "lite-blocks/";
-          url_sync_pkey      = "/" + this.app.wallet.returnPublicKey();
-        }
+    delete this.downloads_hmap[bhash];
 
-        if (!block_to_download.peer.peer.endpoint.protocol) {
-          this.downloads.splice(0, 1);
-          this.downloading_active = 0;
-          return;
-        }
-
-        let block_to_download_url = block_to_download.peer.peer.endpoint.protocol + "://" +
-                                    block_to_download.peer.peer.endpoint.host + ":" +
-                                    block_to_download.peer.peer.endpoint.port + "/" +
-                                    url_sync_address +
-                                    block_to_download.bhash +
-                                    url_sync_pkey;
-
-        axios({
-          method: 'get',
-          url: block_to_download_url,
-          timeout: 30000
-        })
-        .then((response) => {
-          let body = response.data;
-
-          this.downloads.splice(0, 1);
-          this.downloading_active = 0;
-
-          if (response.status == 400) {
-            return
-          }
-
-          let blk = new saito.block(this.app, body);
-
-          if (blk.block.ts > new Date().getTime() + 5000) {
-            console.log("block appears to be from the future, dropping...");
-            return;
-          }
-
-          if (blk.is_valid == 0 && this.app.BROWSER == 0) {
-            return;
-          }
-
-          // blk.size = parseInt(response.headers["content-length"]);
-          blk.peer_publickey = block_to_download.peer.peer.publickey;
-
-          //
-          // confirm validity
-          //
-          if (blk.returnHash() != block_to_download.bhash) {
-            this.downloads.splice(0, 1);
-            this.downloading_active = 0;
-            return;
-          }
-
-          //
-          // should we propagate this block (?)
-          //
-          if (this.addBlock(blk)) {
-            console.log("HEADING INTO PROCESS BLOCKS");
-            this.processBlocks();
-          } else {
-            console.log("could not add block in fetch block for servers, so did not run processBlocks");
-          }
-        })
-        .catch((error) => {
-          //
-          // in event of error, remove bad block
-          //
-          this.downloads.splice(0, 1);
-          this.downloading_active = 0;
-          if (error.response) {
-            console.error(error.response);
-          }
-          return;
-        });
-      } else {
-        this.downloads.splice(0, 1);
-        this.downloading_active = 0;
-      }
-    }, this.downloading_speed);
+    await this.processBlocks();
   }
 }
+
+/**
+ * @params {object} peer
+ * @params {array} bhashes
+ */
+Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(peer, bhashes, publickeys=[]) {
+  let url_sync_address = "blocks/";
+  let url_sync_pkey    = "";
+
+  if (peer.peer.synctype == "lite") {
+    url_sync_address   = "lite-blocks/";
+    if (publickeys.length == 0) {
+      publickeys.push(this.app.wallet.returnPublicKey());
+    }
+  }
+
+  let {protocol, host, port} = peer.peer.endpoint;
+  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}`;
+
+  let block_size = 50;
+
+  for (let i = 0; i < Math.ceil((bhashes.length)/block_size); i++) {
+    let start = i * block_size;
+    let end   = (i + 1) * block_size
+
+    var blocks = bhashes.slice(start, end);
+
+    try {
+      let response = await axios.post(block_to_download_url, { blocks, publickeys });
+      response.data.payload.blocks.forEach(body => {
+        let blk = new saito.block(this.app, body);
+
+        if (blk.block.ts > new Date().getTime() + 60000) {
+          console.log("block appears to be from the future, dropping...");
+          return;
+        }
+
+        if (blk.is_valid == 0 && this.app.BROWSER == 0) {
+          return;
+        }
+
+        this.addBlock(blk)
+      });
+    } catch(err) {
+      console.log(err);
+    }
+  }
+  await this.processBlocks();
+}
+
 
 
 
@@ -469,54 +440,31 @@ Mempool.prototype.processBlocks = async function processBlocks() {
 
   this.processing_active = true;
 
-  if (this.processing_timer == null) {
-    this.processing_timer = setInterval(async () => {
-      if (this.app.monitor.canBlockchainAddBlockToBlockchain()) {
-        if (this.blocks.length > 0) {
+  // this.processing_active = true;
+  while(this.blocks.length > 0 && this.app.monitor.canBlockchainAddBlockToBlockchain()) {
+    console.log("CAN ADD BLOCK TO BLOCKCHAIN")
+    let block_to_add = this.blocks.shift();
+    if (block_to_add.created_on_empty_mempool &&
+      this.app.blockchain.returnLatestBlockHash() != block_to_add.block.prevhash) {
 
-          let block_to_add = this.blocks.shift();
+      //
+      // check it is still getting added to the longest chain, otherwise
+      // we will need to dissolve it to recapture the transactions as
+      // we will not notice if this block is pushed off the longest-chain
+      // by someone else
+      //
 
-          //
-          // if we created this block
-          //
-          if (block_to_add.created_on_empty_mempool == 1) {
-
-            //
-            // check it is still getting added to the longest chain, otherwise
-            // we will need to dissolve it to recapture the transactions as
-            // we will not notice if this block is pushed off the longest-chain
-            // by someone else
-            //
-            if (this.app.blockchain.returnLatestBlockHash() != block_to_add.block.prevhash) {
-
-              for (let i = 0; i < block_to_add.transactions.length; i++) {
-                console.log("RECOVERING TRANSACTIONS FROM BADLY-TIMED BLOCK WE PRODUCED: ");
-                this.app.mempool.recoverTransaction(block_to_add.transactions[i]);
-                this.app.mempool.reinsertRecoveredTransactions();
-              }
-
-            } else {
-              await this.app.blockchain.addBlockToBlockchain(block_to_add);
-            }
-
-          } else {
-            await this.app.blockchain.addBlockToBlockchain(block_to_add);
-          }
-
-        }
+      for (let i = 0; i < block_to_add.transactions.length; i++) {
+        console.log("RECOVERING TRANSACTIONS FROM BADLY-TIMED BLOCK WE PRODUCED: ");
+        this.app.mempool.recoverTransaction(block_to_add.transactions[i]);
+        this.app.mempool.reinsertRecoveredTransactions();
       }
-      // if we have emptied our queue
-      if (this.blocks.length == 0) {
-        clearInterval(this.processing_timer);
-        this.processing_timer = null;
-      }
-         this.processing_active = false;
-     }, this.processing_speed);
-
-    this.processing_active = false;
-    return;
-
+    } else {
+      await this.app.blockchain.addBlockToBlockchain(block_to_add);
+    }
   }
+
+  this.processing_active = false;
 }
 
 
@@ -688,9 +636,6 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
       }
     }
   }
-
-
-console.log("HERE: " + JSON.stringify(tx.transaction));
 
   if (transaction_imported === 0) {
 

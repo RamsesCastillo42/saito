@@ -974,8 +974,6 @@ Email.prototype.onConfirmation = function onConfirmation(blk, tx, conf, app) {
   if (txmsg == null) { return; }
   if (txmsg.module != "Email") { return; }
 
-console.log("\n\n\nIN EMAIL ONCONFIRMATION!");
-
   if (conf == 0) {
     if (tx.isFrom(app.wallet.returnPublicKey())) {
       app.archives.saveTransaction(tx);
