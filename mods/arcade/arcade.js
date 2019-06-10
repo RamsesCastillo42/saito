@@ -494,9 +494,19 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
     //
     if (txmsg.request == "decline") {
       if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
-        if (this.monitor_shown_already == 1) {
+        if (this.monitor_shown_already == 1 || invite_page == 1) {
           $('.manage_invitations').html(`
                     <center>Your opponent has declined the game as they have already started one!</center>
+          `);
+          $('.status').show();
+          $('#game_spinner').hide();
+          this.attachEvents(this.app);
+	}
+      }
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
+        if (this.monitor_shown_already == 1 || invite_page == 1) {
+          $('.manage_invitations').html(`
+                    <center>You have received multiple acceptances to your game. Refusing all but the first acceptance.</center>
           `);
           $('.status').show();
           this.attachEvents(this.app);

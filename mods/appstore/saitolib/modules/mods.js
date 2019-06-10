@@ -52,7 +52,8 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   //this.mods.push(require('./mods/raw/raw')(this.app));
   this.mods.push(require('../../mods/advert/advert')(this.app));
 // uses msig
-  this.mods.push(require('../../mods/appstore/appstore')(this.app));
+
+//  this.mods.push(require('../../mods/appstore/appstore')(this.app));
 //  this.mods.push(require('./mods/auth/auth')(this.app));
 //  this.mods.push(require('./mods/bank/bank')(this.app));
 // uses msig
