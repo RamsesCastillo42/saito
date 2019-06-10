@@ -18,7 +18,7 @@ function Mempool(app) {
 
   this.directory                = path.join(__dirname, '../../data/');
   this.blocks                   = [];
-  this.downloads                = [];
+  this.downloads                = {};
   this.transactions             = [];
   this.goldentickets            = [];
   this.recovered                = [];
@@ -49,10 +49,6 @@ function Mempool(app) {
   this.processing_speed         = 500;
   this.processing_timer         = null;
 
-  this.downloading_active       = false;
-  this.downloading_speed        = 500;
-  this.downloading_timer        = null;
-
   this.clearing_active          = false;
 
   return this;
@@ -77,6 +73,11 @@ Mempool.prototype.fetchBlock = async function fetchBlock(peer, bhash) {
   if (this.app.blockchain.isHashIndexed(bhash) == 1) {
     return;
   }
+  if (this.downloads[bhash] == 1) {
+    return;
+  }
+
+  this.downloads[bhash] = 1;
 
   //
   // avoid enqueuing from peers w/o endpoints
@@ -121,10 +122,9 @@ Mempool.prototype.fetchBlock = async function fetchBlock(peer, bhash) {
       console.error(err);
     }
 
-    await this.processBlocks();
+    delete this.downloads[bhash];
 
-  } else {
-    this.downloading_active = false;
+    await this.processBlocks();
   }
 }
 

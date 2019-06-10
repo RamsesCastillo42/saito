@@ -793,7 +793,7 @@ console.log("\nBLOCK\n");
 
         if (block_hashes.length > 1) {
           await this.app.mempool.fetchMultipleBlocks(this, block_hashes);
-        } else if (block_hashes == 1) {
+        } else if (block_hashes.length == 1) {
           await this.app.mempool.fetchBlock(this, block_hashes[0]);
         }
 
