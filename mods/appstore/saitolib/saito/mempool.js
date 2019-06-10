@@ -138,7 +138,7 @@ Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(peer,
 
   if (peer.peer.synctype == "lite") {
     url_sync_address   = "lite-blocks/";
-    if (publickeys == []) {
+    if (publickeys.length == 0) {
       publickeys.push(this.app.wallet.returnPublicKey());
     }
   }
