@@ -909,7 +909,10 @@ console.log(" .... run callbks: " + new Date().getTime());
         let our_longest_chain = this.returnLongestChainIndexPosArray(this.callback_limit);
         for (let i = 0; i < our_longest_chain.length && i < this.callback_limit; i++) {
 
-          var blk = await this.returnBlockByHash(this.index.hash[our_longest_chain[i]]);
+	  //
+	  // insist on TXS
+	  //
+          var blk = await this.returnBlockByHash(this.index.hash[our_longest_chain[i]], 2);
           if (blk != null) {
 
             //
@@ -957,12 +960,13 @@ console.log(" .... run callbks: " + new Date().getTime());
   // limit is too short and we don't have the block data actively
   // stored in memory.
   //
-  // TODO -- we do not delete EVERY block with this approach
-  // 
   if (this.blocks.length > this.callback_limit) {
+
     let blk2clear = this.blocks.length - this.callback_limit-1;
     let id2clear = this.blocks[this.blocks.length-1].block.id - this.callback_limit-1;
+
     if (blk2clear >= 0) {
+
       while (this.blocks[blk2clear].block.id > id2clear && blk2clear > 0) {
 	blk2clear--;
       }

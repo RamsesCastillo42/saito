@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Saito - Report a Bug</title>
+
+  <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" type="text/css" media="screen" />
+
+  <link rel="stylesheet" type="text/css" href="/chat/style.css" />
+  <link rel="stylesheet" type="text/css" href="/lib/templates/game.css" />
+  <link rel="stylesheet" type="text/css" href="/debug/style.css" />
+
+  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+
+</head>
+<body>
+
+  <div id="Debug_browser_active"></div>
+
+  <div class="main" style="display:all">
+
+    <b>Thank You for Reporting this Bug!</b>
+
+    <p></p>
+
+    We are working to make Saito more stable. Please let us know what module you were using and what went wrong:
+
+    <p></p>
+
+    <form action="/debug/submit" method="POST">
+
+      <label for="module" >Application: </label>
+      <br />
+      <input type="text" name="module" class="form_module" id="form_module" value="" />
+
+      <p></p>
+
+      <label for="module" >Details: </label>
+      <br />
+      <textarea name="details" class="form_details" id="form_details"></textarea>
+
+      <p></p>
+
+      <input type="button" value="Submit Bug" class="form_submit" id="form_submit" />"
+
+    </form>
+
+    <p></p>
+
+    <div id="output" class="output"></div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/browser.js"></script>
+  <script src="/debug/script.js"></script>
+
+</body>
+</html>
+
+
