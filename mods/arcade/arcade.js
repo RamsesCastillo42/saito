@@ -375,9 +375,15 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
             opponent = this.app.options.games[i].opponents[0];
           }
         }
-        if (gamename === "") {
-          gamename = "Unknown";
-        }
+
+	//
+	// unknown
+	//
+        if (gamename === "") { return; }
+        if (opponent === "") { return; }
+
+	if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+
 
         if (this.app.options.games[i].over == 1) {
           status = "Game Over";
@@ -386,7 +392,7 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
           status = "Game Underway";
         }
 
-        if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
+        if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
         if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
         this.updateBalance(this.app);
