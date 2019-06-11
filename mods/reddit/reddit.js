@@ -145,12 +145,15 @@ Reddit.prototype.initialize = async function initialize() {
   if (this.browser_active == 0) { return; }
 
   if (this.app.BROWSER == 1) {
+    // transactions will be sent to this publickey
+    this.publickey = this.app.network.peers[0].peer.publickey;
 
     if (load_content_on_load == 0) {
       $('#loading_posts').hide();
       return;
     }
     if (offset == null) { offset = 0; }
+
 
     ////////////////
     // SUBREDDITS //
