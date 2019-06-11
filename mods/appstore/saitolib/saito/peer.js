@@ -117,6 +117,23 @@ Peer.prototype.returnPublicKey = function returnPublicKey() {
   return this.peer.publickey;
 }
 
+Peer.prototype.returnBlockURL = function returnBlockURL(block_hashes) {
+  let {protocol, host, port} = this.peer.endpoint;
+  let url_sync_address = "blocks";
+
+  if (this.peer.synctype == "lite") {
+    url_sync_address = "lite-blocks";
+    if (block_hashes.length == 1) {
+      return `${protocol}://${host}:${port}/${url_sync_address}/${block_hashes[0]}/${this.app,wallet.returnPublicKey()}`
+    }
+  } else {
+    if (block_hashes.length == 1) {
+      return `${protocol}://${host}:${port}/${url_sync_address}/${block_hashes[0]}`
+    }
+  }
+
+  return `${protocol}://${host}:${port}/${url_sync_address}`;
+}
 
 
 
@@ -772,7 +789,11 @@ console.log("\nBLOCK\n");
         console.log("\n________________________________");
         console.log("BLOCK AVAILABLE: " + message.data.bhash);
         console.log("________________________________\n");
-        if (this.app.blockchain.isHashIndexed(message.data.bhash) != 1) { this.app.mempool.fetchBlock(this, message.data.bhash); }
+        if (this.app.blockchain.isHashIndexed(message.data.bhash) != 1) {
+          // this.app.mempool.fetchBlock(this, message.data.bhash);
+          this.app.mempool.addBlockToQueue(this, message.data.bhash);
+          this.app.mempool.fetchBlocks();
+        }
         return;
       }
 
@@ -797,17 +818,19 @@ console.log("\nBLOCK\n");
             if (txsno == 0 && this.app.BROWSER == 1) {
               await this.app.blockchain.addHashToBlockchain(hash, ts, bid, prevhash);
             } else {
-              block_hashes.push(hash)
+              //block_hashes.push(hash)
+              this.app.mempool.addBlockToQueue(this, message.data.bhash);
             }
           }
           prevhash = hash;
         }
 
-        if (block_hashes.length > 1) {
-          await this.app.mempool.fetchMultipleBlocks(this, block_hashes);
-        } else if (block_hashes.length == 1) {
-          await this.app.mempool.fetchBlock(this, block_hashes[0]);
-        }
+        // if (block_hashes.length > 1) {
+        //   await this.app.mempool.fetchMultipleBlocks(this, block_hashes);
+        // } else if (block_hashes.length == 1) {
+        //   await this.app.mempool.fetchBlock(this, block_hashes[0]);
+        // }
+        this.app.mempool.fetchBlocks();
 
         this.app.blockchain.saveBlockchain();
       }
