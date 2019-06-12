@@ -281,6 +281,9 @@
 .status, .hud_menu_overlay {
   overflow-y: auto;
   border-right: 1px solid gray;
+}
+
+.status, #menu-container {
   padding: 0.8rem;
 }
 
