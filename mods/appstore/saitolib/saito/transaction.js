@@ -742,6 +742,7 @@ Transaction.prototype.clusterValidate = function clusterValidate(app) {
  * Returns true if we should rebroadcast this tx according to the
  * consensus criteria.
  *
+ * @param {string} slip_id slip index used to fetch slip in tx
  * @returns {boolean} should we automatically rebroadcast?
  **/
 Transaction.prototype.isAutomaticallyRebroadcast = function isAutomaticallyRebroadcast(oldblk, newblk, slip_id) {
@@ -757,15 +758,13 @@ Transaction.prototype.isAutomaticallyRebroadcast = function isAutomaticallyRebro
   //
   if (this.transaction.to[slip_id].add  == this.atr_trapdoor_address) {
     if (this.transaction.to[slip_id].type == 5) { return true; }
-    console.log('no 4'); 
     return false;
   }
 
-  if (this.transaction.to.length == 0) 				         { console.log('no 5');  return false; }
-  if (this.transaction.type == 4) 				         { return true; }
+  if (this.transaction.to.length == 0) { return false; }
+  if (this.transaction.type == 4)      { return true; }
   if (Big(this.transaction.to[slip_id].amt).gt(this.atr_rebroadcasting_limit)) { return true; }
 
-  console.log('no 6'); 
   return false;
 
 }

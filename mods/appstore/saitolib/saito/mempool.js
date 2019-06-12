@@ -60,6 +60,28 @@ function Mempool(app) {
 }
 module.exports = Mempool;
 
+
+/**
+ * Initializes mempool and starts trying to bundle blocks
+ */
+Mempool.prototype.initialize = function initialize() {
+  if (this.app.BROWSER == 1) { return; }
+  if (this.app.SPVMODE == 1) { return; }
+  try {
+    this.bundling_timer = setInterval(() => {
+      this.bundleBlock();
+    }, this.bundling_speed);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+/**
+ * Add block hash to downloads queue based on peer. Updates download hashmap to track blocks in queue
+ *
+ * @param {saito.peer} peer who we're getting our block from
+ * @param {string} bhash block hash
+ */
 Mempool.prototype.addBlockToQueue = function addBlockToQueue(peer, bhash) {
   //
   // avoid dupes
@@ -80,13 +102,11 @@ Mempool.prototype.addBlockToQueue = function addBlockToQueue(peer, bhash) {
     this.downloads[peer_publickey].push(bhash)
   }
   this.downloads_hmap[bhash] = 1;
-
-  // fetchBlocks from queue
-  // if (this.downloads.length == 1) {
-  this.fetchBlocks();
-  // }
 }
 
+/**
+ * Fetches blocks in our download queue then processes downloaded blocks
+ */
 Mempool.prototype.fetchBlocks = async function fetchBlocks() {
   // blocks are being fetched already
   if (this.downloading_active == 1) {
@@ -94,15 +114,16 @@ Mempool.prototype.fetchBlocks = async function fetchBlocks() {
   }
 
   this.downloading_active = 1;
+
+  // iterate through our download que. Key is peer publickey
   for (var key in this.downloads) {
     while (this.downloads[key].length > 0) {
       let block_hashes = this.downloads[key].splice(0, this.block_sample_size);
-      let block_to_download_url = this.app.network.returnPeerByPublicKey(key).returnBlockURL(block_hashes.length)
+      let block_to_download_url = this.app.network.returnPeerByPublicKey(key).returnBlockURL(block_hashes)
 
       if (block_hashes.length > 1) {
-        await this.fetchMultipleBlocks(block_to_download_url, block_hashes, [this.app.wallet.returnPublickKey()]);
+        await this.fetchMultipleBlocks(block_to_download_url, block_hashes, [this.app.wallet.returnPublicKey()]);
       } else {
-        block_to_download_url = block_to_download_url + block_hashes[0];
         await this.fetchSingleBlock(block_to_download_url, block_hashes[0]);
       }
     }
@@ -114,11 +135,10 @@ Mempool.prototype.fetchBlocks = async function fetchBlocks() {
 }
 
 /**
- * given a block hash, fetches that block from the peer that
- * has told us they have it.
+ * Fetches single block from endpoint
  *
- * @params {saito.peer} who told us they have this
- * @params {string} the hash of the new block
+ * @param {URL} block_to_download_url url endpoint to fetch from
+ * @param {string} bhash fetched block hash
  **/
 Mempool.prototype.fetchSingleBlock = async function fetchSingleBlock(block_to_download_url, bhash) {
   if ( this.block_size_current <= this.block_size_cap ) {
@@ -138,8 +158,6 @@ Mempool.prototype.fetchSingleBlock = async function fetchSingleBlock(block_to_do
         return;
       }
 
-      blk.peer_publickey = peer.peer.publickey;
-
       this.addBlock(blk)
     } catch(err) {
       console.error(err);
@@ -150,10 +168,13 @@ Mempool.prototype.fetchSingleBlock = async function fetchSingleBlock(block_to_do
 }
 
 /**
- * @params {object} peer
- * @params {array} bhashes
+ * Fetch multiple blocks from endpoint
+ *
+ * @param {URL} block_to_download_url url endpoint to fetch from
+ * @param {Array.<saito.block>} blocks list of bhashes being fetched
+ * @param {Array.string} publickeys list of keys we want transactions for
  */
-Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(blocks, bhashes, publickeys=[]) {
+Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(block_to_download_url, blocks, publickeys=[]) {
   try {
     let response = await axios.post(block_to_download_url, { blocks, publickeys });
     response.data.payload.blocks.forEach((body, index) => {
@@ -170,162 +191,13 @@ Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(block
 
       this.addBlock(blk);
 
-      delete this.downloads_hmap[bhashes[index]];
+      delete this.downloads_hmap[blocks[index]];
     });
   } catch(err) {
     console.log(err);
   }
 }
 
-/**
- * given a block hash, fetches that block from the peer that
- * has told us they have it.
- *
- * @params {saito.peer} who told us they have this
- * @params {string} the hash of the new block
- **/
-Mempool.prototype.fetchBlock = async function fetchBlock(peer, bhash) {
-
-  //
-  // avoid dupes
-  //
-  if (this.app.blockchain.isHashIndexed(bhash) == 1) {
-    return;
-  }
-  if (this.downloads_hmap[bhash] == 1) {
-    return;
-  }
-
-  this.downloads.push({bhash, peer});
-  this.downloads_hmap[bhash] = 1;
-
-  if (this.downloading_active == 1) {
-    // blocks are being fetched already
-    return;
-  }
-
-  this.downloading_active == 1;
-
-  // fetchBlocks from queue
-  if (this.downloads.length == 1) {
-    this.fetchBlocks();
-  }
-
-  //
-  // avoid enqueuing from peers w/o endpoints
-  //
-  if (peer.peer.endpoint.protocol == "" || peer.peer.endpoint.host == "") { return; }
-
-  let url_sync_address = "blocks/";
-  let url_sync_pkey    = "";
-
-  if (peer.peer.synctype == "lite") {
-    url_sync_address   = "lite-blocks/";
-    url_sync_pkey      = "/" + this.app.wallet.returnPublicKey();
-  }
-
-  let {protocol, host, port} = peer.peer.endpoint
-  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}${bhash}${url_sync_pkey}`;
-
-  //
-  // check we have space
-  //
-  if ( this.block_size_current <= this.block_size_cap ) {
-
-    try {
-      let response = await axios.get(block_to_download_url);
-      let body = response.data;
-
-      let blk = new saito.block(this.app, body);
-
-      if (blk.block.ts > new Date().getTime() + 60000) {
-        console.log("block appears to be from the future, dropping...");
-        return;
-      }
-
-      if (blk.is_valid == 0 && this.app.BROWSER == 0) {
-        return;
-      }
-
-      blk.peer_publickey = peer.peer.publickey;
-
-      this.addBlock(blk)
-    } catch(err) {
-      console.error(err);
-    }
-
-    delete this.downloads_hmap[bhash];
-
-    await this.processBlocks();
-  }
-}
-
-/**
- * @params {object} peer
- * @params {array} bhashes
- */
-Mempool.prototype.fetchMultipleBlocks = async function fetchMultipleBlocks(peer, bhashes, publickeys=[]) {
-  let url_sync_address = "blocks/";
-  let url_sync_pkey    = "";
-
-  if (peer.peer.synctype == "lite") {
-    url_sync_address   = "lite-blocks/";
-    if (publickeys.length == 0) {
-      publickeys.push(this.app.wallet.returnPublicKey());
-    }
-  }
-
-  let {protocol, host, port} = peer.peer.endpoint;
-  let block_to_download_url = `${protocol}://${host}:${port}/${url_sync_address}`;
-
-  let block_size = 50;
-
-  for (let i = 0; i < Math.ceil((bhashes.length)/block_size); i++) {
-    let start = i * block_size;
-    let end   = (i + 1) * block_size
-
-    var blocks = bhashes.slice(start, end);
-
-    try {
-      let response = await axios.post(block_to_download_url, { blocks, publickeys });
-      response.data.payload.blocks.forEach(body => {
-        let blk = new saito.block(this.app, body);
-
-        if (blk.block.ts > new Date().getTime() + 60000) {
-          console.log("block appears to be from the future, dropping...");
-          return;
-        }
-
-        if (blk.is_valid == 0 && this.app.BROWSER == 0) {
-          return;
-        }
-
-        this.addBlock(blk)
-      });
-    } catch(err) {
-      console.log(err);
-    }
-  }
-  await this.processBlocks();
-}
-
-
-
-
-/**
- * Initializes mempool and starts trying to bundle blocks
- */
-Mempool.prototype.initialize = function initialize() {
-  if (this.app.BROWSER == 1) { return; }
-  if (this.app.SPVMODE == 1) { return; }
-  try {
-    this.bundling_timer = setInterval(() => { 
-      this.bundleBlock(); 
-    }, this.bundling_speed);
-  } catch (err) {
-    console.log(err);
-  }
-}
 
 
 /**
@@ -434,9 +306,9 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
           if (this.transactions[i].transaction.type == 1) {
 
             //
-            // we hit this when we include a solution for a previous 
+            // we hit this when we include a solution for a previous
             // golden ticket that is not correct. in this case we want
-            // to just quit, and delete this transaction from our 
+            // to just quit, and delete this transaction from our
             // mempool.
             //
             if (this.transactions[i].transaction.msg.target != prevblk.returnHash()) {
@@ -469,17 +341,17 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
         }
 
 
-        // 
-        // sanity check 
-        // 
+        //
+        // sanity check
+        //
         // if the number of transactions in the block == 0 then
-         // we have put together a block with NOTHING and there 
+         // we have put together a block with NOTHING and there
         // has been some sort of error. In this case we empty
         // our entire mempool as a sanity check, and print out
         // an error message....
         //
         if (blk.transactions.length == 0 && blk.block.id > 1) {
-          console.log("\nProducing a block with ZERO transactions? EMPTYING MEMPOOL in response\n"); 
+          console.log("\nProducing a block with ZERO transactions? EMPTYING MEMPOOL in response\n");
           this.transactions = [];
           this.app.miner.stopMining();
           this.app.miner.startMining(this.app.blockchain.returnLatestBlock());
