@@ -184,7 +184,7 @@
   font-size: 1.2rem;
   width: 40%;
   min-width: 750px;
-  max-width: 1000px;
+  max-width: 9.1em;
 
   background-color: #707070;
   border: 2px solid #948f8b;
@@ -281,6 +281,9 @@
 .status, .hud_menu_overlay {
   overflow-y: auto;
   border-right: 1px solid gray;
+}
+
+.status, #menu-container {
   padding: 0.8rem;
 }
 
@@ -294,43 +297,6 @@
 .hide {
   display: none;
 }
-
-/*
-.controls {
-  cursor: pointer;
-  background: #666;
-  
-  font-size: 1.4rem;
-  position: absolute;
-  overflow: hidden;
-  border-radius: 1.4em;
-  transition: border-radius 0.3s ease;
-  transition: height 0.3s ease;
-  transition: width 0.4s ease;
-  width: 1.5em;
-  height: 1.5em;
-  line-height: 1.5em;
-  vertical-align: bottom;
-}
-
-.controls-expanded {
-  top: -107px;
-  height: 6em;
-  width: 8em; 
-  border-radius: 2px;
-}
-
-.contols-content {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  height: 6em;
-}
-
-.controls > div {
-  display: block;
-}
-*/
 
 .controls {
   width: 99%;
@@ -372,14 +338,16 @@
     width: 100%;
     grid-template-areas: "hud-header" "hud-content";
     grid-template-columns: 1fr;
-    grid-template-rows: 3em auto;
-    min-width: 0px;
-    font-size: 1.3em;
+    grid-template-rows: 8vh auto;
+    /* font-size: 1.3em; */
+    max-width: unset;
+    min-width: unset;
   }
 
   .hud-header {
     flex-flow: row;
     flex-direction: row-reverse;
+    /* height: 6vh; */
   }
 
   .dragbar {
@@ -401,11 +369,13 @@
   .hud-header a {
     padding-left: 15px;
     padding-right: 15px;
+    line-height: 8vh;
     /* line-height: 58px; */
   }
 
   #sizer {
-    padding: 15px;
+    padding: 20px;
+    padding-left: 22px;
   }
 
   .status {
@@ -414,10 +384,14 @@
 
   .status {
     margin-bottom: 15px;
+  }
+
+  .tall {
+    height: 50vh;
   }
 
   .short {
-    height: 3.9em;
+    height: 10vh;
   }
 
   .controls {
@@ -433,6 +407,7 @@
     grid-template-columns: 5em auto;
     grid-template-rows: auto;
     min-width: unset;
+    max-width: unset;
     height: 100%;
     right: -9em;
     left: unset;
