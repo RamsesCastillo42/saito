@@ -320,8 +320,6 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   }
 
 
-console.log("HERE A");
-
   //
   // add chat
   //
