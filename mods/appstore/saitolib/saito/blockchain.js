@@ -673,9 +673,10 @@ console.log("About to Send Request for Missing Block: ");
   // block.
   //
   if (i_am_the_longest_chain == 1 && this.index.hash.length > 1) {
+
     this.lc = pos;
     this.index.lc[pos] = 1;
-    this.block_hash_hmap[pos] = newblock.block.id;
+    this.block_hash_hmap[newblock.returnHash()] = newblock.block.id;
 
     //
     // stop mining
@@ -1253,7 +1254,11 @@ Blockchain.prototype.unwindChain = async function unwindChain(
   resetting_flag
 ) {
 
+console.log("unwind: 1 " + old_block_hashes.length);
+
   if (old_block_hashes.length > 0) {
+
+console.log("unwinding hash: " + old_block_hashes[current_unwind_index]);
 
     let blk = await this.returnBlockByHash(old_block_hashes[current_unwind_index], 2);
     if (blk == null) {
@@ -1284,7 +1289,11 @@ Blockchain.prototype.unwindChain = async function unwindChain(
       return;
     }
 
+
     await this.app.storage.onChainReorganization(blk.block.id, blk.returnHash(), 0);
+
+console.log("unwinding hash: " + blk.block.id + " -- " + blk.returnHash());
+
     this.app.wallet.onChainReorganization(blk.block.id, blk.returnHash(), 0);
     this.app.modules.onChainReorganization(blk.block.id, blk.returnHash(), 0);
     this.index.lc[old_block_idxs[current_unwind_index]] = 0;

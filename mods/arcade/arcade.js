@@ -4,6 +4,8 @@ var util = require('util');
 var markdown = require("markdown").markdown;
 var fs = require('fs');
 
+var quick_invite_mode = 1; // quick_links_default
+			    // 0 legacy address invites
 
 //////////////////
 // CONSTRUCTOR  //
@@ -54,9 +56,11 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
   let show_game_options = game_options == "" ? "none" : "block";
 
   let quick_invite =
-  `<div class="quick_invite" id="quick_invite">
-    <i class="fa fa-magic"></i>Generate Invite Link
-  </div>`
+  `<div class="quick_invite_box">
+    <div class="quick_invite" id="quick_invite"><i class="fa fa-magic"></i> Generate Invite Link</div>
+    <div class="quick_invite_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">invite by publickey:</a></div>
+  </div>
+  `
 
   let multi_invite = `
     <div class="invitation_player1" id="invitation_player1" style="max-width:620px;">
@@ -70,9 +74,13 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
         <p></p>
       </div>
 
-      <div class="invite_button" id="invite_button">
-        <i class="fa fa-envelope"></i> Send Invite
+      <div class="invite_button_box">
+        <div class="invite_button" id="invite_button">
+          <i class="fa fa-envelope"></i> Send Invite
+        </div>
+        <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
       </div>
+
     </div>
   `
 
@@ -82,16 +90,15 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
   if (game_self.maxPlayers > 2) {
     invite_description =
     `<div id="invite_publickey_description" style="display:block">
-      Invite player(s) by publickey(s)
+      Provide Saito address of opponent(s):
     </div>`
   } else {
     invite_description =
-      `<div id="invite_link_description" style="display:block">
-        Generate link to invite players or <a style="color:darkblue" class="toggle_invite">invite by publickey:</a>
+      `<div id="invite_link_description" style="display:none">
+        Generate link to invite players or <a style="color:#003444;border-bottom:1px dashed;" class="toggle_invite">invite by publickey:</a>
       </div>
-
       <div id="invite_publickey_description" style="display:none">
-        Invite player(s) by publickey or <a style="color:darkblue" class="toggle_invite">generate a quick invite link</a>
+        Provide Saito address of opponent(s):
       </div>`
   }
 
@@ -133,6 +140,7 @@ Arcade.prototype.returnGameMonitor = function returnGameMonitor(app) {
         <div class="invite_button" id="invite_button">
           <i class="fa fa-envelope"></i> Send Invite
         </div>
+        <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
       </div>
 
       <div id="publisher_message" class="publisher_message" style="display:none"></div>
@@ -320,8 +328,6 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
   }
 
 
-console.log("HERE A");
-
   //
   // add chat
   //
@@ -375,9 +381,15 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
             opponent = this.app.options.games[i].opponents[0];
           }
         }
-        if (gamename === "") {
-          gamename = "Unknown";
-        }
+
+	//
+	// unknown
+	//
+        if (gamename === "") { return; }
+        if (opponent === "") { return; }
+
+	if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+
 
         if (this.app.options.games[i].over == 1) {
           status = "Game Over";
@@ -386,7 +398,7 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
           status = "Game Underway";
         }
 
-        if (opponent.length > 14) { opponent = opponent.substring(0, 13) + "..."; }
+        if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
         if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
         this.updateBalance(this.app);
@@ -893,13 +905,33 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
   $('.toggle_invite').off()
   $('.toggle_invite').on('click', () => {
-    $('.quick_invite').toggle();
-    $('.invitation_player1').toggle();
 
-    $('#invite_link_description').toggle();
-    $('#invite_publickey_description').toggle();
+    if (quick_invite_mode == 1) {
 
-    $('.invite_link_container').toggle();
+      $('.quick_invite_box').hide();
+      $('.quick_invite').hide();
+      $('.invitation_player1').toggle();
+      $('#invite_link_description').hide();
+      $('#invite_publickey_description').show();
+
+      $('.invite_link_container').toggle();
+
+      quick_invite_mode = 0;
+
+    } else {
+
+      $('.quick_invite_box').show();
+      $('.quick_invite').show();
+      $('.invitation_player1').toggle();
+
+      $('#invite_link_description').hide(); 
+     $('#invite_publickey_description').hide();
+
+      $('.invite_link_container').toggle();
+
+      quick_invite_mode = 0;
+
+    }
 
     this.attachEvents(this.app);
   })
@@ -922,10 +954,18 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
 
     let options    = {};
 
-    $('form input, form select').each(
+    $('.quick_invite_switch').hide();
+
+    $('form input, form checkbox, form select').each(
       function(index) {
         var input = $(this);
-        options[input.attr('name')] = input.val();
+        if (input.is(":checkbox")) {
+          if (input.prop("checked")) {
+            options[input.attr('name')] = 1;
+	  }
+	} else {
+          options[input.attr('name')] = input.val();
+	}
       }
     );
 
@@ -950,8 +990,8 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
         <i class="fa fa-clipboard" id="invite_link_clipboard" aria-hidden="true"></i>
       </div>
       <div id="generate_link_description" style="color: #444">
-        <div>Send this link to your opponent to start the game.</div>
-        <div>Please remain on this page while the invitation is accepted.</div>
+        <div style="margin-top:25px;">Send this link to your opponent to start the game.</div>
+        <div style="margin-top:10px">Please remain on this page while the invitation is accepted.</div>
       </div>
       `
     )
@@ -983,7 +1023,7 @@ Arcade.prototype.attachEvents = async function attachEvents(app) {
     $('.find_player_button').toggle();
 
     if (arcade_self.active_game == "Twilight") {
-      $('.publisher_message').html("Twilight Struggle is licensed for use in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
+      $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
       $('.publisher_message').show();
     }
 
@@ -1114,6 +1154,8 @@ console.log("ERROR DELETING GAME!");
   $('.invite_button').off();
   $('.invite_button').on('click', async function() {
 
+    $('.invite_button_switch').hide();
+
     let address    = [];
         address[0] = $('#opponent_address').val();
         address[1] = $('#opponent_address2').val();
@@ -1122,9 +1164,15 @@ console.log("ERROR DELETING GAME!");
     let options    = {};
 
     $('form input, form select').each(
-      function(index) {  
+      function(index) {
         var input = $(this);
-        options[input.attr('name')] = input.val();
+        if (input.is(":checkbox")) {
+          if (input.prop("checked")) {
+            options[input.attr('name')] = 1;
+	  }
+	} else {
+          options[input.attr('name')] = input.val();
+	}
       }
     );
 
