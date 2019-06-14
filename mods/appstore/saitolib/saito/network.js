@@ -397,8 +397,6 @@ Network.prototype.propagateBlock = function propagateBlock(blk) {
 
   var data = { bhash : blk.returnHash() , bid : blk.block.id };
   for (let i = 0; i < this.peers.length; i++) {
-    console.log("SENDING BLOCK DATA: ", data.bhash);
-    console.log("TO: ", this.peers[i].peer.host);
     this.peers[i].sendRequest("block", data);
   }
 
