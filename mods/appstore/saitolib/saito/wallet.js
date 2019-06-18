@@ -294,11 +294,39 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
     total_inputs = total_inputs.plus(Big(tx.transaction.from[ii].amt));
   }
 
+  //
+  // generate change address(es)
+  //
   var change_amount = total_inputs.minus(total_fees);
   if (Big(change_amount).gt(0)) {
-    tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change_amount.toFixed(8)));
-    // specify that this is a normal transaction
-    tx.transaction.to[tx.transaction.to.length-1].type = 0;
+
+    //
+    // if we do not have many slips left, generate a few extra inputs
+    //
+    if (this.app.options.wallet.inputs.length < 3) {
+
+      //
+      // split change address
+      //
+      // this prevents some usability issues with APPS
+      // by making sure there are usually at least 3 
+      // utxo available for spending.
+      //
+      let half_change_amount = change_amount.div(2);
+
+      tx.transaction.to.push(new saito.slip(this.returnPublicKey(), half_change_amount.toFixed(8)));
+      tx.transaction.to[tx.transaction.to.length-1].type = 0;
+      tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change_amount.minus(half_change_amount).toFixed(8)));
+      tx.transaction.to[tx.transaction.to.length-1].type = 0;
+
+    } else {
+
+      //
+      // single change address
+      //
+      tx.transaction.to.push(new saito.slip(this.returnPublicKey(), change_amount.toFixed(8)));
+      tx.transaction.to[tx.transaction.to.length-1].type = 0;
+    }
   }
 
   return tx;
