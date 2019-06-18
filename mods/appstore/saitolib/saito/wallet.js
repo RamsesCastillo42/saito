@@ -266,8 +266,6 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   }
 
 
-
-
   if (total_fees.gt(wallet_avail)) {
     return null;
   }
@@ -286,7 +284,9 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
 
   // specify that this is a normal transaction
   tx.transaction.to[tx.transaction.to.length-1].type = 0;
-  if (tx.transaction.from == null) { return null; }
+  if (tx.transaction.from == null) {
+    return null;
+  }
 
   // add change input
   var total_inputs = Big(0.0);
@@ -298,12 +298,13 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   // generate change address(es)
   //
   var change_amount = total_inputs.minus(total_fees);
+
   if (Big(change_amount).gt(0)) {
 
     //
     // if we do not have many slips left, generate a few extra inputs
     //
-    if (this.app.options.wallet.inputs.length < 3) {
+    if (this.wallet.inputs.length < 4) {
 
       //
       // split change address
