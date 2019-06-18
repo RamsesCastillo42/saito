@@ -263,21 +263,24 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
       // check that we do not have an existing game with this inviter
       //
       let game_exists = 0;
+      let game_exists_idx = 0;
       if (app.options.games != undefined) {
         for (let i = 0; i < app.options.games.length; i++) {
 	  if (app.options.games[i].opponents.length > 0) {
 	    if (app.options.games[i].opponents[0] === invite_data.pubkey) {
 	      if (app.options.games[i].over == 0) {
 	        game_exists = 1;
+	        game_exists_idx = i;
 	      }
 	    }
 	  }
 	}
       }
 
-
       if (game_exists == 1) {
-	$('.invite_main').html('You already have a game with this opponent. Please finish it before creating a new one.');
+        app.options.games[i].ts = new Date().getTime();
+	this.saveGame(app.options.games[game_exists_idx].id);
+	$('.invite_main').html('You already have a game with this opponent.<p></p><a href="/twilight">Join this Game</a>');
 	$('.invite_main').css('font-size','1.7em');
 	return;
       }
@@ -525,6 +528,7 @@ Arcade.prototype.handleOnConfirmation = function handleOnConfirmation(blk, tx, c
           this.attachEvents(this.app);
 	}
       }
+      return;
     }
 
 
