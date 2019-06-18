@@ -365,108 +365,112 @@ Arcade.prototype.listActiveGames = function listActiveGames() {
     if (this.app.options.games.length > 0) {
 
       for (let i = 0; i < this.app.options.games.length; i++) {
-
-        let opponent   = "unknown";
-        let gameid     = this.app.options.games[i].id;
-        let player     = this.app.options.games[i].player;
-        let winner     = this.app.options.games[i].winner;
-        let gamename   = this.app.options.games[i].module;
-        let status     = this.app.options.games[i].status;
-        let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
-        let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
-        let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
-
-        let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
-        if (tmpid != "") { opponent = tmpid; }
-
-        if (this.app.options.games[i].opponents != undefined) {
-          if (this.app.options.games[i].opponents.length > 0) {
-            opponent = this.app.options.games[i].opponents[0];
-          }
-        }
-
-	//
-	// unknown
-	//
-        if (gamename === "") { return; }
-        if (opponent === "") { return; }
-
-	if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
-
-
-        if (this.app.options.games[i].over == 1) {
-          status = "Game Over";
-        }
-        if (status == "" || status == undefined) {
-          status = "Game Underway";
-        }
-
-        if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
-        if (status.length > 50) { status = status.substring(0, 50) + "..."; }
-
-        this.updateBalance(this.app);
-
-        let html = "";
-
-        if (this.app.options.games[i].over == 0) {
-
-          if (this.app.options.games[i].invitation == 1) {
-
-            let remote_address = "";
-            for (let z = 0; z < this.app.options.games[i].opponents.length; z++) {;
-              if (z > 0) { remote_address += "_"; }
-              remote_address += this.app.options.games[i].opponents[z];
-            }
-
-            html  = '<div class="single_activegame">';
-            html += '<div id="'+gameid+'_game">';
-            html += '<b>' + gamename + '</b></br>';
-            html += opponent + '</div>';
-            html += '<p></p>Game Invitation!<p></p>';
-            html += '<div class="acceptgamelink">'+acceptgame+'</div>';
-            html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
-            html += '</div>';
-
-          } else {
-
-            html  = '<div class="single_activegame">';
-            html += '<div id="'+gameid+'_game">';
-            html += '<b>' + gamename + '</b></br>';
-            html += opponent + '</div>';
-            html += '<div class="joingamelink">'+joingame+'</div>';
-            html += '<div class="deletegamelink">'+deletegame+'</div>';
-            html += '</div>';
-          }
-
-        } else {
-
-          html  = '<div class="single_activegame">';
-          html += '<div id="'+gameid+'_game">';
-          html += '<b>' + gamename + '</b></br>';
-          html += opponent + '</div>';
-          if (winner == player) {
-            html += '<p></p>You Won!<p></p>';
-          } else {
-            if (winner == 0) {
-              html += '<p></p>Opponent Resigned!<p></p>';
-            } else {
-              html += '<p></p>Lost Game!<p></p>';
-            }
-          }
-          html += '<div class="deletegamelink">'+deletegame+'</div>';
-          html += '</div>';
-
-        }
-
-        if (parseInt(this.app.options.games[i].last_block) == 0) {
-          $('.active_games').show();
-          $('#gametable').append(html);
-        }
+        this.renderGameNotificationHTML(this.app.options.games[i]);
       }
     }
   }
 
   this.attachEvents(this.app);
+
+}
+
+Arcade.prototype.renderGameNotificationHTML  = function renderGameNotificationHTML(game) {
+  let opponent   = "unknown";
+  let gameid     = game.id;
+  let player     = game.player;
+  let winner     = game.winner;
+  let gamename   = game.module;
+  let status     = game.status;
+  let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
+  let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
+  let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
+
+  let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
+  if (tmpid != "") { opponent = tmpid; }
+
+  if (game.opponents != undefined) {
+    if (game.opponents.length > 0) {
+      opponent = game.opponents[0];
+    }
+  }
+
+//
+// unknown
+//
+  if (gamename === "") { return; }
+  if (opponent === "") { return; }
+
+if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+
+
+  if (game.over == 1) {
+    status = "Game Over";
+  }
+  if (status == "" || status == undefined) {
+    status = "Game Underway";
+  }
+
+  if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
+  if (status.length > 50) { status = status.substring(0, 50) + "..."; }
+
+  this.updateBalance(this.app);
+
+  let html = "";
+
+  if (game.over == 0) {
+
+    if (game.invitation == 1) {
+
+      let remote_address = "";
+      for (let z = 0; z < game.opponents.length; z++) {;
+        if (z > 0) { remote_address += "_"; }
+        remote_address += game.opponents[z];
+      }
+
+      html  = '<div class="single_activegame">';
+      html += '<div id="'+gameid+'_game">';
+      html += '<b>' + gamename + '</b></br>';
+      html += opponent + '</div>';
+      html += '<p></p>Game Invitation!<p></p>';
+      html += '<div class="acceptgamelink">'+acceptgame+'</div>';
+      html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
+      html += '</div>';
+
+    } else {
+
+      html  = '<div class="single_activegame">';
+      html += '<div id="'+gameid+'_game">';
+      html += '<b>' + gamename + '</b></br>';
+      html += opponent + '</div>';
+      html += '<div class="joingamelink">'+joingame+'</div>';
+      html += '<div class="deletegamelink">'+deletegame+'</div>';
+      html += '</div>';
+    }
+
+  } else {
+
+    html  = '<div class="single_activegame">';
+    html += '<div id="'+gameid+'_game">';
+    html += '<b>' + gamename + '</b></br>';
+    html += opponent + '</div>';
+    if (winner == player) {
+      html += '<p></p>You Won!<p></p>';
+    } else {
+      if (winner == 0) {
+        html += '<p></p>Opponent Resigned!<p></p>';
+      } else {
+        html += '<p></p>Lost Game!<p></p>';
+      }
+    }
+    html += '<div class="deletegamelink">'+deletegame+'</div>';
+    html += '</div>';
+
+  }
+
+  if (parseInt(game.last_block) == 0) {
+    $('.active_games').show();
+    $('#gametable').append(html);
+  }
 
 }
 
