@@ -203,7 +203,6 @@ Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
 
 
         var slip_map_index = blk.transactions[b].transaction.to[bb].returnIndex();
-console.log("INSERTING SLIP " + slip_map_index + " with value -1");
         shashmap.insert_slip(slip_map_index, -1);
 
       }
@@ -629,7 +628,6 @@ Storage.prototype.validateTransactionInputs = function validateTransactionInputs
   if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return false; }
 
   for (let i = 0; i < slip_array.length; i++) {
-console.log("HERE: " + slip_array[i]);
     if (this.validateTransactionInput(slip_array[i], bid) == false) {
       console.log(slip_array[i].returnIndex());
       // console.log(JSON.stringify(slip_array[i]));
@@ -1017,7 +1015,6 @@ Storage.prototype.queryDatabaseArray = async function queryDatabaseArray(sql, pa
 
 
 Storage.prototype.updateShashmap = function updateShashmap(slip_map_index, bid) {
-console.log("UPDATE SHASHMAP: " + slip_map_index + " -- " + bid);
   shashmap.insert_slip(slip_map_index, bid);
   return;
 }
