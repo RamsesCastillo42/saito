@@ -23,7 +23,7 @@
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
   <style>
-    .arcade > ul {
+    .arcade > #games > ul {
       list-style-type: none;
       margin: 0;
       padding: 0;
@@ -31,11 +31,16 @@
       background-color: #333;
     }
 
-    .arcade > ul > li {
+    .arcade > #games > ul > li {
       float: left;
+      cursor: pointer;
     }
 
-    .arcade > ul > li a {
+    .arcade > #games > ul > li a:active {
+      border-bottom: 5px solid darkorange;
+    }
+
+    .arcade > #games > ul > li a {
       display: block;
       color: white;
       text-align: center;
@@ -44,11 +49,16 @@
     }
 
     /* Change the link color to #111 (black) on hover */
-    .arcade > ul > li a:hover {
+    .arcade > #games > ul > li a:hover {
       background-color: #111;
     }
 
+    .highlighted {
+      border-bottom: 5px solid darkorange;
+    }
+
     table {
+      width: 100%;
       border: 1px solid black;
       border-bottom: unset;
       border-spacing: unset;
@@ -72,6 +82,8 @@
 
     td {
       border-bottom: 1px solid black;
+      max-width: 3em;
+      padding-bottom: unset;
     }
 
     .header_table {
@@ -83,6 +95,28 @@
     .table_button {
       width: 100%;
     }
+
+    .accept_game, .reject_game, .delete_game, .joinlink {
+      float: right;
+      border-radius: 5px;
+      margin: 10px 0px 10px 10px;
+      color: white;
+      width: 40%;
+    }
+
+    .accept_game {
+      background: darkorange;
+    }
+
+    .reject_game {
+      background: darkgrey;
+    }
+
+    .delete_game {
+      background-color: red;
+    }
+
+    .joinlink {}
   </style>
 
 </head>
@@ -124,43 +158,23 @@
         </div>
       </div>
 
-      <h2>Games</h2>
-      <ul style="list-style-type: none; margin: 0; padding: 0;">
-        <li><a>Open</a></li>
-        <li><a>Ongoing</a></li>
-        <li><a>My Games</a></li>
-      </ul>
-      <table>
-        <tr class="header_table">
-          <th>Player Name</th>
-          <th>Game</th>
-          <th>Status</th>
-        </tr>
-        <tr>
-          <td>david@saito</td>
-          <td>Twilight Struggle</td>
-          <td>
-            <button class="table_button">ACCEPT</button>
-          </td>
-        </tr>
-        <tr>
-          <td>richard@saito</td>
-          <td>Twilight Struggle</td>
-          <td>
-            <button class="table_button">ACCEPT</button>
-          </td>
-        </tr>
-      </table>
-      <div>
-        <button>Create Game</button>
+      <div id="games" style="min-height: 1000px;">
+        <h2>Games</h2>
+        <ul id="games-nav-menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
+          <li><a id="open">Open</a></li>
+          <li><a id="ongoing">Ongoing</a></li>
+          <li><a id="mygames">My Games</a></li>
+        </ul>
+        <table id="games-table"></table>
+        <div>
+          <button class="invite_button">Create Game</button>
+        </div>
       </div>
     </div>
     <div class="ads">
       <div class="advert-300-250" id="advert-300-250"></div>
       <h2>Forum</h2>
-      <div>
-
-      </div>
+      <div style="width:100%;height:300px;border: 1px solid black"></div>
     </div>
   </div>
 

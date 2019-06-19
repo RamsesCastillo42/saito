@@ -71,8 +71,10 @@
 */
 
 @media (min-width: 481px) and (max-width: 767px) {
-
-
+  .game {
+    min-width: 50vw;
+    margin-right: 1em;
+  }
 }
 
 /*

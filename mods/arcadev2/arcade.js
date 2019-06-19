@@ -11,6 +11,104 @@ class Arcade extends ModTemplate {
     this.name            = "Arcade";
     this.browser_active  = 0;
     this.emailAppName    = "Arcade";
+
+    this.games = {}
+    this.games.open = [];
+    this.games.ongoing = [];
+    this.games.mygames = [];
+
+    this.games.nav     = { selected: 'open' };
+  }
+
+  initialize() {
+    // Open
+    this.games.open.push({ player: 'david@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
+    this.games.open.push({ player: 'richard@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
+
+    // Ongoing
+    this.games.ongoing.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
+
+    // My Games
+    this.games.mygames.push({ player: 'alice@saito', game: 'Twilight Struggle', status: ['delete_game', 'joinlink'] });
+
+    this.updateNavSelector();
+    this.renderGamesTable(this.games.nav.selected);
+  }
+
+  attachEvents() {
+    let gamesNavMenu = document.getElementById("games-nav-menu");
+
+    gamesNavMenu.addEventListener("click", this.onGamesMenuClick);
+
+  }
+
+  onGamesMenuClick = (event) => {
+    let id = event.target.id;
+    let previousNavTab = document.getElementById(this.games.nav.selected);
+
+    previousNavTab.className = "";
+    this.games.nav.selected = id;
+
+    this.updateNavSelector();
+    this.renderGamesTable(id);
+  }
+
+  updateNavSelector() {
+    let gameNavTab = document.getElementById(this.games.nav.selected);
+    gameNavTab.className = "highlighted";
+  }
+
+  renderGamesTable(id) {
+    let gamesTable = document.getElementById('games-table');
+    let gamesTableBody = document.createElement("tbody");
+    gamesTable.innerHTML = '';
+
+    this.games[id].forEach((game) => {
+      var node = document.createElement("tr");
+
+      var playerTC = document.createElement("td");
+      var playerTextNode = document.createTextNode(game.player);
+      playerTC.appendChild(playerTextNode);
+
+      var gameTC = document.createElement("td");
+      var gameTextNode = document.createTextNode(game.game);
+      gameTC.appendChild(gameTextNode);
+
+      var statusTC = document.createElement("td");
+      //var statusTextNode = document.createTextNode(game.status);
+      game.status.forEach(status => statusTC.appendChild(this.createButtonElement(status)))
+
+      node.append(playerTC,gameTC,statusTC);
+      gamesTableBody.appendChild(node);
+    })
+    gamesTable.append(gamesTableBody);
+  }
+
+  createButtonElement(button_class) {
+    var button = document.createElement("button");
+    button.className = button_class;
+
+    let text_node;
+
+    switch(button_class){
+      case "accept_game":
+        text_node = document.createTextNode("ACCEPT");
+        break;
+      case "reject_game":
+        text_node = document.createTextNode("REJECT");
+        break;
+      case "joinlink":
+        text_node = document.createTextNode("JOIN");
+        break;
+      case "delete_game":
+        text_node = document.createTextNode("DELETE");
+        break;
+      default:
+        break;
+    }
+
+    button.append(text_node);
+    return button;
   }
 
   webServer(app, expressapp) {
