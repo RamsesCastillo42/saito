@@ -22,6 +22,69 @@
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
+  <style>
+    .arcade > ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .arcade > ul > li {
+      float: left;
+    }
+
+    .arcade > ul > li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    /* Change the link color to #111 (black) on hover */
+    .arcade > ul > li a:hover {
+      background-color: #111;
+    }
+
+    table {
+      border: 1px solid black;
+      border-bottom: unset;
+      border-spacing: unset;
+    }
+
+    tr {
+      height: 50px;
+    }
+
+    th:first-child {
+      padding-left: 14px;
+    }
+
+    td:first-child {
+      padding-left: 14px;
+    }
+
+    th {
+      border-bottom: 1px solid black;
+    }
+
+    td {
+      border-bottom: 1px solid black;
+    }
+
+    .header_table {
+      border-bottom: 1px solid black;
+      background: lightsteelblue;
+      width: 100%;
+    }
+
+    .table_button {
+      width: 100%;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -39,9 +102,65 @@
   </div>
 
   <div class="main">
-    <div class="arcade"></div>
+    <div class="arcade">
+      <h2 style="margin-top: 0">Arcade</h2>
+      <div class="gamelist">
+        <div class="game" id="Twilight">
+          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+          <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
+          <div class="gametitle" id="Twilight">Twilight Struggle</div>
+        </div>
+
+        <div class="game" id="Chess">
+          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+          <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
+          <div class="gametitle" id="Chess">Chess</div>
+        </div>
+
+        <div class="game" id="Wordblocks">
+          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+          <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
+          <div class="gametitle" id="Wordblocks">Wordblocks</div>
+        </div>
+      </div>
+
+      <h2>Games</h2>
+      <ul style="list-style-type: none; margin: 0; padding: 0;">
+        <li><a>Open</a></li>
+        <li><a>Ongoing</a></li>
+        <li><a>My Games</a></li>
+      </ul>
+      <table>
+        <tr class="header_table">
+          <th>Player Name</th>
+          <th>Game</th>
+          <th>Status</th>
+        </tr>
+        <tr>
+          <td>david@saito</td>
+          <td>Twilight Struggle</td>
+          <td>
+            <button class="table_button">ACCEPT</button>
+          </td>
+        </tr>
+        <tr>
+          <td>richard@saito</td>
+          <td>Twilight Struggle</td>
+          <td>
+            <button class="table_button">ACCEPT</button>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <button>Create Game</button>
+      </div>
+    </div>
     <div class="ads">
       <div class="advert-300-250" id="advert-300-250"></div>
+      <h2>Forum</h2>
+      <div>
+
+      </div>
     </div>
   </div>
 
