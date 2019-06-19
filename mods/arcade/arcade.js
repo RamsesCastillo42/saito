@@ -381,9 +381,9 @@ Arcade.prototype.renderGameNotificationHTML  = function renderGameNotificationHT
   let winner     = game.winner;
   let gamename   = game.module;
   let status     = game.status;
-  let acceptgame = '<div class="link accept_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-check-circle"></i> ACCEPT</div>';
-  let joingame   = '<div class="link gamelink join" id="'+gameid+'_'+gamename+'"><i class="fa fa-play-circle"></i> JOIN</div>';
-  let deletegame = '<div class="link delete_game" id="'+gameid+'_'+gamename+'"><i class="fa fa-minus-circle"></i> DELETE</div>';
+  let acceptgame = `<div class="link accept_game" id="${gameid}_${gamename}"><i class="fa fa-check-circle"></i> ACCEPT</div>`;
+  let joingame   = `<div class="link gamelink join" id="${gameid}_${gamename}"><i class="fa fa-play-circle"></i> JOIN</div>`;
+  let deletegame = `<div class="link delete_game" id="${gameid}_${gamename}"><i class="fa fa-minus-circle"></i> DELETE</div>`;
 
   let tmpid = this.app.keys.returnIdentifierByPublicKey(opponent);
   if (tmpid != "") { opponent = tmpid; }
@@ -428,12 +428,14 @@ if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = thi
       }
 
       html  = '<div class="single_activegame">';
-      html += '<div id="'+gameid+'_game">';
-      html += '<b>' + gamename + '</b></br>';
-      html += opponent + '</div>';
+      html += `<div id="${gameid}_game">`;
+      html += `<b>${gamename}</b></br>`;
+      html += `${opponent}</div>`;
       html += '<p></p>Game Invitation!<p></p>';
-      html += '<div class="acceptgamelink">'+acceptgame+'</div>';
-      html += '<div class="acceptgameopponents" id="'+remote_address+'" style="display:none"></div>';
+      html += `<div style="display: flex">`
+      html += `<div class="acceptgamelink">${acceptgame}</div>`;
+      html += `<div class="acceptgameopponents" id="${remote_address}" style="display:none"></div>`;
+      html += `</div>`
       html += '</div>';
 
     } else {
