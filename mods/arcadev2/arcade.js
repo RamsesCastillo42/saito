@@ -179,6 +179,7 @@ alert("SELECTION");
   // Web Server //
   ////////////////
   webServer(app, expressapp) {
+
     expressapp.get('/arcade/',  (req, res) => {
       res.sendFile(__dirname + '/web/index.html');
       return;
