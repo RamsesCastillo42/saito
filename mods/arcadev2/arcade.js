@@ -131,7 +131,7 @@ class Arcade extends ModTemplate {
     return button;
   }
 
-  returnGameMonitor(app) {
+  populateGameMonitor(app) {
 
     let game_options = "";
     let game_self = app.modules.returnModule(this.active_game);
@@ -142,116 +142,7 @@ class Arcade extends ModTemplate {
       }
     }
 
-    let show_game_options = game_options == "" ? "none" : "block";
-
-    let quick_invite =
-    `<div class="quick_invite_box">
-      <div class="quick_invite" id="quick_invite"><i class="fa fa-magic"></i> Generate Invite Link</div>
-      <div class="quick_invite_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">invite by publickey:</a></div>
-    </div>
-    `
-
-    let multi_invite = `
-      <div class="invitation_player1" id="invitation_player1" style="max-width:620px;">
-        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
-        <div class="opponent_address2">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-          <p></p>
-        </div>
-        <div class="opponent_address3">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-          <p></p>
-        </div>
-
-        <div class="invite_button_box">
-          <div class="invite_button" id="invite_button">
-            <i class="fa fa-envelope"></i> Send Invite
-          </div>
-          <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
-        </div>
-
-      </div>
-    `
-
-    let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
-
-    var invite_description = ''
-    if (game_self.maxPlayers > 2) {
-      invite_description =
-      `<div id="invite_publickey_description" style="display:block">
-        Provide Saito address of opponent(s):
-      </div>`
-    } else {
-      invite_description =
-        `<div id="invite_link_description" style="display:none">
-          Generate link to invite players or <a style="color:#003444;border-bottom:1px dashed;" class="toggle_invite">invite by publickey:</a>
-        </div>
-        <div id="invite_publickey_description" style="display:none">
-          Provide Saito address of opponent(s):
-        </div>`
-    }
-
-    return `
-
-      <!-- <div class="address_box">
-
-        Send this address to your opponent for invitation:
-
-        <p></p>
-
-        <span style="font-family: Courier">ADDRESS: </span><span class="saito_address" id="saito_address">${app.wallet.returnPublicKey()}</span>
-        <br />
-        <span style="font-family: Courier">BALANCE: </span><span class="saito_balance" id="saito_balance">0.0</span> SAITO
-
-      </div> -->
-
-      <div class="funding_alert">
-        Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
-      </div>
-
-      <div class="manage_invitations" style="display:none">
-
-        <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg">
-
-        <div class="game_details" style="display:${show_game_options}">${game_options}</div>
-
-        <div style="grid-area: game-generate;">
-
-          ${invite_description}
-
-          ${invite_html}
-
-          <div class="invitation_player1" id="invitation_player1" style="display:none; max-width:620px">
-            <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
-            <div class="opponent_address2">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-            </div>
-            <div class="opponent_address3">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-            </div>
-
-            <div class="invite_button" id="invite_button">
-              <i class="fa fa-envelope"></i> Send Invite
-            </div>
-            <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
-          </div>
-
-          <div id="publisher_message" class="publisher_message" style="display:none"></div>
-
-          <div class="return_to_arcade" id="return_to_arcade">
-          <i class="fa fa-arrow-circle-left"></i> Return to Arcade
-          </div>
-
-          <div class="invitation_player2" id="invitation_player2" style="display:none">
-            Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
+    $('.game_details').html(game_options);
   }
 
   updateBalance(app) {
@@ -272,7 +163,7 @@ class Arcade extends ModTemplate {
         });
         return;
       }
-    } catch (err) {}
+    } catch (err) { console.error(err) }
 
 
     $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
@@ -288,34 +179,77 @@ class Arcade extends ModTemplate {
     // this.monitor_shown_already = 1;
     // this.currently_viewing_monitor = 1;
 
-    $('.game_monitor').html(this.returnGameMonitor(this.app));
+    this.populateGameMonitor(this.app);
     this.updateBalance(this.app);
+
     $('.game_monitor').slideDown(500, function() {});
     $('.gamelist').hide();
     $('#arcade-container').hide();
     $('#games').hide();
     $('.game_options').hide();
 
-    //
-    // game module specific, like max players
-    //
-    let game_mod = this.app.modules.returnModule(this.active_game);
-    if (game_mod != null) {
-      if (game_mod.maxPlayers > 2) { $('.opponent_address2').show(); }
-      if (game_mod.maxPlayers > 3) { $('.opponent_address3').show(); }
-    }
+    this.addModalEvents();
 
     if (this.browser_active == 1) { this.attachEvents(this.app); }
+  }
 
+  addModalEvents() {
+    // Modal Functionality
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var modalSpinner = document.getElementById("game-modal-spinner");
+    var span = document.getElementsByClassName("close")[0];
 
+    // When the user clicks on the button, open the modal
+    btn.addEventListener('click', () => {
+      modal.style.display = "block";
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', () => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // game-modal-spinner
+    modalSpinner.addEventListener("change", (event) => {
+      let gameSelectHTML = this.renderModalOptions(event.target.value)
+      $('#game-start-options').innerHTML = '';
+      $('#game-start-options').html(gameSelectHTML);
+    });
+  }
+
+  renderModalOptions(option) {
+    switch(option) {
+      case 'open':
+        return `<button class="quick_invite">CREATE GAME</button>`
+      case 'link':
+        return `<input style="padding: 10px;width: 63%;height: 40px;" /><button class="quick_invite"> RECREATE LINK</button`
+      case 'key':
+        let selectedGameModule = this.app.modules.returnModule(this.active_game);
+        let html = `<div style="display: grid; grid-gap: 1em; width: 70%; margin-top: 1em;">`
+        for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
+          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent-address" id=${i}></input></div>`
+        }
+        html += `<button class="quick_invite"> INVITE</button>`;
+        html += "</div>";
+        return html;
+      default:
+        break;
+    }
   }
 
   hideMonitor() {
-
     $('.gamelist').show();
     $('.game_options').show();
     $('.game_monitor').hide();
-
   }
 
   webServer(app, expressapp) {

@@ -16,7 +16,7 @@
   <script type="text/javascript" src="/lib/hammer/hammer.min.js"></script>
 
   <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" type="text/css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="/arcade/style.css" />
+  <link rel="stylesheet" type="text/css" href="/arcadev2/style.css" />
   <link rel="stylesheet" type="text/css" href="/chat/style.css" />
   <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
 
@@ -90,6 +90,15 @@
       padding-bottom: unset;
     }
 
+    select {
+      max-width: 300px;
+      border: 1px black solid;
+      padding: 5px;
+      text-align: center;
+      font-size: 0.9em;
+      background: white;
+    }
+
     .header_table {
       border-bottom: 1px solid black;
       background: lightsteelblue;
@@ -134,6 +143,85 @@
       margin-bottom: 30px;
     }
 
+    /* The Modal (background) */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* The Close Button */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Modal Header */
+    .modal-header {
+      padding: 2px 16px;
+      color: white;
+    }
+
+    /* Modal Body */
+    .modal-body {padding: 2px 16px; color: white;}
+
+    /* Modal Footer */
+    .modal-footer {
+      padding: 2px 16px;
+      color: white;
+    }
+
+    /* Modal Content */
+    .modal-content {
+      position: absolute;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 60%;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      animation-name: animatetop;
+      animation-duration: 0.4s;
+      background: #4e4e4e;
+      border-radius: 5px;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+    }
+
+    /* Add Animation */
+    @keyframes animatetop {
+      from {top: -300px; opacity: 0}
+      to {top: 30%; opacity: 1}
+    }
+
+    .opponent-address {
+      padding: 10px;
+      width: 65%;
+    }
+
+    #game-start-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
   </style>
 
 </head>
@@ -154,25 +242,68 @@
 
   <div class="main">
     <div class="arcade">
-      <div class="game_monitor" id="game_monitor"></div>
-      <div id="arcade-container">  
+      <div class="game_monitor" id="game_monitor">
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>One More Thing!</h2>
+            </div>
+            <div class="modal-body">
+              <p>Select what sort of game invitation you want to create</p>
+              <div style="display: grid">
+                <select name="invitation" id="game-modal-spinner">
+                  <option value="open">Open Invite</option>
+                  <option value="link">Quick Link</option>
+                  <option value="key">Invite By Key</option>
+                </select>
+                <div id="game-start-options">
+                  <button class="quick_invite">CREATE GAME</button>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+
+        <div class="manage_invitations" style="display:none">
+          <img class="gameimage" id="Twilight" src="/arcadev2/img/twilight.jpg">
+          <p>This is the Twilight Struggle description</p>
+          <div style="grid-area: game-generate;">
+            <div class="game_details"></div>
+            <div class="quick_invite_box">
+              <div class="quick_invite" id="myBtn"><i class="fa fa-magic"></i>  START GAME</div>
+            </div>
+            <div id="publisher_message" class="publisher_message" style="display:none"></div>
+            <div class="return_to_arcade" id="return_to_arcade">
+              <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="arcade-container">
         <h2 style="margin-top: 0">Arcade</h2>
         <div class="gamelist">
           <div class="game" id="Twilight">
             <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-            <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
+            <img class="gameimage" id="Twilight" src="/arcadev2/img/twilight.jpg" />
             <div class="gametitle" id="Twilight">Twilight Struggle</div>
           </div>
 
           <div class="game" id="Chess">
             <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-            <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
+            <img class="gameimage" id="Chess" src="/arcadev2/img/chess.jpg" />
             <div class="gametitle" id="Chess">Chess</div>
           </div>
 
           <div class="game" id="Wordblocks">
             <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-            <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
+            <img class="gameimage" id="Wordblocks" src="/arcadev2/img/wordblocks.jpg" />
             <div class="gametitle" id="Wordblocks">Wordblocks</div>
           </div>
         </div>
@@ -206,7 +337,7 @@
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/browser.js"></script>
-  <script src="/arcade/script.js"></script>
+  <script src="/arcadev2/script.js"></script>
 
 </body>
 
