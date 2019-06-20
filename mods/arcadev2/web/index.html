@@ -23,6 +23,10 @@
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
   <style>
+    .arcade {
+      justify-content: center;
+    }
+
     .arcade > #games > ul {
       list-style-type: none;
       margin: 0;
@@ -117,6 +121,19 @@
     }
 
     .joinlink {}
+
+    .manage_invitations {
+      display: grid;
+      column-gap: 2em;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "game-image game-options" "game-generate game-generate";
+      padding-bottom: 25px;
+    }
+
+    .publisher_message {
+      margin-bottom: 30px;
+    }
+
   </style>
 
 </head>
@@ -137,24 +154,27 @@
 
   <div class="main">
     <div class="arcade">
-      <h2 style="margin-top: 0">Arcade</h2>
-      <div class="gamelist">
-        <div class="game" id="Twilight">
-          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-          <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
-          <div class="gametitle" id="Twilight">Twilight Struggle</div>
-        </div>
+      <div class="game_monitor" id="game_monitor"></div>
+      <div id="arcade-container">  
+        <h2 style="margin-top: 0">Arcade</h2>
+        <div class="gamelist">
+          <div class="game" id="Twilight">
+            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
+            <div class="gametitle" id="Twilight">Twilight Struggle</div>
+          </div>
 
-        <div class="game" id="Chess">
-          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-          <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
-          <div class="gametitle" id="Chess">Chess</div>
-        </div>
+          <div class="game" id="Chess">
+            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
+            <div class="gametitle" id="Chess">Chess</div>
+          </div>
 
-        <div class="game" id="Wordblocks">
-          <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
-          <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
-          <div class="gametitle" id="Wordblocks">Wordblocks</div>
+          <div class="game" id="Wordblocks">
+            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
+            <div class="gametitle" id="Wordblocks">Wordblocks</div>
+          </div>
         </div>
       </div>
 
@@ -185,8 +205,8 @@
 
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/browser.js"></script>
   <script src="/arcade/script.js"></script>
+  <script src="/browser.js"></script>
 
 </body>
 
