@@ -21,122 +21,7 @@
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
-  <style>
-    .arcade {
-      justify-content: center;
-    }
-
-    .arcade > #games > ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #333;
-    }
-
-    .arcade > #games > ul > li {
-      float: left;
-      cursor: pointer;
-    }
-
-    .arcade > #games > ul > li a:active {
-      border-bottom: 5px solid darkorange;
-    }
-
-    .arcade > #games > ul > li a {
-      display: block;
-      color: white;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-    }
-
-    /* Change the link color to #111 (black) on hover */
-    .arcade > #games > ul > li a:hover {
-      background-color: #111;
-    }
-
-    .highlighted {
-      border-bottom: 5px solid darkorange;
-    }
-
-    table {
-      width: 100%;
-      border: 1px solid black;
-      border-bottom: unset;
-      border-spacing: unset;
-    }
-
-    tr {
-      height: 50px;
-    }
-
-    th:first-child {
-      padding-left: 14px;
-    }
-
-    td:first-child {
-      padding-left: 14px;
-    }
-
-    th {
-      border-bottom: 1px solid black;
-    }
-
-    td {
-      border-bottom: 1px solid black;
-      max-width: 3em;
-      padding-bottom: unset;
-    }
-
-    .header_table {
-      border-bottom: 1px solid black;
-      background: lightsteelblue;
-      width: 100%;
-    }
-
-    .table_button {
-      width: 100%;
-    }
-
-    .accept_game, .reject_game, .delete_game, .joinlink {
-      float: right;
-      border-radius: 5px;
-      margin: 10px 0px 10px 10px;
-      color: white;
-      width: 40%;
-    }
-
-    .accept_game {
-      background: darkorange;
-    }
-
-    .reject_game {
-      background: darkgrey;
-    }
-
-    .delete_game {
-      background-color: red;
-    }
-
-    .joinlink {}
-
-    .manage_invitations {
-      display: grid;
-      column-gap: 2em;
-      grid-template-columns: 1fr 1fr;
-      grid-template-areas: "game-image game-options" "game-generate game-generate";
-      padding-bottom: 25px;
-    }
-
-    .publisher_message {
-      margin-bottom: 30px;
-    }
-
-  </style>
-
 </head>
-
 <body>
 
   <div id="Arcade_browser_active"></div>
@@ -151,38 +36,40 @@
     <button class="find_player_button">Find Player</button>
   </div>
 
+
   <div class="main">
+
     <div class="arcade">
-      <div class="game_monitor" id="game_monitor"></div>
-      <div id="arcade-container">  
+
+      <div id="arcade_container">  
         <h2 style="margin-top: 0">Arcade</h2>
         <div class="gamelist">
           <div class="game" id="Twilight">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
             <div class="gametitle" id="Twilight">Twilight Struggle</div>
           </div>
 
           <div class="game" id="Chess">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
             <div class="gametitle" id="Chess">Chess</div>
           </div>
 
           <div class="game" id="Wordblocks">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
             <div class="gametitle" id="Wordblocks">Wordblocks</div>
           </div>
         </div>
       </div>
 
-      <div id="games" style="min-height: 1000px;">
 
+      <div id="games" style="min-height: 1000px;">
         <h2>Games</h2>
-        <ul id="games-nav-menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
-          <li class="games-nav-menu-item" id="open">Open</li>
-          <li class="games-nav-menu-item" id="completed">Completed</li>
+        <ul id="games_nav_menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
+          <li class="games_nav_menu_item" id="open">Open</li>
+          <li class="games_nav_menu_item" id="completed">Completed</li>
         </ul>
 
         <table id="games-table"></table>
@@ -190,12 +77,77 @@
           <button class="invite_button">Create Game</button>
         </div>
       </div>
+
     </div>
-    <div class="ads">
+
+
+
+    <div class="sidebar">
       <div class="advert-300-250" id="advert-300-250"></div>
       <h2>Forum</h2>
       <div style="width:100%;height:300px;border: 1px solid black"></div>
     </div>
+
+
+
+    <div class="game_invitation" style="display:none">
+
+        <div class="game_details"></div>
+
+        <div style="grid-area: game-generate;">
+
+          <div class="invite_description"></div>
+
+          <div class="invite_html"></div>
+
+
+
+          <div class="funding_alert">Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.</div>
+
+
+          <div class="invite_by_publickey" id="invite_by_publickey">
+
+            <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
+
+            <div class="opponent_address2">
+              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
+            </div>
+
+            <div class="opponent_address3">
+              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
+            </div>
+
+            <div class="invite_button" id="invite_button">
+              <i class="fa fa-envelope"></i> Send Invite
+            </div>
+          </div>
+
+
+
+
+          <div class="invite_by_quicklink" id="invite_by_quicklink">
+
+	    <div class="quick_invite" id="quick_invite"><i class="fa fa-magic"></i> Generate Invite Link</div>
+
+            <div class="invite_button" id="invite_button">
+              <i class="fa fa-envelope"></i> Send Invite
+            </div>
+          </div>
+
+
+
+          <div id="publisher_message" class="publisher_message" style="display:none"></div>
+
+          <div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
+
+
+        </div>
+
+
+    </div>
+
+
+
   </div>
 
 

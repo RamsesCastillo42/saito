@@ -20,10 +20,130 @@
   color: #444;
 }
 
-.ads {
+.sidebar {
   max-width: 300px;
   padding: 1em;
 }
+
+
+
+.arcade {
+  justify-content: center;
+}
+
+.arcade > #games > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+.arcade > #games > ul > li {
+  float: left;
+  cursor: pointer;
+}
+
+.arcade > #games > ul > li a:active {
+  border-bottom: 5px solid darkorange;
+}
+
+.arcade > #games > ul > li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.arcade > #games > ul > li a:hover {
+  background-color: #111;
+}
+
+.highlighted {
+  border-bottom: 5px solid darkorange;
+}
+
+table {
+  width: 100%;
+  border: 1px solid black;
+  border-bottom: unset;
+  border-spacing: unset;
+}
+
+tr {
+  height: 50px;
+}
+
+th:first-child {
+  padding-left: 14px;
+}
+
+td:first-child {
+  padding-left: 14px;
+}
+
+th {
+  border-bottom: 1px solid black;
+}
+
+td {
+  border-bottom: 1px solid black;
+  max-width: 3em;
+  padding-bottom: unset;
+}
+
+.header_table {
+  border-bottom: 1px solid black;
+  background: lightsteelblue;
+  width: 100%;
+}
+
+.table_button {
+  width: 100%;
+}
+
+.accept_game, .reject_game, .delete_game, .joinlink {
+  float: right;
+  border-radius: 5px;
+  margin: 10px 0px 10px 10px;
+  color: white;
+  width: 40%;
+}
+
+.accept_game {
+  background: darkorange;
+}
+
+.reject_game {
+  background: darkgrey;
+}
+
+.delete_game {
+  background-color: red;
+}
+
+.joinlink {
+
+}
+
+.game_invitation {
+  display: grid;
+  column-gap: 2em;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "game-image game-options" "game-generate game-generate";
+  padding-bottom: 25px;
+}
+
+.publisher_message {
+  margin-bottom: 30px;
+}
+
+
+
+
+
+
 
 /*
   ##Device = Desktops

@@ -306,101 +306,12 @@ alert("SELECTION");
 
     let show_game_options = game_options == "" ? "none" : "block";
 
-    let quick_invite =
-    `<div class="quick_invite_box">
-      <div class="quick_invite" id="quick_invite"><i class="fa fa-magic"></i> Generate Invite Link</div>
-      <div class="quick_invite_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">invite by publickey:</a></div>
-    </div>
-    `
-
-    let multi_invite = `
-      <div class="invitation_player1" id="invitation_player1" style="max-width:620px;">
-        <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
-        <div class="opponent_address2">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-          <p></p>
-        </div>
-        <div class="opponent_address3">
-          <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-          <p></p>
-        </div>
-
-        <div class="invite_button_box">
-          <div class="invite_button" id="invite_button">
-            <i class="fa fa-envelope"></i> Send Invite
-          </div>
-          <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
-        </div>
-
-      </div>
-    `
-
     let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
 
     var invite_description = ''
     if (game_self.maxPlayers > 2) {
-      invite_description =
-      `<div id="invite_publickey_description" style="display:block">
-        Provide Saito address of opponent(s):
-      </div>`
     } else {
-      invite_description =
-        `<div id="invite_link_description" style="display:none">
-          Generate link to invite players or <a style="color:#003444;border-bottom:1px dashed;" class="toggle_invite">invite by publickey:</a>
-        </div>
-        <div id="invite_publickey_description" style="display:none">
-          Provide Saito address of opponent(s):
-        </div>`
     }
-
-    return `
-
-      <div class="funding_alert">
-        Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.
-      </div>
-
-      <div class="manage_invitations" style="display:none">
-
-        <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg">
-
-        <div class="game_details" style="display:${show_game_options}">${game_options}</div>
-
-        <div style="grid-area: game-generate;">
-
-          ${invite_description}
-
-          ${invite_html}
-
-          <div class="invitation_player1" id="invitation_player1" style="display:none; max-width:620px">
-            <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
-            <div class="opponent_address2">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-            </div>
-            <div class="opponent_address3">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-            </div>
-
-            <div class="invite_button" id="invite_button">
-              <i class="fa fa-envelope"></i> Send Invite
-            </div>
-            <div class="invite_button_switch"> or <a style="color:#003444;border-bottom: 1px dashed;cursor:pointer" class="toggle_invite">generate invite link</a></div>
-          </div>
-
-          <div id="publisher_message" class="publisher_message" style="display:none"></div>
-
-          <div class="return_to_arcade" id="return_to_arcade">
-          <i class="fa fa-arrow-circle-left"></i> Return to Arcade
-          </div>
-
-          <div class="invitation_player2" id="invitation_player2" style="display:none">
-            Invitation received from <span class="player2_address"></span> [ <span class="player2_accept link gamelink" id="player2_accept"><i class="fa fa-check-circle"></i> ACCEPT INVITATION</span> ]
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
 
   }
 
