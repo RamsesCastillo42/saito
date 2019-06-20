@@ -62,5 +62,87 @@
     gamesTable.append(gamesTableBody);
   }
 
+  function populateGameMonitor(app) {
 
+    let game_options = "";
+    let game_self = app.modules.returnModule(this.active_game);
+
+    if (this.active_game != "") {
+      if (game_self != null) {
+        game_options = game_self.returnGameOptionsHTML();
+      }
+    }
+
+    $('.game_details').html(game_options);
+  }
+
+
+
+  function showMonitor() {
+    this.populateGameMonitor(this.app);
+    this.updateBalance(this.app);
+
+    $('.game_monitor').slideDown(500, function() {});
+    $('.gamelist').hide();
+    $('#arcade_container').hide();
+    $('#games').hide();
+    $('.game_options').hide();
+
+    this.addModalEvents();
+
+    if (this.browser_active == 1) { this.attachEvents(this.app); }
+  }
+
+  function addModalEvents() {
+    // Modal Functionality
+    // Get the modal
+    var modal = document.getElementById("game_modal");
+    var btn = document.getElementById("game_button");
+    var modalSelector = document.getElementById("game_modal_selector");
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.addEventListener('click', () => {
+      modal.style.display = "block";
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', () => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // game_modal_selector
+    modalSelector.addEventListener("change", (event) => {
+      let gameSelectHTML = this.renderModalOptions(event.target.value)
+      $('#game_start_options').innerHTML = '';
+      $('#game_start_options').html(gameSelectHTML);
+    });
+  }
+
+  function renderModalOptions(option, app) {
+    switch(option) {
+      case 'open':
+        return `<button class="quick_invite">CREATE GAME</button>`
+      case 'link':
+        return `<input class="quick_link_input" />`
+      case 'key':
+        let selectedGameModule = app.modules.returnModule(this.active_game);
+        let html = `<div class="oponent_key_container">`
+        for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
+          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent_address" id=${i}></input></div>`
+        }
+        html += `<button class="quick_invite"> INVITE</button>`;
+        html += "</div>";
+        return html;
+      default:
+        break;
+    }
+  }
 
