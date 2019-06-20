@@ -1,5 +1,4 @@
 <html>
-
 <head>
 
   <meta charset="utf-8">
@@ -179,12 +178,13 @@
       </div>
 
       <div id="games" style="min-height: 1000px;">
+
         <h2>Games</h2>
         <ul id="games-nav-menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
-          <li><a id="open">Open</a></li>
-          <li><a id="ongoing">Ongoing</a></li>
-          <li><a id="mygames">My Games</a></li>
+          <li class="games-nav-menu-item" id="open">Open</li>
+          <li class="games-nav-menu-item" id="completed">Completed</li>
         </ul>
+
         <table id="games-table"></table>
         <div>
           <button class="invite_button">Create Game</button>
@@ -200,7 +200,9 @@
 
 
   <script type="text/javascript">
+
     var invite_page = 0;
+
   </script>
 
   <script src="/mailchat/script.js"></script>

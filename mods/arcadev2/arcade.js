@@ -18,8 +18,7 @@ class Arcade extends ModTemplate {
 
     this.games           = {}
     this.games.open      = [];
-    this.games.ongoing   = [];
-    this.games.mygames   = [];
+    this.games.completed = [];
 
     this.games.nav       = { selected: 'open' };
 
@@ -60,19 +59,17 @@ class Arcade extends ModTemplate {
   ////////////////
   async initialize() {
 
-    if (this.app.BROWSER == 1) {
+    if (this.app.BROWSER == 1 && this.browser_active == 1) {
 
       // Open
       this.games.open.push({ player: 'david@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
       this.games.open.push({ player: 'richard@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
 
-      // Ongoing
-      this.games.ongoing.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
-
-      // My Games
-      this.games.mygames.push({ player: 'alice@saito', game: 'Twilight Struggle', status: ['delete_game', 'joinlink'] });
+      // Completed
+      this.games.completed.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
 
       renderGamesTable(this.games[this.games.nav.selected]);
+
     }
 
     if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return; }
@@ -99,7 +96,28 @@ class Arcade extends ModTemplate {
   ///////////////////
   attachEvents() {
 
+    //
+    // Games Table
+    //
+    $('.games-nav-menu-item').on('click', (event) => {
+
+alert("SELECTION");
+
+      document.getElementById(this.games.nav.selected).className = "";
+
+      let id = $(this).attr("id");
+      this.games.nav.selected = id;
+      document.getElementById(this.games.nav.selected).className = "highlighted";
+
+      showGamesTable(this.games[id]);
+
+    });
+
+
+
+    //
     // Arcade Game Event Listener
+    //
     let gameslist = document.querySelector('.gamelist');
     gameslist.addEventListener('click', (event) => {
       this.active_game = event.target.id;
@@ -111,13 +129,6 @@ class Arcade extends ModTemplate {
         $('.publisher_message').show();
       }
     })
-
-    // Game Table Nav Menu
-    let gamesNavMenu = document.getElementById("games-nav-menu");
-    gamesNavMenu.addEventListener("click", (event) => {
-      this.onGamesMenuClick(event);
-    });
-    this.updateNavSelector();
 
   }
 
@@ -279,22 +290,6 @@ class Arcade extends ModTemplate {
 
 
 
-
-  onGamesMenuClick(event) {
-    let id = event.target.id;
-    let previousNavTab = document.getElementById(this.games.nav.selected);
-
-    previousNavTab.className = "";
-    this.games.nav.selected = id;
-
-    this.updateNavSelector();
-    renderGamesTable(this.games[id]);
-  }
-
-  updateNavSelector() {
-    let gameNavTab = document.getElementById(this.games.nav.selected);
-    gameNavTab.className = "highlighted";
-  }
 
 
   returnGameMonitor(app) {
