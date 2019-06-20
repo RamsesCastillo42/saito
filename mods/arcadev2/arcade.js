@@ -3,6 +3,9 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
 
 class Arcade extends ModTemplate {
+
+
+
   constructor(app) {
     super();
 
@@ -20,7 +23,12 @@ class Arcade extends ModTemplate {
     this.games.nav     = { selected: 'open' };
   }
 
+
+  ////////////////
+  // initialize //
+  ////////////////
   initialize() {
+
     // Open
     this.games.open.push({ player: 'david@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
     this.games.open.push({ player: 'richard@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });

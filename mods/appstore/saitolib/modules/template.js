@@ -10,6 +10,8 @@ function ModTemplate(app) {
 
   this.name = "";
   this.browser_active   = 0;
+  this.processRebroadcastTransactions = 0;	// 0 -- ignore rebroadcast txs
+						// 1 -- process rebroadcast txs
   this.handlesArchiving = 0;
   this.handlesEmail     = 0;
   this.handlesDNS       = 0;

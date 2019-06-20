@@ -904,7 +904,6 @@ console.log(" .... run rmv txs: " + new Date().getTime());
   this.blocks[pos].affixCallbacks();
   if (i_am_the_longest_chain == 1) {
     if (this.run_callbacks == 1) {
-console.log(" .... run callbks: " + new Date().getTime());
       if (!force) {
 
         let our_longest_chain = this.returnLongestChainIndexPosArray(this.callback_limit);
