@@ -50,6 +50,7 @@ Profile.prototype.initialize = function initialize() {
   // add profile information to options file
   //
   if (this.app.options.profile == undefined) {
+
     this.app.options.profile = this.newProfile();
 
     this.app.options.profile.name = "Michael Caine";
@@ -154,6 +155,8 @@ Profile.prototype.newProfile = function newProfile() {
   profile.archive.port = "";
   profile.archive.host = "";
   profile.archive.host = "";
+
+  return profile;
 
 }
 Profile.prototype.saveProfile = function saveProfile() {
