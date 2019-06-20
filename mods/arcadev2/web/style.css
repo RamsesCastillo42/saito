@@ -1,310 +1,4 @@
-.header {
-  font-size: 2em;
-  width: 100%;
-  height: 50px;
-  border-bottom: 1px solid #a5a5a5;
-  display: grid;
-  grid-template-columns: 60px auto 4em;
-  align-items: center;
-}
-
-.main {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-column-gap: 1em;
-  width: 100%;
-  max-width: 1600px;
-  font-size: 1.6em;
-  margin-left: auto;
-  margin-right: auto;
-  color: #444;
-}
-
-.ads {
-  max-width: 300px;
-  padding: 1em;
-}
-
-.quick_invite_box {}
-
-.invite_link_description {
-  display:none;
-}
-
-.invite_publickey_description {
-  display:none;
-}
-
-.removecards {
-  padding: 0px;
-  margin: 0;
-}
-
-.removecards li {
-  float: left;
-  min-width: 250px;
-  font-size: 15px;
-  list-style-type: none;
-  margin-left: 0px;
-  padding-left:0px;
-}
-
-.removecards ul {
- padding: 0px;
- margin: 0;
- margin-block-start: 0px;
- margin-block-end: 0px;
- margin-inline-start: 0px;
- margin-inline-end: 0px;
- padding-inline-start: 40px;
-}
-
-.opponent_address2 {
-  display: none;
-  margin-top: 20px;
-}
-
-.opponent_address3 {
-  display: none;
-  margin-top: 20px;
-}
-
-.opponent_address4 {
-  display: none;
-  margin-top: 20px;
-}
-
-.opponent_address5 {
-  display: none;
-  margin-top: 20px;
-}
-
-.opponent_address6 {
-  display: none;
-  margin-top: 20px;
-}
-
-
-
-.active_games {
-  margin-bottom: 10px;
-  margin-top: 25px;
-  clear: both;
-  padding-top: 10px;
-}
-
-.active_games_header {
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
-
-
-.single_activegame {
-  width: 300px;
-  padding: 14px;
-  border: 1px dashed #47a;
-  background-color: #efefef;
-}
-
-.gamelink, .accept_game, .reject_game, .delete_game, .joinlink {
-  margin: 10px;
-  padding: 10px;
-  font-size: 1em;
-  display: inline-block;
-}
-
-.joinlink {
-  background: #47A;
-  border-radius: 5px;
-  color: white;
-  margin: 0;
-}
-
-.joingamelink, .acceptgamelink, .deletegamelink {
-  display: inline-block;
-}
-
-.return_to_arcade {
-  clear: both;
-  padding-top: 20px;
-  padding: 10px;
-  font-size: 0.9em;
-  display: inline-block;
-  cursor: pointer;
-  /* #border: 1px #444 solid; */
-  border-radius: 5px;
-  column-gap: 0.5em;
-  display: grid;
-  grid-template-columns: 1em auto;
-  justify-content: center;
-  align-items: center;
-}
-
-.join {
-  margin-left: 10px;
-}
-
-td {
-  padding-bottom: 10px;
-}
-
-hr {
-  border: 1px dashed #444444;
-  width: 80%
-}
-
-.arcade {
-  display: inherit;
-  padding: 1em;
-  /* height: 87vh;
-  grid-template-rows: 1em auto; */
-}
-
-.gamelist {
-  display: grid;
-  row-gap: 1em;
-  column-gap: 1.5em;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr;
-}
-
-.gametitle {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-top: 6px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.link {
-  display: inline-block;
-  cursor: pointer;
-  max-width: 310px;
-}
-
-.game_monitor {
-  display: none;
-  width: 100%;
-  max-width: 750px;
-  height: 87vh;
-}
-
-.game_details h3 {
-  margin-top: 0.2em;
-}
-.game_details {
-}
-.game_details select {
-  max-width: 300px;
-  border: 1px black solid;
-  padding: 5px;
-  text-align: center;
-  font-size: 0.9em;
-  background: white;
-}
-
-.options {
-  display: grid;
-  grid-template-columns: 5em auto;
-  column-gap: 1em;
-  row-gap: 1em;
-  margin-bottom: 0px;
-}
-
-.game_options {
-  display: inherit;
-  row-gap: 1em
-}
-
-.nonlink {
-  text-decoration: none;
-}
-
-.publisher_message {
-  margin-top:30px;
-  clear: both;
-  padding-top: 20px;
-  font-size: 20px;
-  line-height: 1.2em;
-  color: 3444;
-  height: 120px;
-  overflow-y: scroll;
-  padding: 1em;
-  border: 1px black solid;
-
-}
-
-th {
-  text-align: left;
-}
-
-td {
-  text-align: left;
-  padding-right: 45px;
-}
-
-#gametable {
-  font-size: 1.0em;
-  display: grid;
-  row-gap: 1em;
-  grid-template-columns: repeat(auto-fit, 330px);
-  column-gap: 1em;
-}
-
-.active_games {
-  display: none;
-}
-
-.status {
-  font-family: 'Courier New', Courier, monospace;
-  display: none;
-}
-
-.invitation_player1 {
-  display: block;
-}
-
-.invitation_player2 {
-  display: block;
-}
-
-.address_box {
-  width: 700px;
-  padding: 15px;
-  background-color: #E7E7E7;
-  border: 2px dashed #888;
-  margin-bottom: 15px;
-}
-
-.game {
-  min-width: 150px;
-}
-
-.game:hover {
-  color: #47A;
-}
-
-.gamename {
-  font-weight: bold;
-  width: 100%;
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 1.15em;
-  text-transform: uppercase;
-}
-
-.gameimage {
-  width: 100%;
-  text-align: center;
-  border: 3px solid #888;
-  cursor: pointer;
-  max-width: 375px;
-}
-
-.gameimage:hover {
-  border-color: #47A;
-  opacity: 0.75;
-}
+/* HEADER AND BODY */
 
 .body, body {
   font-family: arial, helvetica, sans-serif, sans;
@@ -372,7 +66,506 @@ td {
   color: #444;
 }
 
-.manage_invitations {
+.arcade {
+  display: inherit;
+  padding: 1em;
+  justify-content: center;
+}
+
+
+
+
+
+
+
+
+
+
+/* Styling for the Games Table */
+
+.arcade > #games > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+.arcade > #games > ul > li {
+  float: left;
+  cursor: pointer;
+}
+
+.arcade > #games > ul > li a:active {
+  border-bottom: 5px solid darkorange;
+}
+
+.arcade > #games > ul > li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.arcade > #games > ul > li a:hover {
+  background-color: #111;
+}
+
+.highlighted {
+  border-bottom: 5px solid darkorange;
+}
+
+table {
+  width: 100%;
+  border: 1px solid black;
+  border-bottom: unset;
+  border-spacing: unset;
+}
+
+tr {
+  height: 50px;
+}
+
+th:first-child {
+  padding-left: 14px;
+}
+
+td:first-child {
+  padding-left: 14px;
+}
+
+th {
+  border-bottom: 1px solid black;
+}
+
+td {
+  border-bottom: 1px solid black;
+  max-width: 3em;
+  padding-bottom: unset;
+}
+
+select {
+  max-width: 300px;
+  border: 1px black solid;
+  padding: 5px;
+  text-align: center;
+  font-size: 0.9em;
+  background: white;
+}
+
+.header_table {
+  border-bottom: 1px solid black;
+  background: lightsteelblue;
+  width: 100%;
+}
+
+.table_button {
+  width: 100%;
+}
+
+.gamelink, .accept_game, .reject_game, .delete_game, .joinlink {
+  float: right;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0px 10px 10px;
+  font-size: 1em;
+  color: white;
+  width: 40%;
+  /* display: inline-block; */
+}
+
+.accept_game {
+  background: darkorange;
+}
+
+.reject_game {
+  background: darkgrey;
+}
+
+.delete_game {
+  background-color: red;
+}
+
+.joinlink {}
+
+
+
+
+
+
+
+
+/* Ads */
+
+.ads {
+  max-width: 300px;
+  padding: 1em;
+}
+
+.quick_invite_box {}
+
+.invite_link_description {
+  display:none;
+}
+
+.invite_publickey_description {
+  display:none;
+}
+
+.removecards {
+  padding: 0px;
+  margin: 0;
+}
+
+.removecards li {
+  float: left;
+  min-width: 250px;
+  font-size: 15px;
+  list-style-type: none;
+  margin-left: 0px;
+  padding-left:0px;
+}
+
+.removecards ul {
+ padding: 0px;
+ margin: 0;
+ margin-block-start: 0px;
+ margin-block-end: 0px;
+ margin-inline-start: 0px;
+ margin-inline-end: 0px;
+ padding-inline-start: 40px;
+}
+
+/* .opponent_address2 {
+  display: none;
+  margin-top: 20px;
+}
+
+.opponent_address3 {
+  display: none;
+  margin-top: 20px;
+}
+
+.opponent_address4 {
+  display: none;
+  margin-top: 20px;
+}
+
+.opponent_address5 {
+  display: none;
+  margin-top: 20px;
+}
+
+.opponent_address6 {
+  display: none;
+  margin-top: 20px;
+} */
+
+
+
+
+
+
+
+
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 2px 16px;
+  color: white;
+}
+
+/* Modal Body */
+.modal-body {padding: 2px 16px; color: white;}
+
+/* Modal Footer */
+.modal-footer {
+  padding: 2px 16px;
+  color: white;
+}
+
+/* Modal Content */
+.modal-content {
+  position: absolute;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 60%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  background: #4e4e4e;
+  border-radius: 5px;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+/* Add Animation */
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 30%; opacity: 1}
+}
+
+.opponent-address {
+  padding: 10px;
+  width: 65%;
+}
+
+#game-start-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .active_games {
+  margin-bottom: 10px;
+  margin-top: 25px;
+  clear: both;
+  padding-top: 10px;
+}
+
+.active_games_header {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+
+.single_activegame {
+  width: 300px;
+  padding: 14px;
+  border: 1px dashed #47a;
+  background-color: #efefef;
+} */
+
+/* .joingamelink, .acceptgamelink, .deletegamelink {
+  display: inline-block;
+} */
+
+.return_to_arcade {
+  clear: both;
+  padding-top: 20px;
+  padding: 10px;
+  font-size: 0.9em;
+  display: inline-block;
+  cursor: pointer;
+  /* #border: 1px #444 solid; */
+  border-radius: 5px;
+  column-gap: 0.5em;
+  display: grid;
+  grid-template-columns: 1em auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.join {
+  margin-left: 10px;
+}
+
+td {
+  padding-bottom: 10px;
+}
+
+hr {
+  border: 1px dashed #444444;
+  width: 80%
+}
+
+
+.gamelist {
+  display: grid;
+  row-gap: 1em;
+  column-gap: 1.5em;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.gametitle {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 6px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.link {
+  display: inline-block;
+  cursor: pointer;
+  max-width: 310px;
+}
+
+.game_monitor {
+  display: none;
+  width: 100%;
+  max-width: 750px;
+  height: 87vh;
+}
+
+.game_details h3 {
+  margin-top: 0.2em;
+}
+
+/* .game_details {}
+
+.game_details select {
+  max-width: 300px;
+  border: 1px black solid;
+  padding: 5px;
+  text-align: center;
+  font-size: 0.9em;
+  background: white;
+} */
+
+.options {
+  display: grid;
+  grid-template-columns: 5em auto;
+  column-gap: 1em;
+  row-gap: 1em;
+  margin-bottom: 0px;
+}
+
+.game_options {
+  display: inherit;
+  row-gap: 1em
+}
+
+.nonlink {
+  text-decoration: none;
+}
+
+.publisher_message {
+  margin-top:30px;
+  clear: both;
+  padding-top: 20px;
+  font-size: 20px;
+  line-height: 1.2em;
+  color: 3444;
+  height: 120px;
+  overflow-y: scroll;
+  padding: 1em;
+  border: 1px black solid;
+
+}
+
+/* th {
+  text-align: left;
+}
+
+td {
+  text-align: left;
+  padding-right: 45px;
+} */
+
+#gametable {
+  font-size: 1.0em;
+  display: grid;
+  row-gap: 1em;
+  grid-template-columns: repeat(auto-fit, 330px);
+  column-gap: 1em;
+}
+
+.active_games {
+  display: none;
+}
+
+.status {
+  font-family: 'Courier New', Courier, monospace;
+  display: none;
+}
+
+/* .invitation_player1 {
+  display: block;
+}
+
+.invitation_player2 {
+  display: block;
+} */
+
+.address_box {
+  width: 700px;
+  padding: 15px;
+  background-color: #E7E7E7;
+  border: 2px dashed #888;
+  margin-bottom: 15px;
+}
+
+.game {
+  min-width: 150px;
+}
+
+.game:hover {
+  color: #47A;
+}
+
+.gamename {
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.15em;
+  text-transform: uppercase;
+}
+
+.gameimage {
+  width: 100%;
+  text-align: center;
+  border: 3px solid #888;
+  cursor: pointer;
+  max-width: 375px;
+}
+
+.gameimage:hover {
+  border-color: #47A;
+  opacity: 0.75;
+}
+
+.create-game-container {
   display: grid;
   row-gap: 1em;
   line-height: 1.4em;
@@ -549,23 +742,11 @@ a {
   }
 }
 
-.accept_game {
-  color: darkorange;
-  border: darkorange 1px solid;
-  border-radius: 5px;
-}
-
-.reject_game {}
 
 .play_button {
   color: darkorange;
   border: darkorange 1px solid;
   border-radius: 5px;
-}
-
-.accept_game:hover {
-  background: rgb(255, 140, 0);
-  color: #efefef;
 }
 
 #accept_invitation_container {
