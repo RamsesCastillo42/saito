@@ -123,6 +123,7 @@ alert("SELECTION");
       this.active_game = event.target.id;
       this.showMonitor();
       $('.find_player_button').toggle();
+      $('.create-game-container').toggle();
 
       if (this.active_game == "Twilight") {
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
@@ -165,7 +166,7 @@ alert("SELECTION");
 
     if (app.wallet.returnBalance() >= 2) {
       $('.funding_alert').hide();
-      $('.manage_invitations').show();
+      $('.create-game-container').show();
     }
   }
 
@@ -274,26 +275,7 @@ alert("SELECTION");
 
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  returnGameMonitor(app) {
+  populateGameMonitor(app) {
 
     let game_options = "";
     let game_self = app.modules.returnModule(this.active_game);
@@ -304,33 +286,116 @@ alert("SELECTION");
       }
     }
 
-    let show_game_options = game_options == "" ? "none" : "block";
-
-    let invite_html = game_self.maxPlayers > 2 ? multi_invite : quick_invite;
-
-    var invite_description = ''
-    if (game_self.maxPlayers > 2) {
-    } else {
-    }
-
+    $('.game_details').html(game_options);
   }
 
 
 
 
+  updateBalance(app) {
+    if (app.BROWSER == 0) { return; }
+
+    //
+    // invite page stuff here
+    //
+    try {
+      if (invite_page == 1 && !this.is_initializing) {
+        $('.invite_play_button').css('background-color','darkorange');
+        $('.invite_play_button').css('border', '1px solid darkorange');
+        $('.invite_play_button').show();
+        $('.invite_play_button').off();
+        $('.invite_play_button').on('click', () => {
+          this.acceptGameInvitation();
+          this.invitePlayButtonClicked();
+        });
+        return;
+      }
+    } catch (err) { console.error(err) }
 
 
+    $('.saito_balance').html(app.wallet.returnBalance().replace(/0+$/,'').replace(/\.$/,'\.0'));
+
+    if (app.wallet.returnBalance() >= 2) {
+      $('.funding_alert').hide();
+      $('.create-game-container').show();
+    }
+  }
+
+
+
+  showMonitor() {
+    this.populateGameMonitor(this.app);
+    this.updateBalance(this.app);
+
+    $('.game_monitor').slideDown(500, function() {});
+    $('.gamelist').hide();
+    $('#arcade-container').hide();
+    $('#games').hide();
+    $('.game_options').hide();
+
+    this.addModalEvents();
+
+    if (this.browser_active == 1) { this.attachEvents(this.app); }
+  }
+
+  addModalEvents() {
+    // Modal Functionality
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var modalSpinner = document.getElementById("game-modal-spinner");
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.addEventListener('click', () => {
+      modal.style.display = "block";
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', () => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // game-modal-spinner
+    modalSpinner.addEventListener("change", (event) => {
+      let gameSelectHTML = this.renderModalOptions(event.target.value)
+      $('#game-start-options').innerHTML = '';
+      $('#game-start-options').html(gameSelectHTML);
+    });
+  }
+
+  renderModalOptions(option) {
+    switch(option) {
+      case 'open':
+        return `<button class="quick_invite">CREATE GAME</button>`
+      case 'link':
+        return `<input style="padding: 10px;width: 63%;height: 40px;" /><button class="quick_invite"> RECREATE LINK</button`
+      case 'key':
+        let selectedGameModule = this.app.modules.returnModule(this.active_game);
+        let html = `<div style="display: grid; grid-gap: 1em; width: 70%; margin-top: 1em;">`
+        for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
+          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent-address" id=${i}></input></div>`
+        }
+        html += `<button class="quick_invite"> INVITE</button>`;
+        html += "</div>";
+        return html;
+      default:
+        break;
+    }
+  }
 
   hideMonitor() {
-
     $('.gamelist').show();
     $('.game_options').show();
     $('.game_monitor').hide();
-
   }
-
-
-
 
 
 

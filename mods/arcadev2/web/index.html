@@ -21,6 +21,21 @@
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
+  <style>
+    .create-game-container {
+      display: grid;
+      column-gap: 2em;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "game-image game-options" "game-generate game-generate";
+      padding-bottom: 25px;
+    }
+
+    .publisher_message {
+      margin-bottom: 30px;
+    }
+
+  </style>
+
 </head>
 <body>
 
@@ -41,7 +56,49 @@
 
     <div class="arcade">
 
-      <div id="arcade_container">  
+      <div class="game_monitor" id="game_monitor">
+
+        <div id="myModal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="close">&times;</span>
+              <h2>One More Thing!</h2>
+            </div>
+            <div class="modal-body">
+              <p>Select what sort of game invitation you want to create</p>
+              <div style="display: grid">
+                <select name="invitation" id="game-modal-spinner">
+                  <option value="open">Open Invite</option>
+                  <option value="link">Quick Link</option>
+                  <option value="key">Invite By Key</option>
+                </select>
+                <div id="game-start-options">
+                  <button class="quick_invite">CREATE GAME</button>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+
+        <div class="create-game-container" style="display:none">
+          <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg">
+          <p>This is the Twilight Struggle description</p>
+          <div style="grid-area: game-generate;">
+            <div class="game_details"></div>
+            <div class="quick_invite_box">
+              <div class="quick_invite" id="myBtn"><i class="fa fa-magic"></i>  START GAME</div>
+            </div>
+            <div id="publisher_message" class="publisher_message" style="display:none"></div>
+            <div class="return_to_arcade" id="return_to_arcade">
+              <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="arcade-container">
         <h2 style="margin-top: 0">Arcade</h2>
         <div class="gamelist">
           <div class="game" id="Twilight">
@@ -67,9 +124,9 @@
 
       <div id="games" style="min-height: 1000px;">
         <h2>Games</h2>
-        <ul id="games_nav_menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
-          <li class="games_nav_menu_item" id="open">Open</li>
-          <li class="games_nav_menu_item" id="completed">Completed</li>
+        <ul id="games-nav-menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
+          <li class="games-nav-menu-item" id="open"><a>Open</a></li>
+          <li class="games-nav-menu-item" id="completed"><a>Completed</a></li>
         </ul>
 
         <table id="games-table"></table>
