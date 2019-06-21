@@ -69,11 +69,6 @@
             <div class="modal_body">
               <p style="margin: 0">How do you want to invite your opponent?</p>
               <div style="display: grid">
-                <!-- <select name="invitation" id="game_modal_selector">
-                  <option value="open">Post on this Website</option>
-                  <option value="link">Send them a Link</option>
-                  <option value="key">Invite By Saito Email</option>
-                </select> -->
                 <form id="game_creation_form">
                   <ul class="game_creation_modal_options">
                     <li>
@@ -143,11 +138,11 @@
 
       <div id="games" style="min-height: 1000px;">
         <h2>Games</h2>
-        <ul id="games-nav-menu" style="list-style-type: none; margin: 0; padding: 0; max-height: 54px;">
-          <li class="games-nav-menu-item" id="open"><a>Open Games</a></li>
-          <li class="games-nav-menu-item" id="completed"><a>Completed</a></li>
+        <ul id="games_nav_menu">
+          <li class="games_nav_menu_item" id="play"><a>PLAY</a></li>
+          <li class="games_nav_menu_item" id="finished"><a>FINISHED</a></li>
         </ul>
-        <table id="games-table"></table>
+        <div id="games_table"></div>
       </div>
 
     </div>

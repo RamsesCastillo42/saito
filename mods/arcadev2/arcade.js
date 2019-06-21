@@ -3,6 +3,7 @@ const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
 const sqlite = require('sqlite');
 var numeral = require('numeral');
+const path = require("path");
 
 class Arcade extends ModTemplate {
 
@@ -10,7 +11,11 @@ class Arcade extends ModTemplate {
 
     super();
 
+    var dir = path.join(__dirname, '../../data');
+
     this.app             = app;
+
+    this.dir             = dir;
 
     this.name            = "Arcade";
     this.browser_active  = 0;
@@ -39,13 +44,6 @@ class Arcade extends ModTemplate {
   async installModule() {
 
     if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return; }
-
-    try {
-      this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, game_bid INTEGER, gameid TEXT, game TEXT, state TEXT, options TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY (id ASC))";
-      await this.db.run(sql, {});
-    } catch (err) {
-    }
 
   }
 
@@ -88,7 +86,19 @@ class Arcade extends ModTemplate {
 
     if (this.db == null) {
       try {
-        this.db = await sqlite.open('./data/arcade.sq3');
+        this.db = await sqlite.open(`${this.dir}/arcade.sq3`);
+        var sql = `CREATE TABLE IF NOT EXISTS mod_arcade (
+          id INTEGER,
+          player TEXT,
+          game_bid INTEGER,
+          gameid TEXT,
+          game TEXT,
+          state TEXT,
+          options TEXT,
+          created_at INTEGER,
+          expires_at INTEGER,
+          PRIMARY KEY (id ASC))`;
+        await this.db.run(sql, {});
         this.refreshOpenGames();
       } catch (err) {
       }

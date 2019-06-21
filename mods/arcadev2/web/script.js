@@ -34,53 +34,55 @@
     return button;
   }
 
+  function createGameTableCell(content) {
+    var gameTableCell = document.createElement("div");
+    gameTableCell.className = "game_table_cell";
 
+    var gameTableCellContent = document.createTextNode(content);
+    gameTableCell.appendChild(gameTableCellContent);
+    return gameTableCell
+  }
 
 
 
 
   function renderGamesTable(games) {
 
-    let gamesTable = document.getElementById('games-table');
-    let gamesTableBody = document.createElement("tbody");
+    let gamesTable = document.getElementById('games_table');
     gamesTable.innerHTML = '';
 
     games.forEach((game) => {
 
-      var node = document.createElement("tr");
+      var gameRow = document.createElement("div");
+      gameRow.className = "game_table_row";
 
-      var playerTC = document.createElement("td");
-      var playerTextNode = document.createTextNode(game.player);
-      playerTC.appendChild(playerTextNode);
-
-      var gameTC = document.createElement("td");
-      var gameTextNode = document.createTextNode(game.game);
-      gameTC.appendChild(gameTextNode);
+      let playerCell = createGameTableCell(game.player.substring(0,8));
+      let gameCell = createGameTableCell(game.game);
+      let statusCell = createGameTableCell(game.status);
 
       if (game.state == "open") {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("accept_game", "zzz"));
+        var buttonCell = document.createElement("div");
+        buttonCell.className = "game_table_cell";
+
+        buttonCell.appendChild(this.createGameButton("accept_game", "zzz"));
 
       } else {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("join_game"));
+        var buttonCell = document.createElement("div");
+        buttonCell.className = "game_table_cell";
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("delete_game"));
+        buttonCell.appendChild(this.createGameButton("join_game", "zzz"));
+        buttonCell.appendChild(this.createGameButton("delete_game"));
 
       }
-
 
       if (game.state == "over") {
 
       }
-      node.append(playerTC,gameTC,statusTC);
-      gamesTableBody.appendChild(node);
-
+      gameRow.append(playerCell,gameCell,statusCell,buttonCell);
+      gamesTable.appendChild(gameRow);
     })
-    gamesTable.append(gamesTableBody);
   }
 
 
@@ -97,6 +99,19 @@
 
     $('.game_details').html(game_options);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
