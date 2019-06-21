@@ -60,37 +60,37 @@
 
       <div class="game_monitor" id="game_monitor">
 
-        <div id="myModal" class="modal">
-          <div class="modal-content">
-            <div class="modal-header">
+        <div id="game_modal" class="modal">
+          <div class="modal_content">
+            <div class="modal_header">
               <span class="close">&times;</span>
               <h2>One More Thing!</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal_body">
               <p>Select what sort of game invitation you want to create</p>
               <div style="display: grid">
-                <select name="invitation" id="game-modal-spinner">
+                <select name="invitation" id="game_modal_selector">
                   <option value="open">Open Invite</option>
                   <option value="link">Quick Link</option>
                   <option value="key">Invite By Key</option>
                 </select>
-                <div id="game-start-options">
+                <div id="game_start_options">
                   <button class="quick_invite">CREATE GAME</button>
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal_footer">
             </div>
           </div>
         </div>
 
-        <div class="create-game-container" style="display:none">
+        <div class="create_game_container" style="display:none">
           <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg">
           <p>This is the Twilight Struggle description</p>
           <div style="grid-area: game-generate;">
             <div class="game_details"></div>
             <div class="quick_invite_box">
-              <div class="quick_invite" id="myBtn"><i class="fa fa-magic"></i>  START GAME</div>
+              <div class="quick_invite" id="game_button"><i class="fa fa-magic"></i>  START GAME</div>
             </div>
             <div id="publisher_message" class="publisher_message" style="display:none"></div>
             <div class="return_to_arcade" id="return_to_arcade">
@@ -100,7 +100,8 @@
         </div>
       </div>
 
-      <div id="arcade-container">
+      <div id="arcade_container">
+        <h2 style="margin-top: 0">Arcade</h2>
         <div class="gamelist">
           <div class="game" id="Twilight">
             <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
@@ -134,80 +135,11 @@
 
     </div>
 
-
-
     <div class="sidebar">
       <div class="advert-300-250" id="advert-300-250"></div>
       <h2>Forum</h2>
       <div style="width:100%;height:300px;border: 1px solid black"></div>
     </div>
-
-
-
-
-
-
-
-
-    <div class="game_invitation" style="display:none">
-
-        <div class="game_details"></div>
-
-        <div style="grid-area: game-generate;">
-
-          <div class="invite_description"></div>
-
-          <div class="invite_html"></div>
-
-
-
-          <div class="funding_alert">Transfer tokens to this address or <a href="https://apps.saito.network/faucet?saito_address=${app.wallet.returnPublicKey()}&source_app=arcade" target="_new">fund this address from the main faucet</a>.</div>
-
-
-          <div class="invite_by_publickey" id="invite_by_publickey">
-
-            <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em;" id="opponent_address" class="opponent_address" />
-
-            <div class="opponent_address2">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address2" />
-            </div>
-
-            <div class="opponent_address3">
-              <input type="text" style="border:1px solid #444;width:100%;padding:4px;font-size:1.15em" id="opponent_address3" />
-            </div>
-
-            <div class="invite_button" id="invite_button">
-              <i class="fa fa-envelope"></i> Send Invite
-            </div>
-          </div>
-
-
-
-
-          <div class="invite_by_quicklink" id="invite_by_quicklink">
-
-	    <div class="quick_invite" id="quick_invite"><i class="fa fa-magic"></i> Generate Invite Link</div>
-
-            <div class="invite_button" id="invite_button">
-              <i class="fa fa-envelope"></i> Send Invite
-            </div>
-          </div>
-
-
-
-          <div id="publisher_message" class="publisher_message" style="display:none"></div>
-
-          <div class="return_to_arcade" id="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
-
-
-        </div>
-
-
-    </div>
-
-
-
-  </div>
 
 
   <script type="text/javascript">

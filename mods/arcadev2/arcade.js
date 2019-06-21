@@ -143,7 +143,7 @@ class Arcade extends ModTemplate {
       this.active_game = event.target.id;
       this.showMonitor();
       $('.find_player_button').toggle();
-      $('.create-game-container').toggle();
+      $('.create_game_container').toggle();
 
       if (this.active_game == "Twilight") {
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
@@ -274,12 +274,6 @@ class Arcade extends ModTemplate {
 
 
 
-
-
-
-
-
-
   async updateOpenGames() {
 
     this.games.open_games = [];
@@ -296,32 +290,7 @@ class Arcade extends ModTemplate {
 
 
 
-  showMonitor() {
 
-    // this.monitor_shown_already = 1;
-    // this.currently_viewing_monitor = 1;
-
-    $('.game_monitor').html(this.returnGameMonitor(this.app));
-    this.updateBalance(this.app);
-    $('.game_monitor').slideDown(500, function() {});
-    $('.gamelist').hide();
-    $('#arcade-container').hide();
-    $('#games').hide();
-    $('.game_options').hide();
-
-    //
-    // game module specific, like max players
-    //
-    let game_mod = this.app.modules.returnModule(this.active_game);
-    if (game_mod != null) {
-      if (game_mod.maxPlayers > 2) { $('.opponent_address2').show(); }
-      if (game_mod.maxPlayers > 3) { $('.opponent_address3').show(); }
-    }
-
-    if (this.browser_active == 1) { this.attachEvents(this.app); }
-
-
-  }
 
   populateGameMonitor(app) {
 
@@ -377,7 +346,7 @@ class Arcade extends ModTemplate {
 
     $('.game_monitor').slideDown(500, function() {});
     $('.gamelist').hide();
-    $('#arcade-container').hide();
+    $('#arcade_container').hide();
     $('#games').hide();
     $('.game_options').hide();
 
@@ -389,9 +358,9 @@ class Arcade extends ModTemplate {
   addModalEvents() {
     // Modal Functionality
     // Get the modal
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("myBtn");
-    var modalSpinner = document.getElementById("game-modal-spinner");
+    var modal = document.getElementById("game_modal");
+    var btn = document.getElementById("game_button");
+    var modalSelector = document.getElementById("game_modal_selector");
     var span = document.getElementsByClassName("close")[0];
 
     // When the user clicks on the button, open the modal
@@ -411,11 +380,11 @@ class Arcade extends ModTemplate {
       }
     });
 
-    // game-modal-spinner
-    modalSpinner.addEventListener("change", (event) => {
+    // game_modal_selector
+    modalSelector.addEventListener("change", (event) => {
       let gameSelectHTML = this.renderModalOptions(event.target.value)
-      $('#game-start-options').innerHTML = '';
-      $('#game-start-options').html(gameSelectHTML);
+      $('#game_start_options').innerHTML = '';
+      $('#game_start_options').html(gameSelectHTML);
     });
   }
 
@@ -425,12 +394,12 @@ class Arcade extends ModTemplate {
       case 'open':
         return `<button class="quick_invite">CREATE GAME</button>`
       case 'link':
-        return `<input style="padding: 10px;width: 63%;height: 40px;" /><button class="quick_invite"> RECREATE LINK</button`
+        return `<input class="quick_link_input" />`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
-        let html = `<div style="display: grid; grid-gap: 1em; width: 70%; margin-top: 1em;">`
+        let html = `<div class="oponent_key_container">`
         for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
-          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent-address" id=${i}></input></div>`
+          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent_address" id=${i}></input></div>`
         }
         html += `<button class="quick_invite"> INVITE</button>`;
         html += "</div>";
@@ -445,12 +414,6 @@ class Arcade extends ModTemplate {
     $('.game_options').show();
     $('.game_monitor').hide();
   }
-
-
-
-
-
-
 }
 
 module.exports = Arcade;
