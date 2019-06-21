@@ -42,19 +42,7 @@ class Arcade extends ModTemplate {
 
     try {
       this.db = await sqlite.open('./data/arcade.sq3');
-      let res = await this.db.run(sql, {});
-      var sql =
-      `CREATE TABLE IF NOT EXISTS mod_arcade (
-        id INTEGER,
-        player TEXT DEFAULT VALUE "",
-	      game_bid INTEGER,
-        gameid TEXT DEFAULT VALUE "",
-        game TEXT DEFAULT VALUE "",
-        options TEXT DEFAULT VALUE "",
-        created_at INTEGER,
-        expires_at INTEGER,
-        PRIMARY KEY (id ASC)
-      )`;
+      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, game_bid INTEGER, gameid TEXT, game TEXT, state TEXT, options TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY (id ASC))";
       await this.db.run(sql, {});
     } catch (err) {
     }
@@ -175,7 +163,10 @@ class Arcade extends ModTemplate {
     $('.quick_invite').off();
     $('.quick_invite').on('click', function() {
 
+
       if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
+
+alert("Can send OnChain");
 
 	//
 	// on-chain
@@ -203,46 +194,39 @@ class Arcade extends ModTemplate {
 	//
 	// off-chain peer-to-peer TX
 	//
-
+alert("Must send OffChain");
 
       }
-
     });
+
+
+
 
 
     //
     // Modal
     //
-
-    // Get the modal
     var modal = document.getElementById("game_modal");
-
-     // When the user clicks on the button, open the modal
     $('#game_button').off();
     $('#game_button').on('click', () => {
       modal.style.display = "block";
     });
-
-     var span = document.getElementsByClassName("close")[0];
-
-     // When the user clicks on <span> (x), close the modal
+    var span = document.getElementsByClassName("close")[0];
     span.addEventListener('click', () => {
       modal.style.display = "none";
     });
-
-     // When the user clicks anywhere outside of the modal, close it
     window.addEventListener('click', () => {
       if (event.target == modal) {
         modal.style.display = "none";
       }
     });
-
-     $('#game_creation_form').off();
+    $('#game_creation_form').off();
     $('#game_creation_form').on("change", (event) => {
       let gameSelectHTML = this.renderModalOptions(event.target.id);
       $('#game_start_options').innerHTML = '';
       $('#game_start_options').html(gameSelectHTML);
     });
+
 
 
 
