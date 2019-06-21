@@ -56,14 +56,32 @@
       var gameTextNode = document.createTextNode(game.game);
       gameTC.appendChild(gameTextNode);
 
-      var statusTC = document.createElement("td");
-      game.status.forEach(status => statusTC.appendChild(this.createButtonElement(status)))
+      if (game.state == "open") {
 
+        var statusTC = document.createElement("td");
+        statusTC.appendChild(this.createButtonElement("accept_game"));
+
+      } else {
+
+        var statusTC = document.createElement("td");
+        statusTC.appendChild(this.createButtonElement("join_game"));
+
+        var statusTC = document.createElement("td");
+        statusTC.appendChild(this.createButtonElement("delete_game"));
+
+      }
+
+
+      if (game.state == "over") {
+
+      }
       node.append(playerTC,gameTC,statusTC);
       gamesTableBody.appendChild(node);
+
     })
     gamesTable.append(gamesTableBody);
   }
+
 
   function populateGameMonitor(app) {
 

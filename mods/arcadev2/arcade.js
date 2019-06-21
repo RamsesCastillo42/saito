@@ -61,7 +61,7 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1 && this.browser_active == 1) {
 
-
+/**** PROFILE ***
       let saito_email   = this.app.wallet.returnIdentifier();
       let saito_address = this.app.wallet.returnPublicKey();
       let saito_balance = this.app.wallet.returnBalance();
@@ -74,13 +74,13 @@ class Arcade extends ModTemplate {
       $('.saito_email').html(saito_email);
       //$('#saito_address').html(saito_address);
       $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
+***/
 
       for (let i = 0; i < open_games.length; i++) {
         this.games.open.push(open_games[i]);
       }
 
-      // Completed
-      //this.games.completed.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
+      this.populateGamesTable();
 
       renderGamesTable(this.games[this.games.nav.selected]);
 
@@ -414,6 +414,67 @@ class Arcade extends ModTemplate {
     $('.game_options').show();
     $('.game_monitor').hide();
   }
+
+
+
+
+  populateGamesTable() {
+
+    //
+    // add games to table
+    //
+    if (this.app.options.games != undefined) {
+      if (this.app.options.games.length > 0) {
+
+        for (let i = 0; i < this.app.options.games.length; i++) {
+
+	  let x = this.app.options.games[i];
+
+     	  let opponent   = "unknown";
+  	  let gameid     = x.id;
+  	  let player     = x.player;
+  	  let winner     = x.winner;
+  	  let gamename   = x.module;
+  	  let state      = "initializing";
+  	  let status     = x.status;
+          let adminid    = `${gameid}_${gamename}`;
+
+  	  if (x.opponents != undefined) {
+    	    if (x.opponents.length > 0) {
+   	      opponent = x.opponents[0];
+    	    }
+  	  }
+
+	  if (x.initializing != 1) { state = "active"; }
+
+
+	  if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+	  if (x.over == 1) { state = "over"; }
+  	  if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
+  	  if (status.length > 50) { status = status.substring(0, 50) + "..."; }
+
+          let remote_address = "";
+          for (let z = 0; z < game.opponents.length; z++) {;
+            if (z > 0) { remote_address += "_"; }
+            remote_address += game.opponents[z];
+          }
+
+          open_games.push({ 
+	    gameid : gameid ,
+	    player: opponent ,
+	    publickey : opponent , 
+	    winner : winner ,
+	    gameid : gameid ,
+	    game: gamename , 
+	    state : state , 
+	    status : status
+	  });
+
+        }
+      }
+    }
+  }
+
 }
 
 module.exports = Arcade;
