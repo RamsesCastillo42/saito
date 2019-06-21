@@ -216,6 +216,7 @@ class Arcade extends ModTemplate {
 
 
 
+
     //
     // Games Table
     //
@@ -231,6 +232,8 @@ class Arcade extends ModTemplate {
       showGamesTable(this.games[id]);
 
     });
+
+
 
 
 
