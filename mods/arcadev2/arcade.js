@@ -120,16 +120,18 @@ class Arcade extends ModTemplate {
 
 	let txmsg = tx.returnMessage();
 
-	let game  = txmsg.game;
-	let state = txmsg.state;
-	let pkey  = tx.transaction.from[0].add;
+	let game    = txmsg.game;
+	let state   = txmsg.state;
+	let pkey    = tx.transaction.from[0].add;
+	let options = txmsg.options;
 
-        var sql    = "INSERT INTO mod_arcade (player, state, game_bid, game) VALUES ($player, $state, $bid, $game)";
+        var sql    = "INSERT INTO mod_arcade (player, state, game_bid, game, options) VALUES ($player, $state, $bid, $game, $options)";
         var params = {
           $player : pkey ,
           $state : state ,
 	  $bid : blk.block.id ,
-	  $game : game 
+	  $game : game , 
+	  $options : options 
         }
 
 	try {
@@ -164,6 +166,22 @@ class Arcade extends ModTemplate {
     $('.quick_invite').on('click', function() {
 
 
+      let options    = {};
+
+      $('form input, form select').each(
+        function(index) {
+          var input = $(this);
+          if (input.is(":checkbox")) {
+            if (input.prop("checked")) {
+              options[input.attr('name')] = 1;
+            }
+          } else {
+            options[input.attr('name')] = input.val();
+          }
+        }
+      );
+
+
       if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
 
 alert("Can send OnChain");
@@ -182,9 +200,9 @@ alert("Can send OnChain");
   	newtx.transaction.msg.request = "opengame";
   	newtx.transaction.msg.game    = arcade_self.active_game;
   	newtx.transaction.msg.state   = "open";
+  	newtx.transaction.msg.options = options;
 
   	newtx = arcade_self.app.wallet.signTransaction(newtx);
-
   	arcade_self.app.network.propagateTransaction(newtx);
 
 	alert("WE HAVE BROADCAST A MESSAGE TO THE NETWORK");
@@ -194,7 +212,7 @@ alert("Can send OnChain");
 	//
 	// off-chain peer-to-peer TX
 	//
-alert("Must send OffChain");
+	alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
 
       }
     });
