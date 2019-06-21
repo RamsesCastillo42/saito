@@ -67,13 +67,29 @@
               <h2>One More Thing!</h2>
             </div>
             <div class="modal_body">
-              <p>Select what sort of game invitation you want to create</p>
+              <p style="margin: 0">Select what sort of game invitation you want to create</p>
               <div style="display: grid">
-                <select name="invitation" id="game_modal_selector">
+                <!-- <select name="invitation" id="game_modal_selector">
                   <option value="open">Open Invite</option>
                   <option value="link">Quick Link</option>
                   <option value="key">Invite By Key</option>
-                </select>
+                </select> -->
+                <form id="game_creation_form">
+                  <ul class="game_creation_modal_options">
+                    <li>
+                      <input type="radio" id="open" name="amount" checked="checked" />
+                      <label for="open">Open Invite</label>
+                    </li>
+                    <li>
+                      <input type="radio" id="link" name="amount" />
+                      <label for="link">Quick Link</label>
+                    </li>
+                    <li>
+                      <input type="radio" id="key" name="amount" />
+                      <label for="key">Invite By Key</label>
+                    </li>
+                  </ul>
+                </form>
                 <div id="game_start_options">
                   <button class="quick_invite">CREATE GAME</button>
                 </div>

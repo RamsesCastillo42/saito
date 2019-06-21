@@ -40,13 +40,22 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return; }
 
-    var arcade_self = this;
-
     try {
       this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, state TEXT, game_bid INTEGER, gameid TEXT, game TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
       let res = await this.db.run(sql, {});
-console.log("DATABASE CREATED");
+      var sql =
+      `CREATE TABLE IF NOT EXISTS mod_arcade (
+        id INTEGER,
+        player TEXT DEFAULT VALUE "",
+	game_bid INTEGER,
+        gameid TEXT DEFAULT VALUE "",
+        game TEXT DEFAULT VALUE "",
+        options TEXT DEFAULT VALUE "",
+        created_at INTEGER,
+        expires_at INTEGER,
+        PRIMARY KEY (id ASC)
+      )`;
+      await this.db.run(sql, {});
     } catch (err) {
     }
 
@@ -70,7 +79,7 @@ console.log("DATABASE CREATED");
 
       if (saito_email == "") {
         saito_email = saito_address.substring(0,13) + "..."; 
-	//saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
+        //saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
       }
 
       $('.saito_email').html(saito_email);
@@ -159,6 +168,7 @@ console.log("DATABASE CREATED");
 
     let arcade_self = this;
 
+
     //
     // Quick Invite
     //
@@ -166,8 +176,6 @@ console.log("DATABASE CREATED");
     $('.quick_invite').on('click', function() {
 
       if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
-
-alert("I can send a transaction onchain!");
 
 	//
 	// on-chain
@@ -195,8 +203,6 @@ alert("I can send a transaction onchain!");
 	//
 	// off-chain peer-to-peer TX
 	//
-alert("I can't send a transaction onchain!");
-
 
 
       }
@@ -244,9 +250,7 @@ alert("I can't send a transaction onchain!");
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
         $('.publisher_message').show();
       }
-
     });
-
   }
 
 
@@ -348,9 +352,11 @@ alert("I can't send a transaction onchain!");
 	let gameid     = "";
 	let adminid    = "";
 	let winner     = "";
+	let options    = "";
 
-	if (x.gameid != undefined && x.gameid != "") { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
-	if (x.winner != undefined && x.winner != "") { winner = x.winner; }
+	if (x.gameid != undefined && x.gameid != "")   { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
+	if (x.winner != undefined && x.winner != "")   { winner = x.winner; }
+	if (x.options != undefined && x.options != "") { options = x.options; }
 
 
         html += `open_games.push({ 
@@ -359,6 +365,7 @@ alert("I can't send a transaction onchain!");
 	  game: "${x.game}", 
 	  state : "${x.state}" , 
 	  status : "" ,
+	  options : "${JSON.stringify(x.options)}" ,
 	  gameid : "${gameid}",
 	  adminid : "${adminid}" 
 	});`;
@@ -488,58 +495,27 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
     $('#games').hide();
     $('.game_options').hide();
 
-    this.addModalEvents();
-
     if (this.browser_active == 1) { this.attachEvents(this.app); }
-  }
-
-  addModalEvents() {
-    // Modal Functionality
-    // Get the modal
-    var modal = document.getElementById("game_modal");
-    var btn = document.getElementById("game_button");
-    var modalSelector = document.getElementById("game_modal_selector");
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks on the button, open the modal
-    btn.addEventListener('click', () => {
-      modal.style.display = "block";
-    });
-
-    // When the user clicks on <span> (x), close the modal
-    span.addEventListener('click', () => {
-      modal.style.display = "none";
-    });
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.addEventListener('click', () => {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    });
-
-    // game_modal_selector
-    modalSelector.addEventListener("change", (event) => {
-      let gameSelectHTML = this.renderModalOptions(event.target.value)
-      $('#game_start_options').innerHTML = '';
-      $('#game_start_options').html(gameSelectHTML);
-    });
   }
 
 
   renderModalOptions(option) {
     switch(option) {
       case 'open':
-        return `<button class="quick_invite">CREATE GAME</button>`
+        return `<button id="create_game_button" class="quick_invite">CREATE GAME</button>`
       case 'link':
-        return `<input class="quick_link_input" />`
+        return `<input class="quick_link_input" /> <button class="quick_invite"> COPY</button>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
-        let html = `<div class="oponent_key_container">`
+        let html = `<div class="opponent_key_container">`
         for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
-          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent_address" id=${i}></input></div>`
+          html += `
+          <div style="display: flex; align-items: center;">
+            <span style="margin-right: 15px;width: 25%">OPPONENT ${i + 1}:</span>
+            <input class="opponent_address" id=${i}></input>
+          </div>`
         }
-        html += `<button class="quick_invite"> INVITE</button>`;
+        html += `<button style="margin-top: 0" class="quick_invite"> INVITE</button>`;
         html += "</div>";
         return html;
       default:
@@ -566,15 +542,16 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
 
         for (let i = 0; i < this.app.options.games.length; i++) {
 
-	  let x = this.app.options.games[i];
+          let x = this.app.options.games[i];
 
-     	  let opponent   = "unknown";
-  	  let gameid     = x.id;
-  	  let player     = x.player;
-  	  let winner     = x.winner;
-  	  let gamename   = x.module;
-  	  let state      = "initializing";
-  	  let status     = x.status;
+          let opponent   = "unknown";
+          let gameid     = x.id;
+          let player     = x.player;
+          let winner     = x.winner;
+          let gamename   = x.module;
+          let options    = x.options;
+          let state      = "initializing";
+          let status     = x.status;
           let adminid    = `${gameid}_${gamename}`;
 
 	  if (x.id == undefined || x.id == "") {
@@ -588,13 +565,13 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
     	    }
   	  }
 
-	  if (x.initializing != 1) { state = "active"; }
+          if (x.initializing != 1) { state = "active"; }
 
 
-	  if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
-	  if (x.over == 1) { state = "over"; }
-  	  if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
-  	  if (status.length > 50) { status = status.substring(0, 50) + "..."; }
+          if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+          if (x.over == 1) { state = "over"; }
+          if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
+          if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
           let remote_address = "";
           for (let z = 0; z < x.opponents.length; z++) {;
@@ -608,21 +585,14 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
 	    game: gamename , 
 	    state : state , 
 	    status : status ,
+	    options : options ,
 	    gameid : gameid ,
 	    adminid : adminid
 	  });
-
         }
       }
     }
   }
-
-
-
-
-
-
-
 
 }
 
