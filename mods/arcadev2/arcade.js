@@ -38,13 +38,24 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return; }
 
-    var arcade_self = this;
-
     try {
-      var sqlite = require('sqlite');
+      const sqlite = require('sqlite');
       this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, state TEXT, game_bid INTEGER, player TEXT, publickey TEXT, game TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
-      let res = await this.db.run(sql, {});
+
+      var sql =
+      `CREATE TABLE IF NOT EXISTS mod_arcade (
+        id INTEGER,
+        state TEXT,
+        game_bid INTEGER,
+        player TEXT,
+        publickey TEXT,
+        game TEXT,
+        created_at INTEGER,
+        expires_at INTEGER,
+        PRIMARY KEY (id ASC)
+      )`;
+
+      await this.db.run(sql, {});
     } catch (err) {
     }
 
@@ -68,7 +79,7 @@ class Arcade extends ModTemplate {
 
       if (saito_email == "") {
         saito_email = saito_address.substring(0,13) + "..."; 
-	//saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
+        //saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
       }
 
       $('.saito_email').html(saito_email);
@@ -90,7 +101,7 @@ class Arcade extends ModTemplate {
 
     if (this.db == null) {
       try {
-        var sqlite = require('sqlite');
+        const sqlite = require('sqlite');
         this.db = await sqlite.open('./data/arcade.sq3');
       } catch (err) {}
     }
@@ -149,7 +160,41 @@ class Arcade extends ModTemplate {
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
         $('.publisher_message').show();
       }
-    })
+    });
+
+    //
+    // Modal Events
+    //
+
+    // Get the modal
+    var modal = document.getElementById("game_modal");
+
+    // When the user clicks on the button, open the modal
+    $('#game_button').off();
+    $('#game_button').on('click', () => {
+      modal.style.display = "block";
+    });
+
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', () => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    $('#game_creation_form').off();
+    $('#game_creation_form').on("change", (event) => {
+      let gameSelectHTML = this.renderModalOptions(event.target.id);
+      $('#game_start_options').innerHTML = '';
+      $('#game_start_options').html(gameSelectHTML);
+    });
 
   }
 
@@ -350,58 +395,27 @@ class Arcade extends ModTemplate {
     $('#games').hide();
     $('.game_options').hide();
 
-    this.addModalEvents();
-
     if (this.browser_active == 1) { this.attachEvents(this.app); }
-  }
-
-  addModalEvents() {
-    // Modal Functionality
-    // Get the modal
-    var modal = document.getElementById("game_modal");
-    var btn = document.getElementById("game_button");
-    var modalSelector = document.getElementById("game_modal_selector");
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks on the button, open the modal
-    btn.addEventListener('click', () => {
-      modal.style.display = "block";
-    });
-
-    // When the user clicks on <span> (x), close the modal
-    span.addEventListener('click', () => {
-      modal.style.display = "none";
-    });
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.addEventListener('click', () => {
-      if (event.target == modal) {
-        modal.style.display = "none";
-      }
-    });
-
-    // game_modal_selector
-    modalSelector.addEventListener("change", (event) => {
-      let gameSelectHTML = this.renderModalOptions(event.target.value)
-      $('#game_start_options').innerHTML = '';
-      $('#game_start_options').html(gameSelectHTML);
-    });
   }
 
 
   renderModalOptions(option) {
     switch(option) {
       case 'open':
-        return `<button class="quick_invite">CREATE GAME</button>`
+        return `<button id="create_game_button" class="quick_invite">CREATE GAME</button>`
       case 'link':
-        return `<input class="quick_link_input" />`
+        return `<input class="quick_link_input" /> <button class="quick_invite"> COPY</button>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
-        let html = `<div class="oponent_key_container">`
+        let html = `<div class="opponent_key_container">`
         for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
-          html += `<div style="display: flex; align-items: center;"><span style="margin-right: 15px;">OPPONENT ${i + 1}:</span> <input class="opponent_address" id=${i}></input></div>`
+          html += `
+          <div style="display: flex; align-items: center;">
+            <span style="margin-right: 15px;width: 25%">OPPONENT ${i + 1}:</span>
+            <input class="opponent_address" id=${i}></input>
+          </div>`
         }
-        html += `<button class="quick_invite"> INVITE</button>`;
+        html += `<button style="margin-top: 0" class="quick_invite"> INVITE</button>`;
         html += "</div>";
         return html;
       default:
@@ -428,30 +442,30 @@ class Arcade extends ModTemplate {
 
         for (let i = 0; i < this.app.options.games.length; i++) {
 
-	  let x = this.app.options.games[i];
+          let x = this.app.options.games[i];
 
-     	  let opponent   = "unknown";
-  	  let gameid     = x.id;
-  	  let player     = x.player;
-  	  let winner     = x.winner;
-  	  let gamename   = x.module;
-  	  let state      = "initializing";
-  	  let status     = x.status;
+          let opponent   = "unknown";
+          let gameid     = x.id;
+          let player     = x.player;
+          let winner     = x.winner;
+          let gamename   = x.module;
+          let state      = "initializing";
+          let status     = x.status;
           let adminid    = `${gameid}_${gamename}`;
 
-  	  if (x.opponents != undefined) {
-    	    if (x.opponents.length > 0) {
-   	      opponent = x.opponents[0];
-    	    }
-  	  }
+          if (x.opponents != undefined) {
+            if (x.opponents.length > 0) {
+              opponent = x.opponents[0];
+            }
+          }
 
-	  if (x.initializing != 1) { state = "active"; }
+          if (x.initializing != 1) { state = "active"; }
 
 
-	  if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
-	  if (x.over == 1) { state = "over"; }
-  	  if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
-  	  if (status.length > 50) { status = status.substring(0, 50) + "..."; }
+          if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+          if (x.over == 1) { state = "over"; }
+          if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
+          if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
           let remote_address = "";
           for (let z = 0; z < game.opponents.length; z++) {;
@@ -459,17 +473,16 @@ class Arcade extends ModTemplate {
             remote_address += game.opponents[z];
           }
 
-          open_games.push({ 
-	    gameid : gameid ,
-	    player: opponent ,
-	    publickey : opponent , 
-	    winner : winner ,
-	    gameid : gameid ,
-	    game: gamename , 
-	    state : state , 
-	    status : status
-	  });
-
+          open_games.push({
+            gameid,
+            player: opponent,
+            publickey : opponent,
+            winner,
+            gameid,
+            game: gamename,
+            state,
+            status
+          });
         }
       }
     }
