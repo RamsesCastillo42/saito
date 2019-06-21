@@ -1,6 +1,7 @@
 const fs = require('fs');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
+var numeral = require('numeral');
 
 class Arcade extends ModTemplate {
 
@@ -42,9 +43,8 @@ class Arcade extends ModTemplate {
     try {
       var sqlite = require('sqlite');
       this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, status TEXT, game_bid INTEGER, player1_publickey TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
+      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, state TEXT, game_bid INTEGER, player TEXT, publickey TEXT, game TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
       let res = await this.db.run(sql, {});
-
     } catch (err) {
     }
 
@@ -61,12 +61,26 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1 && this.browser_active == 1) {
 
-      // Open
-      this.games.open.push({ player: 'david@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
-      this.games.open.push({ player: 'richard@saito', game: 'Twilight Struggle', status: ['reject_game', 'accept_game'] });
+
+      let saito_email   = this.app.wallet.returnIdentifier();
+      let saito_address = this.app.wallet.returnPublicKey();
+      let saito_balance = this.app.wallet.returnBalance();
+
+      if (saito_email == "") {
+        saito_email = saito_address.substring(0,13) + "..."; 
+	//saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
+      }
+
+      $('.saito_email').html(saito_email);
+      //$('#saito_address').html(saito_address);
+      $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
+
+      for (let i = 0; i < open_games.length; i++) {
+        this.games.open.push(open_games[i]);
+      }
 
       // Completed
-      this.games.completed.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
+      //this.games.completed.push({ player: 'adrian@saito vs. lzq@saito', game: 'Twilight Struggle', status: ['joinlink'] });
 
       renderGamesTable(this.games[this.games.nav.selected]);
 
@@ -80,6 +94,8 @@ class Arcade extends ModTemplate {
         this.db = await sqlite.open('./data/arcade.sq3');
       } catch (err) {}
     }
+
+    this.updateOpenGames();
 
   }
 
@@ -97,11 +113,15 @@ class Arcade extends ModTemplate {
   attachEvents() {
 
     //
+    // Modal
+    //
+
+
+
+    //
     // Games Table
     //
     $('.games-nav-menu-item').on('click', (event) => {
-
-alert("SELECTION");
 
       document.getElementById(this.games.nav.selected).className = "";
 
@@ -181,6 +201,8 @@ alert("SELECTION");
   ////////////////
   webServer(app, expressapp) {
 
+    let arcade_self = this;
+
     expressapp.get('/arcade/',  (req, res) => {
       res.sendFile(__dirname + '/web/index.html');
       return;
@@ -220,8 +242,22 @@ alert("SELECTION");
     });
 
     expressapp.get('/arcade/script.js',  (req, res) => {
-      res.sendFile(__dirname + '/web/script.js');
+
+      let html = "\n";
+
+      for (let i = 0; i < arcade_self.games.open.length; i++) {
+        let x = arcade_self.games.open[i];
+        html += `open_games.push({ player: "${x.player}", publickey : "${x.publickey}", game: "${x.game}", state : "${x.state}" , status: ['reject_game', 'accept_game'] });`;
+      }
+
+      let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
+      data = data.replace('OPEN GAMES', html);
+      res.setHeader('Content-type', 'text/html');
+      res.charset = 'UTF-8';
+      res.write(data);
+      res.end();
       return;
+
     });
 
     expressapp.get('/arcade/img/:imagefile',  (req, res) => {
@@ -244,7 +280,19 @@ alert("SELECTION");
 
 
 
+  async updateOpenGames() {
 
+    this.games.open_games = [];
+    this.games.open[0] = {};
+    this.games.open[0].player = "david@saito";
+    this.games.open[0].state = "open";
+    this.games.open[0].game_bid = 1312;
+    this.games.open[0].publickey = "130181091810980923412309812309412348123142134";
+    this.games.open[0].game = "Twilight Struggle";
+    this.games.open[0].created_at = new Date().getTime();
+    this.games.open[0].expires_at = new Date().getTime() + 600000;
+
+  }
 
 
 
@@ -296,7 +344,7 @@ alert("SELECTION");
     if (app.BROWSER == 0) { return; }
 
     //
-    // invite page stuff here
+    // invite page
     //
     try {
       if (invite_page == 1 && !this.is_initializing) {
@@ -370,6 +418,7 @@ alert("SELECTION");
       $('#game-start-options').html(gameSelectHTML);
     });
   }
+
 
   renderModalOptions(option) {
     switch(option) {

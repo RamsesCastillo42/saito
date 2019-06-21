@@ -1,4 +1,7 @@
 
+  var open_games = [];
+
+  // OPEN GAMES
 
 
 
