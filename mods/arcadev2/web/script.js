@@ -5,10 +5,11 @@
 
 
 
-  function createButtonElement(button_class) {
+  function createGameButton(button_class, button_id) {
 
     var button = document.createElement("button");
     button.className = button_class;
+    button.id = button_id;
 
     let text_node;
 
@@ -59,15 +60,15 @@
       if (game.state == "open") {
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createButtonElement("accept_game"));
+        statusTC.appendChild(this.createGameButton("accept_game", "zzz"));
 
       } else {
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createButtonElement("join_game"));
+        statusTC.appendChild(this.createGameButton("join_game"));
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createButtonElement("delete_game"));
+        statusTC.appendChild(this.createGameButton("delete_game"));
 
       }
 

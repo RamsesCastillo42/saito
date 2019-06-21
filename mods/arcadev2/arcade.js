@@ -1,6 +1,7 @@
 const fs = require('fs');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
+const sqlite = require('sqlite');
 var numeral = require('numeral');
 
 class Arcade extends ModTemplate {
@@ -17,6 +18,7 @@ class Arcade extends ModTemplate {
 
     this.active_game     = "";
 
+    this.db              = null;
     this.games           = {}
     this.games.open      = [];
     this.games.completed = [];
@@ -41,10 +43,10 @@ class Arcade extends ModTemplate {
     var arcade_self = this;
 
     try {
-      var sqlite = require('sqlite');
       this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, state TEXT, game_bid INTEGER, player TEXT, publickey TEXT, game TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
+      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, state TEXT, game_bid INTEGER, gameid TEXT, game TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY(id ASC))";
       let res = await this.db.run(sql, {});
+console.log("DATABASE CREATED");
     } catch (err) {
     }
 
@@ -81,7 +83,6 @@ class Arcade extends ModTemplate {
       }
 
       this.populateGamesTable();
-
       renderGamesTable(this.games[this.games.nav.selected]);
 
     }
@@ -90,13 +91,57 @@ class Arcade extends ModTemplate {
 
     if (this.db == null) {
       try {
-        var sqlite = require('sqlite');
         this.db = await sqlite.open('./data/arcade.sq3');
-      } catch (err) {}
+        this.refreshOpenGames();
+      } catch (err) {
+      }
     }
 
-    this.updateOpenGames();
 
+
+  }
+
+
+
+
+
+
+  async onNewBlock(blk, lc) {
+    let arcade_self = blk.app.modules.returnModule("Arcade");
+    arcade_self.refreshOpenGames();
+  }
+
+  async onConfirmation(blk, tx, conf, app) {
+
+    let arcade_self = app.modules.returnModule("Arcade");
+
+    if (tx.transaction.msg.module != "Arcade") { return; }
+
+    if (app.BROWSER == 0) {
+
+      if (conf == 0) {
+
+	let txmsg = tx.returnMessage();
+
+	let game  = txmsg.game;
+	let state = txmsg.state;
+	let pkey  = tx.transaction.from[0].add;
+
+        var sql    = "INSERT INTO mod_arcade (player, state, game_bid, game) VALUES ($player, $state, $bid, $game)";
+        var params = {
+          $player : pkey ,
+          $state : state ,
+	  $bid : blk.block.id ,
+	  $game : game 
+        }
+
+	try {
+          let res = await arcade_self.db.run(sql, params);
+	} catch (err) {
+	  console.log("There is an error here: " + err);
+	}
+      }
+    }
   }
 
 
@@ -112,6 +157,53 @@ class Arcade extends ModTemplate {
   ///////////////////
   attachEvents() {
 
+    let arcade_self = this;
+
+    //
+    // Quick Invite
+    //
+    $('.quick_invite').off();
+    $('.quick_invite').on('click', function() {
+
+      if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
+
+alert("I can send a transaction onchain!");
+
+	//
+	// on-chain
+	//
+        var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
+  	if (newtx == null) {
+  	  alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+  	  return;
+  	}
+
+  	newtx.transaction.to.push(new saito.slip(arcade_self.app.wallet.returnPublicKey(), 0.0));
+  	newtx.transaction.msg.module  = "Arcade";
+  	newtx.transaction.msg.request = "opengame";
+  	newtx.transaction.msg.game    = arcade_self.active_game;
+  	newtx.transaction.msg.state   = "open";
+
+  	newtx = arcade_self.app.wallet.signTransaction(newtx);
+
+  	arcade_self.app.network.propagateTransaction(newtx);
+
+	alert("WE HAVE BROADCAST A MESSAGE TO THE NETWORK");
+
+      } else {
+
+	//
+	// off-chain peer-to-peer TX
+	//
+alert("I can't send a transaction onchain!");
+
+
+
+      }
+
+    });
+
+
     //
     // Modal
     //
@@ -121,6 +213,7 @@ class Arcade extends ModTemplate {
     //
     // Games Table
     //
+    $('.games-nav-menu-item').off();
     $('.games-nav-menu-item').on('click', (event) => {
 
       document.getElementById(this.games.nav.selected).className = "";
@@ -136,20 +229,23 @@ class Arcade extends ModTemplate {
 
 
     //
-    // Arcade Game Event Listener
+    // Start a Game Graphics
     //
-    let gameslist = document.querySelector('.gamelist');
-    gameslist.addEventListener('click', (event) => {
-      this.active_game = event.target.id;
-      this.showMonitor();
+    $('.game').off();
+    $('.game').on('click', function() {
+
+      arcade_self.active_game = $(this).attr("id");
+      arcade_self.showMonitor();
+
       $('.find_player_button').toggle();
       $('.create_game_container').toggle();
 
-      if (this.active_game == "Twilight") {
+      if (arcade_self.active_game == "Twilight") {
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
         $('.publisher_message').show();
       }
-    })
+
+    });
 
   }
 
@@ -246,8 +342,26 @@ class Arcade extends ModTemplate {
       let html = "\n";
 
       for (let i = 0; i < arcade_self.games.open.length; i++) {
+
         let x = arcade_self.games.open[i];
-        html += `open_games.push({ player: "${x.player}", publickey : "${x.publickey}", game: "${x.game}", state : "${x.state}" , status: ['reject_game', 'accept_game'] });`;
+
+	let gameid     = "";
+	let adminid    = "";
+	let winner     = "";
+
+	if (x.gameid != undefined && x.gameid != "") { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
+	if (x.winner != undefined && x.winner != "") { winner = x.winner; }
+
+
+        html += `open_games.push({ 
+	  player: "${x.player}" , 
+	  winner : "${winner}",
+	  game: "${x.game}", 
+	  state : "${x.state}" , 
+	  status : "" ,
+	  gameid : "${gameid}",
+	  adminid : "${adminid}" 
+	});`;
       }
 
       let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
@@ -274,20 +388,43 @@ class Arcade extends ModTemplate {
 
 
 
-  async updateOpenGames() {
+  async refreshOpenGames() {
 
-    this.games.open_games = [];
-    this.games.open[0] = {};
-    this.games.open[0].player = "david@saito";
-    this.games.open[0].state = "open";
-    this.games.open[0].game_bid = 1312;
-    this.games.open[0].publickey = "130181091810980923412309812309412348123142134";
-    this.games.open[0].game = "Twilight Struggle";
-    this.games.open[0].created_at = new Date().getTime();
-    this.games.open[0].expires_at = new Date().getTime() + 600000;
+console.log("REFRESHING OPEN GAMES");
 
+    if (this.app.BROWSER == 0) {
+
+      var sql    = "SELECT * FROM mod_arcade WHERE state = 'open'";
+      var params = {};
+      try {
+console.log("RUN ON DB: " + JSON.stringify(rows));
+        var rows = await this.db.all(sql, params);
+console.log("AWAIT: " + JSON.stringify(rows));
+      } catch(err) {
+        console.log(err);
+console.log("ERROR REFRESHING: " + err);
+	return;
+      }
+
+      this.games.open = [];
+
+      if (rows != null) {
+        if (rows.length != 0) {
+          for (var fat = 0; fat < rows.length; fat++) {
+console.log("HERE WE IS" + JSON.stringify(rows[fat]));
+            this.games.open[fat] = {};
+            this.games.open[fat].gameid     = rows[fat].gameid;
+            this.games.open[fat].player     = rows[fat].player;
+            this.games.open[fat].state      = rows[fat].state;
+            this.games.open[fat].game_bid   = rows[fat].game_bid;
+            this.games.open[fat].game       = rows[fat].game;
+            this.games.open[fat].created_at = new Date().getTime();
+            this.games.open[fat].expires_at = new Date().getTime() + 600000;
+          }
+        }
+      }
+    }
   }
-
 
 
 
@@ -341,6 +478,7 @@ class Arcade extends ModTemplate {
 
 
   showMonitor() {
+
     this.populateGameMonitor(this.app);
     this.updateBalance(this.app);
 
@@ -439,6 +577,11 @@ class Arcade extends ModTemplate {
   	  let status     = x.status;
           let adminid    = `${gameid}_${gamename}`;
 
+	  if (x.id == undefined || x.id == "") {
+	    gameid = "";
+	    adminid = "";
+	  }
+
   	  if (x.opponents != undefined) {
     	    if (x.opponents.length > 0) {
    	      opponent = x.opponents[0];
@@ -454,26 +597,32 @@ class Arcade extends ModTemplate {
   	  if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
           let remote_address = "";
-          for (let z = 0; z < game.opponents.length; z++) {;
+          for (let z = 0; z < x.opponents.length; z++) {;
             if (z > 0) { remote_address += "_"; }
-            remote_address += game.opponents[z];
+            remote_address += x.opponents[z];
           }
 
           open_games.push({ 
-	    gameid : gameid ,
 	    player: opponent ,
-	    publickey : opponent , 
 	    winner : winner ,
-	    gameid : gameid ,
 	    game: gamename , 
 	    state : state , 
-	    status : status
+	    status : status ,
+	    gameid : gameid ,
+	    adminid : adminid
 	  });
 
         }
       }
     }
   }
+
+
+
+
+
+
+
 
 }
 
