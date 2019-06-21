@@ -47,7 +47,7 @@ class Arcade extends ModTemplate {
       `CREATE TABLE IF NOT EXISTS mod_arcade (
         id INTEGER,
         player TEXT DEFAULT VALUE "",
-	game_bid INTEGER,
+	      game_bid INTEGER,
         gameid TEXT DEFAULT VALUE "",
         game TEXT DEFAULT VALUE "",
         options TEXT DEFAULT VALUE "",
@@ -214,6 +214,35 @@ class Arcade extends ModTemplate {
     // Modal
     //
 
+    // Get the modal
+    var modal = document.getElementById("game_modal");
+
+     // When the user clicks on the button, open the modal
+    $('#game_button').off();
+    $('#game_button').on('click', () => {
+      modal.style.display = "block";
+    });
+
+     var span = document.getElementsByClassName("close")[0];
+
+     // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', () => {
+      modal.style.display = "none";
+    });
+
+     // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', () => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+     $('#game_creation_form').off();
+    $('#game_creation_form').on("change", (event) => {
+      let gameSelectHTML = this.renderModalOptions(event.target.id);
+      $('#game_start_options').innerHTML = '';
+      $('#game_start_options').html(gameSelectHTML);
+    });
 
 
 
