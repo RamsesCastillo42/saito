@@ -534,6 +534,13 @@ hr {
   opacity: 0.75;
 }
 
+.initialize_game_container {
+  display: block;
+  line-height: 1.4em;
+  max-width: 1200px;
+  padding-bottom:25px;
+}
+
 .create_game_container {
   display: grid;
   grid-template-areas: "gameimage gamedescription" "game-generate game-generate";

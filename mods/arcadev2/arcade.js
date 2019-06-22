@@ -18,6 +18,9 @@ class Arcade extends ModTemplate {
 
     this.active_game     = "";
 
+    this.viewing_game_creator = 0;
+    this.viewing_game_initializer = 0;
+
     this.db              = null;
     this.games           = {}
     this.games.open      = [];
@@ -42,7 +45,7 @@ class Arcade extends ModTemplate {
 
     try {
       this.db = await sqlite.open('./data/arcade.sq3');
-      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, game_bid INTEGER, gameid TEXT, game TEXT, state TEXT, options TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY (id ASC))";
+      var sql = "CREATE TABLE IF NOT EXISTS mod_arcade (id INTEGER, player TEXT, player2 TEXT, game_bid INTEGER, gameid TEXT, game TEXT, state TEXT, options TEXT, sig TEXT, created_at INTEGER, expires_at INTEGER, PRIMARY KEY (id ASC))";
       await this.db.run(sql, {});
     } catch (err) {
     }
@@ -81,6 +84,7 @@ class Arcade extends ModTemplate {
 
       this.populateGamesTable();
       renderGamesTable(this.games[this.games.nav.selected]);
+      this.attachEvents();
 
     }
 
@@ -101,47 +105,312 @@ class Arcade extends ModTemplate {
 
 
 
+  /////////////////////////////////
+  // ShouldAffixCallbacktoModule //
+  /////////////////////////////////
+  shouldAffixCallbackToModule(modname) {
+    if (modname === "Arcade") { return 1; }
+    if (modname === "Twilight") { return 1; }
+    if (modname === "Chess") { return 1; }
+    if (modname === "Wordblocks") { return 1; }
+    return 0;
+  }
 
 
+
+
+  ////////////////
+  // onNewBlock //
+  ////////////////
   async onNewBlock(blk, lc) {
     let arcade_self = blk.app.modules.returnModule("Arcade");
     arcade_self.refreshOpenGames();
   }
 
+
+
+
+
+  ////////////////////
+  // onConfirmation //
+  ////////////////////
   async onConfirmation(blk, tx, conf, app) {
 
     let arcade_self = app.modules.returnModule("Arcade");
 
-    if (tx.transaction.msg.module != "Arcade") { return; }
-
     if (app.BROWSER == 0) {
-
       if (conf == 0) {
-
 	let txmsg = tx.returnMessage();
 
-	let game    = txmsg.game;
-	let state   = txmsg.state;
-	let pkey    = tx.transaction.from[0].add;
-	let options = txmsg.options;
 
-        var sql    = "INSERT INTO mod_arcade (player, state, game_bid, game, options) VALUES ($player, $state, $bid, $game, $options)";
-        var params = {
-          $player : pkey ,
-          $state : state ,
-	  $bid : blk.block.id ,
-	  $game : game , 
-	  $options : options 
-        }
-
-	try {
-          let res = await arcade_self.db.run(sql, params);
-	} catch (err) {
-	  console.log("There is an error here: " + err);
+	//
+	// update database to remove game from list
+	//
+	if (txmsg.request == "invite") {
+	  let sql = "UPDATE mod_arcade SET state = 'active', player2 = $player2 WHERE sig = $sig";
+	  let params = {
+	    $player2 : tx.transaction.from[0].add ,
+	    $sig : txmsg.sig
+	  }
+	  try {
+            let res = await arcade_self.db.run(sql, params);
+	  } catch (err) {
+	    console.log("error updating database in arcade...");
+	    return;
+	  }
 	}
+
+
+
+
+	if (txmsg.module == "Arcade" && txmsg.request == "opengame") {
+
+	  let game    = "";
+	  let state   = "";
+	  let pkey    = "";
+	  let options = "";
+	  let created_at = "";
+	  let sig     = "";
+
+	  if (txmsg.game != "") { game = txmsg.game; }
+	  if (txmsg.state != "") { state = txmsg.state; }
+	  pkey = tx.transaction.from[0].add;
+	  if (txmsg.options != "") { options = txmsg.options; }
+	  if (txmsg.ts != "") { created_at = txmsg.ts; }
+	  if (txmsg.sig != "") { sig = txmsg.sig; }
+
+          var sql = "INSERT INTO mod_arcade (player, state, game_bid, game, options, created_at, sig) VALUES ($player, $state, $bid, $game, $options, $created_at, $sig)";
+          var params = {
+            $player : pkey ,
+            $state : state ,
+	    $bid : blk.block.id ,
+	    $game : game , 
+	    $options : JSON.stringify(options) ,
+	    $created_at : created_at , 
+	    $sig : sig 
+          }
+
+	  try {
+            let res = await arcade_self.db.run(sql, params);
+	  } catch (err) {
+	    console.log("There is an error here: " + err);
+	  }
+          return;
+	}
+      }
+    } else {
+
+      //
+      // browsers remove listed games on accept (technically invited)
+      //
+      let txmsg = tx.returnMessage();
+
+      if (txmsg.request == "invite" && arcade_self.browser_active == 1) {
+
+	let removed_any_games = 0;
+        for (let i = 0; i < arcade_self.games.open.length; i++) {
+	  if (arcade_self.games.open[i].sig == txmsg.sig) {
+	    arcade_self.games.open.splice(i, 1); 
+	    i--;
+	    removed_any_games = 1;
+          }
+        }
+	if (removed_any_games == 1) {
+          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected]);
+	}
+      }
+
+    }
+
+
+
+    //
+    // pass controls into games
+    //
+    try {
+      if (tx.isTo(app.wallet.returnPublicKey()) == 1) {
+        arcade_self.handleOnConfirmation(blk, tx, conf, app);
+      }
+    } catch (err) {
+      console.log("Error in Arcade: " + JSON.stringify(err));
+      return;
+    }
+  }
+
+
+
+
+
+  handleOnConfirmation(blk, tx, conf, app) {
+
+    //
+    // only browsers deal with this mess of code
+    //
+    if (this.app.BROWSER == 0) { return; }
+
+    let txmsg = tx.returnMessage();
+    let remote_address = tx.transaction.from[0].add;
+
+
+    if (conf == 0) {
+
+console.log("TXMSG: " + JSON.stringify(txmsg));
+
+/*****
+      //
+      // DECLINE
+      //
+      if (txmsg.request == "decline") {
+        if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
+          if (this.monitor_shown_already == 1 || invite_page == 1) {
+            $('.manage_invitations').html(`
+              <center>Your opponent has declined the game as they have already started one!</center>
+            `);
+            $('.status').show();
+            $('#game_spinner').hide();
+            this.attachEvents(this.app);
+          }
+        }
+        if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
+          if (this.monitor_shown_already == 1 || invite_page == 1) {
+            $('.manage_invitations').html(`
+              <center>You have received multiple acceptances to your game. Refusing all but the first acceptance.</center>
+            `);
+            $('.status').show();
+            this.attachEvents(this.app);
+          }
+        }
+       return;
+      }
+*****/
+
+      //
+      // INVITE
+      //
+      if (txmsg.request == "invite") {
+
+console.log("TXMSG 2: " + JSON.stringify(txmsg));
+
+        if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
+
+          try {
+
+            let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+            let game_module = tx.transaction.msg.module;
+
+	    //
+	    // do nothing if already watching this game initialize
+	    //
+            if (app.options.games != undefined) {
+              for (let i = 0; i < app.options.games.length; i++) {
+                if (app.options.games[i].id == game_id) {
+                  if (app.options.games[i].invitation == 0) {
+		    if (this.viewing_game_initializer == 1) {
+                      if (txmsg.ts != "" && txmsg.sig != "") {
+                        if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                          try {
+                            if (invite_page == 1) {
+                              return;
+                            }
+                          } catch (err) {
+                          }
+                        } else {
+                          return;
+                        }
+                      }
+                    } else {
+                    }
+                  }
+                }
+              }
+            }
+
+            let tmpmod = txmsg.module;
+            this.active_game = tmpmod.charAt(0).toUpperCase();
+            this.active_game += tmpmod.slice(1);
+
+            //
+            // ADD GAME TO TABLE
+            //
+            //this.listActiveGames();
+
+
+	    //
+	    //
+	    //
+            if (this.browser_active == 1) {
+
+              if (txmsg.ts != "" && txmsg.sig != "") {
+                if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
+                  this.showGameInitializer();
+                  this.startInitializationTimer(game_id, txmsg.module);
+                }
+              } else {
+
+		//
+		// MANUAL ACCEPT IN 
+		//
+                let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
+
+		this.showGameInitializer();
+		alert(html);
+/***
+                let tmpadd = "";
+                for (let b = 0; b < tx.transaction.to.length; b++) {
+                  if (b > 0) { tmpadd += "_"; }
+                  tmpadd += tx.transaction.to[b].add;
+                }
+                $('.lightbox_message_from_address').html(tmpadd);
+***/
+
+              }
+            }
+          } catch (err) {
+          }
+        }
+      }
+
+
+      //
+      // ACCEPT
+      //
+      if (txmsg.request == "accept") {
+
+        try {
+          let game_self = app.modules.returnModule(txmsg.module);
+          game_self.loadGame(txmsg.game_id);
+
+          //
+          // don't get triggered by closed games
+          //
+          if (game_self.game.over == 1) { return; }
+
+          //
+          // if I have accepted...
+          //
+          if (game_self.game.accept === 1) {
+            return;
+          }
+
+          if (game_self.game.initializing == 1) {
+
+            if (game_self.game.accept == 0) {
+              return;
+            } else {
+alert("I have accepted, so show game init screen...");
+	      this.showGameInitializer();
+              this.startInitializationTimer(txmsg.game_id, txmsg.module);
+            }
+          } else {
+alert("This game is ready to be played");
+          }
+        } catch (err) {
+console.log("ERROR");
+        }
       }
     }
   }
+
 
 
 
@@ -160,11 +429,62 @@ class Arcade extends ModTemplate {
 
 
     //
-    // Quick Invite
+    // MAIN TABLE - buttons
+    //
+
+    //
+    // accept invites
+    //
+    $('.accept_game').off();
+    $('.accept_game').on('click', function() {
+
+      let id = $(this).attr("id");
+
+      // if accepting a game, the id is our sig
+      for (let i = 0; i < arcade_self.games.open.length; i++) {
+	if (arcade_self.games.open[i].sig == id) {
+
+          if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
+
+            var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
+  	    if (newtx == null) {
+  	      alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+  	      return;
+  	    }
+
+     	    newtx.transaction.to.push(new saito.slip(arcade_self.games.open[i].player, 0.0));
+  	    newtx.transaction.msg.module  = arcade_self.games.open[i].game;
+  	    newtx.transaction.msg.request = "invite";
+  	    newtx.transaction.msg.options = JSON.parse(arcade_self.games.open[i].options);
+  	    newtx.transaction.msg.ts      = arcade_self.games.open[i].created_at;
+  	    newtx.transaction.msg.sig     = arcade_self.games.open[i].sig;
+
+  	    newtx = arcade_self.app.wallet.signTransaction(newtx);
+  	    arcade_self.app.network.propagateTransaction(newtx);
+
+	    alert("Please be patient while the network starts to initialize the game!");
+
+          } else {
+	    alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
+          }
+	  return;
+	}
+      }
+    });
+
+
+
+
+
+    //
+    // GAME CREATION PAGE -- BUTTONS
+    //
+
+    //
+    // Post Offer on Page
     //
     $('.quick_invite').off();
     $('.quick_invite').on('click', function() {
-
 
       let options    = {};
 
@@ -181,14 +501,8 @@ class Arcade extends ModTemplate {
         }
       );
 
-
       if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
 
-alert("Can send OnChain");
-
-	//
-	// on-chain
-	//
         var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
   	if (newtx == null) {
   	  alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
@@ -201,19 +515,16 @@ alert("Can send OnChain");
   	newtx.transaction.msg.game    = arcade_self.active_game;
   	newtx.transaction.msg.state   = "open";
   	newtx.transaction.msg.options = options;
+  	newtx.transaction.msg.ts      = new Date().getTime();
+  	newtx.transaction.msg.sig     = arcade_self.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), arcade_self.app.wallet.returnPrivateKey());
 
   	newtx = arcade_self.app.wallet.signTransaction(newtx);
   	arcade_self.app.network.propagateTransaction(newtx);
 
-	alert("WE HAVE BROADCAST A MESSAGE TO THE NETWORK");
+	arcade_self.hideGameCreator();
 
       } else {
-
-	//
-	// off-chain peer-to-peer TX
-	//
 	alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
-
       }
     });
 
@@ -222,28 +533,56 @@ alert("Can send OnChain");
 
 
     //
-    // Modal
+    // CREATE GAME - Step #1
     //
-    var modal = document.getElementById("game_modal");
+    $('.game').off();
+    $('.game').on('click', function() {
+
+      arcade_self.active_game = $(this).attr("id");
+      arcade_self.showGameCreator();
+
+      if (arcade_self.active_game == "Twilight") {
+        $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
+        $('.publisher_message').show();
+      }
+    });
+
+
+
+
+    //
+    // CREATE GAME -- STEP #2
+    //
     $('#game_button').off();
     $('#game_button').on('click', () => {
+
+      var modal = document.getElementById("game_modal");
       modal.style.display = "block";
-    });
-    var span = document.getElementsByClassName("close")[0];
-    span.addEventListener('click', () => {
-      modal.style.display = "none";
-    });
-    window.addEventListener('click', () => {
-      if (event.target == modal) {
+
+
+      $('.close').off();
+      $('.close').on('click', function() {
         modal.style.display = "none";
-      }
+        window.removeEventListener('click');
+      });
+
+      window.addEventListener('click', () => {
+        if (event.target == modal) {
+	  $('.close').off();
+          modal.style.display = "none";
+          window.removeEventListener('click');
+        }
+      });
+
+      $('#game_creation_form').off();
+      $('#game_creation_form').on("change", (event) => {
+        let gameSelectHTML = this.renderModalOptions(event.target.id);
+        $('#game_start_options').innerHTML = '';
+        $('#game_start_options').html(gameSelectHTML);
+      });
+
     });
-    $('#game_creation_form').off();
-    $('#game_creation_form').on("change", (event) => {
-      let gameSelectHTML = this.renderModalOptions(event.target.id);
-      $('#game_start_options').innerHTML = '';
-      $('#game_start_options').html(gameSelectHTML);
-    });
+
 
 
 
@@ -266,25 +605,6 @@ alert("Can send OnChain");
 
 
 
-
-
-    //
-    // Start a Game Graphics
-    //
-    $('.game').off();
-    $('.game').on('click', function() {
-
-      arcade_self.active_game = $(this).attr("id");
-      arcade_self.showMonitor();
-
-      $('.find_player_button').toggle();
-      $('.create_game_container').toggle();
-
-      if (arcade_self.active_game == "Twilight") {
-        $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
-        $('.publisher_message').show();
-      }
-    });
   }
 
 
@@ -387,11 +707,14 @@ alert("Can send OnChain");
 	let adminid    = "";
 	let winner     = "";
 	let options    = "";
+	let sig        = "";
+	let created_at = 0;
 
 	if (x.gameid != undefined && x.gameid != "")   { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
 	if (x.winner != undefined && x.winner != "")   { winner = x.winner; }
 	if (x.options != undefined && x.options != "") { options = x.options; }
-
+	if (x.sig != undefined && x.sig != "") { sig = x.sig; }
+	if (x.created_at > 0) { created_at = x.created_at; }
 
         html += `open_games.push({ 
 	  player: "${x.player}" , 
@@ -399,7 +722,9 @@ alert("Can send OnChain");
 	  game: "${x.game}", 
 	  state : "${x.state}" , 
 	  status : "" ,
-	  options : "${JSON.stringify(x.options)}" ,
+	  options : ${x.options} ,
+	  sig : "${sig}",
+	  created_at : ${created_at},
 	  gameid : "${gameid}",
 	  adminid : "${adminid}" 
 	});`;
@@ -438,9 +763,7 @@ console.log("REFRESHING OPEN GAMES");
       var sql    = "SELECT * FROM mod_arcade WHERE state = 'open'";
       var params = {};
       try {
-console.log("RUN ON DB: " + JSON.stringify(rows));
         var rows = await this.db.all(sql, params);
-console.log("AWAIT: " + JSON.stringify(rows));
       } catch(err) {
         console.log(err);
 console.log("ERROR REFRESHING: " + err);
@@ -452,15 +775,16 @@ console.log("ERROR REFRESHING: " + err);
       if (rows != null) {
         if (rows.length != 0) {
           for (var fat = 0; fat < rows.length; fat++) {
-console.log("HERE WE IS" + JSON.stringify(rows[fat]));
             this.games.open[fat] = {};
             this.games.open[fat].gameid     = rows[fat].gameid;
             this.games.open[fat].player     = rows[fat].player;
             this.games.open[fat].state      = rows[fat].state;
             this.games.open[fat].game_bid   = rows[fat].game_bid;
             this.games.open[fat].game       = rows[fat].game;
-            this.games.open[fat].created_at = new Date().getTime();
-            this.games.open[fat].expires_at = new Date().getTime() + 600000;
+            this.games.open[fat].created_at = rows[fat].created_at;
+            this.games.open[fat].expires_at = rows[fat].created_at + 6000000;
+            this.games.open[fat].options    = `${JSON.stringify(rows[fat].options)}`;
+            this.games.open[fat].sig        = rows[fat].sig;
           }
         }
       }
@@ -469,20 +793,6 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
 
 
 
-
-  populateGameMonitor(app) {
-
-    let game_options = "";
-    let game_self = app.modules.returnModule(this.active_game);
-
-    if (this.active_game != "") {
-      if (game_self != null) {
-        game_options = game_self.returnGameOptionsHTML();
-      }
-    }
-
-    $('.game_details').html(game_options);
-  }
 
 
 
@@ -518,9 +828,19 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
 
 
 
-  showMonitor() {
+  showGameCreator() {
 
-    this.populateGameMonitor(this.app);
+    this.viewing_game_creator = 1;
+
+    let game_options = "";
+    let game_self = this.app.modules.returnModule(this.active_game);
+    if (this.active_game != "") {
+      if (game_self != null) {
+        game_options = game_self.returnGameOptionsHTML();
+      }
+    }
+    $('.game_details').html(game_options);
+
     this.updateBalance(this.app);
 
     $('.game_monitor').slideDown(500, function() {});
@@ -529,8 +849,47 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
     $('#games').hide();
     $('.game_options').hide();
 
+    $('.find_player_button').show();
+    $('.create_game_container').show();
+
     if (this.browser_active == 1) { this.attachEvents(this.app); }
   }
+
+
+
+  showGameInitializer() {
+
+    this.viewing_game_initializer = 1;
+
+    $('.game_monitor').slideDown(500, function() {});
+    $('.gamelist').hide();
+    $('#arcade_container').hide();
+    $('#games').hide();
+    $('.game_options').hide();
+
+    $('.initialize_game_container').show();
+
+    if (this.browser_active == 1) { this.attachEvents(this.app); }
+  }
+
+  hideGameInitializer() {
+    this.viewing_game_initializer = 0;
+    $('.create_game_initializer').hide();
+    $('.gamelist').show();
+    $('.game_options').show();
+    $('.game_monitor').hide();
+  }
+
+
+  hideGameCreator() {
+    this.viewing_game_creator = 0;
+    $('.create_game_creator').hide();
+    $('.find_player_button').hide();
+    $('.gamelist').show();
+    $('.game_options').show();
+    $('.game_monitor').hide();
+  }
+
 
 
   renderModalOptions(option) {
@@ -557,11 +916,6 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
     }
   }
 
-  hideMonitor() {
-    $('.gamelist').show();
-    $('.game_options').show();
-    $('.game_monitor').hide();
-  }
 
 
 
@@ -577,6 +931,8 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
         for (let i = 0; i < this.app.options.games.length; i++) {
 
           let x = this.app.options.games[i];
+console.log("\n\n\nProcessing a Game: " );
+console.log(JSON.stringify(x));
 
           let opponent   = "unknown";
           let gameid     = x.id;
@@ -584,9 +940,11 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
           let winner     = x.winner;
           let gamename   = x.module;
           let options    = x.options;
-          let state      = "initializing";
+          let state      = 'active';
           let status     = x.status;
           let adminid    = `${gameid}_${gamename}`;
+	  let created_at = x.ts;
+	  let sig        = x.sig;
 
 	  if (x.id == undefined || x.id == "") {
 	    gameid = "";
@@ -613,13 +971,17 @@ console.log("HERE WE IS" + JSON.stringify(rows[fat]));
             remote_address += x.opponents[z];
           }
 
-          open_games.push({ 
+console.log("ADDING TO OPEN GAMES");
+
+          this.games.open.push({ 
 	    player: opponent ,
 	    winner : winner ,
 	    game: gamename , 
 	    state : state , 
 	    status : status ,
 	    options : options ,
+	    created_at : created_at ,
+	    sig : sig ,
 	    gameid : gameid ,
 	    adminid : adminid
 	  });

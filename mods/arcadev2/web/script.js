@@ -41,6 +41,8 @@
 
   function renderGamesTable(games) {
 
+    $('#games-table tbody').empty();
+
     let gamesTable = document.getElementById('games-table');
     let gamesTableBody = document.createElement("tbody");
     gamesTable.innerHTML = '';
@@ -60,18 +62,19 @@
       if (game.state == "open") {
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("accept_game", "zzz"));
+        statusTC.appendChild(this.createGameButton("accept_game", game.sig));
 
       } else {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("join_game"));
+alert("WE HAVE A GAME THAT IS NOT OPEN");
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("delete_game"));
+        statusTC.appendChild(this.createGameButton("join_game", game.id));
+
+        var statusTC = document.createElement("td");
+        statusTC.appendChild(this.createGameButton("delete_game", game.id));
 
       }
-
 
       if (game.state == "over") {
 
@@ -81,6 +84,7 @@
 
     })
     gamesTable.append(gamesTableBody);
+
   }
 
 
