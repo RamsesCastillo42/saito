@@ -429,8 +429,32 @@ console.log("ERROR");
 
 
     //
-    // MAIN TABLE - buttons
+    // BUTTONS IN TABLE WITH AVAILABLE GAMES
     //
+
+
+    //
+    // join an existing game
+    //
+    $('.join_game').off();
+    $('.join_game').on('click', function () {
+      let tmpid = $(this).attr('id');
+      let tmpar = tmpid.split("_");
+      let game_id = tmpar[0];
+      let game_module = tmpar[1];
+      let game_self = arcade_self.app.modules.returnModule(game_module);
+      game_self.game = game_self.loadGame(game_id);
+      game_self.game.ts = new Date().getTime();
+      //
+      // ensure init happens appropriately
+      //
+      game_self.game.initialize_game_run = 0;
+      game_self.game.module = game_module;
+      game_self.saveGame(game_id);
+      window.location = '/' + game_module.toLowerCase();
+    });
+
+
 
     //
     // accept invites
@@ -473,15 +497,97 @@ console.log("ERROR");
     });
 
 
+    //
+    // delete games
+    //
+    $('.delete_game').off();
+    $('.delete_game').on('click', function() {
+
+console.log("DELETE GAME 1");
+
+      let tmpid = $(this).attr('id');
+      let tmpar = tmpid.split("_");
+      let gameid = tmpar[0];
+      let game_module = tmpar[1];
+      let game_self = null;
+
+console.log("DELETE GAME 2");
+
+      //
+      // if game_moduleis undefined
+      //
+      if (game_module == undefined) {
+        return;
+      }
+
+console.log("DELETE GAME 2");
+
+      try {
+        game_self = app.modules.returnModule(game_module);
+        game_self.loadGame(gameid);
+        if (game_self.game.over == 0) {
+          game_self.resignGame();
+        } else {
+          game_self.game.over = 1;
+          game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
+        }
+        game_self.saveGame(gameid);
+      } catch (err) {
+        console.log("ERROR DELETING GAME!");
+      }
+
+      for (let i = 0; i < arcade_self.app.options.games.length; i++) {
+        if (i < 0) { i = 0; }
+          if (arcade_self.app.options.games.length == 0) {
+          } else {
+          if (arcade_self.app.options.games[i].id == undefined) {
+            arcade_self.app.options.games.splice(i, 1);
+            i--; 
+          } else {
+            if (arcade_self.app.options.games[i].id == gameid) {
+              // 
+              // delete it if it is too old (i.e. don't need to resync)
+              // 
+              if ((arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
+                arcade_self.app.options.games.splice(i, 1);
+                i--;
+              }
+            }
+          }
+          try {
+            if (arcade_self.app.options.games[i].over == 1 && ((parseInt(arcade_self.app.options.games[i].last_block)+10) < arcade_self.app.blockchain.returnLatestBlockId())) {
+              arcade_self.app.options.games.splice(i, 1);
+              i--;
+            }
+            if (arcade_self.app.options.games[i].opponents.length == 0) {
+              arcade_self.app.options.games.splice(i, 1);
+              i--;
+            }
+          } catch(err) {
+            console.log(err)
+          }
+        }
+      }
+      arcade_self.app.storage.saveOptions();
+
+      //
+      // acknowledge
+      //
+      window.location = "/arcade";
+
+    });
+
+
+
 
 
 
     //
-    // GAME CREATION PAGE -- BUTTONS
+    // GAME CREATION PAGE
     //
 
     //
-    // Post Offer on Page
+    // add game to list of open games
     //
     $('.quick_invite').off();
     $('.quick_invite').on('click', function() {
@@ -946,7 +1052,7 @@ console.log(JSON.stringify(x));
 	  let created_at = x.ts;
 	  let sig        = x.sig;
 
-	  if (x.id == undefined || x.id == "") {
+	  if (x.id == undefined || x.id === "") {
 	    gameid = "";
 	    adminid = "";
 	  }
@@ -972,6 +1078,7 @@ console.log(JSON.stringify(x));
           }
 
 console.log("ADDING TO OPEN GAMES");
+console.log(gameid + " -- " + adminid);
 
           this.games.open.push({ 
 	    player: opponent ,

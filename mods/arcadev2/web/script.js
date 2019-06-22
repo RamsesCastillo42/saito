@@ -20,7 +20,7 @@
       case "reject_game":
         text_node = document.createTextNode("REJECT");
         break;
-      case "joinlink":
+      case "join_game":
         text_node = document.createTextNode("JOIN");
         break;
       case "delete_game":
@@ -69,10 +69,8 @@
 alert("WE HAVE A GAME THAT IS NOT OPEN");
 
         var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("join_game", game.id));
-
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("delete_game", game.id));
+        statusTC.appendChild(this.createGameButton("delete_game", game.adminid));
+        statusTC.appendChild(this.createGameButton("join_game", game.gameid));
 
       }
 

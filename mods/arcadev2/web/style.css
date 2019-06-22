@@ -164,7 +164,7 @@ select {
   width: 100%;
 }
 
-.gamelink, .accept_game, .reject_game, .delete_game, .joinlink {
+.accept_game, .reject_game, .delete_game, .join_game {
   float: right;
   padding: 10px;
   border-radius: 5px;
@@ -187,7 +187,9 @@ select {
   background-color: red;
 }
 
-.joinlink {}
+.join_game {
+  background-color: green;
+}
 
 
 
