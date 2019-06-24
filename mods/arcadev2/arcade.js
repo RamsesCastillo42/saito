@@ -421,7 +421,7 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
             if (game_self.game.accept == 0) {
               return;
             } else {
-// alert("I have accepted, so show game init screen...");
+              this.hideGameCreator();
               this.showGameInitializer();
               this.startInitializationTimer(txmsg.game_id, txmsg.module);
             }
@@ -1171,12 +1171,12 @@ console.log("ERROR REFRESHING: " + err);
           if (x.initializing != 1) { state = "active"; }
 alert("X LAST BLOCK: " + x.last_block);
           if (x.over == 1) {
-	    state = "over"; 
+            state = "over"; 
             if (x.last_block > 0) { 
 alert("X LAST BLOCK SET TO DELETED");
-	      state = "deleted"; 
-	    }
-	  }
+              state = "deleted"; 
+            }
+          }
 
 
           if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
