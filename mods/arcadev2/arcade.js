@@ -1109,7 +1109,20 @@ console.log("ERROR REFRESHING: " + err);
       case 'open':
         return `<button id="create_game_button" class="quick_invite">CREATE GAME</button>`
       case 'link':
-        return `<input class="quick_link_input" /> <button class="quick_invite"> COPY</button>`
+        let game_module = this.app.modules.returnModule(this.active_game);
+        let options = {};
+        options = game_module.returnQuickLinkGameOptions(options);
+
+        let txmsg = {};
+        txmsg.module = this.active_game;
+        txmsg.pubkey = this.app.wallet.returnPublicKey();
+        txmsg.options = options;
+        txmsg.ts = new Date().getTime();
+        txmsg.sig = this.app.wallet.signMessage(txmsg.ts.toString(), this.app.wallet.returnPrivateKey());
+
+        let base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
+
+        return `<input class="quick_link_input" value="=${window.location.href}/invite/${base64str}" /> <button class="quick_invite"> COPY</button>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`
