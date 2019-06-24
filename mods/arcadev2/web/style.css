@@ -193,7 +193,7 @@ select {
   width: 100%;
 }
 
-.accept_game, .reject_game, .delete_game, .join_game {
+.accept_game, .reject_game, .delete_game, .join_game, .start_game {
   float: right;
   padding: 10px;
   border-radius: 5px;
@@ -218,6 +218,17 @@ select {
 
 .join_game {
   background-color: green;
+}
+
+.start_game {
+  width: 100%;
+  background-color: #f09f09;
+}
+
+.start_game_container {
+  display: grid;
+  align-items: center;
+  justify-items: center;
 }
 
 

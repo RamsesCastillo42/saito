@@ -767,7 +767,7 @@ console.log("DELETE GAME 2");
           <center id="start_game_container">
             <div id="join_game_invite_description">Your game is ready:</div>
             <a href="/${game_module.toLowerCase()}">
-              <button class="link linkbutton joinlink" id="invite_join_button">
+              <button class="link linkbutton join_game start_game" id="invite_join_button">
                 START
               </button>
             </a>
@@ -1051,6 +1051,7 @@ console.log("ERROR REFRESHING: " + err);
     $('.game_options').hide();
 
     $('.initialize_game_container').show();
+    $('.loader').show();
 
     if (this.browser_active == 1) { this.attachEvents(this.app); }
   }
