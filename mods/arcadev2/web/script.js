@@ -50,8 +50,8 @@
 
     $('#games-table tbody').empty();
 
-    let gamesTable = document.getElementById('games-table');
-    let gamesTableBody = document.createElement("tbody");
+    let gamesTable = document.getElementById('games_table');
+    // let gamesTableBody = document.createElement("tbody");
     gamesTable.innerHTML = '';
 
     games.forEach((game) => {
@@ -65,14 +65,14 @@
 
       if (game.state == "open") {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("accept_game", game.sig));
+        var buttonCell = document.createElement("div");
+        buttonCell.appendChild(this.createGameButton("accept_game", game.sig));
 
       } else {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("delete_game", game.adminid));
-        statusTC.appendChild(this.createGameButton("join_game", game.gameid));
+        var buttonCell = document.createElement("div");
+        buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+        buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
 
       }
 
