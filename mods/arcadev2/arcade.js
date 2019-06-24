@@ -33,8 +33,6 @@ class Arcade extends ModTemplate {
     this.db              = null;
     this.games           = {}
     this.games.open      = [];
-    this.games.completed = [];
-
     this.games.nav       = { selected: 'open' };
 
   }
@@ -87,10 +85,12 @@ class Arcade extends ModTemplate {
         var sql = `CREATE TABLE IF NOT EXISTS mod_arcade (
           id INTEGER,
           player TEXT,
+          player2 TEXT,
           game_bid INTEGER,
           gameid TEXT,
           game TEXT,
           state TEXT,
+          status TEXT,
           options TEXT,
           sig TEXT,
           created_at INTEGER,
@@ -530,15 +530,11 @@ console.log("ERROR");
     $('.delete_game').off();
     $('.delete_game').on('click', function() {
 
-console.log("DELETE GAME 1");
-
       let tmpid = $(this).attr('id');
       let tmpar = tmpid.split("_");
       let gameid = tmpar[0];
       let game_module = tmpar[1];
       let game_self = null;
-
-console.log("DELETE GAME 2");
 
       //
       // if game_moduleis undefined
@@ -547,35 +543,38 @@ console.log("DELETE GAME 2");
         return;
       }
 
-console.log("DELETE GAME 2");
-
       try {
-        game_self = app.modules.returnModule(game_module);
+        game_self = arcade_self.app.modules.returnModule(game_module);
         game_self.loadGame(gameid);
         if (game_self.game.over == 0) {
+console.log("RESIGNING THE GAME!");
           game_self.resignGame();
+          game_self.game.over = 1;
+          game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
         } else {
           game_self.game.over = 1;
           game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
         }
         game_self.saveGame(gameid);
+alert("last block set to: " + game_self.game.over + " -- " + game_self.game.last_block + " -- GID: " + gameid);
       } catch (err) {
-        console.log("ERROR DELETING GAME!");
+        console.log("ERROR DELETING GAME: " + err);
       }
 
       for (let i = 0; i < arcade_self.app.options.games.length; i++) {
         if (i < 0) { i = 0; }
-          if (arcade_self.app.options.games.length == 0) {
-          } else {
+        if (arcade_self.app.options.games.length == 0) {
+        } else {
+
           if (arcade_self.app.options.games[i].id == undefined) {
+alert("DELETEING 0");
             arcade_self.app.options.games.splice(i, 1);
             i--; 
           } else {
             if (arcade_self.app.options.games[i].id == gameid) {
-              // 
-              // delete it if it is too old (i.e. don't need to resync)
-              // 
-              if ((arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
+alert( arcade_self.app.options.games[i].last_block + " -- " + arcade_self.app.blockchain.returnLatestBlockId() );
+              if (arcade_self.app.options.games[i].last_block > 0 && (arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
+alert("DELETEING 1");
                 arcade_self.app.options.games.splice(i, 1);
                 i--;
               }
@@ -583,10 +582,12 @@ console.log("DELETE GAME 2");
           }
           try {
             if (arcade_self.app.options.games[i].over == 1 && ((parseInt(arcade_self.app.options.games[i].last_block)+10) < arcade_self.app.blockchain.returnLatestBlockId())) {
+alert("DELETEING 2");
               arcade_self.app.options.games.splice(i, 1);
               i--;
             }
             if (arcade_self.app.options.games[i].opponents.length == 0) {
+alert("DELETEING 3");
               arcade_self.app.options.games.splice(i, 1);
               i--;
             }
@@ -1142,8 +1143,6 @@ console.log("ERROR REFRESHING: " + err);
         for (let i = 0; i < this.app.options.games.length; i++) {
 
           let x = this.app.options.games[i];
-console.log("\n\n\nProcessing a Game: " );
-console.log(JSON.stringify(x));
 
           let opponent   = "unknown";
           let gameid     = x.id;
@@ -1162,17 +1161,25 @@ console.log(JSON.stringify(x));
             adminid = "";
           }
 
-            if (x.opponents != undefined) {
-                if (x.opponents.length > 0) {
-                 opponent = x.opponents[0];
-                }
-            }
+          if (x.opponents != undefined) {
+              if (x.opponents.length > 0) {
+               opponent = x.opponents[0];
+              }
+          }
+
 
           if (x.initializing != 1) { state = "active"; }
+alert("X LAST BLOCK: " + x.last_block);
+          if (x.over == 1) {
+	    state = "over"; 
+            if (x.last_block > 0) { 
+alert("X LAST BLOCK SET TO DELETED");
+	      state = "deleted"; 
+	    }
+	  }
 
 
           if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
-          if (x.over == 1) { state = "over"; }
           if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
           if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 

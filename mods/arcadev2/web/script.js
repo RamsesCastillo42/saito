@@ -1,4 +1,5 @@
 
+
   var open_games = [];
 
   // OPEN GAMES
@@ -70,17 +71,24 @@
 
       } else {
 
-        var buttonCell = document.createElement("div");
-        buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-        buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+	if (game.state == "over") {
+          var buttonCell = document.createElement("div");
+          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+	} else {
 
+          var buttonCell = document.createElement("div");
+          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+
+	}
       }
 
-      if (game.state == "over") {
-
+      if (game.state != "deleted") {
+        gameRow.append(playerCell,gameCell,statusCell,buttonCell);
+        gamesTable.appendChild(gameRow);
       }
-      gameRow.append(playerCell,gameCell,statusCell,buttonCell);
-      gamesTable.appendChild(gameRow);
+
     })
   }
 
