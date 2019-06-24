@@ -1169,11 +1169,9 @@ console.log("ERROR REFRESHING: " + err);
 
 
           if (x.initializing != 1) { state = "active"; }
-alert("X LAST BLOCK: " + x.last_block);
           if (x.over == 1) {
             state = "over"; 
             if (x.last_block > 0) { 
-alert("X LAST BLOCK SET TO DELETED");
               state = "deleted"; 
             }
           }

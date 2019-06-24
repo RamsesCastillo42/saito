@@ -60,6 +60,12 @@
       var gameRow = document.createElement("div");
       gameRow.className = "game_table_row";
 
+      if (game.status.length > 20) { game.status = game.status.substring(0, 20); }
+      if (game.state == "open") { game.status = "waiting for opponent"; }
+      if (game.state == "over") { game.status = "opponent resigned"; }
+
+
+
       let playerCell = createGameTableCell(game.player.substring(0,8));
       let gameCell = createGameTableCell(game.game);
       let statusCell = createGameTableCell(game.status);
@@ -74,14 +80,13 @@
 	if (game.state == "over") {
           var buttonCell = document.createElement("div");
           buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+          buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 	} else {
-
           var buttonCell = document.createElement("div");
           buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
-
+          buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 	}
+
       }
 
       if (game.state != "deleted") {
