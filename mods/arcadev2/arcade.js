@@ -29,8 +29,6 @@ class Arcade extends ModTemplate {
     this.db              = null;
     this.games           = {}
     this.games.open      = [];
-    this.games.completed = [];
-
     this.games.nav       = { selected: 'open' };
 
   }
@@ -83,11 +81,14 @@ class Arcade extends ModTemplate {
         var sql = `CREATE TABLE IF NOT EXISTS mod_arcade (
           id INTEGER,
           player TEXT,
+          player2 TEXT,
           game_bid INTEGER,
           gameid TEXT,
           game TEXT,
           state TEXT,
+          status TEXT,
           options TEXT,
+          sig TEXT,
           created_at INTEGER,
           expires_at INTEGER,
           PRIMARY KEY (id ASC))`;

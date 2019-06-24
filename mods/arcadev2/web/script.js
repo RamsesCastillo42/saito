@@ -48,11 +48,12 @@
 
   function renderGamesTable(games) {
 
-    $('#games-table tbody').empty();
+    //
+    // empty first in case we are freshing
+    //
+    $('#games_table').empty();
 
-    let gamesTable = document.getElementById('games-table');
-    let gamesTableBody = document.createElement("tbody");
-    gamesTable.innerHTML = '';
+    let gamesTable = document.getElementById('games_table');
 
     games.forEach((game) => {
 
@@ -62,17 +63,16 @@
       let playerCell = createGameTableCell(game.player.substring(0,8));
       let gameCell = createGameTableCell(game.game);
       let statusCell = createGameTableCell(game.status);
+      let buttonCell = document.createElement("td");
 
       if (game.state == "open") {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("accept_game", game.sig));
+        buttonCell.appendChild(this.createGameButton("accept_game", game.sig));
 
       } else {
 
-        var statusTC = document.createElement("td");
-        statusTC.appendChild(this.createGameButton("delete_game", game.adminid));
-        statusTC.appendChild(this.createGameButton("join_game", game.gameid));
+        buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+        buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 
       }
 
