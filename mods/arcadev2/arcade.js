@@ -26,6 +26,10 @@ class Arcade extends ModTemplate {
     this.viewing_game_creator = 0;
     this.viewing_game_initializer = 0;
 
+    this.initialization_check_active = true;
+    this.initialization_check_timer  = null;
+    this.initialization_check_timer_ellapsed = 0;
+
     this.db              = null;
     this.games           = {}
     this.games.open      = [];
@@ -388,31 +392,21 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
           //
           // if I have accepted...
           //
-          if (game_self.game.accept === 1) {
-            return;
-          }
+          // if (game_self.game.accept === 1) {
+          //   return;
+          // }
 
           if (game_self.game.initializing == 1) {
 
             if (game_self.game.accept == 0) {
               return;
             } else {
-alert("I have accepted, so show game init screen...");
+// alert("I have accepted, so show game init screen...");
               this.showGameInitializer();
               this.startInitializationTimer(txmsg.game_id, txmsg.module);
             }
           } else {
-            alert("This game is ready to be played");
-            $('initialize_game_container').html(`
-              <center id="start_game_container">
-              <div id="join_game_invite_description">Your game is ready:</div>
-              <a href="/${game_module.toLowerCase()}">
-                <button class="link linkbutton joinlink" id="invite_join_button">
-                  START
-                </button>
-              </a>
-            </center>
-            `);
+            // alert("This game is ready to be played");
           }
         } catch (err) {
 console.log("ERROR");
@@ -499,7 +493,7 @@ console.log("ERROR");
             alert("Please be patient while the network starts to initialize the game!");
 
           arcade_self.hideArcadeHome();
-          arcade_self.showGameInitializer();
+          // arcade_self.showGameInitializer();
 
           } else {
             alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
@@ -640,8 +634,10 @@ console.log("DELETE GAME 2");
           newtx = this.app.wallet.signTransaction(newtx);
           this.app.network.propagateTransaction(newtx);
 
+        renderGamesTable(this.games[this.games.nav.selected]);
         this.hideGameCreator();
         this.showArcadeHome();
+        this.attachEvents();
 
       } else {
         alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
@@ -725,6 +721,72 @@ console.log("DELETE GAME 2");
     });
 
 
+
+  }
+
+  startInitializationTimer(game_id, game_module) {
+    let arcade_self = this;
+
+    try {
+
+      if (arcade_self.is_initializing == false) { this.initialization_check_timer_ellapsed = 0; }
+
+      arcade_self.is_initializing = true;
+      arcade_self.initialization_check_timer = setInterval(() => {
+
+        arcade_self.initialization_check_timer_ellapsed++;
+
+        if (invite_page == 1) {
+          if ($('.status').html() === "") {
+            if (arcade_self.initialization_check_timer_ellapsed == 3) { $('.invite_description').html(`<center>Checking to Confirm that Opponent is Online....</center>`); }
+            if (arcade_self.initialization_check_timer_ellapsed == 8) { $('.invite_description').html(`<center>Still Checking to Confirm that Opponent is Online....</center>`); }
+            if (arcade_self.initialization_check_timer_ellapsed == 12) { $('.invite_description').html(`<center>Waiting for Response from Opponent....</center>`); }
+            if (arcade_self.initialization_check_timer_ellapsed == 20) { $('.invite_description').html(`<center>Still Waiting for Response from Opponent....</center>`); }
+            if (arcade_self.initialization_check_timer_ellapsed == 32) { $('.invite_description').html(`<center>Still, Still Waiting for Response from Opponent....</center>`); }
+            if (arcade_self.initialization_check_timer_ellapsed == 45) { $('.invite_description').html(`<center>One More Minute. Have you checked they are still online...?</center>`); }
+    } else {
+            $('.invite_description').html(`<center>Initializing Game with Opponent. Please stay on this page....</center>`);
+    }
+        }
+
+        let pos = -1;
+        if (arcade_self.app.options.games != undefined) {
+          for (let i = 0; i < arcade_self.app.options.games.length; i++) {
+            if (arcade_self.app.options.games[i].id == game_id) {
+                pos = i;
+            }
+          }
+        }
+
+        if (pos == -1) {
+          return;
+        }
+
+        if (arcade_self.app.options.games[pos].initializing == 0) {
+          let html = `
+          <center id="start_game_container">
+            <div id="join_game_invite_description">Your game is ready:</div>
+            <a href="/${game_module.toLowerCase()}">
+              <button class="link linkbutton joinlink" id="invite_join_button">
+                START
+              </button>
+            </a>
+          </center>
+          `;
+          //<div id="return_to_arcade" class="return_to_arcade"><i class="fa fa-arrow-circle-left"></i> Return to Arcade</div>
+          $('.initialize_game_container').html(html);
+          // $('.manage_invitations').css('display:flex;');
+          $('.initialize_game_container').show();
+          if (this.browser_active == 1) { $('#status').hide(); $('#game_spinner').hide()}
+          clearInterval(arcade_self.initialization_check_timer);
+          arcade_self.attachEvents(this.app);
+        }
+
+      }, 2000);
+
+    } catch (err) {
+      alert("ERROR checking if game is initialized!");
+    }
 
   }
 
