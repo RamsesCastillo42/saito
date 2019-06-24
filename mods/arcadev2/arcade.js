@@ -140,63 +140,63 @@ class Arcade extends ModTemplate {
 
     if (app.BROWSER == 0) {
       if (conf == 0) {
-	let txmsg = tx.returnMessage();
+        let txmsg = tx.returnMessage();
 
 
-	//
-	// update database to remove game from list
-	//
-	if (txmsg.request == "invite") {
-	  let sql = "UPDATE mod_arcade SET state = 'active', player2 = $player2 WHERE sig = $sig";
-	  let params = {
-	    $player2 : tx.transaction.from[0].add ,
-	    $sig : txmsg.sig
-	  }
-	  try {
-            let res = await arcade_self.db.run(sql, params);
-	  } catch (err) {
-	    console.log("error updating database in arcade...");
-	    return;
-	  }
-	}
+        //
+        // update database to remove game from list
+        //
+        if (txmsg.request == "invite") {
+          let sql = "UPDATE mod_arcade SET state = 'active', player2 = $player2 WHERE sig = $sig";
+          let params = {
+            $player2 : tx.transaction.from[0].add ,
+            $sig : txmsg.sig
+          }
+          try {
+      let res = await arcade_self.db.run(sql, params);
+          } catch (err) {
+            console.log("error updating database in arcade...");
+            return;
+          }
+        }
 
 
 
 
-	if (txmsg.module == "Arcade" && txmsg.request == "opengame") {
+        if (txmsg.module == "Arcade" && txmsg.request == "opengame") {
 
-	  let game    = "";
-	  let state   = "";
-	  let pkey    = "";
-	  let options = "";
-	  let created_at = "";
-	  let sig     = "";
+          let game    = "";
+          let state   = "";
+          let pkey    = "";
+          let options = "";
+          let created_at = "";
+          let sig     = "";
 
-	  if (txmsg.game != "") { game = txmsg.game; }
-	  if (txmsg.state != "") { state = txmsg.state; }
-	  pkey = tx.transaction.from[0].add;
-	  if (txmsg.options != "") { options = txmsg.options; }
-	  if (txmsg.ts != "") { created_at = txmsg.ts; }
-	  if (txmsg.sig != "") { sig = txmsg.sig; }
+          if (txmsg.game != "") { game = txmsg.game; }
+          if (txmsg.state != "") { state = txmsg.state; }
+          pkey = tx.transaction.from[0].add;
+          if (txmsg.options != "") { options = txmsg.options; }
+          if (txmsg.ts != "") { created_at = txmsg.ts; }
+          if (txmsg.sig != "") { sig = txmsg.sig; }
 
           var sql = "INSERT INTO mod_arcade (player, state, game_bid, game, options, created_at, sig) VALUES ($player, $state, $bid, $game, $options, $created_at, $sig)";
           var params = {
             $player : pkey ,
             $state : state ,
-	    $bid : blk.block.id ,
-	    $game : game , 
-	    $options : JSON.stringify(options) ,
-	    $created_at : created_at , 
-	    $sig : sig 
+            $bid : blk.block.id ,
+            $game : game , 
+            $options : JSON.stringify(options) ,
+            $created_at : created_at , 
+            $sig : sig 
           }
 
-	  try {
+          try {
             let res = await arcade_self.db.run(sql, params);
-	  } catch (err) {
-	    console.log("There is an error here: " + err);
-	  }
+          } catch (err) {
+            console.log("There is an error here: " + err);
+          }
           return;
-	}
+        }
       }
     } else {
 
@@ -207,17 +207,17 @@ class Arcade extends ModTemplate {
 
       if (txmsg.request == "invite" && arcade_self.browser_active == 1) {
 
-	let removed_any_games = 0;
+        let removed_any_games = 0;
         for (let i = 0; i < arcade_self.games.open.length; i++) {
-	  if (arcade_self.games.open[i].sig == txmsg.sig) {
-	    arcade_self.games.open.splice(i, 1); 
-	    i--;
-	    removed_any_games = 1;
+          if (arcade_self.games.open[i].sig == txmsg.sig) {
+            arcade_self.games.open.splice(i, 1); 
+            i--;
+            removed_any_games = 1;
           }
         }
-	if (removed_any_games == 1) {
+        if (removed_any_games == 1) {
           renderGamesTable(arcade_self.games[arcade_self.games.nav.selected]);
-	}
+        }
       }
 
     }
@@ -298,14 +298,14 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
             let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
             let game_module = tx.transaction.msg.module;
 
-	    //
-	    // do nothing if already watching this game initialize
-	    //
+            //
+            // do nothing if already watching this game initialize
+            //
             if (app.options.games != undefined) {
               for (let i = 0; i < app.options.games.length; i++) {
                 if (app.options.games[i].id == game_id) {
                   if (app.options.games[i].invitation == 0) {
-		    if (this.viewing_game_initializer == 1) {
+                    if (this.viewing_game_initializer == 1) {
                       if (txmsg.ts != "" && txmsg.sig != "") {
                         if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
                           try {
@@ -335,9 +335,9 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
             //this.listActiveGames();
 
 
-	    //
-	    //
-	    //
+            //
+            //
+            //
             if (this.browser_active == 1) {
 
               if (txmsg.ts != "" && txmsg.sig != "") {
@@ -347,13 +347,13 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
                 }
               } else {
 
-		//
-		// MANUAL ACCEPT IN 
-		//
+                //
+                // MANUAL ACCEPT IN 
+                //
                 let html = 'You have been invited to a game of ' + this.active_game + ' by ' + tx.transaction.from[0].add + ' <p></p>';
 
-		this.showGameInitializer();
-		alert(html);
+                this.showGameInitializer();
+                alert(html);
 /***
                 let tmpadd = "";
                 for (let b = 0; b < tx.transaction.to.length; b++) {
@@ -398,11 +398,21 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
               return;
             } else {
 alert("I have accepted, so show game init screen...");
-	      this.showGameInitializer();
+              this.showGameInitializer();
               this.startInitializationTimer(txmsg.game_id, txmsg.module);
             }
           } else {
-alert("This game is ready to be played");
+            alert("This game is ready to be played");
+            $('initialize_game_container').html(`
+              <center id="start_game_container">
+              <div id="join_game_invite_description">Your game is ready:</div>
+              <a href="/${game_module.toLowerCase()}">
+                <button class="link linkbutton joinlink" id="invite_join_button">
+                  START
+                </button>
+              </a>
+            </center>
+            `);
           }
         } catch (err) {
 console.log("ERROR");
@@ -466,33 +476,36 @@ console.log("ERROR");
 
       // if accepting a game, the id is our sig
       for (let i = 0; i < arcade_self.games.open.length; i++) {
-	if (arcade_self.games.open[i].sig == id) {
-
+        if (arcade_self.games.open[i].sig == id) {
+          if (arcade_self.games.open[i].player == arcade_self.app.wallet.returnPublicKey()) { alert('You cannot accept a game with yourself'); return; }
           if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
 
             var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
-  	    if (newtx == null) {
-  	      alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
-  	      return;
-  	    }
+              if (newtx == null) {
+                alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+                return;
+              }
 
-     	    newtx.transaction.to.push(new saito.slip(arcade_self.games.open[i].player, 0.0));
-  	    newtx.transaction.msg.module  = arcade_self.games.open[i].game;
-  	    newtx.transaction.msg.request = "invite";
-  	    newtx.transaction.msg.options = JSON.parse(arcade_self.games.open[i].options);
-  	    newtx.transaction.msg.ts      = arcade_self.games.open[i].created_at;
-  	    newtx.transaction.msg.sig     = arcade_self.games.open[i].sig;
+              newtx.transaction.to.push(new saito.slip(arcade_self.games.open[i].player, 0.0));
+              newtx.transaction.msg.module  = arcade_self.games.open[i].game;
+              newtx.transaction.msg.request = "invite";
+              newtx.transaction.msg.options = JSON.parse(arcade_self.games.open[i].options);
+              newtx.transaction.msg.ts      = arcade_self.games.open[i].created_at;
+              newtx.transaction.msg.sig     = arcade_self.games.open[i].sig;
 
-  	    newtx = arcade_self.app.wallet.signTransaction(newtx);
-  	    arcade_self.app.network.propagateTransaction(newtx);
+              newtx = arcade_self.app.wallet.signTransaction(newtx);
+              arcade_self.app.network.propagateTransaction(newtx);
 
-	    alert("Please be patient while the network starts to initialize the game!");
+            alert("Please be patient while the network starts to initialize the game!");
+
+          arcade_self.hideArcadeHome();
+          arcade_self.showGameInitializer();
 
           } else {
-	    alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
+            alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
           }
-	  return;
-	}
+          return;
+        }
       }
     });
 
@@ -589,8 +602,8 @@ console.log("DELETE GAME 2");
     //
     // add game to list of open games
     //
-    $('.quick_invite').off();
-    $('.quick_invite').on('click', function() {
+    $('#create_open_game').off();
+    $('#create_open_game').on('click', () => {
 
       let options    = {};
 
@@ -607,30 +620,31 @@ console.log("DELETE GAME 2");
         }
       );
 
-      if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
+      if (this.app.wallet.returnBalance() > this.app.wallet.returnDefaultFee()) {
 
-        var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(arcade_self.app.wallet.returnPublicKey(), 0.0);
-  	if (newtx == null) {
-  	  alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
-  	  return;
-  	}
+        var newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.returnPublicKey(), 0.0);
+          if (newtx == null) {
+            alert("ERROR: bug? unable to accept invitation. Do you have enough SAITO tokens?");
+            return;
+          }
 
-  	newtx.transaction.to.push(new saito.slip(arcade_self.app.wallet.returnPublicKey(), 0.0));
-  	newtx.transaction.msg.module  = "Arcade";
-  	newtx.transaction.msg.request = "opengame";
-  	newtx.transaction.msg.game    = arcade_self.active_game;
-  	newtx.transaction.msg.state   = "open";
-  	newtx.transaction.msg.options = options;
-  	newtx.transaction.msg.ts      = new Date().getTime();
-  	newtx.transaction.msg.sig     = arcade_self.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), arcade_self.app.wallet.returnPrivateKey());
+          newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
+          newtx.transaction.msg.module  = "Arcade";
+          newtx.transaction.msg.request = "opengame";
+          newtx.transaction.msg.game    = this.active_game;
+          newtx.transaction.msg.state   = "open";
+          newtx.transaction.msg.options = options;
+          newtx.transaction.msg.ts      = new Date().getTime();
+          newtx.transaction.msg.sig     = this.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), this.app.wallet.returnPrivateKey());
 
-  	newtx = arcade_self.app.wallet.signTransaction(newtx);
-  	arcade_self.app.network.propagateTransaction(newtx);
+          newtx = this.app.wallet.signTransaction(newtx);
+          this.app.network.propagateTransaction(newtx);
 
-	arcade_self.hideGameCreator();
+        this.hideGameCreator();
+        this.showArcadeHome();
 
       } else {
-	alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
+        alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
       }
     });
 
@@ -645,6 +659,7 @@ console.log("DELETE GAME 2");
     $('.game').on('click', function() {
 
       arcade_self.active_game = $(this).attr("id");
+      arcade_self.hideArcadeHome();
       arcade_self.showGameCreator();
 
       if (arcade_self.active_game == "Twilight") {
@@ -674,7 +689,7 @@ console.log("DELETE GAME 2");
 
       window.addEventListener('click', () => {
         if (event.target == modal) {
-	  $('.close').off();
+          $('.close').off();
           modal.style.display = "none";
           window.removeEventListener('click');
         }
@@ -809,31 +824,31 @@ console.log("DELETE GAME 2");
 
         let x = arcade_self.games.open[i];
 
-	let gameid     = "";
-	let adminid    = "";
-	let winner     = "";
-	let options    = "";
-	let sig        = "";
-	let created_at = 0;
+        let gameid     = "";
+        let adminid    = "";
+        let winner     = "";
+        let options    = "";
+        let sig        = "";
+        let created_at = 0;
 
-	if (x.gameid != undefined && x.gameid != "")   { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
-	if (x.winner != undefined && x.winner != "")   { winner = x.winner; }
-	if (x.options != undefined && x.options != "") { options = x.options; }
-	if (x.sig != undefined && x.sig != "") { sig = x.sig; }
-	if (x.created_at > 0) { created_at = x.created_at; }
+        if (x.gameid != undefined && x.gameid != "")   { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
+        if (x.winner != undefined && x.winner != "")   { winner = x.winner; }
+        if (x.options != undefined && x.options != "") { options = x.options; }
+        if (x.sig != undefined && x.sig != "") { sig = x.sig; }
+        if (x.created_at > 0) { created_at = x.created_at; }
 
         html += `open_games.push({ 
-	  player: "${x.player}" , 
-	  winner : "${winner}",
-	  game: "${x.game}", 
-	  state : "${x.state}" , 
-	  status : "" ,
-	  options : ${x.options} ,
-	  sig : "${sig}",
-	  created_at : ${created_at},
-	  gameid : "${gameid}",
-	  adminid : "${adminid}" 
-	});`;
+          player: "${x.player}" , 
+          winner : "${winner}",
+          game: "${x.game}", 
+          state : "${x.state}" , 
+          status : "" ,
+          options : ${x.options} ,
+          sig : "${sig}",
+          created_at : ${created_at},
+          gameid : "${gameid}",
+          adminid : "${adminid}" 
+        });`;
       }
 
       let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
@@ -873,7 +888,7 @@ console.log("REFRESHING OPEN GAMES");
       } catch(err) {
         console.log(err);
 console.log("ERROR REFRESHING: " + err);
-	return;
+        return;
       }
 
       this.games.open = [];
@@ -932,10 +947,16 @@ console.log("ERROR REFRESHING: " + err);
     }
   }
 
+  showArcadeHome() {
+    $('.gamelist').show();
+    $('#arcade_container').show();
+    $('#games').show();
+    $('.game_options').show();
+  }
+
 
 
   showGameCreator() {
-
     this.viewing_game_creator = 1;
 
     let game_options = "";
@@ -950,18 +971,12 @@ console.log("ERROR REFRESHING: " + err);
     this.updateBalance(this.app);
 
     $('.game_monitor').slideDown(500, function() {});
-    $('.gamelist').hide();
-    $('#arcade_container').hide();
-    $('#games').hide();
-    $('.game_options').hide();
 
     $('.find_player_button').show();
     $('.create_game_container').show();
 
     if (this.browser_active == 1) { this.attachEvents(this.app); }
   }
-
-
 
   showGameInitializer() {
 
@@ -986,13 +1001,20 @@ console.log("ERROR REFRESHING: " + err);
     $('.game_monitor').hide();
   }
 
+  hideArcadeHome() {
+    $('.gamelist').hide();
+    $('#arcade_container').hide();
+    $('#games').hide();
+    $('.game_options').hide();
+  }
+
 
   hideGameCreator() {
     this.viewing_game_creator = 0;
     $('.create_game_creator').hide();
     $('.find_player_button').hide();
-    $('.gamelist').show();
-    $('.game_options').show();
+    // $('.gamelist').show();
+    // $('.game_options').show();
     $('.game_monitor').hide();
   }
 
@@ -1049,19 +1071,19 @@ console.log(JSON.stringify(x));
           let state      = 'active';
           let status     = x.status;
           let adminid    = `${gameid}_${gamename}`;
-	  let created_at = x.ts;
-	  let sig        = x.sig;
+          let created_at = x.ts;
+          let sig        = x.sig;
 
-	  if (x.id == undefined || x.id === "") {
-	    gameid = "";
-	    adminid = "";
-	  }
+          if (x.id == undefined || x.id === "") {
+            gameid = "";
+            adminid = "";
+          }
 
-  	  if (x.opponents != undefined) {
-    	    if (x.opponents.length > 0) {
-   	      opponent = x.opponents[0];
-    	    }
-  	  }
+            if (x.opponents != undefined) {
+                if (x.opponents.length > 0) {
+                 opponent = x.opponents[0];
+                }
+            }
 
           if (x.initializing != 1) { state = "active"; }
 
@@ -1081,17 +1103,17 @@ console.log("ADDING TO OPEN GAMES");
 console.log(gameid + " -- " + adminid);
 
           this.games.open.push({ 
-	    player: opponent ,
-	    winner : winner ,
-	    game: gamename , 
-	    state : state , 
-	    status : status ,
-	    options : options ,
-	    created_at : created_at ,
-	    sig : sig ,
-	    gameid : gameid ,
-	    adminid : adminid
-	  });
+            player: opponent ,
+            winner : winner ,
+            game: gamename , 
+            state : state , 
+            status : status ,
+            options : options ,
+            created_at : created_at ,
+            sig : sig ,
+            gameid : gameid ,
+            adminid : adminid
+          });
         }
       }
     }

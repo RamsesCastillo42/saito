@@ -4,6 +4,8 @@
   // OPEN GAMES
 
 
+alert("Testing: " + JSON.stringify(open_games));
+
 
   function createGameButton(button_class, button_id) {
 
@@ -55,6 +57,9 @@
 
     let gamesTable = document.getElementById('games_table');
 
+    // let gamesTableBody = document.createElement("tbody");
+    gamesTable.innerHTML = '';
+
     games.forEach((game) => {
 
       var gameRow = document.createElement("div");
@@ -67,12 +72,14 @@
 
       if (game.state == "open") {
 
+        var buttonCell = document.createElement("div");
         buttonCell.appendChild(this.createGameButton("accept_game", game.sig));
 
       } else {
 
+        var buttonCell = document.createElement("div");
         buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-        buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+        buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
 
       }
 
