@@ -1,10 +1,9 @@
 
+
   var open_games = [];
 
   // OPEN GAMES
 
-
-alert("Testing: " + JSON.stringify(open_games));
 
 
   function createGameButton(button_class, button_id) {
@@ -50,13 +49,9 @@ alert("Testing: " + JSON.stringify(open_games));
 
   function renderGamesTable(games) {
 
-    //
-    // empty first in case we are freshing
-    //
-    $('#games_table').empty();
+    $('#games-table tbody').empty();
 
     let gamesTable = document.getElementById('games_table');
-
     // let gamesTableBody = document.createElement("tbody");
     gamesTable.innerHTML = '';
 
@@ -68,7 +63,6 @@ alert("Testing: " + JSON.stringify(open_games));
       let playerCell = createGameTableCell(game.player.substring(0,8));
       let gameCell = createGameTableCell(game.game);
       let statusCell = createGameTableCell(game.status);
-      let buttonCell = document.createElement("td");
 
       if (game.state == "open") {
 
@@ -77,17 +71,24 @@ alert("Testing: " + JSON.stringify(open_games));
 
       } else {
 
-        var buttonCell = document.createElement("div");
-        buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-        buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+	if (game.state == "over") {
+          var buttonCell = document.createElement("div");
+          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+	} else {
 
+          var buttonCell = document.createElement("div");
+          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+          buttonCell.appendChild(this.createGameButton("join_game", game.gameid));
+
+	}
       }
 
-      if (game.state == "over") {
-
+      if (game.state != "deleted") {
+        gameRow.append(playerCell,gameCell,statusCell,buttonCell);
+        gamesTable.appendChild(gameRow);
       }
-      gameRow.append(playerCell,gameCell,statusCell,buttonCell);
-      gamesTable.appendChild(gameRow);
+
     })
   }
 
