@@ -224,6 +224,26 @@ class Arcade extends ModTemplate {
         }
       }
 
+
+      if (txmsg.request == "opengame") {
+        let game_exists = arcade_self.games.open.some((game) => game.sig === txmsg.sig);
+        if (!game_exists) {
+          let game = {
+            player: tx.transaction.from[0].add,
+            state: txmsg.state,
+            bid: blk.block.id,
+            game: txmsg.game,
+            options: txmsg.options,
+            status: "Waiting for opponent",
+            created_at: txmsg.ts,
+            sig: txmsg.sig
+          }
+
+          arcade_self.games.open.push(game);
+          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected]);
+        }
+      }
+
     }
 
 

@@ -54,7 +54,7 @@
     // let gamesTableBody = document.createElement("tbody");
     gamesTable.innerHTML = '';
 
-    games.forEach((game) => {
+    games.reverse().forEach((game) => {
 
       var gameRow = document.createElement("div");
       gameRow.className = "game_table_row";
