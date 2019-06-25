@@ -250,6 +250,8 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   var total_fees   = Big(amt).plus(Big(fee));
   var wallet_avail = Big(this.returnBalance());
 
+console.log("WALLET AV: " + wallet_avail);
+
   //
   // check to-address is ok -- this just keeps a server
   // that receives an invalid address from forking off
@@ -266,9 +268,12 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
   }
 
 
+console.log("TOTAL FEES: " + total_fees.toString());
+
   if (total_fees.gt(wallet_avail)) {
     return null;
   }
+
 
   //
   // zero-fee transactions have fake inputs
