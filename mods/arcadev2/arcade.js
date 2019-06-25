@@ -616,9 +616,10 @@ alert("DELETEING 3");
 
     //
     // add game to list of open games
-    //
-    $('#create_open_game').off();
-    $('#create_open_game').on('click', () => {
+    // #create_open_game
+
+    $('#find_opponent').off();
+    $('#find_opponent').on('click', () => {
 
       let options    = {};
 
@@ -690,12 +691,17 @@ alert("DELETEING 3");
 
     //
     // CREATE GAME -- STEP #2
-    //
-    $('#game_button').off();
-    $('#game_button').on('click', () => {
+    // invite_friend
+    // game_button
+    $('#invite_friend').off();
+    $('#invite_friend').on('click', () => {
 
       var modal = document.getElementById("game_modal");
       modal.style.display = "block";
+
+      let gameSelectHTML = this.renderModalOptions("link");
+      $('#game_start_options').innerHTML = '';
+      $('#game_start_options').html(gameSelectHTML);
 
 
       $('.close').off();
@@ -704,7 +710,8 @@ alert("DELETEING 3");
         window.removeEventListener('click');
       });
 
-      window.addEventListener('click', () => {
+      $(window).off();
+      $(window).on('click', () => {
         if (event.target == modal) {
           $('.close').off();
           modal.style.display = "none";
@@ -1095,7 +1102,7 @@ console.log("ERROR REFRESHING: " + err);
 
   hideGameCreator() {
     this.viewing_game_creator = 0;
-    $('.create_game_creator').hide();
+    $('.create_game_container').hide();
     $('.find_player_button').hide();
     // $('.gamelist').show();
     // $('.game_options').show();
@@ -1122,7 +1129,7 @@ console.log("ERROR REFRESHING: " + err);
 
         let base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
 
-        return `<input class="quick_link_input" value="=${window.location.href}/invite/${base64str}" /> <button class="quick_invite"> COPY</button>`
+        return `<input class="quick_link_input" value="${window.location.href}/invite/${base64str}" /> <button class="quick_invite"> COPY</button>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`

@@ -70,12 +70,12 @@
               <div style="display: grid">
                 <form id="game_creation_form">
                   <ul class="game_creation_modal_options">
-                    <li>
+                    <!-- <li>
                       <input type="radio" id="open" name="amount" checked="checked" />
                       <label for="open">Open Invite</label>
-                    </li>
+                    </li> -->
                     <li>
-                      <input type="radio" id="link" name="amount" />
+                      <input type="radio" id="link" name="amount" checked="checked"/>
                       <label for="link">Quick Link</label>
                     </li>
                     <li>
@@ -85,7 +85,11 @@
                   </ul>
                 </form>
                 <div id="game_start_options">
-                  <button class="quick_invite" id="create_open_game">CREATE GAME</button>
+                  <!-- <div class="opponent_key_container">
+                    <div style="display: flex; align-items: center;">
+                      <span style="margin-right: 15px;width: 25%">OPPONENT 1:</span>
+                      <input class="opponent_address" id="0">
+                    </div><button style="margin-top: 0" class="quick_invite"> INVITE</button></div> -->
                 </div>
               </div>
             </div>
@@ -105,7 +109,9 @@
           <div style="grid-area: game-generate;">
             <div class="game_details"></div>
             <div class="create_game_box">
-              <div class="create_game" id="game_button"><i class="fa fa-magic"></i>  CREATE GAME</div>
+              <!-- FIND OPPONENT -->
+              <div class="create_game" id="find_opponent"> FIND OPPONENT</div>
+              <a id="invite_friend" style="margin-left:1em; color: blue; cursor: pointer">or send an invite to a friend</a>
             </div>
             <div id="publisher_message" class="publisher_message" style="display:none"></div>
             <div class="return_to_arcade" id="return_to_arcade">
