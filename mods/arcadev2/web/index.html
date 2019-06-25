@@ -54,51 +54,49 @@
   <div class="main">
 
     <div class="arcade">
+      <div id="game_modal" class="modal">
+        <div class="modal_content">
 
-      <div class="game_monitor" id="game_monitor">
+          <div class="modal_header">
+            <span class="close">&times;</span>
+            <h2 id="modal_header_text">One More Thing!</h2>
+          </div>
 
-        <div id="game_modal" class="modal">
-          <div class="modal_content">
-
-            <div class="modal_header">
-              <span class="close">&times;</span>
-              <h2>One More Thing!</h2>
-            </div>
-
-            <div class="modal_body">
-              <p style="margin: 0">How do you want to invite your opponent?</p>
-              <div style="display: grid">
-                <form id="game_creation_form">
-                  <ul class="game_creation_modal_options">
-                    <!-- <li>
-                      <input type="radio" id="open" name="amount" checked="checked" />
-                      <label for="open">Open Invite</label>
-                    </li> -->
-                    <li>
-                      <input type="radio" id="link" name="amount" checked="checked"/>
-                      <label for="link">Quick Link</label>
-                    </li>
-                    <li>
-                      <input type="radio" id="key" name="amount" />
-                      <label for="key">Invite By Key</label>
-                    </li>
-                  </ul>
-                </form>
-                <div id="game_start_options">
-                  <!-- <div class="opponent_key_container">
-                    <div style="display: flex; align-items: center;">
-                      <span style="margin-right: 15px;width: 25%">OPPONENT 1:</span>
-                      <input class="opponent_address" id="0">
-                    </div><button style="margin-top: 0" class="quick_invite"> INVITE</button></div> -->
-                </div>
+          <div class="modal_body">
+            <p id="modal_body_text" style="margin: 0">How do you want to invite your opponent?</p>
+            <div style="display: grid">
+              <form id="game_creation_form">
+                <ul class="game_creation_modal_options">
+                  <!-- <li>
+                    <input type="radio" id="open" name="amount" checked="checked" />
+                    <label for="open">Open Invite</label>
+                  </li> -->
+                  <li>
+                    <input type="radio" id="link" name="amount" checked="checked"/>
+                    <label for="link">Quick Link</label>
+                  </li>
+                  <li>
+                    <input type="radio" id="key" name="amount" />
+                    <label for="key">Invite By Key</label>
+                  </li>
+                </ul>
+              </form>
+              <div id="game_start_options">
+                <!-- <div class="opponent_key_container">
+                  <div style="display: flex; align-items: center;">
+                    <span style="margin-right: 15px;width: 25%">OPPONENT 1:</span>
+                    <input class="opponent_address" id="0">
+                  </div><button style="margin-top: 0" class="quick_invite"> INVITE</button></div> -->
               </div>
             </div>
-
-            <div class="modal_footer">
-            </div>
-
           </div>
+
+          <div class="modal_footer">
+          </div>
+
         </div>
+      </div>
+      <div class="game_monitor" id="game_monitor">
 
 
 

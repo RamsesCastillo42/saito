@@ -141,6 +141,12 @@ a {
   text-align: center;
 }
 
+.button_container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
 /* table {
   width: 100%;
   border: 1px solid black;
@@ -197,7 +203,8 @@ select {
   float: right;
   padding: 10px;
   border-radius: 5px;
-  margin: 10px 0px 10px 10px;
+  /* margin: 10px 0px 10px 10px; */
+  margin: 10px;
   font-size: 1em;
   color: white;
   /* width: 40%; */
@@ -223,6 +230,7 @@ select {
 .start_game {
   width: 100%;
   background-color: #f09f09;
+  margin: 0;
 }
 
 .start_game_container {
@@ -581,7 +589,8 @@ hr {
 }
 
 .initialize_game_container {
-  display: block;
+  display: grid;
+  row-gap: 1em;
   line-height: 1.4em;
   max-width: 1200px;
   padding-bottom:25px;
@@ -625,7 +634,7 @@ hr {
   text-shadow: 0 1px 1px rgba(0,0,0,.2);
   text-transform: uppercase;
   text-align: center;
-  z-index: 5;
+  /* z-index: 5; */
 }
 
 /* top left*/
