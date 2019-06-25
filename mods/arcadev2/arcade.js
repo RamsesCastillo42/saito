@@ -960,8 +960,6 @@ alert("DELETEING 3");
 
   async refreshOpenGames() {
 
-console.log("REFRESHING OPEN GAMES");
-
     if (this.app.BROWSER == 0) {
 
       var sql    = "SELECT * FROM mod_arcade WHERE state = 'open'";
@@ -970,7 +968,6 @@ console.log("REFRESHING OPEN GAMES");
         var rows = await this.db.all(sql, params);
       } catch(err) {
         console.log(err);
-console.log("ERROR REFRESHING: " + err);
         return;
       }
 

@@ -649,6 +649,19 @@ Transaction.prototype.validate = function validate(app, blk=null) {
         return false;
       }
     }
+    //
+    // check block hash of spent inputs also longest chain
+    //
+    // bhash will always be set for something in a previous block
+    //
+    if (this.transaction.from[tidx].bhash != "") {
+      if (app.blockchain.isBlockHashOnLongestChain(this.transaction.from[tidx].bhash) != 1) {
+        console.log("----> " + this.transaction.from[tidx].bhash);
+        console.log("transaction contains slip on non-longest chain:" + JSON.stringify(this.transaction.from[tidx]));
+        app.mempool.removeTransaction(this);
+        return false;
+      }
+    }
   }
 
   return true;
