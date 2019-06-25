@@ -248,6 +248,7 @@ Arcade.prototype.acceptGameInvitation = function acceptGameInvitation() {
   //window.location = '/' + invite_data.module;
 
 }
+
 Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
   let arcade_self = this;

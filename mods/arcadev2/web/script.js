@@ -73,20 +73,22 @@
       if (game.state == "open") {
 
         var buttonCell = document.createElement("div");
+        buttonCell.className = "button_container";
         buttonCell.appendChild(this.createGameButton("accept_game", game.sig));
 
       } else {
 
-	if (game.state == "over") {
+        if (game.state == "over") {
           var buttonCell = document.createElement("div");
+          buttonCell.className = "button_container";
           buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
           buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 	} else {
           var buttonCell = document.createElement("div");
+          buttonCell.className = "button_container";
           buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
           buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 	}
-
       }
 
       if (game.state != "deleted") {
