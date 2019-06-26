@@ -289,6 +289,7 @@ Arcade.prototype.initializeHTML = function initializeHTML(app) {
 
 
       $('.inviting_address').html(invite_data.pubkey.substring(0,8));
+      $('.invite_title').html(invite_data.module);
 
       if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
         // $('.invite_play_button').css('border', '1px solid grey');
