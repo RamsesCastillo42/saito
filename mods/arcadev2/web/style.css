@@ -88,11 +88,10 @@ a {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  max-height: 54px;
-  width: 215px;
+  max-height: 57px;
+  width: 233px;
   overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
+ 
 }
 
 .arcade > #games > ul > li {
@@ -101,12 +100,15 @@ a {
 }
 
 .arcade > #games > ul > li a {
-  display: block;
-  color: black;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  border-right: 1px solid #ccc;
+  margin-left: 5px;
+    display: block;
+    color: #216204;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    border: 2px solid #216204;
+    border-radius: 10px;
+    background: #f7f7f7;
 }
 
 .arcade > #games > ul > li a:active {
@@ -135,12 +137,15 @@ a {
 
 .game_table_row {
   display: grid;
-  justify-items: center;
   align-items: center;
   grid-template-columns: 1fr 1fr 2fr 2fr;
   border: 1px solid grey;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
+  margin-top:10px;
 }
-
 .game_table_cell {
   font-size: 1em;
   text-align: center;
@@ -206,7 +211,7 @@ select {
 
 .accept_game, .reject_game, .delete_game, .join_game, .start_game {
   float: right;
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
   /* margin: 10px 0px 10px 10px; */
   margin: 10px;
@@ -217,7 +222,8 @@ select {
 }
 
 .accept_game {
-  background: darkorange;
+  color:white;
+  background-color:#0a7202;
 }
 
 .reject_game {
@@ -243,12 +249,11 @@ select {
   align-items: center;
   justify-items: center;
 }
-
-
-
-
-
-
+#invite_friend{
+  text-decoration: none;
+  color:#0e6eb8;
+  text-decoration: underline;
+}
 
 
 .sidebar {
@@ -546,10 +551,10 @@ hr {
 }
 
 .create_game {
-  background-color: rgb(0, 190, 10);
+  background-color:#990000;
   color: white;
-  border: rgb(0, 190, 10) 1px solid;
-  border-radius: 5px;
+  border: white 1px solid;
+  border-radius: 10px;
   clear: both;
   padding: 0.5em;
   font-size: 0.9em;
