@@ -43,9 +43,6 @@ class Arcade extends ModTemplate {
 
 
 
-
-
-
   ////////////////
   // Initialize //
   ////////////////
@@ -94,6 +91,8 @@ class Arcade extends ModTemplate {
           sig TEXT,
           created_at INTEGER,
           expires_at INTEGER,
+          country_code INTEGER,
+          sms INTEGER,
           PRIMARY KEY (id ASC))`;
         await this.db.run(sql, {});
         this.refreshOpenGames();
@@ -235,17 +234,27 @@ class Arcade extends ModTemplate {
           let state   = "";
           let pkey    = "";
           let options = "";
-          let created_at = "";
+          let created_at = new Date().getTime();
           let sig     = "";
+
+	  let validfor     = 60;
+	  let sms          = 0;
+	  let country_code = 0;
 
           if (txmsg.game != "") { game = txmsg.game; }
           if (txmsg.state != "") { state = txmsg.state; }
           pkey = tx.transaction.from[0].add;
           if (txmsg.options != "") { options = txmsg.options; }
-          if (txmsg.ts != "") { created_at = txmsg.ts; }
+          if (txmsg.ts != "") { created_at = parseInt(txmsg.ts); }
           if (txmsg.sig != "") { sig = txmsg.sig; }
 
-          var sql = "INSERT INTO mod_arcade (player, state, game_bid, game, options, created_at, sig) VALUES ($player, $state, $bid, $game, $options, $created_at, $sig)";
+          if (txmsg.validfor != "") { validfor = txmsg.validfor; }
+          if (txmsg.cc != "")       { country_code = txmsg.cc; }
+          if (txmsg.sms != "")      { sms = txmsg.sms; }
+
+	  let expires_at = created_at + (60000 * parseInt(validfor));
+
+          var sql = "INSERT INTO mod_arcade (player, state, game_bid, game, options, created_at, sig, expires_at, country_code, sms) VALUES ($player, $state, $bid, $game, $options, $created_at, $sig, $expires_at, $country_code, $sms)";
           var params = {
             $player : pkey ,
             $state : state ,
@@ -253,7 +262,10 @@ class Arcade extends ModTemplate {
             $game : game ,
             $options : JSON.stringify(options) ,
             $created_at : created_at ,
-            $sig : sig
+            $sig : sig ,
+	    $expires_at : expires_at ,
+	    $country_code : parseInt(country_code) ,
+	    $sms : parseInt(sms) 
           }
 
           try {
@@ -561,11 +573,9 @@ console.log("ERROR");
 
     let arcade_self = this;
 
-
     //
     // BUTTONS IN TABLE WITH AVAILABLE GAMES
     //
-
 
     //
     // join an existing game
@@ -634,12 +644,12 @@ console.log("ERROR");
     });
 
 
+    //
+    // accept invitation from a friend)
+    //
     $('.accept_game_button').off();
     $('.accept_game_button').on('click', function() {
 
-      //
-      // clone of code in game.js
-      //
       let tmpid = $(this).attr('id');
       let tmpar = tmpid.split("_");
 
@@ -661,8 +671,6 @@ console.log("ERROR");
 
       game_self = arcade_self.app.modules.returnModule(game_module);
       game_self.loadGame(game_id);
-
-  // console.log("GAME SELF: " + JSON.stringify(game_self.game.options));
 
       game_self.saveGame(game_id);
       for (let i = 0; i < tmpar.length; i++) {
@@ -694,10 +702,8 @@ console.log("ERROR");
       newtx = arcade_self.app.wallet.signTransaction(newtx);
       arcade_self.app.network.propagateTransaction(newtx);
 
-      // let html = 'You have accepted the invitation. Please keep your browser open while both players exchange the cryptographic information necessary to have a provably fair game. This may take up to five minutes, but only needs to happen once before the game. When your game is ready we will notify you here.<p></p><div id="status" class="status"></div>';
-      // $('.manage_invitations').html(html);
-      // $('.status').show();
     });
+
 
 
     //
@@ -731,7 +737,6 @@ console.log("ERROR");
           game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
         }
         game_self.saveGame(gameid);
-// alert("last block set to: " + game_self.game.over + " -- " + game_self.game.last_block + " -- GID: " + gameid);
       } catch (err) {
         console.log("ERROR DELETING GAME: " + err);
       }
@@ -742,14 +747,11 @@ console.log("ERROR");
         } else {
 
           if (arcade_self.app.options.games[i].id == undefined) {
-// alert("DELETEING 0");
             arcade_self.app.options.games.splice(i, 1);
             i--;
           } else {
             if (arcade_self.app.options.games[i].id == gameid) {
-// alert( arcade_self.app.options.games[i].last_block + " -- " + arcade_self.app.blockchain.returnLatestBlockId() );
               if (arcade_self.app.options.games[i].last_block > 0 && (arcade_self.app.options.games[i].last_block+10) < arcade_self.app.blockchain.returnLatestBlockId()) {
-// alert("DELETEING 1");
                 arcade_self.app.options.games.splice(i, 1);
                 i--;
               }
@@ -757,12 +759,10 @@ console.log("ERROR");
           }
           try {
             if (arcade_self.app.options.games[i].over == 1 && ((parseInt(arcade_self.app.options.games[i].last_block)+10) < arcade_self.app.blockchain.returnLatestBlockId())) {
-// alert("DELETEING 2");
               arcade_self.app.options.games.splice(i, 1);
               i--;
             }
             if (arcade_self.app.options.games[i].opponents.length == 0) {
-// alert("DELETEING 3");
               arcade_self.app.options.games.splice(i, 1);
               i--;
             }
@@ -786,13 +786,8 @@ console.log("ERROR");
 
 
     //
-    // GAME CREATION PAGE
+    // GAME CREATION -- "find opponent" on site
     //
-
-    //
-    // add game to list of open games
-    // #create_open_game
-
     $('#create_game_button').off();
     $('#create_game_button').on('click', () => {
 
@@ -811,6 +806,8 @@ console.log("ERROR");
         }
       );
 
+alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.returnDefaultFee());
+
       if (this.app.wallet.returnBalance() > this.app.wallet.returnDefaultFee()) {
 
         var newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.wallet.returnPublicKey(), 0.0);
@@ -819,53 +816,43 @@ console.log("ERROR");
             return;
           }
 
+	  // sms and limit ?
+	  let country_code = $(".country_code").val();
+	  let sms_num = $(".player_sms").val();
+	  let valid_for = $(".invitation_valid_for").val();
+
           newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
-          newtx.transaction.msg.module  = "Arcade";
-          newtx.transaction.msg.request = "opengame";
-          newtx.transaction.msg.game    = this.active_game;
-          newtx.transaction.msg.state   = "open";
-          newtx.transaction.msg.options = options;
-          newtx.transaction.msg.ts      = new Date().getTime();
-          newtx.transaction.msg.sig     = this.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), this.app.wallet.returnPrivateKey());
+          newtx.transaction.msg.module   = "Arcade";
+          newtx.transaction.msg.request  = "opengame";
+          newtx.transaction.msg.game     = this.active_game;
+          newtx.transaction.msg.state    = "open";
+          newtx.transaction.msg.options  = options;
+          newtx.transaction.msg.ts       = new Date().getTime();
+          newtx.transaction.msg.sig      = this.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), this.app.wallet.returnPrivateKey());
+          newtx.transaction.msg.cc       = "";
+          newtx.transaction.msg.sms      = "";
+          newtx.transaction.msg.validfor = "";
+
+	  if (country_code != undefined) { newtx.transaction.msg.cc = country_code; }
+	  if (sms_num != undefined) { newtx.transaction.msg.sms = sms_num; }
+	  if (valid_for != undefined) { newtx.transaction.msg.validfor = valid_for; }
 
           newtx = this.app.wallet.signTransaction(newtx);
           this.app.network.propagateTransaction(newtx);
 
-        // var modal = document.getElementById("game_modal");
-        // modal.style.display = "block";
+          this.createOpenGameSuccess()
+          renderGamesTable(this.games[this.games.nav.selected]);
+          this.hideGameCreator();
+          this.showArcadeHome();
+          this.attachEvents();
 
-        // var modalTitle = document.getElementById("modal_header_text");
-        // modalTitle.innerHTML = "";
-        // modalTitle.appendChild(document.createTextNode("Your Game Has Been Created"));
-
-        // //var gameCreationForm = document.getElementById("modal_header_text");
-        // $("#game_creation_form").hide();
-
-        // var modalBody = document.getElementById("modal_body_text");
-        // modalBody.innerHTML = "";
-        // modalBody.appendChild(document.createTextNode("Send us your phone number so we can notify you when you have an opponent"));
-
-        // //let gameSelectHTML = this.renderModalOptions("link");
-        // $('#game_start_options').innerHTML = '';
-        // $('#game_start_options').html(`
-        //   <div style="display: flex; align-items: center; width: 67%; margin-top:1em; margin-bottom:1em">
-        //     <span style="margin-right: 15px">SMS:</span>
-        //     <input class="opponent_address" id="player_sms"></input>
-        //   </div>
-        // `);
-
-        this.createOpenGameSuccess()
-
-        renderGamesTable(this.games[this.games.nav.selected]);
-        this.hideGameCreator();
-        this.showArcadeHome();
-
-        this.attachEvents();
 
       } else {
         alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
       }
+
     });
+
 
     $('#find_opponent_modal_button').off();
     $('#find_opponent_modal_button').on('click', () => {
@@ -1213,7 +1200,6 @@ console.log("ERROR");
       `Click the button to create a game and share it in the arcade.`
     ));
 
-    //let gameSelectHTML = this.renderModalOptions("link");
     $('#game_start_options').innerHTML = '';
     $('#game_start_options').html(`
       <div class="game_options_grid_container">
@@ -1221,16 +1207,17 @@ console.log("ERROR");
           <h4 class="advanced_options_header">Options</h4>
           <div class="sms_input_container" >
             ${this.countryCodeNumbersSelector()}
-            <input class="opponent_address" id="player_sms"></input>
-            <p class="sms_options_text">OPTIONAL</p>
+            <input class="opponent_address player_sms" id="player_sms"></input>
           </div>
-          <p class="sms_explanation_text">Notify me by SMS when an opponent is found (we do not save this)</p>
+          <p class="sms_explanation_text">SMS me when another player accepts the game</p>
           <div class="game_timer_select_container">
-            <div>List Game Timer:</div>
-            <select>
-              <option value="1">1 hour</option>
-              <option value="2">2 hour</option>
-              <option value="4">4 hour</option>
+            <div>Invitation Valid For:</div>
+            <select id="invitation_valid_for" class="invitation_valid_for">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="120">2 hour</option>
+              <option value="240">4 hour</option>
             </select>
           </div>
         </div>
@@ -1429,8 +1416,8 @@ console.log("REFRESHING OPEN GAMES");
 
     if (this.app.BROWSER == 0) {
 
-      var sql    = "SELECT * FROM mod_arcade WHERE state = 'open'";
-      var params = {};
+      var sql    = "SELECT * FROM mod_arcade WHERE state = 'open' and expires_at > $expires_at";
+      var params = { $expires_at : new Date().getTime() };
       try {
         var rows = await this.db.all(sql, params);
       } catch(err) {
@@ -1605,8 +1592,8 @@ console.log("ERROR REFRESHING: " + err);
 
   countryCodeNumbersSelector() {
     return `
-      <select name="country_code" id="" style="width:180px; margin-right: 5px;">
-        <option data-countryCode="CN" value="86">China (+86)</option>
+      <select name="country_code" id="country_code" class="country_code" style="width:180px; margin-right: 5px;">
+        <option data-countryCode="CN" value="86" selected>China (+86)</option>
         <option data-countryCode="US" value="1">USA (+1)</option>
         <option data-countryCode="VE" value="58">Venezuela (+58)</option>
         <optgroup label="Other countries">
