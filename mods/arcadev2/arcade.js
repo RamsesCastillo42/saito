@@ -722,7 +722,6 @@ console.log("ERROR");
         game_self = arcade_self.app.modules.returnModule(game_module);
         game_self.loadGame(gameid);
         if (game_self.game.over == 0) {
-console.log("RESIGNING THE GAME!");
           game_self.resignGame();
           game_self.game.over = 1;
           game_self.game.last_block = arcade_self.app.blockchain.returnLatestBlockId();
@@ -1609,11 +1608,10 @@ console.log("ERROR REFRESHING: " + err);
 
 
           if (x.initializing != 1) { state = "active"; }
-// alert("X LAST BLOCK: " + x.last_block);
+          if (x.accept == 0) { state = "invited"; }
           if (x.over == 1) {
             state = "over";
             if (x.last_block > 0) {
-// alert("X LAST BLOCK SET TO DELETED");
               state = "deleted";
             }
           }
