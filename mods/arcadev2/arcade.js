@@ -335,7 +335,7 @@ class Arcade extends ModTemplate {
 
     let txmsg = tx.returnMessage();
     let remote_address = tx.transaction.from[0].add;
-
+    let arcade_self = this;
 
     if (conf == 0) {
 
@@ -433,7 +433,7 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
               } else {
 
                 //
-                // MANUAL ACCEPT IN
+                // MANUALLY ACCEPT INVITE
                 //
                 let text = `You have been invited to a game of ${this.active_game} by ${tx.transaction.from[0].add}`;
 
@@ -444,19 +444,58 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
 
                 $('#modal_header_text').html('Game Invitation');
                 $('#modal_body_text').html(text);
-                $('#game_start_options').html(`<button class="accpet_game_button" id="${game_id}_${tmpmod}"> ACCEPT</button>`);
+                $('#game_start_options').html(`<button class="accept_game_button" id="${game_id}_${tmpmod}"> ACCEPT</button>`);
 
-                // this.showGameInitializer();
-                // alert(html);
-/***
-                let tmpadd = "";
-                for (let b = 0; b < tx.transaction.to.length; b++) {
-                  if (b > 0) { tmpadd += "_"; }
-                  tmpadd += tx.transaction.to[b].add;
-                }
-                $('.lightbox_message_from_address').html(tmpadd);
-***/
+		$('.accept_game_button').off();
+		$('.accept_game_button').on('click', function() {
 
+ 		  let tmpid = $(this).attr('id');
+    	  	  let tmpar = tmpid.split("_");
+    		  let game_id = tmpar[0];
+    		  let game_module = tmpar[1];
+
+    		  let game_self = arcade_self.app.modules.returnModule(txmsg.module);
+		  let opponents = [];
+
+    		  for (let z = 0; z < tx.transaction.to.length; z++) { 
+    		    if (! opponents.includes(tx.transaction.to[z].add)) {
+		      opponents.push(tx.transaction.to[z].add);
+		    }
+		  }
+
+    		  game_self.loadGame(game_id);
+    		  game_self.saveGame(game_id);
+		  game_self.game.options = txmsg.options;
+    		  game_self.game.invitation = 0;
+    		  game_self.game.accept = 1;
+    		  game_self.game.player = 2;
+   		  game_self.game.module = game_module;
+    		  game_self.saveGame(game_id);
+
+ 		  //
+    		  // send official message accepting
+    		  //
+    		  var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(opponents[0], 0.0);
+		  if (newtx == null) {
+      		    alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+     		    return;
+    		  }
+    		  for (let i = 1; i < opponents.length; i++) {
+     		    newtx.transaction.to.push(new saito.slip(opponents[i], 0.0));
+    		  }
+
+	 	  newtx.transaction.msg.options  = game_self.game.options;
+    		  newtx.transaction.msg.module   = game_module;
+    		  newtx.transaction.msg.game_id  = game_id;
+    		  newtx.transaction.msg.request  = "accept";
+
+		  newtx = arcade_self.app.wallet.signTransaction(newtx);
+    		  arcade_self.app.network.propagateTransaction(newtx);
+
+                  arcade_self.showGameInitializer();
+                  alert("We are going to initialize your game");
+                  arcade_self.startInitializationTimer(game_id, txmsg.module);
+		});
               }
             }
           } catch (err) {
@@ -592,6 +631,7 @@ console.log("ERROR");
         }
       }
     });
+
 
     $('.accept_game_button').off();
     $('.accept_game_button').on('click', function() {
@@ -945,6 +985,20 @@ console.log("RESIGNING THE GAME!");
 
       var newtx;
       let options         = {};
+
+      $('form input, form select').each(
+        function(index) {
+          var input = $(this);
+          if (input.is(":checkbox")) {
+            if (input.prop("checked")) {
+              options[input.attr('name')] = 1;
+            }
+          } else {
+            options[input.attr('name')] = input.val();
+          }
+        }
+      );
+
       let opponent_inputs = $('.opponent_address');
 
       for (let i = 0; i < opponent_inputs.length; i++){
@@ -1475,6 +1529,20 @@ console.log("ERROR REFRESHING: " + err);
       case 'link':
         let game_module = this.app.modules.returnModule(this.active_game);
         let options = {};
+
+        $('form input, form select').each(
+          function(index) {
+            var input = $(this);
+            if (input.is(":checkbox")) {
+              if (input.prop("checked")) {
+                options[input.attr('name')] = 1;
+              }
+            } else {
+              options[input.attr('name')] = input.val();
+            }
+          }
+        );
+
         options = game_module.returnQuickLinkGameOptions(options);
 
         let txmsg = {};
