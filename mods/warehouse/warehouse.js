@@ -90,6 +90,23 @@ Warehouse.prototype.installModule = async function installModule() {
     } catch (err) {
         console.log(err);
     }
+
+    sql = "\
+          CREATE TABLE IF NOT EXISTS mod_warehouse_slips (\
+          slip_id TEXT PRIMARY KEY, \
+          slip_tx_type INTEGER, \
+          slip_address TEXT, \
+          slip_amount REAL, \
+          slip_block_hash TEXT,\
+          slip_block_time INTEGER \
+        )";
+
+    try {
+        await warehouse_self.db.run(sql, {});
+
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 ////////////////
@@ -118,11 +135,21 @@ Warehouse.prototype.initialize = async function initialize() {
 //////////////////
 // On New Blocks //
 //////////////////
-Warehouse.prototype.onNewBlock = function onNewBlock(blk) {
-
+// Warehouse.prototype.onNewBlock = function onNewBlock(blk) {
+    Warehouse.prototype.onNewBlock = function onNewBlock(blk, lc) {
+        
     if (this.app.BROWSER != 1) {
         this.saveTxToDatabase(blk);
         this.saveBlockToDatabase(blk);
+        if (this.app.blockchain.blocks.length == 25) {
+            this.processLongestChain();
+            console.log('pause');
+        }
+        if (this.app.blockchain.blocks.length == 26) {
+            console.log('pause');
+        }
+        //this.processSlipsFromBlock(blk, lc);
+        //this.purgeSlipsFromOldBlock();
     }
 
 }
@@ -182,7 +209,107 @@ Warehouse.prototype.saveBlockToDatabase = function saveBlockToDatabase(blk) {
         if (row != undefined) {
         }
     } catch (err) {
-        console.log(err)
+        console.log(err);
+    }
+}
+
+Warehouse.prototype.processLongestChain = function processLongestChain() {
+    
+    let i = 0;
+    let j = this.app.blockchain.index.lc.length - 1;
+
+    while ( i < this.app.blockchain.genesis_period && j >= 0) {
+
+        if( this.app.blockchain.index.lc[j] == 1) {
+            this.addSlipsFromBlock(this.app.blockchain.blocks[j]);
+            i++;
+        }
+        j--;
+    }
+ 
+} 
+
+Warehouse.prototype.addSlipsFromBlock = function addSlipsFromBlock(blk) {
+
+    for (let i = 0; i < blk.transactions.length; i++) {
+        for (let j = 0; j < blk.transactions[i].transaction.to.length; j++) {
+            this.saveSlipsToDatabase(blk, blk.transactions[i].transaction, blk.transactions[i].transaction.to[j], 1, "t");
+        }
+        for (let k = 0; k < blk.transactions[i].transaction.from.length; k++) {
+            this.saveSlipsToDatabase(blk, blk.transactions[i].transaction, blk.transactions[i].transaction.from[k], -1, "f");
+        }
+    }
+
+}
+
+Warehouse.prototype.processSlipsFromBlock = function processSlipsFromBlock(blk, lc) {
+
+    if (lc) {
+        this.addSlipsFromBlock(blk)
+    } else {
+        this.purgeSlipsfromDatabase(blk);
+    }
+
+  //  if (this.app.blockchain.blocks.length > this.app.blockchain.genesis_period) {
+  //      let angier = this.app.blockchain.blocks[this.app.]
+  //      this.purgeSlipsfromDatabase();
+  //  }
+
+}
+
+
+Warehouse.prototype.saveSlipsToDatabase = function saveSlipsToDatabase(blk, tx, slip, valence, slip_type) {
+
+    var sql = "INSERT OR IGNORE INTO mod_warehouse_slips \
+        (slip_id, slip_tx_type, slip_address, slip_amount, slip_block_hash, slip_block_time) \
+        VALUES ($slip_id, $slip_tx_type, $slip_address, $slip_amount, $slip_block_hash, $slip_block_time);"
+
+    try {
+        var params = {
+            $slip_id: tx.sig + "-" + tx.id + "-" + slip_type + "-" + slip.sid,
+            $slip_tx_type: this.returnTransactionType(tx.type),
+            $slip_address: slip.add,
+            $slip_amount: slip.amt * valence,
+            $slip_block_hash: blk.returnHash(),
+            $slip_block_time: blk.block.ts
+        }
+        let row = this.db.run(sql, params);
+        if (row != undefined) {
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+Warehouse.prototype.purgeSlipsfromDatabase = function purgeSlipsfromDatabase(blk) {
+
+    var sql = "DELETE from mod_warehouse_slips WHERE slip_block_hash = $slip_block_hash;"
+
+    try {
+        var params = {
+            $slip_block_hash: blk.returnHash()
+        }
+        let row = this.db.run(sql, params);
+        if (row != undefined) {
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+Warehouse.prototype.purgeSlipsfromDatabaseByTime = function purgeSlipsfromDatabaseByTime(ts) {
+
+    var sql = "DELETE from mod_warehouse_slips WHERE slip_block_time < $slip_block_time;"
+
+    try {
+        var params = {
+            $slip_block_time: ts
+        }
+        let row = this.db.run(sql, params);
+        if (row != undefined) {
+        }
+    } catch (err) {
+        console.log(err);
     }
 }
 
