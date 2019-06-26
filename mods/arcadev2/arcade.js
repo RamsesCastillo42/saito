@@ -28,6 +28,7 @@ class Arcade extends ModTemplate {
 
     this.initialization_check_active = true;
     this.initialization_check_timer  = null;
+    this.initialization_check_timer_interval = 2000;
     this.initialization_check_timer_ellapsed = 0;
 
     this.db              = null;
@@ -758,8 +759,8 @@ console.log("RESIGNING THE GAME!");
     // add game to list of open games
     // #create_open_game
 
-    $('#find_opponent').off();
-    $('#find_opponent').on('click', () => {
+    $('#create_game_button').off();
+    $('#create_game_button').on('click', () => {
 
       let options    = {};
 
@@ -796,32 +797,35 @@ console.log("RESIGNING THE GAME!");
           newtx = this.app.wallet.signTransaction(newtx);
           this.app.network.propagateTransaction(newtx);
 
-        var modal = document.getElementById("game_modal");
-        modal.style.display = "block";
+        // var modal = document.getElementById("game_modal");
+        // modal.style.display = "block";
 
-        var modalTitle = document.getElementById("modal_header_text");
-        modalTitle.innerHTML = "";
-        modalTitle.appendChild(document.createTextNode("Your Game Has Been Created"));
+        // var modalTitle = document.getElementById("modal_header_text");
+        // modalTitle.innerHTML = "";
+        // modalTitle.appendChild(document.createTextNode("Your Game Has Been Created"));
 
-        //var gameCreationForm = document.getElementById("modal_header_text");
-        $("#game_creation_form").hide();
+        // //var gameCreationForm = document.getElementById("modal_header_text");
+        // $("#game_creation_form").hide();
 
-        var modalBody = document.getElementById("modal_body_text");
-        modalBody.innerHTML = "";
-        modalBody.appendChild(document.createTextNode("Send us your phone number so we can notify you when you have an opponent"));
+        // var modalBody = document.getElementById("modal_body_text");
+        // modalBody.innerHTML = "";
+        // modalBody.appendChild(document.createTextNode("Send us your phone number so we can notify you when you have an opponent"));
 
-        //let gameSelectHTML = this.renderModalOptions("link");
-        $('#game_start_options').innerHTML = '';
-        $('#game_start_options').html(`
-          <div style="display: flex; align-items: center; width: 67%; margin-top:1em; margin-bottom:1em">
-            <span style="margin-right: 15px">SMS:</span>
-            <input class="opponent_address" id="player_sms"></input>
-          </div>
-        `);
+        // //let gameSelectHTML = this.renderModalOptions("link");
+        // $('#game_start_options').innerHTML = '';
+        // $('#game_start_options').html(`
+        //   <div style="display: flex; align-items: center; width: 67%; margin-top:1em; margin-bottom:1em">
+        //     <span style="margin-right: 15px">SMS:</span>
+        //     <input class="opponent_address" id="player_sms"></input>
+        //   </div>
+        // `);
+
+        this.createOpenGameSuccess()
 
         renderGamesTable(this.games[this.games.nav.selected]);
         this.hideGameCreator();
         this.showArcadeHome();
+
         this.attachEvents();
 
       } else {
@@ -829,9 +833,23 @@ console.log("RESIGNING THE GAME!");
       }
     });
 
+    $('#find_opponent_modal_button').off();
+    $('#find_opponent_modal_button').on('click', () => {
+      this.findOpponentModal();
+      this.attachEvents();
+    });
 
+    $('#invite_by_publickey').off()
+    $('#invite_by_publickey').on('click', () => {
+      this.inviteByPublickeyModal();
+      this.attachEvents();
+    });
 
-
+    $('#invite_by_link').off()
+    $('#invite_by_link').on('click', () => {
+      this.inviteByLinkModal()
+      this.attachEvents();
+    });
 
     //
     // CREATE GAME - Step #1
@@ -858,16 +876,7 @@ console.log("RESIGNING THE GAME!");
     // game_button
     $('#invite_friend').off();
     $('#invite_friend').on('click', () => {
-
-      var modal = document.getElementById("game_modal");
-      modal.style.display = "block";
-
-      $("#game_creation_form").show();
-
-      let gameSelectHTML = this.renderModalOptions("link");
-      $('#game_start_options').innerHTML = '';
-      $('#game_start_options').html(gameSelectHTML);
-
+      this.inviteByLinkModal();
       this.attachEvents();
     });
 
@@ -915,7 +924,6 @@ console.log("RESIGNING THE GAME!");
       document.getElementById(this.games.nav.selected).className = "highlighted";
 
       showGamesTable(this.games[id]);
-
     });
 
 
@@ -1049,7 +1057,7 @@ console.log("RESIGNING THE GAME!");
           arcade_self.attachEvents(this.app);
         }
 
-      }, 2000);
+      }, arcade_self.initialization_check_timer_interval);
 
     } catch (err) {
       alert("ERROR checking if game is initialized!");
@@ -1138,6 +1146,90 @@ console.log("RESIGNING THE GAME!");
     //window.location = '/arcade';
     //window.location = '/' + invite_data.module;
 
+  }
+
+  findOpponentModal() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    var modalTitle = document.getElementById("modal_header_text");
+    modalTitle.innerHTML = "";
+    modalTitle.appendChild(document.createTextNode("Game Creation"));
+
+    //var gameCreationForm = document.getElementById("modal_header_text");
+    $("#game_creation_form").hide();
+
+    var modalBody = document.getElementById("modal_body_text");
+    modalBody.innerHTML = "";
+    modalBody.appendChild(document.createTextNode(
+      `After posting, your game will be hosted here for others to accept. It might take a couple of minutes to find an opponent`
+    ));
+
+    //let gameSelectHTML = this.renderModalOptions("link");
+    $('#game_start_options').innerHTML = '';
+    $('#game_start_options').html(this.renderModalOptions("open"));
+  }
+
+  createOpenGameSuccess() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    var modalTitle = document.getElementById("modal_header_text");
+    modalTitle.innerHTML = "";
+    modalTitle.appendChild(document.createTextNode("Your Game Has Been Created"));
+
+    //var gameCreationForm = document.getElementById("modal_header_text");
+    $("#game_creation_form").hide();
+
+    var modalBody = document.getElementById("modal_body_text");
+    modalBody.innerHTML = "";
+    modalBody.appendChild(document.createTextNode("Send us your phone number so we can notify you when you have an opponent"));
+
+    //let gameSelectHTML = this.renderModalOptions("link");
+    $('#game_start_options').innerHTML = '';
+    $('#game_start_options').html(`
+      <div style="display: grid; width: 100%; row-gap: 1em">
+        <div style="display: flex; align-items: center; width: 67%;">
+          <span style="margin-right: 15px">SMS:</span>
+          <input class="opponent_address" id="player_sms"></input>
+        </div>
+        <button id="send_sms_notification" style="margin: 0" class="quick_invite">SEND</button>
+      </div>
+    `);
+  }
+
+  inviteByLinkModal() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    $('#modal_header_text').html('Game Invitation');
+    $('#modal_body_text').html(
+      `<p>Send this link to your opponent to start the game. </p>\n\n
+      <a id="invite_by_publickey" style="text-decoration: underline; cursor: pointer">Or invite them with their publickey</a>`
+    );
+
+    $("#game_creation_form").show();
+
+    let gameSelectHTML = this.renderModalOptions("link");
+    $('#game_start_options').innerHTML = '';
+    $('#game_start_options').html(gameSelectHTML);
+  }
+
+  inviteByPublickeyModal() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    $('#modal_header_text').html('Game Invitation');
+    $('#modal_body_text').html(
+      `<p>Enter your opponent(s) publickey(s) to invite them directly</p>\n\n
+      <a id="invite_by_link" style="text-decoration: underline; cursor: pointer">Or send them a link</a>`
+    );
+
+    $("#game_creation_form").show();
+
+    let gameSelectHTML = this.renderModalOptions("key");
+    $('#game_start_options').innerHTML = '';
+    $('#game_start_options').html(gameSelectHTML);
   }
 
 
@@ -1329,6 +1421,8 @@ console.log("ERROR REFRESHING: " + err);
     $('#games').hide();
     $('.game_options').hide();
 
+    $('.modal').hide();
+
     $('.initialize_game_container').show();
     $('#game_spinner').show();
 
@@ -1377,7 +1471,7 @@ console.log("ERROR REFRESHING: " + err);
   renderModalOptions(option) {
     switch(option) {
       case 'open':
-        return `<button id="create_game_button" class="quick_invite">CREATE GAME</button>`
+        return `<button id="create_game_button" style="margin: 0" class="quick_invite">CREATE GAME</button>`
       case 'link':
         let game_module = this.app.modules.returnModule(this.active_game);
         let options = {};
@@ -1392,7 +1486,8 @@ console.log("ERROR REFRESHING: " + err);
 
         let base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
 
-        return `<input class="quick_link_input" value="${window.location.href}/invite/${base64str}" /> <button class="quick_invite" id="copy_quick_link_button"> COPY</button>`
+        return `<input class="quick_link_input" value="${window.location.href}/invite/${base64str}" />
+        <button class="quick_invite" id="copy_quick_link_button" style="margin: 0"> COPY</button>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`
@@ -1403,7 +1498,7 @@ console.log("ERROR REFRESHING: " + err);
             <input class="opponent_address" id=${i}></input>
           </div>`
         }
-        html += `<button style="margin-top: 0" class="quick_invite" id="invite_button"> INVITE</button>`;
+        html += `<button style="margin: 0" class="quick_invite" id="invite_button"> INVITE</button>`;
         html += "</div>";
         return html;
       default:
