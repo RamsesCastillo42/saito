@@ -135,6 +135,7 @@ class Arcade extends ModTemplate {
       }
 
       $('.inviting_address').html(invite_data.pubkey.substring(0,8));
+      $('.invite_title').html(invite_data.module);
 
       if (parseFloat(this.app.wallet.returnBalance()) <= 0) {
         $('.get_tokens_button').off();
