@@ -1,3 +1,4 @@
+
 const fs = require('fs');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
@@ -1280,7 +1281,7 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
     $('#modal_header_text').html('Invite a Friend');
     $('#modal_body_text').html(
       `<p>This is your invite link. Send this link to your friend to start the game. </p>
-      <a id="invite_by_publickey" style="text-decoration: underline; cursor: pointer; font-size: 0.75em; color: lightgrey">Invite them with their publickey</a>`
+      <a id="invite_by_publickey">Invite them with their publickey</a>`
     );
 
     $("#game_creation_form").show();
@@ -1297,7 +1298,7 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
     $('#modal_header_text').html('Invite a Friend');
     $('#modal_body_text').html(
       `<p>Enter your opponent(s) publickey(s) to invite them.</p>
-       <a id="invite_by_link" style="color: lightgrey; font-size: 0.75em; text-decoration: underline; cursor: pointer">Or send them a link</a>`
+       <a id="invite_by_link">or send them a link</a>`
     );
 
     $("#game_creation_form").show();
