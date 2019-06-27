@@ -220,7 +220,7 @@ select {
 }
 
 .accept_game, .reject_game, .delete_game, .join_game, .start_game {
-  width: 100px;
+  /* width: 100px; */
   float: right;
   padding: 12px;
   border-radius: 7px;
@@ -258,8 +258,8 @@ select {
   cursor: pointer;
 }
 .start_game {
-  width: 250px;
-  height: 80px;
+  width: 100%;
+  height: 2em;
   border-radius: 10px;
   background-color: #049d1a;
   margin: 0 auto;
@@ -508,6 +508,15 @@ select {
   height: 30px;
 }
 
+/* style="" */
+.invite_a_friend_container {
+  display: grid;
+  grid-template-columns: 3fr 7fr;
+  align-items: center;
+  /* display: flex;
+  align-items: center; */
+}
+
 
 
 .return_to_arcade {
@@ -680,6 +689,12 @@ hr {
   border: 3px solid #888;
   cursor: pointer;
   max-width: 375px;
+  grid-area: gameimage;
+}
+
+.game_description {
+  grid-area: gamedescription;
+  margin: 0;
 }
 
 .gameimage:hover {
@@ -767,9 +782,13 @@ hr {
   .main {
     grid-template-columns: 1fr;
   }
+  .arcade {
+    overflow: scroll;
+  }
   .gamelist {
-    justify-items: center;
-    grid-template-columns: 1fr;
+    display: flex;
+    overflow-x: scroll;
+    width: 90vw;
   }
   #gametable {
     justify-items: center;
@@ -781,6 +800,106 @@ hr {
   .logo {
     margin-left: 0.5em;
   }
+
+  #game_start_options {
+    display: grid;
+    row-gap: 1em;
+    justify-content: center;
+  }
+
+  .game_table_cell {
+    text-align: left;
+  }
+
+  #game_cell_game {
+    font-weight: bold;
+    font-size: 1.25em;
+    grid-area: game_title;
+  }
+
+  #game_cell_status {
+    padding: 10px 0 10px 0;
+    align-self: center;
+  }
+
+  .create_game_container {
+    display: grid;
+    row-gap: 1em;
+    grid-template-columns: 1fr;
+    grid-template-areas: "gameimage" "gamedescription" "game-generate";
+    line-height: 1.4em;
+    padding-bottom: 25px;
+
+  }
+
+  #create_game_button {
+    width: unset;
+  }
+
+  .modal_content {
+    top: 50%;
+    width: 90%;
+    text-align: center;
+  }
+
+  .sms_input_container {
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  #game_start_options {
+    display: grid;
+    row-gap: 1em;
+    justify-content: unset;
+  }
+
+  #copy_quick_link_button {
+    width: 100%;
+  }
+
+  .game {
+    min-width: 50vw;
+    margin-right: 1em;
+  }
+
+  .return_to_arcade {
+    max-width: 200px;
+  }
+
+  .game_table_row {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid grey;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-top: 10px;
+    grid-template-areas: "game_title" "game_creator" "game_status" "game_buttons";
+  }
+
+  #game_cell_status {
+    padding: 10px 0 10px 0;
+    align-self: center;
+  }
+  /* style="display: flex; align-items: center;" */
+  .invite_a_friend_container {
+    display: grid;
+    grid-template-columns: 5fr 5fr;
+    align-items: center;
+  }
+
+  .opponent_address {
+    width: 100%;
+  }
+
+  #invite_button {
+    margin: 0;
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+  }
+
 }
 
 .loader {
@@ -830,6 +949,18 @@ hr {
 @media (min-width: 768px) and (max-width: 1024px) {
   .modal_content {
     top: 50%;
+    text-align: center;
+  }
+
+  .sms_input_container {
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  #game_start_options {
+    display: grid;
+    row-gap: 1em;
+    justify-content: center;
   }
 
 }
@@ -850,6 +981,22 @@ hr {
 */
 
 @media (min-width: 481px) and (max-width: 767px) {
+  .modal_content {
+    top: 50%;
+    text-align: center;
+  }
+
+  .sms_input_container {
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  #game_start_options {
+    display: grid;
+    row-gap: 1em;
+    justify-content: center;
+  }
+
   .game {
     min-width: 50vw;
     margin-right: 1em;
@@ -857,6 +1004,29 @@ hr {
 
   .return_to_arcade {
     max-width: 200px;
+  }
+
+  .game_table_row {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid grey;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-top: 10px;
+    grid-template-areas: "game_title" "game_creator" "game_status" "game_buttons";
+  }
+
+  #game_cell_status {
+    padding: 10px 0 10px 0;
+    align-self: center;
+  }
+  /* style="display: flex; align-items: center;" */
+  .invite_a_friend_container {
+    display: grid;
+    grid-template-columns: 4fr 6fr;
+    align-items: center;
   }
 }
 
@@ -872,5 +1042,41 @@ hr {
 
   .publisher_message {
     height: 100px;
+  }
+
+  .game {
+    min-width: 50vw;
+    margin-right: 2em;
+  }
+
+  .return_to_arcade {
+    max-width: 200px;
+  }
+
+  .game_table_row {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid grey;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-top: 10px;
+    grid-template-areas: "game_title""game_creator""game_status_""game_buttons";
+  }
+
+  .game_table_cell {
+    text-align: left;
+  }
+
+  #game_cell_game {
+    font-weight: bold;
+    font-size: 1.25em;
+    grid-area: game_title;
+  }
+
+  #game_cell_status {
+    padding: 10px 0 10px 0;
+    align-self: center;
   }
 }

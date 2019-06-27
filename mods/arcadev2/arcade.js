@@ -69,7 +69,7 @@ class Arcade extends ModTemplate {
       }
 
       this.populateGamesTable();
-      renderGamesTable(this.games[this.games.nav.selected]);
+      renderGamesTable(this.games[this.games.nav.selected], this.app.wallet.returnPublicKey());
       this.attachEvents();
 
     }
@@ -295,7 +295,8 @@ class Arcade extends ModTemplate {
           }
         }
         if (removed_any_games == 1) {
-          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected]);
+          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+          arcade_self.attachEvents();
         }
       }
 
@@ -314,8 +315,12 @@ class Arcade extends ModTemplate {
             sig: txmsg.sig
           }
 
-          arcade_self.games.open.push(game);
-          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected]);
+          // let is_duplicate = arcade_self.games.open.some(current_game => current_game.sig == txmsg.sig);
+          // if (!is_duplicate) {
+            arcade_self.games.open.push(game);
+            renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+            arcade_self.attachEvents();
+          // }
         }
       }
 
@@ -847,7 +852,7 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
           this.app.network.propagateTransaction(newtx);
 
           this.createOpenGameSuccess()
-          renderGamesTable(this.games[this.games.nav.selected]);
+          renderGamesTable(this.games[this.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
           this.hideGameCreator();
           this.showArcadeHome();
           this.attachEvents();
@@ -1394,7 +1399,12 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
 
       let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
       data = data.replace('OPEN GAMES', html);
+
       res.setHeader('Content-type', 'text/html');
+      res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+      res.setHeader("expires","-1");
+      res.setHeader("pragma","no-cache");
+
       res.charset = 'UTF-8';
       res.write(data);
       res.end();
@@ -1474,7 +1484,7 @@ console.log("ERROR REFRESHING: " + err);
       }
     }
 
-    $('.gameimage').attr('src', `/arcade/img/${game_self.name.toLowerCase()}.jpg`);
+    $('#game_creation_image').attr('src', `/arcade/img/${game_self.name.toLowerCase()}.jpg`);
     $('.game_description').html(game_self.description);
     $('.game_details').html(game_options);
 
@@ -1484,6 +1494,12 @@ console.log("ERROR REFRESHING: " + err);
 
     $('.find_player_button').show();
     $('.create_game_container').show();
+
+    if (game_self.name == "Twilight") {
+      $('.publisher_message').show();
+    } else {
+      $('.publisher_message').hide();
+    }
 
     if (this.browser_active == 1) { this.attachEvents(this.app); }
 
@@ -1586,10 +1602,11 @@ console.log("ERROR REFRESHING: " + err);
         let html = `<div class="opponent_key_container">`
         for (let i = 0; i < selectedGameModule.maxPlayers - 1; i++) {
           html += `
-          <div style="display: flex; align-items: center;">
-            <span style="margin-right: 15px;width: 25%">OPPONENT ${i + 1}:</span>
-            <input style="width: 60%" class="opponent_address" id=${i}></input>
+          <div class="invite_a_friend_container">
+            <span>OPPONENT ${i + 1}:</span>
+            <input class="opponent_address" id=${i}></input>
           </div>`
+          //style="margin-right: 15px;width: 25%"
         }
         html += `<button style="margin: 0" class="quick_invite" id="invite_button"> INVITE</button>`;
         html += "</div>";
