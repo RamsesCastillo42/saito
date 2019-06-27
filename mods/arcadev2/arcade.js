@@ -314,7 +314,7 @@ class Arcade extends ModTemplate {
             sig: txmsg.sig
           }
 
-          is_duplicate = arcade_self.games.open.some(current_game => current_game.sig == txmsg.sig);
+          let is_duplicate = arcade_self.games.open.some(current_game => current_game.sig == txmsg.sig);
           if (!is_duplicate) {
             arcade_self.games.open.push(game);
             renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
