@@ -218,7 +218,7 @@ class Arcade extends ModTemplate {
             $sig : txmsg.sig
           }
           try {
-      let res = await arcade_self.db.run(sql, params);
+      	    let res = await arcade_self.db.run(sql, params);
           } catch (err) {
             console.log("error updating database in arcade...");
             return;
