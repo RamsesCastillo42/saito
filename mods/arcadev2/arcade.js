@@ -295,6 +295,7 @@ class Arcade extends ModTemplate {
         }
         if (removed_any_games == 1) {
           renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+          arcade_self.attachEvents();
         }
       }
 
@@ -313,8 +314,12 @@ class Arcade extends ModTemplate {
             sig: txmsg.sig
           }
 
-          arcade_self.games.open.push(game);
-          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+          is_duplicate = arcade_self.games.open.some(current_game => current_game.sig == txmsg.sig);
+          if (!is_duplicate) {
+            arcade_self.games.open.push(game);
+            renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+            arcade_self.attachEvents();
+          }
         }
       }
 
