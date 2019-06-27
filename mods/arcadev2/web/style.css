@@ -210,7 +210,7 @@ select {
 }
 
 .accept_game, .reject_game, .delete_game, .join_game, .start_game {
-  width: 100px;
+  /* width: 100px; */
   float: right;
   padding: 12px;
   border-radius: 7px;
