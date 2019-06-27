@@ -260,6 +260,7 @@ select {
 .create_game_box {
   display:flex;
   align-items: center;
+  justify-content: center;
 }
 
 .invite_link_description {

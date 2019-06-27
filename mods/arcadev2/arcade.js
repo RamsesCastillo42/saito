@@ -780,7 +780,12 @@ console.log("ERROR");
 
     });
 
-
+    $('.return_to_arcade').off();
+    $('.return_to_arcade').on('click', () => {
+      this.hideGameCreator();
+      this.showArcadeHome();
+      this.attachEvents();
+    });
 
 
 
@@ -1467,6 +1472,9 @@ console.log("ERROR REFRESHING: " + err);
         game_options = game_self.returnGameOptionsHTML();
       }
     }
+
+    $('.gameimage').attr('src', `/arcade/img/${game_self.name.toLowerCase()}.jpg`);
+    $('.game_description').html(game_self.description);
     $('.game_details').html(game_options);
 
     this.updateBalance(this.app);
