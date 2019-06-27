@@ -20,6 +20,7 @@ function Chessgame(app) {
   this.publickey = app.wallet.returnPublicKey();
 
   this.name = "Chess";
+  this.description = "Chess is a two-player strategy board game played on a checkered board with 64 squares arranged in an 8×8 grid."
   this.browser_active = 0;
   this.handlesEmail = 1;
   this.emailAppName = "Chess";

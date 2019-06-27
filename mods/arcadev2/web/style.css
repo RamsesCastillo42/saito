@@ -276,6 +276,7 @@ select {
 .create_game_box {
   display:flex;
   align-items: center;
+  justify-content: center;
 }
 
 .invite_link_description {
@@ -354,6 +355,10 @@ select {
 /* Modal Body */
 .modal_body {padding: 2px 16px; color: white;}
 
+#modal_header_text { margin-top: 1em; margin-bottom: 0.25em }
+
+#modal_body_text { margin: 1em 0 1em 0; }
+
 /* Modal Footer */
 .modal_footer {
   display: none;
@@ -393,7 +398,42 @@ select {
   margin: 1em 0 1em 0;
 }
 
-.game_creation_modal_options label, .game_creation_modal_options input {
+.game_options_grid_container {
+  display: grid;
+  row-gap: 1em;
+}
+
+.advanced_options_header {
+  margin:0;
+  text-decoration:underline;
+}
+
+.sms_input_container {
+  display: grid;
+  grid-auto-flow: column;
+  width: 100%;
+  align-items: center;
+  grid-template-columns: 1fr 4fr 1fr;
+}
+
+.sms_options_text {
+  color:red; margin:0; margin-left: 1em; font-size: 0.75em
+}
+
+.sms_explanation_text {
+  margin: 0; font-size: 0.75em;
+}
+
+.game_timer_select_container {
+  display: grid;
+  row-gap: 0.7em;
+}
+
+.advanced_menu_hidden {
+  font-size:0.80em; cursor:pointer; color:lightgrey; text-decoration:underline; margin-top:1.2em;
+}
+
+/* .game_creation_modal_options label, .game_creation_modal_options input {
   top:0;
   left:0;
   right:0;
@@ -417,7 +457,7 @@ select {
 }
 
 .game_creation_modal_options input[type="radio"]:checked + label {
-  /* background:rgb(0, 190, 10); */
+  /* background:rgb(0, 190, 10); 
   background: #47A;
 }
 
@@ -431,7 +471,7 @@ select {
 
 .game_creation_modal_options label:hover {
    background:#DDD;
-}
+} */
 
 .quick_link_input {
   font-size: 1em;
@@ -458,8 +498,7 @@ select {
 .opponent_address {
   padding: 10px;
   font-size: 1em;
-  width: 70%;
-  height: 40px;
+  height: 30px;
 }
 
 
@@ -520,6 +559,12 @@ hr {
 .game_options {
   display: inherit;
   row-gap: 1em
+}
+
+.advanced_game_options {
+  display: grid;
+  row-gap: 1em;
+  margin-bottom: 1.5em;
 }
 
 .options {
@@ -754,7 +799,9 @@ hr {
 */
 
 @media (min-width: 768px) and (max-width: 1024px) {
-
+  .modal_content {
+    top: 50%;
+  }
 
 }
 

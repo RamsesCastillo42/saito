@@ -63,6 +63,7 @@
       if (game.status.length > 20) { game.status = game.status.substring(0, 20); }
       if (game.state == "open") { game.status = "waiting for opponent"; }
       if (game.state == "over") { game.status = "opponent resigned"; }
+      if (game.state == "accept") { game.status = "waiting for acceptance"; }
 
 
 
@@ -84,10 +85,21 @@
           buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
           buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
 	} else {
-          var buttonCell = document.createElement("div");
-          buttonCell.className = "button_container";
-          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
-          buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+
+	  if (game.state == "invited") {
+
+            var buttonCell = document.createElement("div");
+            buttonCell.className = "button_container";
+            buttonCell.appendChild(this.createGameButton("accept_game", game.adminid));
+
+	  } else {
+
+            var buttonCell = document.createElement("div");
+            buttonCell.className = "button_container";
+            buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+            buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+
+	  }
 	}
       }
 
