@@ -1388,7 +1388,12 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
 
       let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
       data = data.replace('OPEN GAMES', html);
+
       res.setHeader('Content-type', 'text/html');
+      res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+      res.setHeader("expires","-1");
+      res.setHeader("pragma","no-cache");
+
       res.charset = 'UTF-8';
       res.write(data);
       res.end();
