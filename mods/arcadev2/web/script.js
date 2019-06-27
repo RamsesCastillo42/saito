@@ -47,7 +47,7 @@
 
 
 
-  function renderGamesTable(games) {
+  function renderGamesTable(games, my_publickey="") {
 
     $('#games-table tbody').empty();
 
@@ -56,20 +56,26 @@
     gamesTable.innerHTML = '';
 
     games.reverse().forEach((game) => {
+      if (game.player == "unknown") { return; }
 
       var gameRow = document.createElement("div");
       gameRow.className = "game_table_row";
 
-      if (game.status.length > 20) { game.status = game.status.substring(0, 20); }
+      if (game.status.length > 20) { game.status = `${game.status.substring(0, 20)}...`; }
       if (game.state == "open") { game.status = "waiting for opponent"; }
       if (game.state == "over") { game.status = "opponent resigned"; }
       if (game.state == "accept") { game.status = "waiting for acceptance"; }
 
 
+      let playerName = my_publickey == game.player ?  "Me" : game.player.substring(0,8);
+      let playerCell = createGameTableCell(playerName);
+      playerCell.id = "game_cell_player";
 
-      let playerCell = createGameTableCell(game.player.substring(0,8));
       let gameCell = createGameTableCell(game.game);
+      gameCell.id = "game_cell_game";
+
       let statusCell = createGameTableCell(game.status);
+      statusCell.id = "game_cell_status";
 
       if (game.state == "open") {
 
