@@ -4,6 +4,7 @@ const ModTemplate = require('../../lib/templates/template');
 const sqlite = require('sqlite');
 var numeral = require('numeral');
 const path = require("path");
+const axios = require('axios');
 
 class Arcade extends ModTemplate {
 
@@ -62,6 +63,8 @@ class Arcade extends ModTemplate {
       //$('#saito_address').html(saito_address);
       $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
 ***/
+      let games_data = await axios.get('/arcade/opengames');
+      open_games = games_data.data.payload;
 
       for (let i = 0; i < open_games.length; i++) {
         this.games.open.push(open_games[i]);
@@ -95,7 +98,7 @@ class Arcade extends ModTemplate {
           sms INTEGER,
           PRIMARY KEY (id ASC))`;
         await this.db.run(sql, {});
-        this.refreshOpenGames();
+        // this.refreshOpenGames();
       } catch (err) {
       }
     }
@@ -195,7 +198,7 @@ class Arcade extends ModTemplate {
   ////////////////
   async onNewBlock(blk, lc) {
     let arcade_self = blk.app.modules.returnModule("Arcade");
-    arcade_self.refreshOpenGames();
+    // arcade_self.refreshOpenGames();
   }
 
 
@@ -1368,13 +1371,16 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
     });
 
     expressapp.get('/arcade/script.js',  (req, res) => {
+      res.sendFile(__dirname + '/web/script.js');
+      return;
+    });
 
-      let html = "\n";
+    expressapp.get('/arcade/opengames', async (req, res) => {
+      var sql    = "SELECT * FROM mod_arcade WHERE expires_at > $expires_at";
+      var params = { $expires_at : new Date().getTime() };
 
-      for (let i = 0; i < arcade_self.games.open.length; i++) {
-
-        let x = arcade_self.games.open[i];
-
+      var open_games = await this.db.all(sql, params);
+      var structured_open_games = open_games.map((game) => {
         let gameid     = "";
         let adminid    = "";
         let winner     = "";
@@ -1382,39 +1388,45 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
         let sig        = "";
         let created_at = 0;
 
-        if (x.gameid != undefined && x.gameid != "")   { gameid = x.gameid; adminid    = `${x.gameid}_${x.game}`; }
-        if (x.winner != undefined && x.winner != "")   { winner = x.winner; }
-        if (x.options != undefined && x.options != "") { options = x.options; }
-        if (x.sig != undefined && x.sig != "") { sig = x.sig; }
-        if (x.created_at > 0) { created_at = x.created_at; }
+        if (game.gameid != undefined && game.gameid != "") {
+          gameid = game.gameid;
+          adminid = `${game.gameid}_${game.game}`;
+        }
 
-        html += `open_games.push({
-          player: "${x.player}" ,
-          winner : "${winner}",
-          game: "${x.game}",
-          state : "${x.state}" ,
-          status : "" ,
-          options : ${x.options} ,
-          sig : "${sig}",
-          created_at : ${created_at},
-          gameid : "${gameid}",
-          adminid : "${adminid}"
-        });`;
-      }
+        if (game.winner != undefined && game.winner != "") {
+          winner = game.winner;
+        }
 
-      let data = fs.readFileSync(__dirname + '/web/script.js', 'utf8', (err, data) => {});
-      data = data.replace('OPEN GAMES', html);
+        if (game.options != undefined && game.options != "") {
+          options = game.options;
+        }
 
-      res.setHeader('Content-type', 'text/html');
-      res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
-      res.setHeader("expires","-1");
-      res.setHeader("pragma","no-cache");
+        if (game.sig != undefined && game.sig != "") {
+          sig = game.sig;
+        }
 
-      res.charset = 'UTF-8';
-      res.write(data);
-      res.end();
-      return;
+        if (game.created_at > 0) {
+          created_at = game.created_at;
+        }
 
+        return {
+          player: game.player ,
+          winner : winner,
+          game: game.game,
+          state : game.state,
+          status : "",
+          options : options ,
+          sig : sig,
+          created_at : created_at,
+          gameid : gameid,
+          adminid : adminid
+        };
+      });
+
+      res.send({
+        payload: structured_open_games,
+        err: {}
+      });
     });
 
     expressapp.get('/arcade/img/:imagefile',  (req, res) => {
