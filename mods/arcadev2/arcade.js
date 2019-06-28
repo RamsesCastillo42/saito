@@ -62,8 +62,9 @@ class Arcade extends ModTemplate {
       $('.saito_email').html(saito_email);
       //$('#saito_address').html(saito_address);
       $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
-***/
-      let games_data = await axios.get('/arcade/opengames');
+***/  
+      let {host, port, protocol} = this.app.network.peers[0].peer;
+      let games_data = await axios.get(`${protocol}://${host}:${port}/arcade/opengames`);
       open_games = games_data.data.payload;
 
       for (let i = 0; i < open_games.length; i++) {
