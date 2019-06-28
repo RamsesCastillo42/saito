@@ -1377,7 +1377,7 @@ alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.retur
     });
 
     expressapp.get('/arcade/opengames', async (req, res) => {
-      var sql    = "SELECT * FROM mod_arcade WHERE expires_at > $expires_at";
+      var sql    = "SELECT * FROM mod_arcade WHERE state = 'open' AND expires_at > $expires_at";
       var params = { $expires_at : new Date().getTime() };
 
       var open_games = await this.db.all(sql, params);
