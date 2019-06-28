@@ -648,6 +648,7 @@ console.log("ERROR");
 
           arcade_self.hideArcadeHome();
           arcade_self.showGameInitializer();
+          arcade_self.startInitializationTimer();
 
           } else {
             alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
