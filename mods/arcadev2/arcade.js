@@ -165,6 +165,12 @@ class Arcade extends ModTemplate {
 
       return;
     }
+
+    //
+    // add chat
+    //
+    const chat = app.modules.returnModule("Chat");
+    chat.addPopUpChat();
   }
 
 
@@ -460,9 +466,9 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
 
                 $('#game_creation_form').hide();
 
-                $('#modal_header_text').html('Invite a Friend');
+                $('#modal_header_text').html('New Game Invite');
                 $('#modal_body_text').html(text);
-                $('#game_start_options').html(`<button class="accept_game_button" id="${game_id}_${tmpmod}"> ACCEPT</button>`);
+                $('#game_start_options').html(`<button class="accept_game accept_game_button" id="${game_id}_${tmpmod}"> ACCEPT</button>`);
 
                 $('.accept_game_button').off();
                 $('.accept_game_button').on('click', function() {

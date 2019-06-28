@@ -249,7 +249,9 @@ Happy Chatting!`
   _createChatNotification(title, message, onClickFunction) {
     if (this.settings.notifications) {
       let notify = this.app.browser.notification(title, message);
-      notify.onclick = onClickFunction;
+      if (notify) {
+        notify.onclick = onClickFunction;
+      }
     }
   }
 

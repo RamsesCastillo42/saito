@@ -218,13 +218,15 @@ select {
   margin: 10px;
   font-size: 1em;
   color: white;
+  border: unset;
   /* width: 40%; */
   /* display: inline-block; */
 }
 
 .accept_game {
   color:white;
-  background-color:#0a7202;
+  /* background-color:#0a7202; */
+  background-color: rgb(0, 190, 10);
 }
 
 .reject_game {
