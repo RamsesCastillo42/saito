@@ -521,7 +521,6 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
                   arcade_self.app.network.propagateTransaction(newtx);
 
                   arcade_self.showGameInitializer();
-                  alert("We are going to initialize your game");
                   arcade_self.startInitializationTimer(game_id, txmsg.module);
                 });
               }
@@ -648,7 +647,7 @@ console.log("ERROR");
             alert("Please be patient while the network starts to initialize the game!");
 
           arcade_self.hideArcadeHome();
-          // arcade_self.showGameInitializer();
+          arcade_self.showGameInitializer();
 
           } else {
             alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
@@ -825,8 +824,6 @@ console.log("ERROR");
           }
         }
       );
-
-alert("HERE: " + this.app.wallet.returnBalance() + " -- " +this.app.wallet.returnDefaultFee());
 
       if (this.app.wallet.returnBalance() > this.app.wallet.returnDefaultFee()) {
 
