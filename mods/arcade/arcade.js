@@ -213,6 +213,8 @@ class Arcade extends ModTemplate {
 
     let arcade_self = app.modules.returnModule("Arcade");
 
+    if (tx == null) { return; }
+
     if (app.BROWSER == 0) {
       if (conf == 0) {
         let txmsg = tx.returnMessage();
