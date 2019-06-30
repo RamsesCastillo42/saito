@@ -1,5 +1,4 @@
 <html>
-
 <head>
 
   <meta charset="utf-8">
@@ -22,8 +21,22 @@
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
-</head>
+  <style>
+    .create-game-container {
+      display: grid;
+      column-gap: 2em;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "game-image game-options" "game-generate game-generate";
+      padding-bottom: 25px;
+    }
 
+    .publisher_message {
+      margin-bottom: 30px;
+    }
+
+  </style>
+
+</head>
 <body>
 
   <div id="Arcade_browser_active"></div>
@@ -35,96 +48,141 @@
         <div id="saitoname" class="logo_text">saito arcade</div>
       </a>
     </a>
-    <button class="find_player_button">Find Player</button>
   </div>
-
-
-  <div class="loader" id="game_spinner"></div>
 
 
   <div class="main">
 
     <div class="arcade">
-      <div class="game_monitor" id="game_monitor"></div>
+      <div id="game_modal" class="modal">
+        <div class="modal_content">
 
-      <div class="game_options">
-        <div class="arcade-description" style="display:none">
-          <div id="outreach" class="outreach">
-            <div id="telegram" class="telegram">
-              <a href="https://t.me/joinchat/BOSYOk_BR8Epp0X35A54UQ" target="_blank">find an opponent on <br /><span
-                  class="emphasis"><i class="fa fa-telegram"></i> Telegram</span></a>
-            </div>
-            <div id="wechat" class="wechat">
-              find an opponent on <br /><span class="emphasis"><i class="fa fa-weixin"></i> WeChat</span>
-              <div id="wechat-qr" class="wechat-qr"><i id="close-qr" class="fa fa-window-close"></i><img
-                  id="wechat-qr-img" src="/arcade/img/wechat-qr.jpg" /></div>
-            </div>
-            <div id="email" class="email">
-              <a href="/arcade/email">stay up to date via<br /> <span class="emphasis"><i class="fa fa-envelope"></i>
-                  Email</span></a>
-            </div>
-
+          <div class="modal_header">
+            <span class="close">&times;</span>
+            <h2 id="modal_header_text">One More Thing!</h2>
           </div>
+
+          <div class="modal_body">
+            <p id="modal_body_text">How do you want to invite your opponent?</p>
+            <div style="display: grid">
+              <!-- <form id="game_creation_form"> -->
+                <!-- <ul class="game_creation_modal_options"> -->
+                  <!-- <li>
+                    <input type="radio" id="open" name="amount" checked="checked" />
+                    <label for="open">Open Invite</label>
+                  </li> -->
+                  <!-- <li>
+                    <input type="radio" id="link" name="amount" checked="checked"/>
+                    <label for="link">Quick Link</label>
+                  </li>
+                  <li>
+                    <input type="radio" id="key" name="amount" />
+                    <label for="key">Invite By Key</label>
+                  </li>
+                </ul> -->
+              <!-- </form> -->
+              <div id="game_start_options">
+                <!-- <div class="opponent_key_container">
+                  <div style="display: flex; align-items: center;">
+                    <span style="margin-right: 15px;width: 25%">OPPONENT 1:</span>
+                    <input class="opponent_address" id="0">
+                  </div><button style="margin-top: 0" class="quick_invite"> INVITE</button></div> -->
+              </div>
+            </div>
+          </div>
+
+          <div class="modal_footer">
+          </div>
+
+        </div>
+      </div>
+      <div class="game_monitor" id="game_monitor">
+
+
+
+
+        <div class="create_game_container" style="display:none">
+          <img class="gameimage" id="game_creation_image" src="/arcade/img/twilight.jpg">
+          <p style="margin: 0" class="game_description">Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
+            One player plays the United States (US), and the other plays the Soviet Union (USSR).</p>
+          <div style="grid-area: game-generate;">
+            <div class="game_details"></div>
+            <div class="create_game_box">
+              <!-- FIND OPPONENT -->
+              <div class="create_game" id="find_opponent_modal_button"> FIND OPPONENT</div>
+              <a id="invite_friend" class="invite_friend_link">or send an invite to a friend</a>
+            </div>
+            <div id="publisher_message" class="publisher_message" style="display:none"></div>
+            <div class="return_to_arcade" id="return_to_arcade">
+              <i class="fa fa-arrow-circle-left"></i> Return to Arcade
+            </div>
+          </div>
+	</div>
+
+
+        <div class="initialize_game_container" style="display:none">
+          <center>Your game is initializing with your opponent. Please do not leave this page</center>
+          <center><div class="loader" id="game_spinner"></div></center>
+          <center><div id="status" class="status"></div></center>
         </div>
 
-        <div style="margin-bottom:30px;margin-top:20px;width:100%;font-weight:bold">
-          <center>Choose a game below to start playing</center>
-        </div>
+
+      </div>
+
+
+
+
+      <div id="arcade_container">
+        <h2 style="margin-top: 0">Arcade</h2>
 
         <div class="gamelist">
           <div class="game" id="Twilight">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Twilight" src="/arcade/img/twilight.jpg" />
             <div class="gametitle" id="Twilight">Twilight Struggle</div>
           </div>
 
           <div class="game" id="Chess">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Chess" src="/arcade/img/chess.jpg" />
             <div class="gametitle" id="Chess">Chess</div>
           </div>
 
           <div class="game" id="Wordblocks">
-            <div class="ribbon ribbon-top-left"><span>Click to Play</span></div>
+            <div class="ribbon ribbon_top_left"><span>Click to Play</span></div>
             <img class="gameimage" id="Wordblocks" src="/arcade/img/wordblocks.jpg" />
             <div class="gametitle" id="Wordblocks">Wordblocks</div>
           </div>
-
-        </div>
-
-        <div class="active_games">
-          <div class="active_games_header">ACTIVE GAMES</div>
-          <div id="gametable" class="gametable"></div>
         </div>
       </div>
 
 
+      <div id="games" style="min-height: 1000px;">
+        <h2>Games</h2>
+        <!-- <ul id="games_nav_menu">
+          <li class="games_nav_menu_item" id="play"><a>PLAY</a></li>
+          <li class="games_nav_menu_item" id="finished"><a>FINISHED</a></li>
+        </ul> -->
+        <div id="games_table" class="games_table"></div>
+      </div>
 
     </div>
 
-    <div class="ads">
+    <div class="sidebar">
       <div class="advert-300-250" id="advert-300-250"></div>
     </div>
 
-  </div>
-
-  <div id="lightbox_message_from_address" class="lightbox_message_from_address" style="display:none" />
-  </div>
-  <div id="lightbox_message_from_address2" class="lightbox_message_from_address2" style="display:none" />
-  </div>
-  <div id="lightbox_message_from_address3" class="lightbox_message_from_address3" style="display:none" />
-  </div>
-  <div id="lightbox_message_from_address4" class="lightbox_message_from_address4" style="display:none" />
-  </div>
 
   <script type="text/javascript">
+
     var invite_page = 0;
+
   </script>
 
+  <script src="/arcade/script.js"></script>
   <script src="/mailchat/script.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/browser.js"></script>
-  <script src="/arcade/script.js"></script>
 
 </body>
 

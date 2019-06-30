@@ -50,7 +50,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   // this.mods.push(require('../../mods/citysim/citysim')(this.app));
 
 
-  const Arcade = require('../../mods/arcadev2/arcade');
+  const Arcade = require('../../mods/arcade/arcade');
   this.mods.push(new Arcade(this.app));
 
 
