@@ -416,7 +416,6 @@ console.log("About to Send Request for Missing Block: ");
   this.index.bf.splice(pos, 0, newblock.returnBurnFeeValue());
   this.blocks.splice(pos, 0, newblock);
 
-console.log("ADDING: " + hash + " to lc HASHMAP");
   this.block_hash_lc_hmap[hash] = 0;
   this.block_hash_hmap[hash] = bid;
 
@@ -681,7 +680,6 @@ console.log("ADDING: " + hash + " to lc HASHMAP");
     this.lc = pos;
     this.index.lc[pos] = 1;
     this.block_hash_hmap[newblock.returnHash()] = newblock.block.id;
-console.log("SETTING: " + newblock.returnHash() + " to 1 on lc_hmap");
     this.block_hash_lc_hmap[newblock.returnHash()] = 1;
 
 
