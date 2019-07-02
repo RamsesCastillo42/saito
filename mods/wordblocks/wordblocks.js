@@ -14,6 +14,7 @@ function Wordblocks(app) {
   this.app = app;
 
   this.name = "Wordblocks";
+  this.description = `Scrabble is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
   this.browser_active = 0;
   this.handlesEmail = 1;
   this.emailAppName = "Wordblocks";
@@ -62,11 +63,8 @@ Wordblocks.prototype.showTiles = function showTiles() {
 ////////////////
 Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
-  // enable chat - but only if we are looking at the game
-  if (this.browser_active == 1) {
-    const chat = this.app.modules.returnModule("Chat");
-    chat.addPopUpChat();
-  }
+  const chat = this.app.modules.returnModule("Chat");
+  chat.addPopUpChat();
 
 
   this.updateStatus("loading game...");
