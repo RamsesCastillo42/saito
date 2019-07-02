@@ -443,7 +443,7 @@ Happy Chatting!`
 
     $('#chat_header').off();
     $('#chat_header').on('click', function(e) {
-      if ($('#chat_container').width() == 400) {
+      if ($('#chat_container').width() <= 400) {
         // check we are not chat-selector
         if ($(e.target).is(".chat_chat-room-selector") ||
             $(e.target).is(".chat_chat-room-option") ||
