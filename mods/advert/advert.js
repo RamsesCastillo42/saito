@@ -684,7 +684,8 @@ Advert.prototype.webServer = function webServer(app, expressapp) {
     var params = { $pkey : user , $link : uploadUrl , $width : width , $height : height };
     advert_self.app.storage.execDatabase(sql, params, function(err, res) {
       if (err != null) {
-	console.log("Error inserting advert into mod_advert_adverts");
+  console.log("Error inserting advert into mod_advert_adverts");
+  console.log(err);
       }
       if (res.lastID != undefined) {
         var newFileName = advert_self.advert_img_dir + res.lastID + ".png";
