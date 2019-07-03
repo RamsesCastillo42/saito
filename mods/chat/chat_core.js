@@ -197,7 +197,7 @@ class ChatCore extends ModTemplate {
       return
     }
 
-    var author
+    var author;
     try {
       const registry = this.app.modules.returnModule("Registry")
       author = await registry.localDomainQuery({publickey})

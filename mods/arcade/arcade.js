@@ -230,7 +230,7 @@ class Arcade extends ModTemplate {
             $sig : txmsg.sig
           }
           try {
-      	    let res = await arcade_self.db.run(sql, params);
+                  let res = await arcade_self.db.run(sql, params);
           } catch (err) {
             console.log("error updating database in arcade...");
             return;
@@ -249,13 +249,17 @@ class Arcade extends ModTemplate {
           let created_at = new Date().getTime();
           let sig     = "";
 
-	  let validfor     = 60;
-	  let sms          = 0;
-	  let country_code = 0;
+          let validfor     = 60;
+          let sms          = 0;
+          let country_code = 0;
+
+          var gameid = "";
+          var adminid = "";
 
           if (txmsg.game != "") { game = txmsg.game; }
           if (txmsg.state != "") { state = txmsg.state; }
           pkey = tx.transaction.from[0].add;
+
           if (txmsg.options != "") { options = txmsg.options; }
           if (txmsg.ts != "") { created_at = parseInt(txmsg.ts); }
           if (txmsg.sig != "") { sig = txmsg.sig; }
@@ -264,24 +268,51 @@ class Arcade extends ModTemplate {
           if (txmsg.cc != "")       { country_code = txmsg.cc; }
           if (txmsg.sms != "")      { sms = txmsg.sms; }
 
-	  let expires_at = created_at + (60000 * parseInt(validfor));
+          if (game.gameid != undefined && game.gameid != "") {
+            gameid = game.gameid;
+            adminid = `${game.gameid}_${game.game}`;
+          }
+
+          if (game.winner != undefined && game.winner != "") {
+            winner = game.winner;
+          }
+
+          let expires_at = created_at + (60000 * parseInt(validfor));
 
           var sql = "INSERT INTO mod_arcade (player, state, game_bid, game, options, created_at, sig, expires_at, country_code, sms) VALUES ($player, $state, $bid, $game, $options, $created_at, $sig, $expires_at, $country_code, $sms)";
           var params = {
             $player : pkey ,
+            $game : game ,
             $state : state ,
             $bid : blk.block.id ,
-            $game : game ,
             $options : JSON.stringify(options) ,
-            $created_at : created_at ,
             $sig : sig ,
-	    $expires_at : expires_at ,
-	    $country_code : parseInt(country_code) ,
-	    $sms : parseInt(sms) 
+            $created_at : created_at ,
+                  $expires_at : expires_at ,
+                  $country_code : parseInt(country_code) ,
+                  $sms : parseInt(sms)
           }
 
           try {
             let res = await arcade_self.db.run(sql, params);
+
+            // TODO: propagate to the network
+            let opengame =  {
+              player: pkey ,
+              winner : "",
+              game: game,
+              state : state,
+              status : "",
+              options : JSON.stringify(options),
+              sig : sig,
+              created_at : created_at,
+              expires_at: expires_at,
+              gameid : gameid,
+              adminid : adminid
+            };
+
+            // propagate the message to our peers
+            arcade_self.app.network.sendRequest("arcade opengame", opengame);
           } catch (err) {
             console.log("There is an error here: " + err);
           }
@@ -582,13 +613,19 @@ console.log("ERROR");
   }
 
 
-
-
-
-
-
-
-
+  handlePeerRequest(app, message, peer, mycallback) {
+    if (app.BROWSER == 1) {
+      switch(message.request) {
+        case "arcade opengame":
+          this.games.open.push(message.data);
+          renderGamesTable(this.games.open);
+          this.attachEvents();
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   ////////////////////
   // Attach Events //
@@ -846,10 +883,10 @@ console.log("ERROR");
             return;
           }
 
-	  // sms and limit ?
-	  let country_code = $(".country_code").val();
-	  let sms_num = $(".player_sms").val();
-	  let valid_for = $(".invitation_valid_for").val();
+          // sms and limit ?
+          let country_code = $(".country_code").val();
+          let sms_num = $(".player_sms").val();
+          let valid_for = $(".invitation_valid_for").val();
 
           newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
           newtx.transaction.msg.module   = "Arcade";
@@ -863,9 +900,9 @@ console.log("ERROR");
           newtx.transaction.msg.sms      = "";
           newtx.transaction.msg.validfor = "";
 
-	  if (country_code != undefined) { newtx.transaction.msg.cc = country_code; }
-	  if (sms_num != undefined) { newtx.transaction.msg.sms = sms_num; }
-	  if (valid_for != undefined) { newtx.transaction.msg.validfor = valid_for; }
+          if (country_code != undefined) { newtx.transaction.msg.cc = country_code; }
+          if (sms_num != undefined) { newtx.transaction.msg.sms = sms_num; }
+          if (valid_for != undefined) { newtx.transaction.msg.validfor = valid_for; }
 
           newtx = this.app.wallet.signTransaction(newtx);
           this.app.network.propagateTransaction(newtx);
