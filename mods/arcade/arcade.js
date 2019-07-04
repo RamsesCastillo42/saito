@@ -1051,7 +1051,7 @@ console.log("ERROR");
 
       let opponent_inputs = $('.opponent_address');
 
-      for (let i = 0; i < opponent_inputs.length; i++){
+      for (let i = 0; i < opponent_inputs.length; i++) {
         let address = opponent_inputs[i];
         address = $(address).val().trim();
 
@@ -1077,27 +1077,27 @@ console.log("ERROR");
           }
         } else {
           if (arcade_self.app.crypto.isPublicKey(address) == 1) {
-            newtx.transaction.to.push(new saito.slip(address[1], 0.0));
+            newtx.transaction.to.push(new saito.slip(address, 0.0));
           }
         }
-
-        newtx.transaction.msg.module  = arcade_self.active_game;
-        newtx.transaction.msg.request = "invite";
-        newtx.transaction.msg.options = options;
-        newtx.transaction.msg.sig     = newtx.transaction.sig;
-        newtx.transaction.msg.pubkey  = arcade_self.app.wallet.returnPublicKey();
-        newtx = arcade_self.app.wallet.signTransaction(newtx);
-        arcade_self.app.network.propagateTransaction(newtx);
-
-        $('#modal_header_text').html('Game Sent');
-        $('#modal_body_text').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
-        $('#game_creation_form').html('');
-        $('#game_start_options').html('');
-
-        let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
-        let active_module = newtx.transaction.msg.module;
-        arcade_self.startInitializationTimer(game_id, active_module);
       }
+
+      newtx.transaction.msg.module  = arcade_self.active_game;
+      newtx.transaction.msg.request = "invite";
+      newtx.transaction.msg.options = options;
+      newtx.transaction.msg.sig     = newtx.transaction.sig;
+      newtx.transaction.msg.pubkey  = arcade_self.app.wallet.returnPublicKey();
+      newtx = arcade_self.app.wallet.signTransaction(newtx);
+      arcade_self.app.network.propagateTransaction(newtx);
+
+      $('#modal_header_text').html('Game Sent');
+      $('#modal_body_text').html('Game invitation has been sent. Please keep your browser open. This will update when the game is accepted.');
+      $('#game_creation_form').html('');
+      $('#game_start_options').html('');
+
+      let game_id = newtx.transaction.from[0].add + "&" + newtx.transaction.ts;
+      let active_module = newtx.transaction.msg.module;
+      arcade_self.startInitializationTimer(game_id, active_module);
     });
 
   }
