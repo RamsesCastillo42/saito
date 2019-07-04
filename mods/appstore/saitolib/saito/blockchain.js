@@ -25,6 +25,7 @@ function Blockchain(app) {
   };
   this.blocks                 = [];
   this.block_hash_hmap        = [];
+  this.block_hash_lc_hmap     = [];
 
   this.last_hash    	        = "";
   this.last_bid     	        = 0;
@@ -268,6 +269,7 @@ Blockchain.prototype.addHashToBlockchain = async function addHashToBlockchain(ha
 
   this.blocks.splice(pos, 0, blk);
   this.block_hash_hmap[hash] = bid;
+  this.block_hash_lc_hmap[hash] = 0;
   this.indexing_active = false;
 
 console.log("ADDED BLOCK - " + blk.block.id + " -- " + blk.returnHash());
@@ -414,6 +416,7 @@ console.log("About to Send Request for Missing Block: ");
   this.index.bf.splice(pos, 0, newblock.returnBurnFeeValue());
   this.blocks.splice(pos, 0, newblock);
 
+  this.block_hash_lc_hmap[hash] = 0;
   this.block_hash_hmap[hash] = bid;
 
 
@@ -677,6 +680,8 @@ console.log("About to Send Request for Missing Block: ");
     this.lc = pos;
     this.index.lc[pos] = 1;
     this.block_hash_hmap[newblock.returnHash()] = newblock.block.id;
+    this.block_hash_lc_hmap[newblock.returnHash()] = 1;
+
 
     //
     // stop mining
@@ -844,6 +849,7 @@ console.log(" .... success:     " + new Date().getTime());
     // reset spent inputs
     //
     this.app.wallet.onChainReorganization(newblock.block.id, newblock.returnHash(), i_am_the_longest_chain);
+    this.block_hash_lc_hmap[newblock.returnHash()] = 1;
   }
 
 console.log(" .... into wallet: " + new Date().getTime());
@@ -1067,6 +1073,7 @@ Blockchain.prototype.addBlockToBlockchainFailure = function addBlockToBlockchain
   // restore longest chain
   this.index.lc[this.lc] = 0;
   delete this.block_hash_hmap[newblock.returnHash()];
+  delete this.block_hash_lc_hmap[newblock.returnHash()];
   this.lc = this.old_lc;
 
 
@@ -1638,6 +1645,15 @@ console.log(" .... block does not validate!");
 
 
 /**
+ * Checks if the block is on the longest chain by hash
+ * @param {string} hash
+ */
+Blockchain.prototype.isBlockHashOnLongestChain = function isBlockHashOnLongestChain(hash) {
+  if (this.block_hash_lc_hmap[hash] == 1) { return true; }
+  return false;
+};
+
+/**
  * Checks if the hash has previosly been indexed
  * @param {string} hash
  */
@@ -2143,6 +2159,7 @@ Blockchain.prototype.purgeArchivedData = function purgeArchivedData(lowest_block
   for (let x = 0; x < items_before_needed; x++) {
     let bh = this.index.hash[x];
     delete this.block_hash_hmap[bh];
+    delete this.block_hash_lc_hmap[bh];
   }
 
 

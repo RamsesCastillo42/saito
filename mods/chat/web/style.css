@@ -48,6 +48,7 @@ pre {
     text-align-last:center;
     border: 1px solid grey;
     width: 95%;
+    font-size: 0.5em;
 }
 
 .chat_chat-room-selector > option {
