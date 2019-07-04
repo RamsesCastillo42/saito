@@ -126,7 +126,7 @@ class Arcade extends ModTemplate {
       }
 
       if (game_exists == 1) {
-        app.options.games[i].ts = new Date().getTime();
+        app.options.games[game_exists_idx].ts = new Date().getTime();
         this.saveGame(app.options.games[game_exists_idx].id);
         $('.invite_main').html('You already have a game with this opponent.<p></p><a href="/twilight">Join this Game</a>');
         $('.invite_main').css('font-size','1.7em');
