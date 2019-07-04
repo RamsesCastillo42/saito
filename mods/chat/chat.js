@@ -111,6 +111,15 @@ class Chat extends ChatCore {
         clearInterval(this.server_processing);
       }
     }, 250);
+
+    if (this.app.BROWSER == 1) {
+      this.app.connection.on('connection_dropped', () => {
+        this.flagConnectionUnstable();
+      });
+      this.app.connection.on('connection_up', () => {
+        this.flagConnectionStable();
+      });
+    }
   }
 
   async _initializeChat() {
@@ -695,6 +704,10 @@ Happy Chatting!`
           </select>
         </section>
 
+        <section id="chat_connection_unstable" style="display: none">
+          <div>CONNECTION UNSTABLE</div>
+        </section>
+
         <div id="chat_main" class="chat_chat_main">
           <section id="chat_messages-list">Messages:</section>
           <section id="chat_messages-list">
@@ -727,6 +740,19 @@ Happy Chatting!`
     );
     this.attachEvents(this.app);
     if (!this.settings.popup) { this._disableMailchat() }
+  }
+
+  flagConnectionUnstable() {
+    try {
+      console.log("Connection Unstable...");
+      $('#chat_header').css('background-color', '#e42025');
+    } catch (err) {}
+  }
+
+  flagConnectionStable() {
+    try {
+      $('#chat_header').css('background-color', 'white');
+    } catch (err) {}
   }
 
 }
