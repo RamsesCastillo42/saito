@@ -888,12 +888,14 @@ console.log("ERROR");
           let sms_num = $(".player_sms").val();
           let valid_for = $(".invitation_valid_for").val();
 
+          let game_module = this.app.modules.returnModule(this.active_game);
+
           newtx.transaction.to.push(new saito.slip(this.app.wallet.returnPublicKey(), 0.0));
           newtx.transaction.msg.module   = "Arcade";
           newtx.transaction.msg.request  = "opengame";
           newtx.transaction.msg.game     = this.active_game;
           newtx.transaction.msg.state    = "open";
-          newtx.transaction.msg.options  = options;
+          newtx.transaction.msg.options  = game_module.returnQuickLinkGameOptions(options);
           newtx.transaction.msg.ts       = new Date().getTime();
           newtx.transaction.msg.sig      = this.app.wallet.signMessage(newtx.transaction.msg.ts.toString(), this.app.wallet.returnPrivateKey());
           newtx.transaction.msg.cc       = "";
