@@ -508,7 +508,7 @@ Network.prototype.propagateTransaction = function propagateTransaction(tx, outbo
 /**
  * Sends Transaction to all connected peers, after checking if the tx has already been there
  */
-Network.prototype.sendTransactionToPeers = function signTXAndSendToPeers(tx, outbound_message, callback=null) {
+Network.prototype.sendTransactionToPeers = function sendTransactionToPeers(tx, outbound_message, callback=null) {
   this.peers.forEach((peer) => {
     if (!peer.inTransactionPath(tx)) {
       let tmptx = peer.addPathToTransaction(tx);
