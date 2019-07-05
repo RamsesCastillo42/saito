@@ -591,9 +591,6 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
           if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
             game_self.game.invitation = 0;
             game_self.game.accept = 1;
-            if (game_self.app.network.isConnected() == 1) {
-              game_self.saveGame(game_id);
-            }
           }
 
           //
