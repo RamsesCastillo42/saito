@@ -744,7 +744,6 @@ Happy Chatting!`
 
   flagConnectionUnstable() {
     try {
-      console.log("Connection Unstable...");
       $('#chat_header').css('background-color', '#e42025');
     } catch (err) {}
   }

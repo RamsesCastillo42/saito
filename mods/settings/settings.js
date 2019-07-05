@@ -246,11 +246,11 @@ Settings.prototype.attachSettingsEvents = function attachSettingsEvents(app) {
           app.options = JSON.parse(contents);
           app.storage.saveOptions();
           alert("Wallet Import Successful");
-	  //
-	  // now check if the slips are still valid
-	  //
-	  for (let z = 0; z < 1; z++) {
-	  //for (let z = 0; z < app.options.wallet.inputs.length; z++) {
+          //
+          // now check if the slips are still valid
+          //
+          for (let z = 0; z < 1; z++) {
+          //for (let z = 0; z < app.options.wallet.inputs.length; z++) {
 
             // find out initial state of peer and blockchain
             var userMessage = {};
@@ -262,34 +262,34 @@ console.log("CHECKING VALIDITY OF SLIP: " + z + " -- " + JSON.stringify(userMess
 
             app.network.peers[0].sendRequestWithCallback(userMessage.request, userMessage.data, function(resjson) {
 
-	      console.log("RESPONSE IS: " + JSON.stringify(resjson));
-	      let resobj = JSON.parse(resjson);
-	      if (resobj.valid == 1) {
-	        alert("The slips in this imported wallet are valid.");
-	      } else {
-	        let shddelete = confirm("The slips in this imported wallet are spent. Should we delete?");
-		if (shddelete) {
+              console.log("RESPONSE IS: " + JSON.stringify(resjson));
+              let resobj = JSON.parse(resjson);
+              if (resobj.valid == 1) {
+                alert("The slips in this imported wallet are valid.");
+              } else {
+                let shddelete = confirm("The slips in this imported wallet are spent. Should we delete?");
+                if (shddelete) {
 
-		  //
-		  // delete wallet slips
-		  //
-	          module_self.app.options.wallet.version = module_self.app.wallet.wallet.version;
+                  //
+                  // delete wallet slips
+                  //
+                  module_self.app.options.wallet.version = module_self.app.wallet.wallet.version;
 
-		  module_self.app.wallet.wallet.inputs = [];
-		  module_self.app.wallet.wallet.outputs = [];
-		  module_self.app.wallet.wallet.spends = [];
-		  module_self.app.wallet.wallet.inputs_hmap = [];
-		  module_self.app.wallet.wallet.outputs_hmap = [];
+                  module_self.app.wallet.wallet.inputs = [];
+                  module_self.app.wallet.wallet.outputs = [];
+                  module_self.app.wallet.wallet.spends = [];
+                  module_self.app.wallet.wallet.inputs_hmap = [];
+                  module_self.app.wallet.wallet.outputs_hmap = [];
 
-          	  module_self.app.wallet.saveWallet();
+                  module_self.app.wallet.saveWallet();
 
-		  alert("payment slips deleted, data preserved!");
-          	  location.reload();
+                  alert("payment slips deleted, data preserved!");
+                  location.reload();
 
-		}
-	      }
-	    });
-	  }
+                }
+              }
+            });
+          }
         } else {
           alert("This does not seem to be a valid wallet file");
         }
