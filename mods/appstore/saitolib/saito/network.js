@@ -61,43 +61,47 @@ Network.prototype.initialize = function initialize() {
     }
   }
 
+  this.app.connection.on('peer_disconnect', (peer) => {
+    this.cleanupDisconnectedSocket(peer);
+  })
+
   // and monitor them
-  this.peer_monitor_timer = setInterval(() => {
-    for (let i = this.peers.length-1; i >= 0; i--) {
-      if (i >= this.peers.length) { i = this.peers.length-1; }
-      if (!this.peers[i].isConnected()) {
+//   this.peer_monitor_timer = setInterval(() => {
+//     for (let i = this.peers.length-1; i >= 0; i--) {
+//       if (i >= this.peers.length) { i = this.peers.length-1; }
+//       if (!this.peers[i].isConnected()) {
 
-	let disconnect_from_peer = 1;
+// 	let disconnect_from_peer = 1;
 
-	//
-	// do not eliminate peers getting connected
-	//
-	if (this.peers[i].handshake_completed == 0) {
+// 	//
+// 	// do not eliminate peers getting connected
+// 	//
+// 	if (this.peers[i].handshake_completed == 0) {
 
-console.log("handshake is not completed....");
+// console.log("handshake is not completed....");
 
-	  disconnect_from_peer = 0;
-	  let current_ts = new Date().getTime();
-	  let diff_ts    = current_ts - this.peers[i].handshake_ts;
+// 	  disconnect_from_peer = 0;
+// 	  let current_ts = new Date().getTime();
+// 	  let diff_ts    = current_ts - this.peers[i].handshake_ts;
 
-	  //
-	  // disconnect after 5 seconds if handshake failed
-	  //
-	  if (diff_ts > 5000) {
-	    disconnect_from_peer = 1;
-	  }
-	}
+// 	  //
+// 	  // disconnect after 5 seconds if handshake failed
+// 	  //
+// 	  if (diff_ts > 5000) {
+// 	    disconnect_from_peer = 1;
+// 	  }
+// 	}
 
-	if (disconnect_from_peer == 1) {
-  	  console.log("We should cleanup this disconnected socket");
-	  console.log(" ... is its handshake done? " + this.peers[i].handshake_completed);
-          this.cleanupDisconnectedSocket(this.peers[i]);
-	  console.log("We have cleaned-up this disconnected socket");
-	}
+// 	if (disconnect_from_peer == 1) {
+//   	  console.log("We should cleanup this disconnected socket");
+// 	  console.log(" ... is its handshake done? " + this.peers[i].handshake_completed);
+//           this.cleanupDisconnectedSocket(this.peers[i]);
+// 	  console.log("We have cleaned-up this disconnected socket");
+// 	}
 
-      }
-    }
-  }, this.peer_monitor_timer_speed);
+//       }
+//     }
+//   }, this.peer_monitor_timer_speed);
 
   // long-polling
   //
@@ -329,7 +333,7 @@ Network.prototype.cleanupDisconnectedSocket = function cleanupDisconnectedSocket
 
   for (let c = 0; c < this.peers.length; c++) {
 
-console.log("cleanup disconnected socket -- loop: " + c + " ---- " + this.peers.length);
+// console.log("cleanup disconnected socket -- loop: " + c + " ---- " + this.peers.length);
 
     if (this.peers[c] == peer) {
 
@@ -361,7 +365,7 @@ console.log("cleanup disconnected socket -- loop: " + c + " ---- " + this.peers.
       //
       // otherwise, remove peer
       //
-      clearInterval(this.peers[c].message_queue_timer);
+      // clearInterval(this.peers[c].message_queue_timer);
       this.peers.splice(c, 1);
       c--;
       this.peers_connected--;

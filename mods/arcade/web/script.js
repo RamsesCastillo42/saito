@@ -88,8 +88,8 @@
         if (game.state == "over") {
           var buttonCell = document.createElement("div");
           buttonCell.className = "button_container";
-          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
           buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+          buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
 	} else {
 
 	  if (game.state == "invited") {
@@ -102,8 +102,8 @@
 
             var buttonCell = document.createElement("div");
             buttonCell.className = "button_container";
-            buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
             buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+            buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
 
 	  }
 	}

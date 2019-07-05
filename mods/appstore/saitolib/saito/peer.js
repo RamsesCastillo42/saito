@@ -421,6 +421,9 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
     this.socket.on('disconnect', () => {
       console.log("client disconnect");
       this.app.connection.emit('connection_dropped');
+
+      // cleanup disconnected websocket
+      this.app.connection.emit('peer_disconnect', this);
     });
 
     ///////////
