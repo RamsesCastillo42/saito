@@ -3,6 +3,7 @@ const ChatCore = require('./chat_core.js');
 var ColorHash = require('color-hash');
 const axios = require('axios');
 const linkifyHtml = require('linkifyjs/html');
+const emoji = require('node-emoji');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -50,6 +51,14 @@ class Chat extends ChatCore {
       res.sendFile(__dirname + '/web/style.css');
       return;
     });
+
+    expressapp.get('/chat/emoji/:subdir/:file', function (req, res) {
+      console.log(req.params.subdir + " - " + req.params.file);
+      var retfile = '/emoji/' + req.params.subdir + "/" + req.params.file;
+      res.sendFile(__dirname + retfile);
+      return;
+    });
+
 
     // chat integration with other modules
     expressapp.get('/mailchat/style.css', function (req, res) {
@@ -463,9 +472,40 @@ Happy Chatting!`
         chat_self._toggleMailchat();
       }
     });
+
+
+    //Emoji Picker
+    $(document).on("click","#emoji-picker",function(e){
+      e.stopPropagation();
+       $('.intercom-composer-emoji-popover').toggleClass("active");
+   });
+   
+   $(document).click(function (e) {
+       if ($(e.target).attr('class') != '.intercom-composer-emoji-popover' && $(e.target).parents(".intercom-composer-emoji-popover").length == 0) {
+           $(".intercom-composer-emoji-popover").removeClass("active");
+       }
+   });
+   
+   $(document).on("click",".intercom-emoji-picker-emoji",function(e){
+    $(".chat_new-message-input").html($(".chat_new-message-input").val());
+       $(".chat_new-message-input").append($(this).html());
+       $(".chat_new-message-input").val($(".chat_new-message-input").html());
+   });
+   
+   $('.intercom-composer-popover-input').on('input', function() {
+       var query = this.value;
+       if(query != ""){
+         $(".intercom-emoji-picker-emoji:not([title*='"+query+"'])").hide();
+       }
+       else{
+         $(".intercom-emoji-picker-emoji").show();
+       }
+   });
+
   }
 
   _formatMessage({id, timestamp, author, message}){
+    message = emoji.emojify(message);
     message = linkifyHtml(message, { target: { url: '_self' } });
 
     let d = new Date(timestamp);
