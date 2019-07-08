@@ -421,6 +421,9 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
     this.socket.on('disconnect', () => {
       console.log("client disconnect");
       this.app.connection.emit('connection_dropped');
+
+      // cleanup disconnected websocket
+      this.app.connection.emit('peer_disconnect', this);
     });
 
     ///////////
@@ -795,6 +798,8 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       // blockchain //
       ////////////////
       if (message.request == "blockchain") {
+
+        if (this.handshake_completed == 0) { return; }
 
         let blocks = message.data;
         let prevhash = blocks.start;
