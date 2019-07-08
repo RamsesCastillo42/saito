@@ -315,6 +315,131 @@ select {
 
 
 
+/**/
+
+.forum_table {
+  display: grid;
+  overflow-y: scroll;
+  padding: 0.5em;
+  row-gap: 1em;
+  max-height: 480px;
+  border: black 1px solid;
+}
+
+.forum_title {
+  margin-bottom: 0.5em;
+}
+
+.post-preview:last-child {
+  margin-bottom: 0.5em;
+}
+
+.post {
+  /* min-width: 600px; */
+  display: grid;
+  grid-template-columns: 30px 75px auto;
+  min-height: 75px;
+  /* padding-bottom: 20px; */
+  margin-bottom: 20px;
+  clear:both;
+ }
+ .votes {
+  float:left;
+  padding-left:2px;
+  padding-top:3px;
+  width: 28px;
+  height: 72px;
+ }
+ .thumbnail {
+  float:left;
+  width: 72px;
+  height: 72px;
+  margin-left:5px;
+  border: 1px solid blue;
+  background-color: #e7e7e7;
+ }
+ .thumbnail_image {
+  width: 72px;
+  height: 72px;
+ }
+ .content {
+  /* float:left; */
+  /* min-width:500px; */
+  max-width: 500px;
+  margin-left: 15px;
+  margin-bottom: 20px;
+ }
+ .content_title > a {
+  /* float:left;
+  clear:all; */
+  color: #0000ff;
+ }
+ .content_site {
+  display: inline;
+  color: #474747;
+  font-size:0.8em;
+  padding-top:5px;
+  margin-left:10px;
+ }
+ .content_site a {
+  color: #474747;
+  font-size:0.8em;
+ }
+ .content_details {
+  color: #474747;
+  font-size:0.8em;
+  padding-top:4px;
+  clear:both;
+ }
+ .content_links {
+  color: #373737;
+  font-size:0.85em;
+  font-weight: bold;
+  padding-top: 4px;
+  clear:all;
+ }
+ .content_link {
+  cursor:pointer;
+  margin-right: 15px;
+ }
+ .content_link_comments {
+  float:left;
+  text-decoration: none;
+  color: #444;
+ }
+ .content_link_report {
+  float:left;
+  color: #444;
+ }
+ .content_link_editpost {
+  display:none;
+  float:left;
+  color: #444;
+ }
+ .comment_link_edit {
+  display:none;
+  float: left;
+  margin-right: 15px;
+ }
+
+
+#discord_icon, #telegram_icon {
+  font-size: 3em;
+}
+#discord_icon {
+  margin-right: 0.5em;
+}
+#discord_icon:hover {
+  color: #738adb;
+}
+#telegram_icon:hover {
+  color: #0088cc;
+}
+
+ /**/
+
+
+
 
 
 
@@ -757,6 +882,23 @@ hr {
   }
   .arcade {
     overflow: scroll;
+  }
+  .sidebar {
+    justify-self: center;
+    width: 90%;
+  }
+  .advert-300-250 {
+    justify-self: center;
+  }
+  .call_to_action_title {
+    text-align: center;
+  }
+  .icon_container {
+    display: flex;
+    justify-content: center;
+  }
+  .forum_title {
+    text-align: center;
   }
   .gamelist {
     display: flex;
