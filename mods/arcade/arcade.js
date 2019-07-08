@@ -67,6 +67,7 @@ class Arcade extends ModTemplate {
       let games_data = await axios.get(`${protocol}://${host}:${port}/arcade/opengames`);
       open_games = games_data.data.payload;
 
+
       for (let i = 0; i < open_games.length; i++) {
         this.games.open.push(open_games[i]);
       }
@@ -106,9 +107,12 @@ class Arcade extends ModTemplate {
 
   }
 
+
   initializeHTML(app) {
+
     const arcade_self = this;
 
+    if (invite_page != undefined) {
     if (invite_page == 1) {
 
       //
@@ -168,6 +172,7 @@ class Arcade extends ModTemplate {
       }
 
       return;
+    }
     }
 
     //
@@ -402,13 +407,13 @@ class Arcade extends ModTemplate {
 
 console.log("TXMSG: " + JSON.stringify(txmsg));
 
-/*****
+
       //
       // DECLINE
       //
       if (txmsg.request == "decline") {
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
-          if (this.monitor_shown_already == 1 || invite_page == 1) {
+          if (this.viewing_game_initializer == 1 || invite_page == 1) {
             $('.manage_invitations').html(`
               <center>Your opponent has declined the game as they have already started one!</center>
             `);
@@ -418,17 +423,19 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
           }
         }
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
-          if (this.monitor_shown_already == 1 || invite_page == 1) {
+          if (this.viewing_game_initializer == 1 || invite_page == 1) {
             $('.manage_invitations').html(`
               <center>You have received multiple acceptances to your game. Refusing all but the first acceptance.</center>
             `);
             $('.status').show();
+            $('#game_spinner').hide();
             this.attachEvents(this.app);
           }
         }
        return;
       }
-*****/
+
+
 
       //
       // INVITE
@@ -488,8 +495,10 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
 
               if (txmsg.ts != "" && txmsg.sig != "") {
                 if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-                  this.showGameInitializer();
-                  this.startInitializationTimer(game_id, txmsg.module);
+	          if (blk.block.id >= game_self.app.blockchain.last_bid) {
+                    this.showGameInitializer();
+                    this.startInitializationTimer(game_id, txmsg.module);
+                  }
                 }
               } else {
 
@@ -570,6 +579,7 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
       if (txmsg.request == "accept") {
 
         try {
+
           let game_self = app.modules.returnModule(txmsg.module);
           game_self.loadGame(txmsg.game_id);
 
@@ -593,11 +603,17 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
           if (game_self.game.initializing == 1) {
 
             if (game_self.game.accept == 0) {
+
               return;
+
             } else {
-              this.hideGameCreator();
-              this.showGameInitializer();
-              this.startInitializationTimer(txmsg.game_id, txmsg.module);
+
+	      if (blk.block.id >= game_self.app.blockchain.last_bid) {
+                this.hideGameCreator();
+                this.showGameInitializer();
+                this.startInitializationTimer(txmsg.game_id, txmsg.module);
+	      }
+
             }
           } else {
             // alert("This game is ready to be played");
@@ -690,11 +706,11 @@ console.log("ERROR");
 
             alert("Please be patient while the network starts to initialize the game!");
 
-          let game_id = `${arcade_self.app.wallet.returnPublicKey()}&${arcade_self.games.open[i].created_at}`
-          let game_module = arcade_self.games.open[i].game;
+            let game_id = `${arcade_self.app.wallet.returnPublicKey()}&${arcade_self.games.open[i].created_at}`
+            let game_module = arcade_self.games.open[i].game;
 
-          arcade_self.hideArcadeHome();
-          arcade_self.showGameInitializer();
+              arcade_self.hideArcadeHome();
+              arcade_self.showGameInitializer();
 
           } else {
             alert("Your account does not have SAITO tokens. Please get some for free from the Faucet...");
@@ -1111,6 +1127,7 @@ console.log("ERROR");
 
         arcade_self.initialization_check_timer_ellapsed++;
 
+	if (invite_page != undefined) {
         if (invite_page == 1) {
           if ($('.status').html() === "") {
             if (arcade_self.initialization_check_timer_ellapsed == 3) { $('.invite_description').html(`<center>Checking to Confirm that Opponent is Online....</center>`); }
@@ -1123,6 +1140,7 @@ console.log("ERROR");
             $('.invite_description').html(`<center>Initializing Game with Opponent. Please stay on this page....</center>`);
           }
         }
+	}
 
         let pos = -1;
         if (arcade_self.app.options.games != undefined) {
@@ -1181,6 +1199,7 @@ console.log("ERROR");
     // invite page stuff here
     //
     try {
+      if (invite_page != undefined) {
       if (invite_page == 1 && !this.is_initializing) {
         $('.invite_play_button').css('background-color','darkorange');
         $('.invite_play_button').css('border', '1px solid darkorange');
@@ -1191,6 +1210,7 @@ console.log("ERROR");
           this.invitePlayButtonClicked();
         });
         return;
+      }
       }
     } catch (err) {}
 
