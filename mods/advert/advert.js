@@ -812,7 +812,6 @@ Advert.prototype.sendAdvert = function sendAdvert(prow, res) {
 
 
 
-
 //////////////////////////
 // Handle Peer Requests //
 //////////////////////////

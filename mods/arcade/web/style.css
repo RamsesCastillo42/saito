@@ -320,10 +320,9 @@ select {
 .forum_table {
   display: grid;
   overflow-y: scroll;
-  padding: 0.5em;
   row-gap: 1em;
-  max-height: 480px;
-  border: black 1px solid;
+  max-height: 580px;
+  font-size: 0.8em;
 }
 
 .forum_title {

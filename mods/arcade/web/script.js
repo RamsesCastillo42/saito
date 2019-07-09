@@ -133,11 +133,6 @@
             to
             <a href="/r/${post.subreddit}">/r/${post.subreddit}</a>
           </div>
-          <div class="content_links">
-            <a href="/r/${post.subreddit}">read comments</a>
-            <div class="content_link content_link_editpost">edit</div>
-            <div class="content_link content_link_report">report</div>
-          </div>
         </div>`;
     });
 
