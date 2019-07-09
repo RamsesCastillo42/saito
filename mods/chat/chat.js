@@ -378,14 +378,19 @@ Happy Chatting!`
       message
     };
 
-    // render and scroll
-    this._addMessage(room_id, newmsg);
-    this._renderMessagesToDOM(room_id);
-    this._scrollToBottom();
+    this._sendMessage(newtx, (response) => {
+      if (response.payload != "success") {
+        alert("Disconnected from chat, refresh your browser");
+        $('#chat_new-message-input').prop("disabled", true);
+      } else {
+        // render and scroll
+        this._addMessage(room_id, newmsg);
+        this._renderMessagesToDOM(room_id);
+        this._scrollToBottom();
 
-    $('.chat_new-message-input').val('');
-
-    this._sendMessage(newtx);
+        $('.chat_new-message-input').val('');
+      }
+    });
 
     return false;
   }

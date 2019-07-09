@@ -103,6 +103,12 @@ class ChatCore extends ModTemplate {
       case "chat send message":
         var tx = new saito.transaction(req.data);
         if (tx == null) { return; }
+        if (mycallback) {
+          mycallback({
+            "payload": "success",
+            "error": {}
+          });
+        }
         this._receiveMessage(app, tx);
         break;
       case "chat request create room":
@@ -338,12 +344,12 @@ class ChatCore extends ModTemplate {
     return newtx;
   }
 
-  async _sendMessage(tx) {
+  async _sendMessage(tx, callback=null) {
     let from_slip = Object.assign({amt: 0.0}, tx.transaction.from[0]);
     if (from_slip.amt > 0.0) {
       this.app.network.propagateTransaction(tx);
     } else {
-      this.app.network.sendTransactionToPeers(tx, "chat send message");
+      this.app.network.sendTransactionToPeers(tx, "chat send message", callback);
     }
   }
 
