@@ -19,11 +19,19 @@ function Storage(app, data, dest="blocks") {
 
   var dir = data || path.join(__dirname, '../../data');
 
-  this.app                = app || {};
-  this.directory          = dir;
-  this.dest               = dest;
-  this.db                 = null;
-  this.loading_active     = false;
+  this.app                 = app || {};
+  this.directory           = dir;
+  this.dest                = dest;
+  this.db                  = null;
+  this.loading_active      = false;
+
+  this.use_shashmap_dump   = 0;
+  this.shashmap_dump_mod   = 10;
+  this.shashmap_fastload   = 0;
+  this.shashmap_dump_bid   = 0;
+  this.shashmap_dump_bhash = 0;
+  if (this.app.BROWSER == 0) { this.use_shashmap_dump = 1; }
+
 
   return this;
 
@@ -56,7 +64,37 @@ Storage.prototype.initialize = async function initialize() {
 
       this.db = await sqlite.open(this.directory + '/database.sq3');
 
-      await this.createDatabaseTables();
+      //
+      // restore shashmap ? 
+      //
+      if (this.use_shashmap_dump == 1) {
+
+	//
+	// this sets shashmap_dump_bid / bhash
+	//
+        await this.returnShashmapDump();
+	let shashmap_imported = 0;
+
+        if (this.shashmap_dump_bid >0 && this.shashmap_dump_bhash != "") {
+
+          let shashmap_file = this.directory + '/shashmaps/' + this.shashmap_dump_bid + "_" + this.shashmap_dump_bhash + '.smap';
+          if (fs.existsSync(shashmap_file)) {
+	    this.shashmap_fastload = 1;
+            await shashmap.load(shashmap_file);
+	    shashmap_imported = 1;
+	  }
+	}
+
+        await this.createDatabaseTablesNonDestructive();
+	if (shashmap_imported == 1) {
+	  let sql = "DELETE FROM blocks WHERE block_id >= $bid";
+	  let params = { $bid : this.shashmap_dump_bid };
+	  await this.execDatabase(sql, params);
+	}
+
+      } else {
+        await this.createDatabaseTables();
+      }
 
       await Promise.all([
         // pragma temp store -- temp objects in memory (2) (default = 0)
@@ -94,6 +132,21 @@ Storage.prototype.createDatabaseTables = async function createDatabaseTables() {
 
   try {
     await this.db.run("DROP TABLE IF EXISTS blocks");
+    await this.createDatabaseTablesNonDestructive();
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+
+/**
+ * Create DB Tables
+ */
+Storage.prototype.createDatabaseTablesNonDestructive = async function createDatabaseTablesNonDestructive() {
+
+  if (this.app.BROWSER == 1) { return; }
+
+  try {
     await this.db.run("\
       CREATE TABLE IF NOT EXISTS blocks (\
         id INTEGER, \
@@ -106,14 +159,8 @@ Storage.prototype.createDatabaseTables = async function createDatabaseTables() {
         hash TEXT, \
         conf INTEGER, \
         longest_chain INTEGER, \
+        shashmap INTEGER DEFAULT 0, \
         UNIQUE (block_id, hash), \
-        PRIMARY KEY(id ASC) \
-      )");
-    await this.db.run("DROP TABLE IF EXISTS blks");
-    await this.db.run("\
-      CREATE TABLE IF NOT EXISTS blks (\
-        id INTEGER, \
-        blk TEXT, \
         PRIMARY KEY(id ASC) \
       )");
 
@@ -159,6 +206,16 @@ Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
 
 //console.log(" .... updte slips: " + new Date().getTime());
 
+  //
+  // shashmap_fastload speedup avoids all shashmap and database
+  // work if we are reloading from disk and have our database
+  // and shashmap already updated to a particularly BID
+  //
+  if (this.shashmap_fastload == 1) {
+    if (this.shashmap_dump_bid > blk.block.id) {} else { this.shashmap_fastload = 0; } 
+  }
+
+
   /////////////////////////////////////////
   // update slips here for wallet insert //
   /////////////////////////////////////////
@@ -181,97 +238,104 @@ Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
 
 //console.log(" .... updte shsmp: " + new Date().getTime());
 
-  ///////////////////////
-  // slips to shashmap //
-  ///////////////////////
   //
-  // insert the "to" slips so that future blocks can manipulate them
   //
-  for (let b = 0; b < blk.transactions.length; b++) {
-    for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
-      if (blk.transactions[b].transaction.to[bb].amt > 0) {
+  //
+  if (this.shashmap_fastload == 0) {
 
-        //
-        // this information is also needed by the wallet when inserting slips
-        // if we edit this, we need to check wallet.processPayments to be sure
-        // that slip information is still valid.
-        //
-        blk.transactions[b].transaction.to[bb].bid = blk.block.id;
-        blk.transactions[b].transaction.to[bb].bhash = blk.returnHash();
-        blk.transactions[b].transaction.to[bb].tid = blk.transactions[b].transaction.id;
-        blk.transactions[b].transaction.to[bb].lc = lc;
+console.log(" ----> updating slips <-----");
 
+    ///////////////////////
+    // slips to shashmap //
+    ///////////////////////
+    //
+    // insert the "to" slips so that future blocks can manipulate them
+    //
+    for (let b = 0; b < blk.transactions.length; b++) {
+      for (let bb = 0; bb < blk.transactions[b].transaction.to.length; bb++) {
+        if (blk.transactions[b].transaction.to[bb].amt > 0) {
 
-        var slip_map_index = blk.transactions[b].transaction.to[bb].returnIndex();
-        shashmap.insert_slip(slip_map_index, -1);
+          //
+          // this information is also needed by the wallet when inserting slips
+          // if we edit this, we need to check wallet.processPayments to be sure
+          // that slip information is still valid.
+          //
+          blk.transactions[b].transaction.to[bb].bid = blk.block.id;
+          blk.transactions[b].transaction.to[bb].bhash = blk.returnHash();
+          blk.transactions[b].transaction.to[bb].tid = blk.transactions[b].transaction.id;
+          blk.transactions[b].transaction.to[bb].lc = lc;
 
+          var slip_map_index = blk.transactions[b].transaction.to[bb].returnIndex();
+          shashmap.insert_slip(slip_map_index, -1);
+
+        }
       }
     }
-  }
 
-//console.log(" .... updte blkdb: " + new Date().getTime());
 
-  ///////////////////////
-  // block to database //
-  ///////////////////////
-  //
-  // this is > -1 if we are reading the block
-  // off disk and restoring our database, in
-  // which case we want to use our prior IDs
-  // to maintain consistency with the saved
-  // blocks
-  //
-  var sql = "";
-  var params = "";
-  if (blk.save_db_id > -1) {
-    sql = `INSERT INTO blocks (id, block_id, golden_ticket, reindexed, block_json_id, hash, conf, longest_chain, min_tx_id, max_tx_id) VALUES ($dbid, $block_id, $golden_ticket, 1, $block_json_id, $hash, 0, $lc, $mintxid, $maxtxid)`;
-    params =  {
-      $dbid: blk.save_db_id,
-      $block_id: blk.block.id,
-      $golden_ticket: blk.containsGoldenTicket(),
-      $block_json_id : 0,
-      $hash: blk.returnHash(),
-      $lc: lc,
-      $mintxid: blk.returnMinTxId(),
-      $maxtxid: blk.returnMaxTxId()
+    ///////////////////////
+    // block to database //
+    ///////////////////////
+    //
+    // this is > -1 if we are reading the block
+    // off disk and restoring our database, in
+    // which case we want to use our prior IDs
+    // to maintain consistency with the saved
+    // blocks
+    //
+    var sql = "";
+    var params = "";
+    if (blk.save_db_id > -1) {
+      sql = `INSERT INTO blocks (id, block_id, golden_ticket, reindexed, block_json_id, hash, conf, longest_chain, min_tx_id, max_tx_id) VALUES ($dbid, $block_id, $golden_ticket, 1, $block_json_id, $hash, 0, $lc, $mintxid, $maxtxid)`;
+      params =  {
+        $dbid: blk.save_db_id,
+        $block_id: blk.block.id,
+        $golden_ticket: blk.containsGoldenTicket(),
+        $block_json_id : 0,
+        $hash: blk.returnHash(),
+        $lc: lc,
+        $mintxid: blk.returnMinTxId(),
+        $maxtxid: blk.returnMaxTxId()
+      }
+    } else {
+      sql = `INSERT INTO blocks (block_id, golden_ticket, reindexed, block_json_id, hash, conf, longest_chain, min_tx_id, max_tx_id) VALUES ($block_id, $golden_ticket, 1, $block_json_id, $hash, 0, $lc, $mintxid, $maxtxid)`;
+      params = {
+        $block_id: blk.block.id,
+        $golden_ticket: blk.containsGoldenTicket(),
+        $block_json_id : 0,
+        $hash: blk.returnHash(),
+        $lc: lc,
+        $mintxid: blk.returnMinTxId(),
+        $maxtxid: blk.returnMaxTxId()
+      }
+    };
+
+
+
+    ///////////////////
+    // block to disk //
+    ///////////////////
+    try {
+      var res = await this.db.run(sql, params);
+  
+      //
+      // save shashmap
+      //
+      if (this.app.BROWSER == 0) { await this.dumpShashmap(blk.block.id, blk.returnHash()); }
+      blk.filename = `${blk.block.id}-${res.lastID}.blk`;
+      var tmp_filepath = `${this.directory}/${this.dest}/${blk.filename}`;
+      let blkjson = blk.stringify();
+
+      if (!fs.existsSync(tmp_filepath)) {
+        fs.writeFileSync(tmp_filepath, blkjson, 'UTF-8');
+      }
+
+      return true;
+
+    } catch (err) {
+      console.log("ERROR: " + err);
     }
-  } else {
-    sql = `INSERT INTO blocks (block_id, golden_ticket, reindexed, block_json_id, hash, conf, longest_chain, min_tx_id, max_tx_id) VALUES ($block_id, $golden_ticket, 1, $block_json_id, $hash, 0, $lc, $mintxid, $maxtxid)`;
-    params = {
-      $block_id: blk.block.id,
-      $golden_ticket: blk.containsGoldenTicket(),
-      $block_json_id : 0,
-      $hash: blk.returnHash(),
-      $lc: lc,
-      $mintxid: blk.returnMinTxId(),
-      $maxtxid: blk.returnMaxTxId()
-    }
-  };
 
-
-
-//console.log(" .... save to dsk: " + new Date().getTime());
-
-  ///////////////////
-  // block to disk //
-  ///////////////////
-  try {
-    var res = await this.db.run(sql, params);
-    blk.filename = `${blk.block.id}-${res.lastID}.blk`;
-    var tmp_filepath = `${this.directory}/${this.dest}/${blk.filename}`;
-
-    let blkjson = blk.stringify();
-
-    if (!fs.existsSync(tmp_filepath)) {
-      fs.writeFileSync(tmp_filepath, blkjson, 'UTF-8');
-    }
-
-//console.log(" .... pst JSON wr  " + new Date().getTime());
-
-    return true;
-
-  } catch (err) {
-    console.log("ERROR: " + err);
   }
 
   return true;
@@ -355,6 +419,49 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
 
 
 
+  /////////////////////////////
+  // remove shashmap backups //
+  /////////////////////////////
+  let sql3 = "SELECT block_id, hash FROM blocks WHERE shashmap = 1 AND longest_chain = 1 ORDER BY block_id DESC";
+console.log("DELETING THE SHASHMAP: ");
+  this.queryDatabaseArray(sql3, {}, function(err, rows) {
+    if (rows != null) {
+
+      let database_updated = 0;
+
+      for (let z = 1; z < rows.length; z++) {
+
+        let bid = rows[z].block_id;
+        let bhash = rows[z].hash;
+
+	if (database_updated == 0) {
+          let sql4 = "UPDATE blocks SET shashmap = 0 WHERE block_id <= $bid";
+          let params4 = { $bid : bid };
+	  database_updated = 1;
+	  try {
+            this.queryDatabaseArray(sql4, params4, function(err, rows) {});
+	  } catch (err) {
+	  }
+	}
+
+        let shashmap_dump_filename = `${this.directory}/shashmaps/${bid}-${bhash}.smap`;
+
+console.log("DELETING FILE: " + shashmap_dump_filename);
+
+        fs.unlink(shashmap_dump_filename, function(err) {
+          if (err) {
+            this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+          }
+        });
+
+      }
+    }
+  });
+
+
+
+
+
   //////////////
   // database //
   //////////////
@@ -367,6 +474,57 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
     this.db.run("VACUUM", {}, function(err) {
       if (err) { this.app.logger.logError("Error thrown in deleteBlocks", {message: "", stack: err}); }
     });
+  }
+
+}
+
+
+/**
+ *
+ * delete older shashmap dumps
+ *
+ * @params {integer} lowest_block_id to keep
+ **/
+Storage.prototype.deleteShashmapDumps = async function deleteShashmapDumps(block_id, block_hash) {
+
+  let storage_self = this;
+
+  if (this.app.BROWSER == 1) { return; }
+
+  /////////////////////////////
+  // remove shashmap backups //
+  /////////////////////////////
+  let sql3 = "SELECT block_id, hash FROM blocks WHERE shashmap = 1 ORDER BY block_id DESC";
+  this.queryDatabaseArray(sql3, {}, function(err, rows) {
+    if (rows != null) {
+
+      let database_updated = 0;
+
+      for (let z = 1; z < rows.length; z++) {
+
+        let bid = rows[z].block_id;
+        let bhash = rows[z].hash;
+
+        let shashmap_dump_filename = `${storage_self.directory}/shashmaps/${bid}_${bhash}.smap`;
+
+console.log("DELETING FILE: " + shashmap_dump_filename);
+
+        fs.unlink(shashmap_dump_filename, function(err) {
+          if (err) {
+            this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+          }
+        });
+
+      }
+    }
+  });
+
+
+  let sql4 = "UPDATE blocks SET shashmap = 0 WHERE block_id < $bid";
+  let params4 = { $bid : block_id };
+  try {
+    this.queryDatabaseArray(sql4, params4, function(err, rows) {});
+  } catch (err) {
   }
 
 }
@@ -1015,4 +1173,66 @@ Storage.prototype.saveConfirmation = function saveConfirmation(hash, conf) {
   this.execDatabase(sql, params);
 
 }
+
+
+
+/*
+ * fetch the latest shashmap backup that is on the longest chain
+ *
+ * @params {string} block_hash
+ * @params {integer} confirmation num
+ */
+Storage.prototype.returnShashmapDump = async function returnShashmapDump() {
+
+  let storage_self = this;
+
+  try {
+    let sql2 = "SELECT block_id, hash FROM blocks WHERE shashmap = 1 AND longest_chain = 1 ORDER BY block_id DESC LIMIT 1";
+    let params2 = {};
+    await this.queryDatabaseArray(sql2, params2, function(err, rows) {
+      if (err) { return null; }
+      if (rows == null) { return null; }
+      if (rows.length == 0) { return null; }
+      storage_self.shashmap_dump_bid = rows[0].block_id;
+      storage_self.shashmap_dump_bhash = rows[0].hash;
+      return;
+    });
+  } catch (err) {
+    return;
+  }
+}
+
+
+/*
+ * fetch the latest shashmap backup that is on the longest chain
+ *
+ * @params {string} block_hash
+ * @params {integer} confirmation num
+ */
+Storage.prototype.dumpShashmap = async function dumpShashmap(bid, bhash) {
+
+  if (this.use_shashmap_dump == 0) { return null; }
+  if (bid % this.shashmap_dump_mod != 1) { return null; }
+
+  let shashmap_file = this.directory + '/shashmaps/' + bid + "_" + bhash + '.smap';
+  await shashmap.save(shashmap_file);
+
+
+  try {
+    let sql = "UPDATE blocks SET shashmap = $shashval WHERE block_id = $bid AND hash = $hash";
+    let params = { $shashval : 1 , $bid : bid , $hash : bhash };
+    await this.execDatabase(sql, params);
+  } catch (err) {
+    return null;
+  }
+
+console.log("and deleting shashmap dumps...");
+
+  this.deleteShashmapDumps(bid,bhash);
+
+  return 1;
+
+}
+
+
 

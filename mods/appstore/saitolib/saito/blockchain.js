@@ -288,7 +288,6 @@ Blockchain.prototype.addBlockToBlockchain = async function addBlockToBlockchain(
 
   this.indexing_active = true;
 
-
   //
   // sanity check
   //
@@ -841,7 +840,6 @@ console.log(" .... success:     " + new Date().getTime());
 //console.log(" .... pre-save:    " + new Date().getTime());
   await this.app.storage.saveBlock(newblock, i_am_the_longest_chain);
 //console.log(" .... post-save:   " + new Date().getTime());
-
 
 
   if (i_am_the_longest_chain == 1) {

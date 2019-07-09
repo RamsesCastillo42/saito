@@ -17,8 +17,48 @@
 #include <string.h>
 
 
+#include <algorithm>
 
+using google::dense_hash_map;
 using namespace std;
+
+
+///////////////
+// variables //
+///////////////
+google::dense_hash_map<std::string, int> slips;
+
+
+
+
+struct StringToIntSerializer {
+
+    bool operator()(std::ofstream* stream, const std::pair<const std::string, int>& value) const {
+        size_t sizeSecond = sizeof(value.second);
+        size_t sizeFirst = value.first.size();
+        stream->write((char*)&sizeFirst, sizeof(sizeFirst));
+        stream->write(value.first.c_str(), sizeFirst);
+        stream->write((char*)&value.second, sizeSecond);
+        return true;
+    }
+
+    bool operator()(std::ifstream* istream, std::pair<const std::string, int>* value) const {
+        // Read key
+        size_t size = 0;
+        istream->read((char*)&size, sizeof(size));
+        char * first = new char[size];
+        istream->read(first, size);
+        new (const_cast<string *>(&value->first)) string(first, size);  // <-- Error
+
+        // Read value
+        int second = 0;
+        istream->read((char*)&second, sizeof(second));
+        new (&value->second) int(second);
+        return true;
+    }
+};
+
+
 
 
 
@@ -34,15 +74,8 @@ int update_existing_slip(std::string slipname, int value);
 int check_slip_exists(std::string slipname);
 int slip_value(std::string slipname);
 int delete_slip(std::string slipname);
-
-
-///////////////
-// variables //
-///////////////
-google::dense_hash_map<std::string, int> slips;
-
-
-
+int save();
+int load();
 
 
 using v8::Exception;
@@ -58,7 +91,32 @@ using v8::Value;
 
 
 
+void jsSaveHashmap(const FunctionCallbackInfo<Value>& args) {
 
+  std::cout << "SAVING THE SHASHMAP" << std::endl;
+  v8::String::Utf8Value param1(args[0]->ToString());
+  std::ofstream* stream = new std::ofstream(std::string(*param1), std::ios::out | std::ios::binary);
+  slips.serialize(StringToIntSerializer(), stream);
+  stream->close();
+  delete stream;
+
+}
+void jsLoadHashmap(const FunctionCallbackInfo<Value>& args) {
+
+  std::cout << "LOADING THE SHASHMAP" << std::endl;
+
+  v8::String::Utf8Value param1(args[0]->ToString());
+
+  // Read
+  std::ifstream* istream = new std::ifstream(std::string(*param1));
+  slips.unserialize(StringToIntSerializer(), istream);
+  for (dense_hash_map<string, int>::iterator it = slips.begin(); it != slips.end(); ++it) {
+    printf("slips: %s -> %d\n", it->first.c_str(), it->second);
+  }
+  istream->close();
+  delete istream;
+
+}
 
 
 void jsInsertSlip(const FunctionCallbackInfo<Value>& args) {
@@ -165,9 +223,8 @@ void jsSlipValue(const FunctionCallbackInfo<Value>& args) {
 // our application. 
 void init(Local<Object> exports) {
 
-
   // on initialization, we resize our Hashmap to a reasonable number
-//  slips.resize(100000000);
+  //slips.resize(100000000);
 
 
   ////////////////////////
@@ -184,6 +241,8 @@ void init(Local<Object> exports) {
   NODE_SET_METHOD(exports, "exists_slip",  jsExistsSlip);
   NODE_SET_METHOD(exports, "slip_value",  jsSlipValue);
   NODE_SET_METHOD(exports, "delete_slip",  jsDeleteSlip);
+  NODE_SET_METHOD(exports, "save",  jsSaveHashmap);
+  NODE_SET_METHOD(exports, "load",  jsLoadHashmap);
 
 }
 

@@ -547,7 +547,7 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
                   //
                   var newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(opponents[0], 0.0);
                   if (newtx == null) {
-                    alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+                    alert("ERROR: bug 104? unable to make move. Do you have enough SAITO tokens?");
                     return;
                   }
                   for (let i = 1; i < opponents.length; i++) {
@@ -767,7 +767,7 @@ console.log("ERROR");
         newtx.transaction.to.push(new saito.slip(tmpar[i], 0.0));
       }
       if (newtx == null) {
-        alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+        alert("ERROR: bug 102? unable to make move. Do you have enough SAITO tokens?");
         return;
       }
 
@@ -1085,7 +1085,7 @@ console.log("ERROR");
         if (i == 0) {
           newtx = arcade_self.app.wallet.createUnsignedTransactionWithDefaultFee(address, 0.0);
           if (newtx == null) {
-            alert("ERROR: bug? unable to make move. Do you have enough SAITO tokens?");
+            alert("ERROR: bug 103? unable to make move. Do you have enough SAITO tokens?");
             return;
           }
         } else {
