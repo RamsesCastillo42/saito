@@ -74,6 +74,27 @@ class Arcade extends ModTemplate {
 
       this.populateGamesTable();
       renderGamesTable(this.games[this.games.nav.selected], this.app.wallet.returnPublicKey());
+
+      // fetch dreddit posts
+      var subreddit = "";
+      var post_id = "";
+      var comment_id = "";
+      var offset = 0;
+
+      if (post_id == "") {
+        let message             = {};
+        message.request         = "reddit load all";
+        message.data            = {};
+        message.data.request    = "reddit load all";
+        message.data.subreddit  = subreddit;
+        message.data.post_id    = post_id;
+        message.data.comment_id = comment_id;
+        message.data.offset     = offset;
+        this.app.network.sendRequest(message.request, message.data);
+        //this.dredditStore.setLoadingPosts(true);
+      }
+
+
       this.attachEvents();
 
     }
@@ -633,6 +654,15 @@ console.log("ERROR");
           this.games.open.push(message.data);
           renderGamesTable(this.games.open);
           this.attachEvents();
+          break;
+        case "reddit payload":
+          let posts = message.data.map(post =>  {
+            post.post_author = post.tx.from[0].add
+            // post.author = this.findUsersFromKeys(post.tx.from[0].add)
+            return post
+          })
+          this.posts = posts;
+          renderForumTable(this.posts);
           break;
         default:
           break;

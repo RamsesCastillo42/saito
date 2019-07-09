@@ -117,6 +117,28 @@
     })
   }
 
+  function renderForumTable(posts) {
+    $('.forum_table').empty();
+    let html = "";
+
+    posts.forEach(post => {
+      html +=
+        `<div class="post-preview" style="width:100%;">
+          <div class="content_title">
+            <a href="/r/${post.subreddit}/${post.tx.sig}">${post.title}</a>
+          </div>
+          <div class="content_details">
+            submitted by
+            <span class="post_author_clickable">${post.post_author.substring(0,8)}
+            to
+            <a href="/r/${post.subreddit}">/r/${post.subreddit}</a>
+          </div>
+        </div>`;
+    });
+
+    $('.forum_table').html(html);
+  }
+
 
   function populateGameMonitor(app) {
 

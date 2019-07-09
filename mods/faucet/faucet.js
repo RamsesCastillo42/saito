@@ -177,17 +177,26 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
         var params2 = { $publickey : saito_address , $unixtime : unixtime }
         faucet_self.app.storage.queryDatabase(sql2, params2, function(err, rows) {});
 
-
-        // send an email
-        newtx = faucet_self.app.wallet.createUnsignedTransactionWithDefaultFee(saito_address, 1000.0);
-        if (newtx == null) { 
+        var wallet_avail = Big(faucet_self.app.wallet.returnBalance());
+        if (wallet_avail.lt(1000.0)) {
 
           res.charset = 'UTF-8';
           res.write("Sorry, the faucet is currently out of money. Please let us know!");
           res.end();
           return;
 
-	}
+        }
+
+        // send an email
+        let newtx = new saito.transaction();
+        newtx.transaction.from = faucet_self.app.wallet.returnAdequateInputs(Big(1002.0));
+        newtx.transaction.ts   = new Date().getTime();
+
+        for (let i = 0; i < 8; i++) {
+          newtx.transaction.to.push(new saito.slip(saito_address, Big(125.0)));
+          newtx.transaction.to[newtx.transaction.to.length-1].type = 0;
+        }
+
         newtx.transaction.msg.module = "Email";
         newtx.transaction.msg.title  = "Saito Faucet - Transaction Receipt";
         newtx.transaction.msg.data   = 'You have received 1000 tokens from our Saito faucet.';
