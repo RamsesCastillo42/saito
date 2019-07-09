@@ -25,7 +25,7 @@ function Wallet(app) {
   this.wallet.outputs               = [];
   this.wallet.spends                = [];
   this.wallet.default_fee           = 2;
-  this.wallet.version               = 2.07;
+  this.wallet.version               = 2.11;
   this.wallet.pending               = []; // sent but not seen
 
   this.inputs_hmap                  = [];
@@ -339,7 +339,7 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
     //
     // if we do not have many slips left, generate a few extra inputs
     //
-    if (this.wallet.inputs.length < 4) {
+    if (this.wallet.inputs.length < 8) {
 
       //
       // split change address
@@ -700,35 +700,36 @@ Wallet.prototype.resetExistingSlips = function resetExistingSlips(block_id, bloc
 }
 
 
-Wallet.prototype.resetSpentInputs = function resetSpentInputs() {
+Wallet.prototype.resetSpentInputs = function resetSpentInputs(bid=0) {
 
-  ////////////////////////
-  // reset spent inputs //
-  ////////////////////////
-  //
-  // this means we have a new block, which means
-  // that we can reset our SPEND array. TODO: make
-  // this more sophisticated so that we wait a certain
-  // number of blocks more than 1 before clearing the
-  // spend array.
-  //
-  for (let i = 0; i < this.wallet.inputs.length; i++) {
-    //if (this.wallet.spends[i] == [];
-      this.wallet.spends[i] = 0;
-    //} else {
-    //  i = this.wallet.inputs.length+2;
-    //}
-  }
+  if (bid == 0) {
 
-}
-
-// TODO: verify that this is legal
-Wallet.prototype.resetSelectSpentInputs = function resetSelectSpentInputs(input) {
-  for (let i = 0; i < this.wallet.inputs.length; i++) {
-    if (input == this.wallet.inputs[i]) {
+    ////////////////////////
+    // reset spent inputs //
+    ////////////////////////
+    //
+    // this means we have a new block, which means
+    // that we can reset our SPEND array. TODO: make
+    // this more sophisticated so that we wait a certain
+    // number of blocks more than 1 before clearing the
+    // spend array.
+    //
+    for (let i = 0; i < this.wallet.inputs.length; i++) {
       this.wallet.spends[i] = 0;
     }
+
+  } else {
+
+    let target_bid = this.app.blockchain.returnLatestBlockId() - bid;
+
+    for (let i = 0; i < this.wallet.inputs.length; i++) {
+      if (this.wallet.inputs[i].bid <= target_bid) {
+        this.wallet.spends[i] = 0;
+      }
+    }
+
   }
+
 }
 
 

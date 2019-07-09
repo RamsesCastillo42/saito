@@ -879,11 +879,13 @@ console.log(" .... into wallet: " + new Date().getTime());
       this.app.mempool.purgeExpiredGoldenTickets();
     }
 
+    //
     // eliminates potential broadcast bugs
     // if inputs locked, as i cannot spend
     // my wallet if i need to update my 
     // wallet to spend and resetInputs
-    this.app.wallet.resetSpentInputs();
+    //
+    this.app.wallet.resetSpentInputs(3);
     this.app.modules.updateBalance();
   }
 

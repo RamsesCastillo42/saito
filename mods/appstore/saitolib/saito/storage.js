@@ -500,21 +500,24 @@ Storage.prototype.deleteShashmapDumps = async function deleteShashmapDumps(block
 
       let database_updated = 0;
 
-      for (let z = 1; z < rows.length; z++) {
+      for (let z = 0; z < rows.length; z++) {
 
         let bid = rows[z].block_id;
         let bhash = rows[z].hash;
 
-        let shashmap_dump_filename = `${storage_self.directory}/shashmaps/${bid}_${bhash}.smap`;
+	if (bid != block_id && block_hash != bhash) {
+
+          let shashmap_dump_filename = `${storage_self.directory}/shashmaps/${bid}_${bhash}.smap`;
 
 console.log("DELETING FILE: " + shashmap_dump_filename);
 
-        fs.unlink(shashmap_dump_filename, function(err) {
-          if (err) {
-            this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
-          }
-        });
+          fs.unlink(shashmap_dump_filename, function(err) {
+            if (err) {
+              this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+            }
+          });
 
+	}
       }
     }
   });
@@ -964,6 +967,14 @@ Storage.prototype.onChainReorganization = async function onChainReorganization(b
   //
   this.app.blockchain.block_hash_lc_hmap[block_hash] = lc;
 
+
+  //
+  // remove any shashmap dumps that are outdated
+  //
+  // this happens if we have taken a dump
+  if (block_id == this.shashmap_dump_bid && lc == 0) {
+    this.deleteShashmapDumps(block_id+1,"");
+  }
 
 }
 
