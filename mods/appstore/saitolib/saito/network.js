@@ -65,6 +65,9 @@ Network.prototype.initialize = function initialize() {
     this.cleanupDisconnectedSocket(peer);
   })
 
+  //
+  // this code can be removed by August 2019 if no issues
+  //
   // and monitor them
 //   this.peer_monitor_timer = setInterval(() => {
 //     for (let i = this.peers.length-1; i >= 0; i--) {

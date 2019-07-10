@@ -521,7 +521,7 @@ console.log("DELETING FILE: " + shashmap_dump_filename);
 
           fs.unlink(shashmap_dump_filename, function(err) {
             if (err) {
-              this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+              storage_self.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
             }
           });
 
