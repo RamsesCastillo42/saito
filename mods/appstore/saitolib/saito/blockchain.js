@@ -1941,9 +1941,13 @@ console.log("x: " + our_fork_id_pair_blockid);
 
 console.log("x: " + our_fork_id_pair_blockid + " (" + this.returnLatestBlockId() + ")");
 
+<<<<<<< HEAD
 console.log("y: " + tmpklr);
     if (our_latest_bid < our_fork_id_pair_blockid) {} else {
 
+=======
+    if (our_fork_id_pair_blockid <= this.returnLatestBlockId()) {
+>>>>>>> ae2644a0b658c16d0edafb8dd8437ce9328ebdfd
       // return hash by blockid
       var tmpklr = this.returnHashByBlockId(our_fork_id_pair_blockid);
 
@@ -1951,6 +1955,7 @@ console.log("y: " + tmpklr);
       // irreconciliable forks, so we just give them everything
       // in the expectation that one of our forks will eventually
       // become the longest chain
+<<<<<<< HEAD
       if (tmpklr == "") { 
 console.log("no match, returning 0");
         return 0; 
@@ -1959,6 +1964,18 @@ console.log("no match, returning 0");
       var our_fork_id_pair = tmpklr.substring(0, 2);
 
 console.log("Z: " + our_fork_id_pair);
+=======
+      if (tmpklr == "") { return 0; }
+
+      var our_fork_id_pair = tmpklr.substring((2*fii), 2);
+
+      // if we have a match in fork ID at a position, treat this
+      // as the shared forkID
+      if (our_fork_id_pair == peer_fork_id_pair) {
+        return our_fork_id_pair_blockid;
+      }
+    }
+>>>>>>> ae2644a0b658c16d0edafb8dd8437ce9328ebdfd
 
       // if we have a match in fork ID at a position, treat this
       // as the shared forkID
