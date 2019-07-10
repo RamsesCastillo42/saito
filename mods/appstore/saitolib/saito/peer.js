@@ -156,23 +156,11 @@ Peer.prototype.connect = function connect() {
     // add events
     //
     this.addSocketEvents();
+    this.sendHandshake();
 
-    //
-    // re-establish existing connection
-    //
-    // long-polling should hit here, as isConnected() needs
-    // to be false for the network class to attempt a reconnect
-    //
-    // } else if (this.socket != null) {
-
-    //   try {
-    //     this.socket.connect();
-    //   } catch(err) {
-    //     console.log(err);
-
-    //   //
-    //   // our connection
-    //   //
+  //
+  // we are connecting to another server
+  //
   } else {
 
     console.log("CONNECT RUNNING... no socket, time to open one.");
@@ -207,19 +195,9 @@ Peer.prototype.connect = function connect() {
     this.addSocketEvents();
 
   }
-
-  //
-  // check connection before sending handshake
-  //
-  if (this.isConnected()) {
-    this.sendHandshake();
-  } else {
-  }
-  //this.addSocketEvents();
-  //this.sendHandshake();
-
-
 }
+
+
 
 
 
@@ -264,6 +242,8 @@ Peer.prototype.sendHandshake = function sendHandshake(sync_blockchain = 1) {
     request.data.protocol = this.app.options.server.protocol;
   }
 
+
+console.log("SENDING HANDSHAKE REQUEST");
 
   this.sendRequest(request.request, request.data);
 
@@ -420,13 +400,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       // browsers get paranoid and rebroadcast any pending txs on connection to any peer
       //
       if (this.app.BROWSER == 1) {
-        setTimeout(() => {
-          // for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
-          //   let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
-          //   this.app.network.propagateTransaction(tmptx);
-          // }
-          this.app.network.sendPendingTransactions();
-        }, 500);
+        this.app.network.sendPendingTransactions();
       }
     });
 
@@ -541,6 +515,8 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       ///////////////
       if (message.request == "handshake") {
 
+console.log("\n\n\nRECEIVED HANDSHAKE REQUEST: " + new Date().getTime());
+
         //
         // peer preferences
         //
@@ -595,29 +571,58 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
         if (this.app.blockchain.returnLatestBlockId() > last_shared_bid) {
 
           //
-          // if the client is completely off-chain, let them know
+          // if we are completely off-chain, let us know
           //
-           if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
-            console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
-            this.promptOffChainUpdate();
-          } else {
-            //
-            // lite-client -- even if last_shared_bid is 0 because the 
-            // fork_id situation is wrong, we will send them everything
-            // from the latest block they request -- this avoids lite-clients
-            // that pop onto the network but do not stick around long-enough
-            // to generate a fork ID from being treated as new lite-clients
-            // and only sent the last 10 blocks.
-            //
-            if (last_shared_bid == 0 && peer_last_bid > 0 && (peer_last_bid - last_shared_bid > 9)) {
-              if (peer_last_bid - 10 < 0) { peer_last_bid = 0; } else { peer_last_bid = peer_last_bid - 10; }
-              this.sendBlockchain(peer_last_bid, message.data.synctype);
-            } else {
-              this.sendBlockchain(last_shared_bid, message.data.synctype);
-            }
-          }
+          if ((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) {
 
+console.log("PROCESS C");
+
+            console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
+	    console.log("\n\nYour machine appears to be running at least a genesis period behind the machine to which you are connecting. We are terminating your machine now to avoid issues. This is a temporary measure added to the software during TESTNET period.");
+            process.exit();
+          } else {
+
+            //
+	    // if our remote peer is behind us
+	    //
+	    if ((this.app.BROWSER == 0 && peer_last_bid < my_last_bid)) {
+
+console.log("PROCESS A");
+
+	      //
+              // lite-client -- even if last_shared_bid is 0 because the 
+              // fork_id situation is wrong, we will send them everything
+              // from the latest block they request -- this avoids lite-clients
+              // that pop onto the network but do not stick around long-enough
+              // to generate a fork ID from being treated as new lite-clients
+              // and only sent the last 10 blocks.
+              //
+              if (last_shared_bid == 0 && peer_last_bid > 0 && (peer_last_bid - last_shared_bid > 9)) {
+                if (peer_last_bid - 10 < 0) { peer_last_bid = 0; } else { peer_last_bid = peer_last_bid - 10; }
+                this.sendBlockchain(peer_last_bid, message.data.synctype);
+              } else {
+                this.sendBlockchain(last_shared_bid, message.data.synctype);
+              }
+
+	    } else {
+
+console.log("PROCESS B");
+
+              //
+	      // the other server is ahead of us in the blockchain
+	      //
+	    }
+          }
         }
+
+	//
+	// remote peer is ahead of us in the blockchain
+	//
+	else {
+
+
+	}
+
 
         //
         // we already received a signature confirming
@@ -633,6 +638,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
             this.socket.emit('request', JSON.stringify(sigmessage));
             this.app.network.cleanupDisconnectedSocket(this);
           } else {
+console.log("VERIFIED MESSAGE OF MY PEER!");
             this.verified = 1;
           }
         }
@@ -645,11 +651,16 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
         //
         // confirm publickey
         //
+	// this runs on the client that connects, and sends a message back to the server
+        // asking for connection signature, which is used to confirm the publickey, also
+	// sending our signature so that they can confirm ours.
+	// 
         this.challenge_remote = message.data.challenge;
         var sigmessage = {};
         sigmessage.request = "connect-sig";
         sigmessage.data = {};
         sigmessage.data.sig = this.app.crypto.signMessage("_" + this.challenge_remote, this.app.wallet.returnPrivateKey());
+console.log("connect sig message being sent!");
         this.socket.emit('request', JSON.stringify(sigmessage));
 
       }
@@ -664,8 +675,6 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
 
         //
         // we have the sig-reply but no handshake
-        // which means a connection issue with
-        // websockets firing randomly
         //
         // at this point we should be connected
         // so we send another handshake request
@@ -686,10 +695,13 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
           this.socket.emit('request', JSON.stringify(sigmessage));
           return;
 
-        }
+        } else {
+console.log("DELETE: received connect-sig but handshake is complete!");
+	}
         if (sig != "") {
           if (this.app.crypto.verifyMessage("_" + this.challenge_local, sig, this.peer.publickey) == 0) {
           } else {
+console.log("VERIFIED PUBLICKEY OF MY PEER!");
             this.verified = 1;
           }
         }
@@ -705,6 +717,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
           this.socket = null;
           this.app.network.cleanupDisconnectedSocket(this);
         }
+console.log("handshake request received, sending handshake!");
         this.sendHandshake();
         return;
       }
@@ -916,16 +929,6 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
 
 
 
-Peer.prototype.promptOffChainUpdate = function promptOffChainUpdate() {
-
-  let message = {};
-  message.request = "offchain";
-
-  console.log("sending message..." + JSON.stringify(message));
-  this.socket.emit('request', JSON.stringify(message));
-  return;
-
-}
 Peer.prototype.sendBlockchain = function sendBlockchain(start_bid, synctype) {
 
   if (start_bid == 0) {
@@ -978,6 +981,25 @@ Peer.prototype.sendBlockchain = function sendBlockchain(start_bid, synctype) {
   return;
 
 }
+
+
+
+
+
+
+Peer.prototype.promptOffChainUpdate = function promptOffChainUpdate() {
+
+  let message = {};
+  message.request = "offchain";
+
+  console.log("sending message..." + JSON.stringify(message));
+  this.socket.emit('request', JSON.stringify(message));
+  return;
+
+}
+
+
+
 
 
 

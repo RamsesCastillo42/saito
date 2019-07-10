@@ -125,10 +125,9 @@ Network.prototype.initialize = function initialize() {
   //
   // rebroadcast any queued txs
   //
-  setTimeout(() => {
-    this.sendPendingTransactions();
-  }, 3000);
-
+  // setTimeout(() => {
+  //   this.sendPendingTransactions();
+  // }, 3000);
 
 }
 
