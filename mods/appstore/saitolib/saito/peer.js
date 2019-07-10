@@ -582,7 +582,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
           //
           // if the client is completely off-chain, let them know
           //
-          if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
+           if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
             this.promptOffChainUpdate();
           } else {

@@ -1927,21 +1927,23 @@ Blockchain.prototype.returnLastSharedBlockId = function returnLastSharedBlockId(
     if (fii == 13) { our_fork_id_pair_blockid = latest_known_block_id - 50000; }
 
 
-    // return hash by blockid
-    var tmpklr = this.returnHashByBlockId(our_fork_id_pair_blockid);
+    if (our_fork_id_pair_blockid <= this.returnLatestBlockId()) {
+      // return hash by blockid
+      var tmpklr = this.returnHashByBlockId(our_fork_id_pair_blockid);
 
-    // if we have not found a match, return 0 since we have
-    // irreconciliable forks, so we just give them everything
-    // in the expectation that one of our forks will eventually
-    // become the longest chain
-    if (tmpklr == "") { return 0; }
+      // if we have not found a match, return 0 since we have
+      // irreconciliable forks, so we just give them everything
+      // in the expectation that one of our forks will eventually
+      // become the longest chain
+      if (tmpklr == "") { return 0; }
 
-    var our_fork_id_pair = tmpklr.substring(0, 2);
+      var our_fork_id_pair = tmpklr.substring((2*fii), 2);
 
-    // if we have a match in fork ID at a position, treat this
-    // as the shared forkID
-    if (our_fork_id_pair == peer_fork_id_pair) {
-      return our_fork_id_pair_blockid;
+      // if we have a match in fork ID at a position, treat this
+      // as the shared forkID
+      if (our_fork_id_pair == peer_fork_id_pair) {
+        return our_fork_id_pair_blockid;
+      }
     }
 
   }

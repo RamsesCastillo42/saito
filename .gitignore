@@ -17,6 +17,7 @@ package-lock.json
 
 data/*.sq3
 data/blocks/*.blk
+data/shashmaps/*
 
 lib/saito/*.swp
 lib/saito/web/browser.js
