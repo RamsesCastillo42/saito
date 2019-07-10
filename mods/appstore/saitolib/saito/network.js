@@ -126,10 +126,7 @@ Network.prototype.initialize = function initialize() {
   // rebroadcast any queued txs
   //
   setTimeout(() => {
-    for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
-      let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
-      this.propagateTransaction(tmptx);
-    }
+    this.sendPendingTransactions();
   }, 3000);
 
 
@@ -438,6 +435,16 @@ Network.prototype.propagateGoldenTicket = function propagateGoldenTicket(tx) {
 Network.prototype.sendRequest = function sendRequest(message, data="") {
   for (let x = this.peers.length-1; x >= 0; x--) {
     this.peers[x].sendRequest(message, data);
+  }
+}
+
+/**
+ * Propagate pending transactions to peers
+ */
+Network.prototype.sendPendingTransactions = function sendPendingTransactions() {
+  for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+    let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
+    this.propagateTransaction(tmptx);
   }
 }
 
