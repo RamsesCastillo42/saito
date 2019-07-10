@@ -421,10 +421,11 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       //
       if (this.app.BROWSER == 1) {
         setTimeout(() => {
-          for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
-            let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
-            this.app.network.propagateTransaction(tmptx);
-          }
+          // for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
+          //   let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
+          //   this.app.network.propagateTransaction(tmptx);
+          // }
+          this.app.network.sendPendingTransactions();
         }, 500);
       }
     });
