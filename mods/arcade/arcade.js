@@ -353,44 +353,53 @@ class Arcade extends ModTemplate {
       //
       let txmsg = tx.returnMessage();
 
-      if (txmsg.request == "invite" && arcade_self.browser_active == 1) {
+      if (txmsg.request == "invite") {
 
-        let removed_any_games = 0;
-        for (let i = 0; i < arcade_self.games.open.length; i++) {
-          if (arcade_self.games.open[i].sig == txmsg.sig) {
-            arcade_self.games.open.splice(i, 1);
-            i--;
-            removed_any_games = 1;
+        if (arcade_self.browser_active == 1) {
+
+          let removed_any_games = 0;
+          for (let i = 0; i < arcade_self.games.open.length; i++) {
+            if (arcade_self.games.open[i].sig == txmsg.sig) {
+              arcade_self.games.open.splice(i, 1);
+              i--;
+              removed_any_games = 1;
+            }
+          }
+          if (removed_any_games == 1) {
+            renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+            arcade_self.attachEvents();
           }
         }
-        if (removed_any_games == 1) {
-          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
-          arcade_self.attachEvents();
-        }
+
+	return;
+
       }
 
 
-      if (txmsg.request == "opengame" && arcade_self.browser_active == 1) {
+      if (txmsg.request == "opengame") {
 
-        let game_exists = arcade_self.games.open.some((game) => game.sig === txmsg.sig);
-        if (!game_exists) {
-          let game = {
-            player: tx.transaction.from[0].add,
-            state: txmsg.state,
-            bid: blk.block.id,
-            game: txmsg.game,
-            options: txmsg.options,
-            status: "Waiting for opponent",
-            created_at: txmsg.ts,
-            sig: txmsg.sig
+	if (arcade_self.browser_active == 1) {
+
+          let game_exists = arcade_self.games.open.some((game) => game.sig === txmsg.sig);
+          if (!game_exists) {
+            let game = {
+              player: tx.transaction.from[0].add,
+              state: txmsg.state,
+              bid: blk.block.id,
+              game: txmsg.game,
+              options: txmsg.options,
+              status: "Waiting for opponent",
+              created_at: txmsg.ts,
+              sig: txmsg.sig
+            }
+
+            arcade_self.games.open.push(game);
+            renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+            arcade_self.attachEvents();
           }
-
-          arcade_self.games.open.push(game);
-          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
-          arcade_self.attachEvents();
         }
 
-        return 0;
+        return;
       }
     }
 

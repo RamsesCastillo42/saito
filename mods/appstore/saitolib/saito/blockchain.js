@@ -1016,6 +1016,9 @@ console.log(" .... run rmv txs: " + new Date().getTime());
     }
   }
 
+console.log("FORK ID: " + this.fork_id);
+
+
   //
   // in storage.js we push any transactions from blocks we
   // created that are being undone back into the mempool
@@ -1893,9 +1896,13 @@ Blockchain.prototype.returnBlockWithTransactionsByHash = async function returnBl
  **/
 Blockchain.prototype.returnLastSharedBlockId = function returnLastSharedBlockId(fork_id, latest_known_block_id) {
 
+console.log("Seeking Last Shared Block Id: " + fork_id + " -- " + latest_known_block_id);
+
   // if there is no fork_id submitted, we backpedal 1 block to be safe
   if (fork_id == null || fork_id == "") { return 0; }
   if (fork_id.length < 2) { if (latest_known_block_id > 0) { latest_known_block_id - 1; } else { return 0; } }
+
+console.log("latest_known_block_id: " + latest_known_block_id);
 
   // roll back latest known block id to known fork ID measurement point
   for (let x = latest_known_block_id; x >= 0; x--) {
@@ -1905,11 +1912,17 @@ Blockchain.prototype.returnLastSharedBlockId = function returnLastSharedBlockId(
     }
   }
 
+console.log("latest_known_block_id: " + latest_known_block_id);
+
+  let our_latest_bid = this.returnLatestBlockId();
+
   // roll back until we have a match
   for (let fii = 0; fii < (fork_id.length/2); fii++) {
 
     var peer_fork_id_pair = fork_id.substring((2*fii),2);
     var our_fork_id_pair_blockid = latest_known_block_id;
+
+console.log("x: " + our_fork_id_pair_blockid);
 
     if (fii == 0)  { our_fork_id_pair_blockid = latest_known_block_id - 0; }
     if (fii == 1)  { our_fork_id_pair_blockid = latest_known_block_id - 10; }
@@ -1926,25 +1939,36 @@ Blockchain.prototype.returnLastSharedBlockId = function returnLastSharedBlockId(
     if (fii == 12) { our_fork_id_pair_blockid = latest_known_block_id - 10000; }
     if (fii == 13) { our_fork_id_pair_blockid = latest_known_block_id - 50000; }
 
+console.log("x: " + our_fork_id_pair_blockid + " (" + this.returnLatestBlockId() + ")");
 
-    // return hash by blockid
-    var tmpklr = this.returnHashByBlockId(our_fork_id_pair_blockid);
+console.log("y: " + tmpklr);
+    if (our_latest_bid < our_fork_id_pair_blockid) {} else {
 
-    // if we have not found a match, return 0 since we have
-    // irreconciliable forks, so we just give them everything
-    // in the expectation that one of our forks will eventually
-    // become the longest chain
-    if (tmpklr == "") { return 0; }
+      // return hash by blockid
+      var tmpklr = this.returnHashByBlockId(our_fork_id_pair_blockid);
 
-    var our_fork_id_pair = tmpklr.substring(0, 2);
+      // if we have not found a match, return 0 since we have
+      // irreconciliable forks, so we just give them everything
+      // in the expectation that one of our forks will eventually
+      // become the longest chain
+      if (tmpklr == "") { 
+console.log("no match, returning 0");
+        return 0; 
+      }
 
-    // if we have a match in fork ID at a position, treat this
-    // as the shared forkID
-    if (our_fork_id_pair == peer_fork_id_pair) {
-      return our_fork_id_pair_blockid;
+      var our_fork_id_pair = tmpklr.substring(0, 2);
+
+console.log("Z: " + our_fork_id_pair);
+
+      // if we have a match in fork ID at a position, treat this
+      // as the shared forkID
+      if (our_fork_id_pair == peer_fork_id_pair) {
+        return our_fork_id_pair_blockid;
+      }
     }
-
   }
+
+console.log("returning zero...");
   return 0;
 }
 
