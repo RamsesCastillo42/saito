@@ -26,7 +26,7 @@ function Storage(app, data, dest="blocks") {
   this.loading_active      = false;
 
   this.use_shashmap_dump   = 0;
-  this.shashmap_dump_mod   = 10;
+  this.shashmap_dump_mod   = 100;
   this.shashmap_fastload   = 0;
   this.shashmap_dump_bid   = 0;
   this.shashmap_dump_bhash = "";
@@ -82,14 +82,22 @@ Storage.prototype.initialize = async function initialize() {
             this.shashmap_fastload = 1;
             await shashmap.load(shashmap_file);
             shashmap_imported = 1;
-          }
-        }
 
-        await this.createDatabaseTablesNonDestructive();
-        if (shashmap_imported == 1) {
-          let sql = "DELETE FROM blocks WHERE block_id >= $bid";
-          let params = { $bid : this.shashmap_dump_bid };
-          await this.execDatabase(sql, params);
+            await this.createDatabaseTablesNonDestructive();
+            if (shashmap_imported == 1) {
+              let sql = "DELETE FROM blocks WHERE block_id >= $bid";
+              let params = { $bid : this.shashmap_dump_bid };
+              await this.execDatabase(sql, params);
+            }
+          } else {
+
+            await this.createDatabaseTables();
+
+          }
+        } else {
+
+          await this.createDatabaseTables();
+
         }
 
       } else {
@@ -513,7 +521,7 @@ console.log("DELETING FILE: " + shashmap_dump_filename);
 
           fs.unlink(shashmap_dump_filename, function(err) {
             if (err) {
-              this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+              storage_self.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
             }
           });
 

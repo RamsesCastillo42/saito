@@ -342,6 +342,7 @@ class Arcade extends ModTemplate {
           } catch (err) {
             console.log("There is an error here: " + err);
           }
+
           return;
         }
       }
@@ -369,7 +370,8 @@ class Arcade extends ModTemplate {
       }
 
 
-      if (txmsg.request == "opengame") {
+      if (txmsg.request == "opengame" && arcade_self.browser_active == 1) {
+
         let game_exists = arcade_self.games.open.some((game) => game.sig === txmsg.sig);
         if (!game_exists) {
           let game = {
@@ -383,15 +385,13 @@ class Arcade extends ModTemplate {
             sig: txmsg.sig
           }
 
-          // let is_duplicate = arcade_self.games.open.some(current_game => current_game.sig == txmsg.sig);
-          // if (!is_duplicate) {
-            arcade_self.games.open.push(game);
-            renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
-            arcade_self.attachEvents();
-          // }
+          arcade_self.games.open.push(game);
+          renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
+          arcade_self.attachEvents();
         }
-      }
 
+        return 0;
+      }
     }
 
 
