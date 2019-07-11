@@ -435,9 +435,6 @@ class Arcade extends ModTemplate {
 
     if (conf == 0) {
 
-console.log("TXMSG: " + JSON.stringify(txmsg));
-
-
       //
       // DECLINE
       //
@@ -471,8 +468,6 @@ console.log("TXMSG: " + JSON.stringify(txmsg));
       // INVITE
       //
       if (txmsg.request == "invite") {
-
-console.log("TXMSG 2: " + JSON.stringify(txmsg));
 
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
@@ -511,12 +506,6 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
             let tmpmod = txmsg.module;
             this.active_game = tmpmod.charAt(0).toUpperCase();
             this.active_game += tmpmod.slice(1);
-
-            //
-            // ADD GAME TO TABLE
-            //
-            //this.listActiveGames();
-
 
             //
             //
@@ -911,6 +900,18 @@ console.log("ERROR");
     //
     $('#create_game_button').off();
     $('#create_game_button').on('click', () => {
+
+      //
+      // only let people list 1 game at a time to avoid game-ending bugs
+      //
+      for (let i = 0; i < this.games.open.length; i++) {
+	if (this.games.open[i].player == this.app.wallet.returnPublicKey() && this.games.open[i].state == "open") {
+	  if (this.app.BROWSER == 1) { alert("Help avoid bugs. You cannot have two open invitations."); }
+	  return;
+	}
+      }
+
+
 
       let options    = {};
 
@@ -1482,6 +1483,7 @@ console.log("ERROR");
     });
 
     expressapp.get('/arcade/opengames', async (req, res) => {
+
       var sql    = "SELECT * FROM mod_arcade WHERE state = 'open' AND expires_at > $expires_at";
       var params = { $expires_at : new Date().getTime() };
 
