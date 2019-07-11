@@ -236,7 +236,7 @@ Transaction.prototype.decryptMessage = function decryptMessage(app) {
     var x = app.keys.decryptMessage(this.transaction.from[0].add, this.transaction.msg);
     this.dmsg = x;
   } catch (e) {
-    console.log("\n\n\nERROR DECRYPTING MESSAGE!\n\n");
+    // plaintext messages hit this error, so no public message
   }
   return;
 }

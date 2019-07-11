@@ -90,6 +90,7 @@ function Peer(app, peerjson = "") {
     if (this.message_queue.length > 0) {
 console.log("Messages in Queue: " + this.message_queue.length);
       if (this.socket != null) {
+        console.log("SOCKET IS NOT NULL");
         if (this.socket.connected == true) {
 console.log("Emitting Messages in Queue!");
           this.socket.emit('request', this.message_queue[0]);
@@ -242,9 +243,6 @@ Peer.prototype.sendHandshake = function sendHandshake(sync_blockchain = 1) {
     request.data.protocol = this.app.options.server.protocol;
   }
 
-
-console.log("SENDING HANDSHAKE REQUEST");
-
   this.sendRequest(request.request, request.data);
 
 }
@@ -325,14 +323,11 @@ Peer.prototype.sendRequestWithCallback = function sendRequestWithCallback(messag
   //
   if (this.socket != null) {
     if (this.socket.connected == true) {
-      console.log("EMITTING!");
       this.socket.emit('request', JSON.stringify(userMessage), mycallback);
       return;
     } else {
       this.message_queue.push(JSON.stringify(userMessage));
       tmperr = {}; tmperr.err = "message queued for broadcast";
-      console.log("TX: " + JSON.stringify(userMessage));
-      console.log("QUEUEING!");
       mycallback(JSON.stringify(tmperr));
       return;
     }
@@ -343,7 +338,6 @@ Peer.prototype.sendRequestWithCallback = function sendRequestWithCallback(messag
   // to the peer above
   //
   tmperr = {}; tmperr.err = "peer not connected";
-  console.log("NOT CONNECTED!");
   mycallback(JSON.stringify(tmperr));
 
 }
@@ -428,7 +422,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
 
       let response = {}
       if (data === undefined) {
-	console.log("We have received bad data!");
+	console.log("bad data received...");
 	return;
       }
       let message = JSON.parse(data.toString());
@@ -515,8 +509,6 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       ///////////////
       if (message.request == "handshake") {
 
-console.log("\n\n\nRECEIVED HANDSHAKE REQUEST: " + new Date().getTime());
-
         //
         // peer preferences
         //
@@ -573,14 +565,8 @@ console.log("\n\n\nRECEIVED HANDSHAKE REQUEST: " + new Date().getTime());
           //
           // if we are completely off-chain, let us know
           //
-<<<<<<< HEAD
-          if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
-=======
           if ((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) {
 
-console.log("PROCESS C");
-
->>>>>>> ff1bc3f19bc6e40dfdb39b67a0f0b3662596a818
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
 	    console.log("\n\nYour machine appears to be running at least a genesis period behind the machine to which you are connecting. We are terminating your machine now to avoid issues. This is a temporary measure added to the software during TESTNET period.");
             process.exit();
@@ -590,8 +576,6 @@ console.log("PROCESS C");
 	    // if our remote peer is behind us
 	    //
 	    if ((this.app.BROWSER == 0 && peer_last_bid < my_last_bid)) {
-
-console.log("PROCESS A");
 
 	      //
               // lite-client -- even if last_shared_bid is 0 because the 
@@ -610,11 +594,10 @@ console.log("PROCESS A");
 
 	    } else {
 
-console.log("PROCESS B");
-
               //
 	      // the other server is ahead of us in the blockchain
 	      //
+
 	    }
           }
         }
@@ -642,7 +625,6 @@ console.log("PROCESS B");
             this.socket.emit('request', JSON.stringify(sigmessage));
             this.app.network.cleanupDisconnectedSocket(this);
           } else {
-console.log("VERIFIED MESSAGE OF MY PEER!");
             this.verified = 1;
           }
         }
@@ -664,7 +646,6 @@ console.log("VERIFIED MESSAGE OF MY PEER!");
         sigmessage.request = "connect-sig";
         sigmessage.data = {};
         sigmessage.data.sig = this.app.crypto.signMessage("_" + this.challenge_remote, this.app.wallet.returnPrivateKey());
-console.log("connect sig message being sent!");
         this.socket.emit('request', JSON.stringify(sigmessage));
 
       }
@@ -700,12 +681,10 @@ console.log("connect sig message being sent!");
           return;
 
         } else {
-console.log("DELETE: received connect-sig but handshake is complete!");
 	}
         if (sig != "") {
           if (this.app.crypto.verifyMessage("_" + this.challenge_local, sig, this.peer.publickey) == 0) {
           } else {
-console.log("VERIFIED PUBLICKEY OF MY PEER!");
             this.verified = 1;
           }
         }
@@ -721,7 +700,6 @@ console.log("VERIFIED PUBLICKEY OF MY PEER!");
           this.socket = null;
           this.app.network.cleanupDisconnectedSocket(this);
         }
-console.log("handshake request received, sending handshake!");
         this.sendHandshake();
         return;
       }
