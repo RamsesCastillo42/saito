@@ -62,13 +62,17 @@ class Arcade extends ModTemplate {
       $('.saito_email').html(saito_email);
       //$('#saito_address').html(saito_address);
       $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
-***/  
+***/
       let {host, port, protocol} = this.app.network.peers[0].peer;
       let games_data = await axios.get(`${protocol}://${host}:${port}/arcade/opengames`);
+
       open_games = games_data.data.payload;
 
-
       for (let i = 0; i < open_games.length; i++) {
+        let id = this.app.keys.findByPublicKey(open_games[i].player);
+        if (id != null) {
+          if (id.identifiers[0] !== "") { open_games[i].identifier = id.identifiers[0]; }
+        }
         this.games.open.push(open_games[i]);
       }
 
@@ -180,7 +184,6 @@ class Arcade extends ModTemplate {
           });
           $('.get_tokens_button').hide();
         });
-        // $('#token_spinner').hide();
       } else {
         $('.get_tokens_button').hide();
         $('.invite_play_button').show();
@@ -322,7 +325,6 @@ class Arcade extends ModTemplate {
           try {
             let res = await arcade_self.db.run(sql, params);
 
-            // TODO: propagate to the network
             let opengame =  {
               player: pkey ,
               winner : "",
@@ -371,7 +373,7 @@ class Arcade extends ModTemplate {
           }
         }
 
-	return;
+	// return;
 
       }
 
@@ -391,6 +393,11 @@ class Arcade extends ModTemplate {
               status: "Waiting for opponent",
               created_at: txmsg.ts,
               sig: txmsg.sig
+            }
+
+            let id = arcade_self.app.keys.findByPublicKey(game.player);
+            if (id != null) {
+              if (id.identifiers[0] !== "") { game.identifier = id.identifiers[0]; }
             }
 
             arcade_self.games.open.push(game);
@@ -535,7 +542,12 @@ console.log("TXMSG 2: " + JSON.stringify(txmsg));
                 //
                 // MANUALLY ACCEPT INVITE
                 //
-                let text = `You have been invited to a game of ${this.active_game} by ${tx.transaction.from[0].add}`;
+                let opponent = tx.transaction.from[0].add;
+                let id = this.app.keys.findByPublicKey(opponent)
+                if (id != null) {
+                  if (id.identifiers[0] !== "") { opponent = id.identifiers[0]; }
+                }
+                let text = `You have been invited to a game of ${this.active_game} by ${opponent}`;
 
                 var modal = document.getElementById("game_modal");
                 modal.style.display = "block";
@@ -660,18 +672,30 @@ console.log("ERROR");
     if (app.BROWSER == 1) {
       switch(message.request) {
         case "arcade opengame":
+          let id = this.app.keys.findByPublicKey(message.data.player);
+          if (id != null) {
+            if (id.identifiers[0] !== "") { message.data.identifier = id.identifiers[0]; }
+          }
           this.games.open.push(message.data);
           renderGamesTable(this.games.open);
           this.attachEvents();
           break;
         case "reddit payload":
-          let posts = message.data.map(post =>  {
-            post.post_author = post.tx.from[0].add
-            // post.author = this.findUsersFromKeys(post.tx.from[0].add)
-            return post
-          })
-          this.posts = posts;
-          renderForumTable(this.posts);
+          try {
+            let posts = message.data.map(post =>  {
+              post.post_author = post.tx.from[0].add
+              let id = this.app.keys.findByPublicKey(post.post_author);
+              if (id != null) {
+                if (id.identifiers[0] !== "") { post.post_author = id.identifiers[0]; }
+              }
+              return post
+            });
+
+            this.posts = posts;
+            renderForumTable(this.posts);
+          } catch(err) {
+            console.error("ERROR IN ARCADE FORUM: ", err);
+          }
           break;
         default:
           break;
@@ -1978,6 +2002,7 @@ console.log("ERROR REFRESHING: " + err);
           let x = this.app.options.games[i];
 
           let opponent   = "unknown";
+          let identifier = null;
           let gameid     = x.id;
           let player     = x.player;
           let winner     = x.winner;
@@ -2010,8 +2035,10 @@ console.log("ERROR REFRESHING: " + err);
             }
           }
 
-
-          if (this.app.keys.returnIdentifierByPublicKey(opponent) !== "") { opponent = this.app.keys.returnIdentifierByPublicKey(opponent); }
+          let id = this.app.keys.findByPublicKey(opponent);
+          if (id != null) {
+            if (id.identifiers[0] !== "") { identifier = id.identifiers[0]; }
+          }
           if (opponent.length > 14 && this.app.crypto.isPublicKey(opponent) == 1) { opponent = opponent.substring(0, 13) + "..."; }
           if (status.length > 50) { status = status.substring(0, 50) + "..."; }
 
@@ -2026,6 +2053,7 @@ console.log(gameid + " -- " + adminid);
 
           this.games.open.push({
             player: opponent ,
+            identifier: identifier,
             winner : winner ,
             game: gamename ,
             state : state ,

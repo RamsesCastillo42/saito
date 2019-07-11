@@ -67,7 +67,11 @@
       if (game.state == "accept") { game.status = "waiting for acceptance"; }
 
 
-      let playerName = my_publickey == game.player ?  "Me" : game.player.substring(0,8);
+
+      let playerName = my_publickey == game.player ?  "Me" : game.player.substring(0,16);
+      if (game.identifier != null) {
+        playerName = game.identifier;
+      }
       let playerCell = createGameTableCell(playerName);
       playerCell.id = "game_cell_player";
 
@@ -129,7 +133,7 @@
           </div>
           <div class="content_details">
             submitted by
-            <span class="post_author_clickable">${post.post_author.substring(0,8)}
+            <span class="post_author_clickable">${post.post_author.substring(0,24)}
             to
             <a href="/r/${post.subreddit}">/r/${post.subreddit}</a>
           </div>
