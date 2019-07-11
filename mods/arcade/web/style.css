@@ -209,7 +209,7 @@ select {
   width: 100%;
 }
 
-.accept_game, .reject_game, .delete_game, .join_game, .start_game {
+.accept_game, .reject_game, .delete_game, .join_game, .start_game, .forum_post_button, .submit_button, .toggle_post_button {
   /* width: 100px; */
   float: right;
   padding: 12px;
@@ -328,6 +328,72 @@ select {
 .forum_title {
   margin-bottom: 0.5em;
 }
+
+.forum_post_button {
+  background: orange;
+  height: 50%;
+  margin-bottom: 0.1em;
+}
+
+.submit_post {
+  display:grid;
+  row-gap: 0.5em;
+  /* display: none;
+  padding: 10px 30px 30px 30px;
+  max-width: 45rem;
+  border: 1px solid #888;
+  background-color: #f7fdfd; */
+}
+
+.submit_post > input {
+  /* height: 4em; */
+  font-size: 1.2em;
+  padding: 7px 0px 7px 0px;
+}
+
+.submit_exit {
+  justify-self: right;
+  font-size: 2em;
+  cursor: pointer;
+}
+
+.submit_title {
+  clear:both;
+}
+.submit_title_label {
+  /* color: #888; */
+}
+.submit_link {
+  clear:both;
+}
+.submit_link_label {
+  margin-top: 15px;
+  /* color: #888; */
+}
+.submit_text {
+  clear:both;
+  resize: vertical;
+  height: 200px;
+  font-size: 1em;
+}
+
+.toggle-preview-text {
+  display: none;
+  /* height: 100%;
+  width: 100%; */
+}
+
+.toggle_post_button {
+  background: red;
+  margin: 0;
+}
+
+.submit_button {
+  background-color: rgb(0, 190, 10);
+  height: 3em;
+  margin: 0;
+}
+
 
 .post-preview:last-child {
   margin-bottom: 0.5em;
@@ -505,7 +571,7 @@ select {
   animation-duration: 0.4s;
   background: #4e4e4e;
   border-radius: 5px;
-  top: 30%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%,-50%);
 }

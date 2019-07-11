@@ -189,8 +189,25 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
 
         // send an email
         let newtx = new saito.transaction();
-        newtx.transaction.from = faucet_self.app.wallet.returnAdequateInputs(Big(1002.0));
+        let total_fees = Big(1002.0);
+        newtx.transaction.from = faucet_self.app.wallet.returnAdequateInputs(total_fees);
         newtx.transaction.ts   = new Date().getTime();
+ 
+        // add change input
+        var total_inputs = Big(0.0);
+        for (let ii = 0; ii < newtx.transaction.from.length; ii++) {
+          total_inputs = total_inputs.plus(Big(newtx.transaction.from[ii].amt));
+        }
+
+        //
+        // generate change address(es)
+        //
+        var change_amount = total_inputs.minus(total_fees);
+
+        if (Big(change_amount).gt(0)) {
+          newtx.transaction.to.push(new saito.slip(faucet_self.app.wallet.returnPublicKey(), change_amount.toFixed(8)));
+          newtx.transaction.to[newtx.transaction.to.length-1].type = 0;
+        }
 
         for (let i = 0; i < 8; i++) {
           newtx.transaction.to.push(new saito.slip(saito_address, Big(125.0)));

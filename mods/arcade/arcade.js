@@ -5,6 +5,7 @@ const sqlite = require('sqlite');
 var numeral = require('numeral');
 const path = require("path");
 const axios = require('axios');
+const markdown = require( "markdown" ).markdown;
 
 class Arcade extends ModTemplate {
 
@@ -1176,6 +1177,75 @@ console.log("ERROR");
       arcade_self.startInitializationTimer(game_id, active_module);
     });
 
+
+    $('.forum_post_button').off();
+    $('.forum_post_button').on('click', () => {
+      this.showForumPostModal();
+      this.attachEvents();
+    });
+
+    $('.toggle_post_button').off();
+    $('.toggle_post_button').on('click', () => {
+      var text = $('#submit_text').val();
+      let markdown_preview = markdown.toHTML(text);
+
+      $('.toggle-preview-text').empty();
+      $('.toggle-preview-text').append(markdown_preview);
+
+      $('.submit_text').toggle();
+      $('.toggle-preview-text').toggle();
+    });
+
+    // submit new post
+    $('#submit_button').off();
+    $('#submit_button').on('click', () => {
+
+      // fetch data from tx
+      var msg = {};
+      msg.module  = "Reddit";
+      msg.type      = "post";
+      msg.title     = $('#submit_title').val();
+      msg.link      = $('#submit_link').val();
+      msg.text      = $('#submit_text').val();
+      msg.subreddit = $('#submit_r').val();
+
+      var regex=/^[0-9A-Za-z]+$/;
+
+      // check OK
+      if (regex.test(msg.subreddit)) {} else {
+        if (msg.subreddit != "") {
+          alert("Only alphanumeric characters permitted in sub-reddit name");
+          return;
+        } else {
+          msg.subreddit = "main";
+        }
+      }
+
+
+      if (msg.title == "") {
+        alert("You cannot submit an empty post");
+        return;
+      }
+
+      var amount = 0.0;
+      var fee    = 2.0001;
+
+      // send post across network
+      var newtx = this.app.wallet.createUnsignedTransactionWithDefaultFee(this.app.network.peers[0].peer.publickey, amount);
+
+      if (newtx == null) { alert("Unable to send TX"); return; }
+      newtx.transaction.msg = msg;
+      newtx = this.app.wallet.signTransaction(newtx);
+      this.app.network.propagateTransactionWithCallback(newtx, function() {
+        alert("your post has been broadcast");
+        $('#submit_post').toggle();
+        $('.submit').toggle();
+        $('.balance').css("right", "5.5rem");
+        $('#posts').toggle();
+        $('.modal').hide();
+      });
+    });
+
   }
 
   startInitializationTimer(game_id, game_module) {
@@ -1451,6 +1521,29 @@ console.log("ERROR");
     $('#game_start_options').html(gameSelectHTML);
   }
 
+  showForumPostModal() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    $('#modal_header_text').html('New Forum Post');
+    $('#modal_body_text').html(
+      `
+      <div id="submit_post" class="submit_post">
+        <div for="submit_title" class="submit_title_label" id="submit_title_label">title:</div>
+        <input type="text" class="submit_title" id="submit_title" name="submit_title" />
+        <div for="submit_link" class="submit_link_label" id="submit_link_label">url: <span style="font-size:0.9em"><i>(optional)</i></span> [<a href="https://imgur.com/upload" onclick="window.open(this.href, 'mywin', 'left=20,top=20,width=800,height=600,toolbar=1,resizable=0'); return false;" id="image_upload" class="image_upload">upload image</a>]</div>
+        <input type="text" class="submit_link" id="submit_link" name="submit_link" />
+        <div for="submit_text" class="submit_text_label" id="submit_text_label">discussion:</div>
+        <div class="toggle-preview-text" style=""></div>
+        <textarea class="submit_text" id="submit_text" name="submit_text"></textarea>
+        <button class="toggle_post_button">toggle preview</button>
+        <div for="submit_r" class="submit_r_label" id="submit_r_label">subreddit:</div>
+        <input type="text" class="submit_r" id="submit_r" name="submit_r" />
+        <input type="button" class="submit_button" id="submit_button" value="POST" />
+      </div>
+      `
+    );
+  }
 
 
 

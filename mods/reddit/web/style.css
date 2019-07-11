@@ -132,6 +132,7 @@ body {
 .post_author_clickable {
  cursor: pointer;
 }
+
 .submit_post {
  display: none;
  padding: 10px 30px 30px 30px;
@@ -163,6 +164,7 @@ body {
  clear:both;
  resize: vertical;
 }
+
 .toggle-post-button {
     width: 100px;
     padding: 5px;
