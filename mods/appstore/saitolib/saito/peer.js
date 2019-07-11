@@ -420,13 +420,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
       // browsers get paranoid and rebroadcast any pending txs on connection to any peer
       //
       if (this.app.BROWSER == 1) {
-        setTimeout(() => {
-          // for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
-          //   let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
-          //   this.app.network.propagateTransaction(tmptx);
-          // }
-          this.app.network.sendPendingTransactions();
-        }, 500);
+        this.app.network.sendPendingTransactions();
       }
     });
 
@@ -597,7 +591,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
           //
           // if the client is completely off-chain, let them know
           //
-           if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
+          if (((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) || (this.app.BROWSER == 0 && peer_last_bid > my_last_bid)) {
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
             this.promptOffChainUpdate();
           } else {
