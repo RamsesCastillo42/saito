@@ -30,6 +30,11 @@ function Wallet(app) {
 
   this.inputs_hmap                  = [];
   this.inputs_hmap_counter 	    = 0;
+
+  this.recreate_pending             = 0;	// create new transaction (slip) for anything in 
+						// the pending array so that they can be properly
+						// rebroadcast (happens in event of chain reorg)
+
   this.inputs_hmap_counter_limit    = 100000;
   this.outputs_hmap                 = [];
   this.outputs_hmap_counter 	    = 0;
@@ -371,6 +376,120 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
 
 
 /**
+ * create a transaction to replace oldtx slips with 
+ * new inputs that the wallet deems valid. this is 
+ * used to resend pending transactions that have been
+ * created on a chain
+ *
+ * @param {tx} old bad transaction
+ *
+ * @returns {saito.transaction} if successful
+ * @returns {null} if inadequate inputs
+ **/
+Wallet.prototype.createReplacementTransaction = function createReplacementTransaction(oldtx) {
+
+  let recipients = [];
+  let outputs    = [];
+  let inputs     = Big(0.0);
+  let fee        = Big(0.0);
+
+  //
+  // calculate inputs
+  //
+  for (let z = 0; z < oldtx.transaction.from.length; z++) {
+    inputs = inputs.plus(Big(oldtx.transaction.from[z].amt));
+  }
+
+  //
+  // calculate outputs
+  //
+  for (let z = 0; z < oldtx.transaction.to.length; z++) {
+
+    if (!recipients.includes(oldtx.transaction.to[z].add)) {
+      recipients.push(oldtx.transaction.to[z].add);
+      outputs.push(Big(0.0));
+    }
+
+    let ridx = 0;
+    for (let zz = 0; zz < recipients.length; zz++) {
+      if (recipients[zz] === oldtx.transaction.to[z].add) {
+	ridx = zz;
+	zz = recipients.length+1;
+      }
+    }
+
+    outputs[ridx] = outputs[ridx].plus(Big(oldtx.transaction.to[z].amt));
+
+  }
+
+
+  //
+  // calculate total fees paid
+  //
+  let total_fees = Big(0.0);
+  for (let z = 0; z < outputs.length; z++) { total_fees = total_fees.plus(outputs[z]); }
+  total_fees = total_fees.minus(inputs).times(-1);
+
+
+  //
+  // subtract outputs I am paying myself to figure out actual amount needed...
+  //
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] == this.returnPublicKey()) {
+      inputs = inputs.minus(outputs[z]);
+      outputs[z] = outputs[z].minus(outputs[z]);
+    }
+  }
+
+  //
+  // subtract fees from inputs
+  //
+  inputs = inputs.minus(total_fees);
+
+  //
+  // create the transaction
+  //
+  var tx           = new saito.transaction();
+
+  let our_idx = 0;
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] == this.returnPublicKey()) {
+      our_idx = z; z = recipients.length+1;
+    }
+  }
+
+  let newtx = this.createUnsignedTransaction(this.returnPublicKey(), outputs[our_idx].toString(), total_fees.toString());
+  if (newtx == null) { return null; }
+
+  //
+  // add slips for other users / recipients
+  //
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] != this.returnPublicKey()) {
+
+      if (outputs[z].eq(Big(0.0))) {
+        newtx.transaction.to.push(new saito.slip(recipients[z]));
+      } else {
+        let newtx2 = this.createUnsignedTransaction(recipients[z], outputs[z].toString(), 0);
+	if (newtx2 == null) { return null; }
+	for (let z = 0; z < newtx2.transaction.from.length; z++) {
+	  newtx.transaction.from.push(newtx2.transaction.from[z]);
+        }
+	for (let z = 0; z < newtx2.transaction.to.length; z++) {
+	  newtx.transaction.to.push(newtx2.transaction.to[z]);
+        }
+      }
+    }
+  }
+
+  newtx.transaction.ts = oldtx.transaction.ts;
+  newtx.transaction.msg = oldtx.transaction.msg;
+  return newtx;
+
+}
+
+
+/**
  * create a transaction with the appropriate slips given
  * the desired fee and payment to associate with the
  * transaction, and a change address to receive any
@@ -640,9 +759,33 @@ Wallet.prototype.purgeExpiredSlips = function purgeExpiredSlips() {
 //
 Wallet.prototype.onChainReorganization = function onChainReorganization(block_id, block_hash, lc) {
   if (lc == 1) {
+
     this.purgeExpiredSlips();
     this.resetSpentInputs();
+
+    //
+    // recreate pending slips
+    //
+    if (this.recreate_pending == 1) {
+      for (let i = 0; i < this.wallet.pending.length; i++) {
+        let ptx = new saito.transaction(this.wallet.pending[i]);
+        let newtx = this.createReplacementTransaction(ptx);
+        if (newtx != null) { 
+	  newtx = this.signTransaction(newtx);
+	  if (newtx != null) {
+	    this.wallet.pending[i] = JSON.stringify(newtx); 
+	  }
+	}
+      }
+
+      this.recreate_pending = 0;
+
+    }
+
+  } else {
+    this.recreate_pending = 1;
   }
+
   this.resetExistingSlips(block_id, block_hash, lc); 
 }
 
@@ -914,27 +1057,6 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
       if (to_slips[m].amt > 0) {
 
         //
-        // Slip(add="", amt="0", type=0, bid=0, tid=0, sid=0, bhash="", lc=1, rn=-1) {
-        //
-        // TODO: this seems to repeat work done in the saveBlock class now, where we
-        // have to provide this information prior to indexing slips. We should clean
-        // this up at some point in the future to avoid wasting the work of setting
-        // this information twice.
-        //
-        //var s = new saito.slip(
-        //  to_slips[m].add,
-        //  to_slips[m].amt,
-        //  to_slips[m].type,
-        //  blk.block.id,
-        //  tx.transaction.id,
-        //  to_slips[m].sid,
-        //  blk.returnHash(),
-        //  lc,
-        //  to_slips[m].rn
-        //);
-	//
-
-        //
         // if we are testing speed inserts, just
         // push to the back of the UTXI chain without
         // verifying anything
@@ -951,7 +1073,28 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
             if (this.containsOutput(to_slips[m]) == 0) {
               this.addInput(to_slips[m]);
             }
-          }
+          } else {
+
+	    //
+	    // it is possible we have slips marked as unspent for lite-clients
+	    // because we have marked stuff as unspent in our initial blockchain
+	    // sync.
+	    //
+	    if (lc == 1) {
+
+	      //
+	      // make sure slip is spendable
+	      //
+	      let our_index = to_slips[m].returnIndex();
+  	      for (let m = this.wallet.inputs.length-1; m >= 0; m--) {
+  	        if (this.wallet.inputs[m].returnIndex() === our_index) {
+console.log("LONGEST CHAIN UPDATING FOR: " + JSON.stringify(to_slips[m].bid + " -- " + to_slips[m].amt));
+      		  this.wallet.inputs[m].lc = lc;
+    		}
+	      }
+
+	    }
+	  }
         }
       }
     }
@@ -1058,6 +1201,34 @@ Wallet.prototype.validateWalletSlips = function validateWalletSlips(peer) {
   // wallet should now be clean
   //
   this.saveWallet();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Resets any slips from the block_id provided as being off
+ * the longest chain. This is used primarily by lite-clients
+ * that are connecting but do not have a history of the longest
+ * chain to use to validate their slips on restart.
+ *
+ * {integer} block_id
+ */
+Wallet.prototype.resetSlipsOffLongestChain = function resetSlipsOffLongestChain(bid=0) {
+
+  for (let i = 0; i < this.wallet.inputs.length; i++) {
+    if (this.wallet.inputs[i].bid >= bid) {
+      this.wallet.inputs[i].lc = 0;
+    }
+  }
 
 }
 

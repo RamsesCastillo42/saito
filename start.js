@@ -146,7 +146,6 @@ async function initSaito() {
       `)
     }
 
-
   } catch (err) {
     console.log(err);
   }
