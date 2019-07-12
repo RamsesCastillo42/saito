@@ -624,6 +624,19 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
   }
 
   //
+  // check inputs all on longest chain
+  //
+  for (let z = 0; z < tx.transaction.from.length; z++) {
+    if (tx.transaction.from[z].bhash != "") {
+      if (this.app.blockchain.isBlockHashOnLongestChain(tx.transaction.from[z].bhash) != 1) {
+        console.log(JSON.stringify(tx.transaction));
+        console.log("received transaction with inputs not on longest chain. rejecting");
+        return;
+      }
+    }
+  }
+
+  //
   // only accept one golden ticket
   //
   if (tx.isGoldenTicket()) {
@@ -670,19 +683,6 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
     // block (i.e. vote consistency, etc.)
     //
     if (tx.validate(this.app, null)) {
-
-      //
-      // check inputs all on longest chain
-      //
-      for (let z = 0; z < tx.transaction.from.length; z++) {
-        if (tx.transaction.from[z].bhash != "") {
-          if (this.app.blockchain.isBlockHashOnLongestChain(tx.transaction.from[z].bhash) != 1) {
-	    console.log("received transaction with inputs not on longest chain. rejecting");
-            return;
-          }
-        }
-      }
-
 
       //
       // propagate if we can't use tx to create a block
