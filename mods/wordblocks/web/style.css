@@ -180,7 +180,7 @@ body {
     width: 60%
   }
   #controls {
-    height: 250px;
+    height: 350px;
   }
 }
 
@@ -197,11 +197,11 @@ body {
     width: 60%
   }
   #controls {
-    height: 250px;
+    height: 350px;
   }
   
   #chat_container {
-    display: none;
+    display: block;
   }
 }
 
@@ -211,6 +211,6 @@ body {
 }
 
 .mainfixedbottom {
-  margin: 0 0 250px 0;
+  margin: 0 0 350px 0;
 }
 
