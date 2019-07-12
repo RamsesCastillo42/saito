@@ -30,6 +30,11 @@ function Wallet(app) {
 
   this.inputs_hmap                  = [];
   this.inputs_hmap_counter 	    = 0;
+
+  this.recreate_pending             = 0;	// create new transaction (slip) for anything in 
+						// the pending array so that they can be properly
+						// rebroadcast (happens in event of chain reorg)
+
   this.inputs_hmap_counter_limit    = 100000;
   this.outputs_hmap                 = [];
   this.outputs_hmap_counter 	    = 0;
@@ -371,6 +376,120 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
 
 
 /**
+ * create a transaction to replace oldtx slips with 
+ * new inputs that the wallet deems valid. this is 
+ * used to resend pending transactions that have been
+ * created on a chain
+ *
+ * @param {tx} old bad transaction
+ *
+ * @returns {saito.transaction} if successful
+ * @returns {null} if inadequate inputs
+ **/
+Wallet.prototype.createReplacementTransaction = function createReplacementTransaction(oldtx) {
+
+  let recipients = [];
+  let outputs    = [];
+  let inputs     = Big(0.0);
+  let fee        = Big(0.0);
+
+  //
+  // calculate inputs
+  //
+  for (let z = 0; z < oldtx.transaction.from.length; z++) {
+    inputs = inputs.plus(Big(oldtx.transaction.from[z].amt));
+  }
+
+  //
+  // calculate outputs
+  //
+  for (let z = 0; z < oldtx.transaction.to.length; z++) {
+
+    if (!recipients.includes(oldtx.transaction.to[z].add)) {
+      recipients.push(oldtx.transaction.to[z].add);
+      outputs.push(Big(0.0));
+    }
+
+    let ridx = 0;
+    for (let zz = 0; zz < recipients.length; zz++) {
+      if (recipients[zz] === oldtx.transaction.to[z].add) {
+	ridx = zz;
+	zz = recipients.length+1;
+      }
+    }
+
+    outputs[ridx] = outputs[ridx].plus(Big(oldtx.transaction.to[z].amt));
+
+  }
+
+
+  //
+  // calculate total fees paid
+  //
+  let total_fees = Big(0.0);
+  for (let z = 0; z < outputs.length; z++) { total_fees = total_fees.plus(outputs[z]); }
+  total_fees = total_fees.minus(inputs).times(-1);
+
+
+  //
+  // subtract outputs I am paying myself to figure out actual amount needed...
+  //
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] == this.returnPublicKey()) {
+      inputs = inputs.minus(outputs[z]);
+      outputs[z] = outputs[z].minus(outputs[z]);
+    }
+  }
+
+  //
+  // subtract fees from inputs
+  //
+  inputs = inputs.minus(total_fees);
+
+  //
+  // create the transaction
+  //
+  var tx           = new saito.transaction();
+
+  let our_idx = 0;
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] == this.returnPublicKey()) {
+      our_idx = z; z = recipients.length+1;
+    }
+  }
+
+  let newtx = this.createUnsignedTransaction(this.returnPublicKey(), outputs[our_idx].toString(), total_fees.toString());
+  if (newtx == null) { return null; }
+
+  //
+  // add slips for other users / recipients
+  //
+  for (let z = 0; z < recipients.length; z++) {
+    if (recipients[z] != this.returnPublicKey()) {
+
+      if (outputs[z].eq(Big(0.0))) {
+        newtx.transaction.to.push(new saito.slip(recipients[z]));
+      } else {
+        let newtx2 = this.createUnsignedTransaction(recipients[z], outputs[z].toString(), 0);
+	if (newtx2 == null) { return null; }
+	for (let z = 0; z < newtx2.transaction.from.length; z++) {
+	  newtx.transaction.from.push(newtx2.transaction.from[z]);
+        }
+	for (let z = 0; z < newtx2.transaction.to.length; z++) {
+	  newtx.transaction.to.push(newtx2.transaction.to[z]);
+        }
+      }
+    }
+  }
+
+  newtx.transaction.ts = oldtx.transaction.ts;
+  newtx.transaction.msg = oldtx.transaction.msg;
+  return newtx;
+
+}
+
+
+/**
  * create a transaction with the appropriate slips given
  * the desired fee and payment to associate with the
  * transaction, and a change address to receive any
@@ -640,9 +759,33 @@ Wallet.prototype.purgeExpiredSlips = function purgeExpiredSlips() {
 //
 Wallet.prototype.onChainReorganization = function onChainReorganization(block_id, block_hash, lc) {
   if (lc == 1) {
+
     this.purgeExpiredSlips();
     this.resetSpentInputs();
+
+    //
+    // recreate pending slips
+    //
+    if (this.recreate_pending == 1) {
+      for (let i = 0; i < this.wallet.pending.length; i++) {
+        let ptx = new saito.transaction(this.wallet.pending[i]);
+        let newtx = this.createReplacementTransaction(ptx);
+        if (newtx != null) { 
+	  newtx = this.signTransaction(newtx);
+	  if (newtx != null) {
+	    this.wallet.pending[i] = JSON.stringify(newtx); 
+	  }
+	}
+      }
+
+      this.recreate_pending = 0;
+
+    }
+
+  } else {
+    this.recreate_pending = 1;
   }
+
   this.resetExistingSlips(block_id, block_hash, lc); 
 }
 

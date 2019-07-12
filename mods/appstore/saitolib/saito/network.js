@@ -127,7 +127,7 @@ Network.prototype.initialize = function initialize() {
   //
   setTimeout(() => {
     this.sendPendingTransactions();
-  }, 3000);
+  }, 2500);
 
 }
 
