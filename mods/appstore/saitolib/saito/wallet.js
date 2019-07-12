@@ -1057,27 +1057,6 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
       if (to_slips[m].amt > 0) {
 
         //
-        // Slip(add="", amt="0", type=0, bid=0, tid=0, sid=0, bhash="", lc=1, rn=-1) {
-        //
-        // TODO: this seems to repeat work done in the saveBlock class now, where we
-        // have to provide this information prior to indexing slips. We should clean
-        // this up at some point in the future to avoid wasting the work of setting
-        // this information twice.
-        //
-        //var s = new saito.slip(
-        //  to_slips[m].add,
-        //  to_slips[m].amt,
-        //  to_slips[m].type,
-        //  blk.block.id,
-        //  tx.transaction.id,
-        //  to_slips[m].sid,
-        //  blk.returnHash(),
-        //  lc,
-        //  to_slips[m].rn
-        //);
-	//
-
-        //
         // if we are testing speed inserts, just
         // push to the back of the UTXI chain without
         // verifying anything
@@ -1094,7 +1073,28 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
             if (this.containsOutput(to_slips[m]) == 0) {
               this.addInput(to_slips[m]);
             }
-          }
+          } else {
+
+	    //
+	    // it is possible we have slips marked as unspent for lite-clients
+	    // because we have marked stuff as unspent in our initial blockchain
+	    // sync.
+	    //
+	    if (lc == 1) {
+
+	      //
+	      // make sure slip is spendable
+	      //
+	      let our_index = to_slips[m].returnIndex();
+  	      for (let m = this.wallet.inputs.length-1; m >= 0; m--) {
+  	        if (this.wallet.inputs[m].returnIndex() === our_index) {
+console.log("LONGEST CHAIN UPDATING FOR: " + JSON.stringify(to_slips[m].bid + " -- " + to_slips[m].amt));
+      		  this.wallet.inputs[m].lc = lc;
+    		}
+	      }
+
+	    }
+	  }
         }
       }
     }
@@ -1185,6 +1185,34 @@ Wallet.prototype.validateWalletSlips = function validateWalletSlips() {
   // wallet should now be clean
   //
   this.saveWallet();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Resets any slips from the block_id provided as being off
+ * the longest chain. This is used primarily by lite-clients
+ * that are connecting but do not have a history of the longest
+ * chain to use to validate their slips on restart.
+ *
+ * {integer} block_id
+ */
+Wallet.prototype.resetSlipsOffLongestChain = function resetSlipsOffLongestChain(bid=0) {
+
+  for (let i = 0; i < this.wallet.inputs.length; i++) {
+    if (this.wallet.inputs[i].bid >= bid) {
+      this.wallet.inputs[i].lc = 0;
+    }
+  }
 
 }
 

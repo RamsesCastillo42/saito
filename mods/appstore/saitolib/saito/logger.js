@@ -28,12 +28,6 @@ Logger.prototype.initialize = function initialize() {
 
     // var exceptionHandler;
 
-    // if (process.env.NODE_ENV == "prod") {
-    //   exceptionHandler = new Winston.transports.File({
-    //     filename: 'logs/exceptions.log'
-    //   });
-    // }
-
     const logger = Winston.createLogger({
       exitOnError: false,
       transports: [
@@ -89,8 +83,6 @@ Logger.prototype.logInfo = function logInfo(message) {
   if (this.app.BROWSER == 1) {
     return;
   }
-  //console.log(message);
-  //process.exit(1)
   this.logger.info(message);
 }
 
@@ -102,10 +94,6 @@ Logger.prototype.logInfo = function logInfo(message) {
  */
 Logger.prototype.logError = function logError(message, err) {
   console.log(message);
-
-  //
-  //process.exit(1);
-
   if (this.app.BROWSER == 1) {
     console.log(message + ": " + err);
     return;
