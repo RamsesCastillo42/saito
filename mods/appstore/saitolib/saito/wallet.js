@@ -25,7 +25,7 @@ function Wallet(app) {
   this.wallet.outputs               = [];
   this.wallet.spends                = [];
   this.wallet.default_fee           = 2;
-  this.wallet.version               = 2.13;
+  this.wallet.version               = 2.14;
   this.wallet.pending               = []; // sent but not seen
 
   this.inputs_hmap                  = [];
@@ -491,6 +491,15 @@ Wallet.prototype.createReplacementTransaction = function createReplacementTransa
 
   newtx.transaction.ts = oldtx.transaction.ts;
   newtx.transaction.msg = oldtx.transaction.msg;
+
+  //
+  // we save here so that we don't create another transaction
+  // with the same inputs after broadcasting on reload
+  //
+  this.saveWallet();
+
+
+
   return newtx;
 
 }
