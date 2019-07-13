@@ -25,7 +25,7 @@ function Wallet(app) {
   this.wallet.outputs               = [];
   this.wallet.spends                = [];
   this.wallet.default_fee           = 2;
-  this.wallet.version               = 2.11;
+  this.wallet.version               = 2.13;
   this.wallet.pending               = []; // sent but not seen
 
   this.inputs_hmap                  = [];
@@ -369,6 +369,13 @@ Wallet.prototype.createUnsignedTransaction = function createUnsignedTransaction(
       tx.transaction.to[tx.transaction.to.length-1].type = 0;
     }
   }
+
+
+  //
+  // we save here so that we don't create another transaction
+  // with the same inputs after broadcasting on reload
+  //
+  this.saveWallet();
 
   return tx;
 
