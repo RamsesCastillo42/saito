@@ -103,13 +103,13 @@ class ChatCore extends ModTemplate {
       case "chat send message":
         var tx = new saito.transaction(req.data);
         if (tx == null) { return; }
+        this._receiveMessage(app, tx);
         if (mycallback) {
           mycallback({
             "payload": "success",
             "error": {}
           });
         }
-        this._receiveMessage(app, tx);
         break;
       case "chat request create room":
         var tx = new saito.transaction(req.data);

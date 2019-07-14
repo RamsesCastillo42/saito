@@ -59,7 +59,7 @@ function Peer(app, peerjson = "") {
   // queue to prevent flooding
   //
   this.message_queue = [];
-  this.message_queue_speed = 2000;             // sent
+  this.message_queue_speed = 3000;             // sent
   this.message_queue_timer = null;
 
 
@@ -88,6 +88,7 @@ function Peer(app, peerjson = "") {
   //
   this.message_queue_timer = setInterval(() => {
     if (this.message_queue.length > 0) {
+      if (this.message_queue.length > 10) { this.message_queue = this.message_queue.splice(10); }
 console.log("Messages in Queue: " + this.message_queue.length);
       if (this.socket != null) {
         console.log("SOCKET IS NOT NULL");
@@ -187,7 +188,8 @@ Peer.prototype.connect = function connect() {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: Infinity
+      reconnectionAttempts: Infinity,
+      transports: ['websocket']
     });
 
     //
@@ -437,6 +439,7 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
         }
       } catch (err) {
         console.log("Error triggered by: " + JSON.stringify(message));
+        console.log(err);
       }
 
       ///////////////////////////

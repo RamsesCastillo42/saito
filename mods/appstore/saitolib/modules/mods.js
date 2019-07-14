@@ -238,7 +238,9 @@ Modules.prototype.handlePeerRequest = function handlePeerRequest(message, peer, 
   for (let iii = 0; iii < this.mods.length; iii++) {
     try {
       this.mods[iii].handlePeerRequest(this.app, message, peer, mycallback);
-    } catch (err) {}
+    } catch (err) {
+      console.error("MODULE HANDLE PEER REQUEST ERROR: ", err);
+    }
   }
   return;
 }
