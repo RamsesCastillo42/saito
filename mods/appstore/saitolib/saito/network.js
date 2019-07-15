@@ -516,7 +516,7 @@ Network.prototype.propagateTransaction = function propagateTransaction(tx, outbo
  */
 Network.prototype.sendTransactionToPeers = function sendTransactionToPeers(tx, outbound_message, callback=null) {
   this.peers.forEach((peer) => {
-    if (!peer.inTransactionPath(tx)) {
+    if (!peer.inTransactionPath(tx) && peer.returnPublicKey() != null) {
       let tmptx = peer.addPathToTransaction(tx);
       if (callback) {
         peer.sendRequestWithCallback(outbound_message, JSON.stringify(tmptx.transaction), callback);

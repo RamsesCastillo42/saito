@@ -569,9 +569,10 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
           //
           // if we are completely off-chain, let us know
           //
-          if ((peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0)) {
+          if (peer_last_bid - my_last_bid > this.app.blockchain.genesis_period && peer_last_bid != 0 && this.peer.synctype == "full") {
 
             console.log("PROMPT OFF_CHAIN UPDATE: --->" + peer_last_bid + "<--- " + this.app.blockchain.returnLatestBlockId());
+            console.log("PERR INFO: ", this.peer);
 	    console.log("\n\nYour machine appears to be running at least a genesis period behind the machine to which you are connecting. We are terminating your machine now to avoid issues. This is a temporary measure added to the software during TESTNET period.");
             process.exit();
           } else {
