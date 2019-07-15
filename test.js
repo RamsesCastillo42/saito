@@ -41,6 +41,13 @@ async function initSaito() {
     //app.server     = new saito.server(app);
     app.modules    = require('./lib/saito/modules')(app, mods);
 
+
+
+console.log(app.crypto.stringToHex("20d0a664c3371c024176379a9fde"));
+console.log(app.crypto.hexToString("20d0a664c3371c024176379a9fde"));
+
+process.exit();
+
 /*
     ////////////////
     // Initialize //
