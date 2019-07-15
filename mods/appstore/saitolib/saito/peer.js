@@ -94,6 +94,7 @@ console.log("Messages in Queue: " + this.message_queue.length);
         console.log("SOCKET IS NOT NULL");
         if (this.socket.connected == true) {
 console.log("Emitting Messages in Queue!");
+console.log(JSON.stringify(this.message_queue[0]));
           this.socket.emit('request', this.message_queue[0]);
           this.message_queue.splice(0, 1);
         }
