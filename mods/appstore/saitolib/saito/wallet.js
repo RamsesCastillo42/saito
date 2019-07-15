@@ -210,6 +210,8 @@ Wallet.prototype.initialize = function initialize(app) {
           if (this.wallet.inputs[x].tid == ptx_tid) {
             if (this.wallet.inputs[x].sid == ptx_sid) {
               if (this.wallet.inputs[x].bhash == ptx_bhash) {
+console.log("\n\n\nWE ARE UPDATING OUR PENDING SLIP so it works: ");
+console.log(JSON.stringify(this.wallet.pending[z]));
 	        this.wallet.spends[x] = 1;
 	        x = this.wallet.inputs.length;
 	      }
