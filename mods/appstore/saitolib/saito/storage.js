@@ -30,7 +30,7 @@ function Storage(app, data, dest="blocks") {
   this.shashmap_fastload   = 0;
   this.shashmap_dump_bid   = 0;
   this.shashmap_dump_bhash = "";
-  if (this.app.BROWSER == 0) { this.use_shashmap_dump = 1; }
+  // if (this.app.BROWSER == 0) { this.use_shashmap_dump = 1; }
 
   return this;
 
@@ -271,6 +271,7 @@ Storage.prototype.saveBlock = async function saveBlock(blk=null, lc=0) {
           blk.transactions[b].transaction.to[bb].lc = lc;
 
           var slip_map_index = blk.transactions[b].transaction.to[bb].returnIndex();
+console.log(slip_map_index);
           shashmap.insert_slip(slip_map_index, -1);
 
         }
@@ -818,6 +819,7 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
 
   if (slip.amt > 0) {
     if (shashmap.validate_slip(slip.returnIndex(), bid) == 0) {
+      console.log(`SHASHMAP VALUE FOR ${slip.returnIndex()}: `, this.returnShashmapValue(slip));
       if (slip.bid < this.app.blockchain.lowest_acceptable_bid) {
 
         //
@@ -836,6 +838,7 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
         // but ensure slip also valid in genesis period
         //
         if (slip.bid < (bid - this.app.blockchain.genesis_period)) {
+          console.log("ERROR: slip is not valid in this genesis period");
           return false;
         }
 
@@ -855,6 +858,9 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
  */
 Storage.prototype.returnShashmapValue = function returnShashmapValue(slip) {
   return shashmap.slip_value(slip.returnIndex());
+}
+Storage.prototype.returnShashmapValueBySlipIndex = function returnShashmapValueBySlipIndex(slipidx) {
+  return shashmap.slip_value(slipidx);
 }
 
 
