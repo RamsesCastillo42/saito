@@ -3,6 +3,7 @@ const ChatCore = require('./chat_core.js');
 var ColorHash = require('color-hash');
 const axios = require('axios');
 const linkifyHtml = require('linkifyjs/html');
+const emoji = require('node-emoji');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -471,6 +472,7 @@ Happy Chatting!`
   }
 
   _formatMessage({id, timestamp, author, message}){
+    message = emoji.emojify(message);
     message = linkifyHtml(message, { target: { url: '_self' } });
 
     let d = new Date(timestamp);
