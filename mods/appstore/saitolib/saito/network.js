@@ -392,7 +392,7 @@ Network.prototype.sendRequest = function sendRequest(message, data="") {
 Network.prototype.sendPendingTransactions = function sendPendingTransactions() {
   for (let i = 0; i < this.app.wallet.wallet.pending.length; i++) {
     let tmptx = new saito.transaction(this.app.wallet.wallet.pending[i]);
-    if (tmptx.type == 0) {
+    if (tmptx.transaction.type == 0) {
       this.propagateTransaction(tmptx);
     } else {
       //
