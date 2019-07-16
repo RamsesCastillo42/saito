@@ -200,8 +200,6 @@ Wallet.prototype.initialize = function initialize(app) {
 
       let spent_slip = ptx.transaction.from[y];
 
-console.log("\n\n\nWE HAVE A PENDING TX TO UPDATE! 3");
-
       let ptx_bhash = spent_slip.bhash;
       let ptx_bid = spent_slip.bid;
       let ptx_tid = spent_slip.tid;
@@ -786,19 +784,19 @@ Wallet.prototype.onChainReorganization = function onChainReorganization(block_id
     // recreate pending slips
     //
     if (this.recreate_pending == 1) {
+
       for (let i = 0; i < this.wallet.pending.length; i++) {
         let ptx = new saito.transaction(this.wallet.pending[i]);
         let newtx = this.createReplacementTransaction(ptx);
         if (newtx != null) { 
 	  newtx = this.signTransaction(newtx);
 	  if (newtx != null) {
+if (this.app.BROWSER == 1) { alert("Re-adding the Pending Transaction in recreated: " + JSON.stringify(newtx.transaction)); }
 	    this.wallet.pending[i] = JSON.stringify(newtx); 
 	  }
 	}
       }
-
       this.recreate_pending = 0;
-
     }
 
   } else {
@@ -1018,6 +1016,7 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
   if (this.wallet.pending.length > 0) {
     for (let i = 0; i < this.wallet.pending.length; i++) {
       if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
+      //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 1: " + JSON.stringify(this.wallet.pending[i])); }
 	this.wallet.pending.splice(i, 1);
 	i--;
       } else {
@@ -1038,6 +1037,8 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
 	  // ensures we do not delete pending for 200 minutes
 	  //
 	  if ((ptx_ts + 12000000) < blk_ts) {
+console.log("DELETING PENDING TX FROM OVERTIME: " + JSON.stringify(this.wallet.pending[i]));
+//if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 2: " + JSON.stringify(this.wallet.pending[i])); }
 	    this.wallet.pending.splice(i, 1);
 	    i--;
 	  }

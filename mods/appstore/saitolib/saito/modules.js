@@ -47,7 +47,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/chess/chess')(this.app));
   //this.mods.push(require('../../mods/arcadev2/arcade')(this.app));
   //this.mods.push(require('../../mods/arcade/arcade')(this.app));
-  this.mods.push(require('../../mods/profile/profile')(this.app));
+  //this.mods.push(require('../../mods/profile/profile')(this.app));
   this.mods.push(require('../../mods/proxymod/proxymod')(this.app));
   // this.mods.push(require('../../mods/citysim/citysim')(this.app));
 
