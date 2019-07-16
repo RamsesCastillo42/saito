@@ -797,7 +797,7 @@ Block.prototype.validate = async function validate() {
     //
     if (prevblk.block.ts >= this.block.ts) {
       console.log("Block invalid: doublespend input");
-      this.app.logger.logError("Block timestamp problem: block timestamp appears to be before its preceeding block", {message:"",err:""});
+      //this.app.logger.logError("Block timestamp problem: block timestamp appears to be before its preceeding block", {message:"",err:""});
       return 0;
     }
 
@@ -810,7 +810,7 @@ Block.prototype.validate = async function validate() {
     //
     if (this.block.txsjson.length > this.transactions.length) {
       console.log("Block transaction and txsjson arrays do not match. Discarding.");
-      this.app.logger.logError("Block transactions do not match. Discarding.", { message: "", err: "" });
+      //this.app.logger.logError("Block transactions do not match. Discarding.", { message: "", err: "" });
       return 0;
     }
 
@@ -823,7 +823,7 @@ Block.prototype.validate = async function validate() {
       for (let j = 0; j < this.transactions[i].transaction.from.length; j++) {
         if (transaction_input_hmap[this.transactions[i].transaction.from[j].returnIndex()] != undefined) {
           console.log("Block invalid: doublespend input");
-          this.app.logger.logError("Block invalid: doublespent input - " + this.transactions[i].transaction.from[j].returnIndex(), { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: doublespent input - " + this.transactions[i].transaction.from[j].returnIndex(), { message: "", err: "" });
           console.log(i + " -- " + j);
           console.log(JSON.stringify(this.transactions[i].transaction.from[j]));
           return 0;
@@ -840,8 +840,9 @@ Block.prototype.validate = async function validate() {
       if (this.transactions[i].transaction.type < 3) {
         if (!this.transactions[i].validate(this.app, this)) {
           console.log(`Block invalid: contains invalid transaction: ${i}`);
+          console.log(JSON.stringify(this.transactions[i]));
           this.transactions[i].is_valid = 0;
-          this.app.logger.logError("Block invalid: contains invalid transaction: " + i, { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: contains invalid transaction: " + i, { message: "", err: "" });
           return 0;
         }
       }
@@ -856,7 +857,7 @@ Block.prototype.validate = async function validate() {
 
     if (did_successfully_validate == 0) {
       console.log('Block invalid: contains invalid transaction -- sig invalid');
-      this.app.logger.logError("Block invalid: contains invalid transaction: " + i, { message: "", err: "" });
+      //this.app.logger.logError("Block invalid: contains invalid transaction: " + i, { message: "", err: "" });
       return 0;
     }
     //console.log(" ---> after sigs:  " + new Date().getTime());
@@ -909,7 +910,7 @@ Block.prototype.validate = async function validate() {
 
       if (t != this.block.merkle) {
         console.log("Block merkle root hash is not as expected");
-        this.app.logger.logError("Block merkle root hash is not as expected", { message: "", err: "" });
+        //this.app.logger.logError("Block merkle root hash is not as expected", { message: "", err: "" });
         return 0;
       }
 
@@ -920,7 +921,7 @@ Block.prototype.validate = async function validate() {
         if (mt[this.transactions[m].transaction.mhash] != undefined) {
           if (mt[this.transactions[m].transaction.mhash].level !== 0) {
             console.log("Block merkle tree does not contain MHASH of transaction");
-            this.app.logger.logError("Block merkle tree does not contain MHASH of transaction", { message: "", err: "" });
+            //this.app.logger.logError("Block merkle tree does not contain MHASH of transaction", { message: "", err: "" });
             return 0;
           }
         }
@@ -946,7 +947,7 @@ Block.prototype.validate = async function validate() {
 
       if (credits_available.lt(burn_fee_needed)) {
         console.log(`Block invalid: transaction fees inadequate: ${credits_available.toFixed(8)} -- ${burn_fee_needed.toFixed(8)}`);
-        this.app.logger.logError("Block invalid: transaction fees inadequate", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: transaction fees inadequate", { message: "", err: "" });
         console.log(this.stringify(1));
         process.exit(1);
         return 0;
@@ -969,13 +970,13 @@ Block.prototype.validate = async function validate() {
 
         if (feetx == null) {
           console.log("Block invalid: surplus exists but no fee ticket");
-          this.app.logger.logError("Block invalid: surplus exists but no fee ticket", { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: surplus exists but no fee ticket", { message: "", err: "" });
           return 0;
         }
 
         if (feetx_count > 1) {
           console.log("Block invalid: multiple fee transactions found in block");
-          this.app.logger.logError("Block invalid: multiple fee transactions found in block", { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: multiple fee transactions found in block", { message: "", err: "" });
           return 0;
         }
 
@@ -984,7 +985,7 @@ Block.prototype.validate = async function validate() {
 
         if (!Big(v.toFixed(8)).eq(Big(surplus_available.toFixed(8)))) {
           console.log(`Block invalid: surplus exists but does not match fee ticket: ${v.toFixed(8)} -- ${surplus_available.toFixed(8)}`);
-          this.app.logger.logError("Block invalid: surplus exists but does not match fee ticket", { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: surplus exists but does not match fee ticket", { message: "", err: "" });
           return 0;
         }
       }
@@ -1006,7 +1007,7 @@ Block.prototype.validate = async function validate() {
 
     if (gttx_count > 1) {
       console.log("Block invalid: has more than one golden ticket");
-      this.app.logger.logError("Block invalid: has more than one golden ticket", { message: "", err: "" });
+      //.logError("Block invalid: has more than one golden ticket", { message: "", err: "" });
       return 0;
     }
 
@@ -1016,12 +1017,12 @@ Block.prototype.validate = async function validate() {
       // difficulty, paysplit should be unchanged
       if (this.returnPaysplit() != prevblk.returnPaysplit()) {
         console.log("Block invalid: no golden ticket yet paysplit differs");
-        this.app.logger.logError("Block invalid: no golden ticket yet paysplit differs", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: no golden ticket yet paysplit differs", { message: "", err: "" });
         return 0;
       }
       if (this.returnDifficulty() != prevblk.returnDifficulty()) {
         console.log("Block invalid: no golden ticket yet difficulty differs");
-        this.app.logger.logError("Block invalid: no golden ticket yet difficulty differs", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: no golden ticket yet difficulty differs", { message: "", err: "" });
         return 0;
       }
 
@@ -1033,7 +1034,7 @@ Block.prototype.validate = async function validate() {
       if (!golden.validateSolution(this, prevblk, gttx.transaction.from[0].add)) {
         console.log("Block invalid: contains invalid golden ticket (solution invalid)");
         console.log(gttx.transaction);
-        this.app.logger.logError("Block contains invalid golden ticket (solution invalid)", { message: "", err: "" });
+       // this.app.logger.logError("Block contains invalid golden ticket (solution invalid)", { message: "", err: "" });
         return 0;
       }
 
@@ -1054,24 +1055,24 @@ Block.prototype.validate = async function validate() {
 
       if (gttx.transaction == null) {
         console.log("Block invalid: contains invalid golden ticket transaction");
-        this.app.logger.logError("Block invalid: contains invalid golden ticket transaction", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: contains invalid golden ticket transaction", { message: "", err: "" });
         return 0;
       }
       if (gttx.transaction.to.length < 2) {
         console.log("Block invalid: contains insufficient transaction to slips");
-        this.app.logger.logError("Block invalid: contains insufficient transaction to slips", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: contains insufficient transaction to slips", { message: "", err: "" });
         return 0;
       }
 
       // create the golden ticket transaction
       if (gttx.transaction.to[0].amt != miner_share) {
         console.log("Block invalid: contains invalid miner share in golden ticket");
-        this.app.logger.logError("Block invalid: contains invalid miner share in golden ticket", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: contains invalid miner share in golden ticket", { message: "", err: "" });
         return 0;
       }
       if (gttx.transaction.to[1].amt != node_share) {
         console.log("Block invalid: contains invalid node share in golden ticket");
-        this.app.logger.logError("Block invalid: contains invalid node share in golden ticket", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: contains invalid node share in golden ticket", { message: "", err: "" });
         return 0;
       }
 
@@ -1082,13 +1083,13 @@ Block.prototype.validate = async function validate() {
       let winning_node = golden.findWinner(golden.solution, prevblk);
       if (gttx.transaction.to[0].add != gttx.transaction.from[0].add) {
         console.log("Block invalid: miner payment is not to miner address");
-        this.app.logger.logError("Block invalid: miner payment is not to miner address");
+        //.logError("Block invalid: miner payment is not to miner address");
         return 0;
       }
 
       if (gttx.transaction.to[1].add != winning_node) {
         console.log("Block invalid: charlie is getting inappropriately screwed");
-        this.app.logger.logError("Block invalid: charlie is getting inappropriately screwed");
+        //this.app.logger.logError("Block invalid: charlie is getting inappropriately screwed");
         return 0;
       }
 
@@ -1107,7 +1108,7 @@ Block.prototype.validate = async function validate() {
       }
       if (gttx_from_amt.lt(gttx_to_amt)) {
         console.log("Block invalid: golden ticket transaction tries to sneak money into change slip");
-        this.app.logger.logError("Block invalid: golden ticket transaction tries to sneak money into change slip", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: golden ticket transaction tries to sneak money into change slip", { message: "", err: "" });
         return 0;
       }
 
@@ -1117,12 +1118,12 @@ Block.prototype.validate = async function validate() {
       //
       if (this.returnDifficulty() != golden.calculateDifficulty(prevblk)) {
         console.log("Block invalid: difficulty adjustment is incorrect");
-        this.app.logger.logError("Block invalid: difficulty adjustment is incorrect", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: difficulty adjustment is incorrect", { message: "", err: "" });
         return 0;
       }
       if (this.returnPaysplit() != golden.calculatePaysplit(prevblk)) {
         console.log("Block invalid: paysplit adjustment is incorrect");
-        this.app.logger.logError("Block invalid: paysplit adjustment is incorrect", { message: "", err: "" });
+        //this.app.logger.logError("Block invalid: paysplit adjustment is incorrect", { message: "", err: "" });
         return 0;
       }
 
@@ -1130,7 +1131,7 @@ Block.prototype.validate = async function validate() {
       if (golden !== null) {
         if (golden.validateMonetaryPolicy(this.returnTreasury(), this.returnCoinbase(), prevblk) != 1) {
           console.log("Block invalid: monetary policy does not validate");
-          this.app.logger.logError("Block invalid: monetary policy does not validate", { message: "", err: "" });
+          //this.app.logger.logError("Block invalid: monetary policy does not validate", { message: "", err: "" });
           return 0;
         }
       }

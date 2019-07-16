@@ -24,7 +24,6 @@ async function initSaito() {
     app.crypto     = new saito.crypto();
     app.connection = new saito.connection();
     app.cluster    = new saito.cluster(app);
-    app.logger     = new saito.logger(app);
     app.storage    = new saito.storage(app);
     app.mempool    = new saito.mempool(app);
     app.voter      = new saito.voter(app);
@@ -45,7 +44,6 @@ async function initSaito() {
     ////////////////
     // Initialize //
     ////////////////
-    app.logger.initialize();
     app.cluster.initialize();
     await app.storage.initialize();
     app.voter.initialize();

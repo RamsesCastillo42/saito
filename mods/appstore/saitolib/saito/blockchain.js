@@ -292,7 +292,7 @@ Blockchain.prototype.addBlockToBlockchain = async function addBlockToBlockchain(
   // sanity check
   //
   if (newblock == null || !newblock.is_valid) {
-    this.app.logger.logError("BLOCK IS INVALID", {message:"",err:""});
+    //this.app.logger.logError("BLOCK IS INVALID", {message:"",err:""});
     this.indexing_active = false;
     return;
   }
@@ -932,7 +932,7 @@ console.log(" .... run rmv txs: " + new Date().getTime());
             this.app.storage.saveConfirmation(blk.returnHash(), i);
           } else {
             console.log("ERROR: we do not have a block within our callback limit in run callbacks in blockchain");
-            this.app.logger.logError("No block found in addBlocktoBlockchainPart2", {});
+            //this.app.logger.logError("No block found in addBlocktoBlockchainPart2", {});
             process.exit();
           }
         }
@@ -1550,7 +1550,7 @@ console.log(" .... block does not validate!");
     var blk = await this.returnBlockByHash(new_block_hashes[current_wind_index], 2);
     if (blk == null) {
        console.log("Cannot open block that should exist in windChain");
-       this.app.logger.logError("Cannot open block that should exist in windChain", { message: "", stack: "" });
+       //this.app.logger.logError("Cannot open block that should exist in windChain", { message: "", stack: "" });
 
        //
        //process.exit();

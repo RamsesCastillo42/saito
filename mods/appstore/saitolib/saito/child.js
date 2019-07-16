@@ -100,6 +100,7 @@ console.log(JSON.stringify(oldtx));
 
         if (!app.crypto.verifyMessage(obj[i].msg, obj[i].sig, obj[i].add)) {
           console.log(`Block invalid: contains invalid transaction: ${i}`);
+          console.log(JSON.stringify(blk.transactions[i]));
           process.send({ validateTransactions : 0 });
           return false;
         }
