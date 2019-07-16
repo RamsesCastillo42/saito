@@ -26,7 +26,7 @@ function Wallet(app) {
   this.wallet.spends                = [];
   this.wallet.default_fee           = 2;
   this.wallet.version               = 2.14;
-  this.wallet.pending               = []; // sent but not seen
+  this.wallet.pending               = []; 	// sent but not seen
 
   this.inputs_hmap                  = [];
   this.inputs_hmap_counter 	    = 0;
@@ -138,6 +138,7 @@ Wallet.prototype.initialize = function initialize(app) {
   //////////////////
   this.wallet.spends = []
   if (this.app.options.wallet != null) {
+
     if (this.app.options.wallet.inputs != null) {
       for (let i = 0; i < this.app.options.wallet.inputs.length; i++) {
         this.wallet.inputs[i] = new saito.slip(
@@ -193,12 +194,13 @@ Wallet.prototype.initialize = function initialize(app) {
   // check pending transactions and update spent slips
   //
   for (let z = 0; z < this.wallet.pending.length; z++) {
-
     let ptx = new saito.transaction(this.wallet.pending[z]);
 
     for (let y = 0; y < ptx.transaction.from.length; y++) {
 
       let spent_slip = ptx.transaction.from[y];
+
+console.log("\n\n\nWE HAVE A PENDING TX TO UPDATE! 3");
 
       let ptx_bhash = spent_slip.bhash;
       let ptx_bid = spent_slip.bid;
@@ -219,7 +221,6 @@ console.log(JSON.stringify(this.wallet.pending[z]));
 	  }
         }
       }
-
     }
   }
 
