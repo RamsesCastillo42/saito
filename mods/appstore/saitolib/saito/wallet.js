@@ -1016,7 +1016,11 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
   if (this.wallet.pending.length > 0) {
     for (let i = 0; i < this.wallet.pending.length; i++) {
       if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
+<<<<<<< HEAD
       //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 1: " + JSON.stringify(this.wallet.pending[i])); }
+=======
+      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 1: " + JSON.stringify(this.wallet.pending[i])); }
+>>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
 	this.wallet.pending.splice(i, 1);
 	i--;
       } else {
@@ -1038,7 +1042,11 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
 	  //
 	  if ((ptx_ts + 12000000) < blk_ts) {
 console.log("DELETING PENDING TX FROM OVERTIME: " + JSON.stringify(this.wallet.pending[i]));
+<<<<<<< HEAD
 //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 2: " + JSON.stringify(this.wallet.pending[i])); }
+=======
+      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 2: " + JSON.stringify(this.wallet.pending[i])); }
+>>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
 	    this.wallet.pending.splice(i, 1);
 	    i--;
 	  }

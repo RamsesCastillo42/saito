@@ -199,7 +199,8 @@ Storage.prototype.execDatabase = async function execDatabase(sql, params, mycall
   } catch (err) {
     if (mycallback == null) { return; }
     mycallback(err);
-    this.app.logger.logError("Error thrown in execDatabase: "+sql+" " + JSON.stringify(params), {message:"", stack: err});
+    console.error(err);
+    // this.app.logger.logError("Error thrown in execDatabase: "+sql+" " + JSON.stringify(params), {message:"", stack: err});
   }
 }
 
@@ -391,7 +392,8 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
 
     fs.unlink(block_filename, function(err) {
       if (err) {
-        this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
+        console.error(err);
+        // this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
       }
     });
 
@@ -415,7 +417,8 @@ Storage.prototype.deleteBlock = async function deleteBlock(block_id, block_hash,
 
         fs.unlink(block_filename, function(err) {
           if (err) {
-            this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
+            console.error(err);
+            // this.app.logger.logError("Error thrown in deleteBlock", {message:"", stack: err});
           }
         });
 
@@ -456,7 +459,8 @@ console.log("DELETING FILE: " + shashmap_dump_filename);
 
         fs.unlink(shashmap_dump_filename, function(err) {
           if (err) {
-            this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+            console.error(err);
+            // this.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
           }
         });
 
@@ -478,7 +482,10 @@ console.log("DELETING FILE: " + shashmap_dump_filename);
   if (Math.random() < 0.005) {
     //this.app.logger.logInfo(" ... defragmenting block database ... ");
     this.db.run("VACUUM", {}, function(err) {
-      if (err) { this.app.logger.logError("Error thrown in deleteBlocks", {message: "", stack: err}); }
+      if (err) {
+        console.error(err);
+        //  this.app.logger.logError("Error thrown in deleteBlocks", {message: "", stack: err});
+      }
     });
   }
 
@@ -519,7 +526,8 @@ console.log("DELETING FILE: " + shashmap_dump_filename);
 
           fs.unlink(shashmap_dump_filename, function(err) {
             if (err) {
-              storage_self.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
+              console.error(err);
+              // storage_self.app.logger.logError("Error thrown in deleteBlock : shashmap_dump_deletion", {message:"", stack: err});
             }
           });
 
@@ -656,8 +664,8 @@ Storage.prototype.loadSingleBlockFromDisk = async function loadSingleBlockFromDi
     let blk = this.openBlockByFilename(fileID);
 
     if (blk == null) {
+      console.error("Error loading block from disk: missing block: " +fileID);
       return null;
-      //console.log("Error loading block from disk: missing block: " +fileID);
       //this.app.logger.logError(`Error loading block from disk: missing block: ${fileID}`,
       //  { message: "", stack: "" });
       //process.exit();
@@ -711,8 +719,8 @@ Storage.prototype.loadSingleBlockFromDiskById = async function loadSingleBlockFr
     let blk = this.openBlockByFilename(fileID);
 
     if (blk == null) {
+      console.error("Error loading block from disk: missing block: " +fileID);
       return null;
-      //console.log("Error loading block from disk: missing block: " +fileID);
       //this.app.logger.logError(`Error loading block from disk: missing block: ${fileID}`,
       //  { message: "", stack: "" });
       //process.exit();
@@ -775,7 +783,8 @@ Storage.prototype.openBlockByFilename = function openBlockByFilename(filename) {
   }
   } catch (err) {
     console.log("Error reading block from disk");
-    this.app.logger.logError("Error reading block from disk", {message: "", stack: err})
+    console.error(err);
+    // this.app.logger.logError("Error reading block from disk", {message: "", stack: err})
   }
 
   return null;
@@ -886,7 +895,8 @@ Storage.prototype.loadOptions = async function loadOptions() {
         let optionsfile = fs.readFileSync(__dirname + '/../../config/options', 'utf8');
         this.app.options = JSON.parse(optionsfile);
       } catch (err) {
-        this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
+        // this.app.logger.logError("Error Reading Options File", {message:"", stack: err});
+        console.error(err);
         process.exit();
       }
 
@@ -1009,8 +1019,8 @@ Storage.prototype.saveOptions = function saveOptions() {
     try {
       fs.writeFileSync(`${__dirname}/../../config/options`, JSON.stringify(this.app.options), null, 4);
     } catch (err) {
-      this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
-      console.log(err);
+      // this.app.logger.logError("Error thrown in storage.saveOptions", {message: "", stack: err});
+      console.error(err);
       return;
     }
 
@@ -1048,7 +1058,8 @@ Storage.prototype.resetOptions = function resetOptions() {
         resolve();
       },
       error: (XMLHttpRequest, textStatus, errorThrown) => {
-        this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
+        console.error(err);
+        // this.app.logger.logError("Reading client.options from server failed", {message: "", stack: errorThrown});
         reject();
       }
     });
@@ -1099,7 +1110,8 @@ Storage.prototype.saveClientOptions = function saveClientOptions() {
     fs.writeFileSync(`${__dirname}/web/client.options`, JSON.stringify(t));
   } catch(err) {
     console.log(err);
-    this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
+    console.error(err);
+    // this.app.logger.logError("Error thrown in storage.saveBlock", {message: "", stack: err});
   }
 
   // fs.writeFileSync("saito/web/client.options", JSON.stringify(t), (err) => {
