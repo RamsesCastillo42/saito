@@ -399,11 +399,7 @@ Network.prototype.sendPendingTransactions = function sendPendingTransactions() {
       // remove golden tickets and other unnecessary slips from pending
       //
       this.app.wallet.wallet.pending.splice(i, 1); 
-<<<<<<< HEAD
       //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Network: " + JSON.stringify(tmptx.transaction)); }
-=======
-      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Network: " + JSON.stringify(tmptx.transaction)); }
->>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
       //
       // unspend slips
       //

@@ -210,7 +210,8 @@ Wallet.prototype.initialize = function initialize(app) {
           if (this.wallet.inputs[x].tid == ptx_tid) {
             if (this.wallet.inputs[x].sid == ptx_sid) {
               if (this.wallet.inputs[x].bhash == ptx_bhash) {
-console.log("\n\n\nWE ARE UPDATING OUR PENDING SLIP so it works: ");
+let d = new Date().getTime();
+console.log("\n\n\nWE ARE UPDATING OUR PENDING SLIP so it is spent: " + d);
 console.log(JSON.stringify(this.wallet.pending[z]));
 	        this.wallet.spends[x] = 1;
 	        x = this.wallet.inputs.length;
@@ -775,6 +776,7 @@ Wallet.prototype.purgeExpiredSlips = function purgeExpiredSlips() {
 // of these in one place.
 //
 Wallet.prototype.onChainReorganization = function onChainReorganization(block_id, block_hash, lc) {
+
   if (lc == 1) {
 
     this.purgeExpiredSlips();
@@ -800,7 +802,9 @@ if (this.app.BROWSER == 1) { alert("Re-adding the Pending Transaction in recreat
     }
 
   } else {
-    this.recreate_pending = 1;
+    if (this.doesSlipInPendingTransactionsSpendBlockHash(block_hash)) {
+      this.recreate_pending = 1;
+    }
   }
 
   this.resetExistingSlips(block_id, block_hash, lc); 
@@ -829,7 +833,43 @@ Wallet.prototype.resetExistingSlips = function resetExistingSlips(block_id, bloc
 
 }
 
+Wallet.prototype.isSlipInPendingTransactions = function isSlipInPendingTransactions(slip=null) {
 
+  if (slip == null) { return false; }
+
+  let slipidx = slip.returnIndex();
+
+  for (let i = 0; i < this.wallet.pending.length; i++) {
+    let ptx = new saito.transaction(this.wallet.pending[i]);
+    for (let k = 0; k < ptx.transaction.from.length; k++) {
+      let fslip = ptx.transaction.from[k];
+      if (fslip.returnIndex() === slipidx) {
+	return true;
+      }
+    }
+  }
+
+  return false;
+
+}
+
+
+Wallet.prototype.doesSlipInPendingTransactionsSpendBlockHash = function doesSlipInPendingTransactionsSpendBlockHash(bhash="") {
+
+  if (bhash == "") { return false; }
+
+  for (let i = 0; i < this.wallet.pending.length; i++) {
+    let ptx = new saito.transaction(this.wallet.pending[i]);
+    for (let k = 0; k < ptx.transaction.from.length; k++) {
+      if (ptx.transaction.from[k].bhash == bhash) {
+	return true;
+      }
+    }
+  }
+
+  return false;
+
+}
 Wallet.prototype.resetSpentInputs = function resetSpentInputs(bid=0) {
 
   if (bid == 0) {
@@ -845,7 +885,9 @@ Wallet.prototype.resetSpentInputs = function resetSpentInputs(bid=0) {
     // spend array.
     //
     for (let i = 0; i < this.wallet.inputs.length; i++) {
-      this.wallet.spends[i] = 0;
+      if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
+        this.wallet.spends[i] = 0;
+      }
     }
 
   } else {
@@ -854,10 +896,11 @@ Wallet.prototype.resetSpentInputs = function resetSpentInputs(bid=0) {
 
     for (let i = 0; i < this.wallet.inputs.length; i++) {
       if (this.wallet.inputs[i].bid <= target_bid) {
-        this.wallet.spends[i] = 0;
+        if (this.isSlipInPendingTransactions(this.wallet.inputs[i]) == false) {
+          this.wallet.spends[i] = 0;
+        }
       }
     }
-
   }
 
 }
@@ -1016,11 +1059,7 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
   if (this.wallet.pending.length > 0) {
     for (let i = 0; i < this.wallet.pending.length; i++) {
       if (this.wallet.pending[i].indexOf(tx.transaction.sig) > 0) {
-<<<<<<< HEAD
       //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 1: " + JSON.stringify(this.wallet.pending[i])); }
-=======
-      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 1: " + JSON.stringify(this.wallet.pending[i])); }
->>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
 	this.wallet.pending.splice(i, 1);
 	i--;
       } else {
@@ -1042,11 +1081,7 @@ Wallet.prototype.processPayment = function processPayment(blk, tx, to_slips, fro
 	  //
 	  if ((ptx_ts + 12000000) < blk_ts) {
 console.log("DELETING PENDING TX FROM OVERTIME: " + JSON.stringify(this.wallet.pending[i]));
-<<<<<<< HEAD
 //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 2: " + JSON.stringify(this.wallet.pending[i])); }
-=======
-      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Wallet Error 2: " + JSON.stringify(this.wallet.pending[i])); }
->>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
 	    this.wallet.pending.splice(i, 1);
 	    i--;
 	  }
