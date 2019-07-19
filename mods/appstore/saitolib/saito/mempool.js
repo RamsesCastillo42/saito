@@ -413,6 +413,10 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
         // queue and process
         //
         await blk.bundle(prevblk);
+	if (blk.is_valid == 0) {
+	  console.log("Block is invalid when bundling. Aborting to prevent ghost-block...");
+	  return;
+	}
 
         //
         // propagate our block
@@ -641,12 +645,20 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
   //
   if (tx.isGoldenTicket()) {
 
+    //
+    // ensure golden ticket is for the latest block
+    //
+    if (tx.transaction.msg.target != this.app.blockchain.returnLatestBlockHash()) {
+      return;
+    }
+
     for (let z = 0; z < this.transactions.length; z++) {
+
       if (this.transactions[z].isGoldenTicket()) {
 
-        //
-        // ensure golden ticket is for the latest block
-        //
+	//
+	// double-check existing slip is for the right block
+	//
         if (this.transactions[z].transaction.msg.target == this.app.blockchain.returnLatestBlockHash()) {
 
           //

@@ -70,11 +70,13 @@ Network.prototype.initialize = function initialize() {
       for (let i = this.peers.length-1; i >= 0; i--) {
         if (this.peers[i].isConnected()) {
           if (this.peers[i].verified == 1) {
-    	    this.sendPendingTransactions();
-	    i = -1;
-	  }	
-  	}
+            this.sendPendingTransactions();
+            i = -1;
+          }
+        }
       }
+    } else {
+      clearInterval(this.peer_monitor_timer);
     }
   }, this.peer_monitor_timer_speed);
 
@@ -399,11 +401,7 @@ Network.prototype.sendPendingTransactions = function sendPendingTransactions() {
       // remove golden tickets and other unnecessary slips from pending
       //
       this.app.wallet.wallet.pending.splice(i, 1); 
-<<<<<<< HEAD
       //if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Network: " + JSON.stringify(tmptx.transaction)); }
-=======
-      if (this.app.BROWSER == 1) { alert("Deleting Pending TX in Network: " + JSON.stringify(tmptx.transaction)); }
->>>>>>> dc43754d0b3b0d6456edb4b956b25f2f5bf61744
       //
       // unspend slips
       //
@@ -566,7 +564,7 @@ Network.prototype.canSendOffChainMessage = function canSendOffChainMessage(publi
     if (this.peers[i].peer.publickey === publickey) {
       if (this.peers[i].isConnected() == 1) {
 console.log("WE ARE DIRECTLY CONNECTED TO: " + publickey);
-	return 1;
+        return 1;
       }
     }
   }
@@ -604,7 +602,7 @@ Network.prototype.sendOffChainMessageWithCallback = async function sendOffChainM
   for (let i = 0; i < this.peers.length; i++) {
     if (this.peers[i].peer.publickey == publickey) {
       if (this.peers[i].isConnected() == 1) {
-	send_direct = 1;
+        send_direct = 1;
       }
     }
   }
@@ -617,7 +615,7 @@ Network.prototype.sendOffChainMessageWithCallback = async function sendOffChainM
     for (let i = 0; i < this.peers.length; i++) {
       if (this.peers[i].peer.publickey == proxy.publickey) {
         if (this.peers[i].isConnected() == 1) {
-  	  send_proxy = 1;
+            send_proxy = 1;
         }
       }
     }
@@ -652,8 +650,8 @@ Network.prototype.sendOffChainMessageWithCallback = async function sendOffChainM
         m.data.tx         = JSON.stringify(newtx.transaction);
 
         this.app.network.peers[j].sendRequestWithCallback(m.request, m.data, function () {
-	  if (mycallback != null) { mycallback(); }
-	});
+          if (mycallback != null) { mycallback(); }
+        });
 
       }
     }
@@ -690,8 +688,8 @@ Network.prototype.sendOffChainMessageWithCallback = async function sendOffChainM
         m.data.tx         = JSON.stringify(shelltx.transaction);
 
         this.app.network.peers[i].sendRequestWithCallback(m.request, m.data, function () {
-	  if (mycallback != null) { mycallback(); }
-	});
+          if (mycallback != null) { mycallback(); }
+        });
 
       }
     }
