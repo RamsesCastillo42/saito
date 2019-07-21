@@ -4,6 +4,9 @@ var ColorHash = require('color-hash');
 const axios = require('axios');
 const linkifyHtml = require('linkifyjs/html');
 const emoji = require('node-emoji');
+var markdown = require("markdown").markdown;
+var marked = require("marked");
+var sanitizeHtml = require('sanitize-html');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -472,6 +475,22 @@ Happy Chatting!`
   }
 
   _formatMessage({id, timestamp, author, message}){
+    message = marked(message);
+    message = sanitizeHtml(message, {
+      allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+        'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'],
+      allowedAttributes: {
+        a: ['href', 'name', 'target'],
+        img: ['src']
+      },
+      selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
+      allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
+      allowedSchemesByTag: {},
+      allowedSchemesAppliedToAttributes: ['href', 'src', 'cite'],
+      allowProtocolRelative: true
+    });
+   
     message = emoji.emojify(message);
     message = linkifyHtml(message, { target: { url: '_self' } });
 
