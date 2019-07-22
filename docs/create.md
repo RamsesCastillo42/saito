@@ -4,20 +4,20 @@ So now that you have Saito installed and you can connect to the network, it's ti
 
 ## Module App Structure
 
-Before we can start coding, we need to get our module structure in order. Modules are located in the `lib/modules` directory in our Saito codebase.
+Before we can start coding, we need to get our module structure in order. Modules are located in the `lib/mods` directory in our Saito codebase.
 
 ```
-.
+└── mods
+    └── todo
+        └── web
+            ├── index.html
+            ├── style.css
+        ├── todo.js
 └── lib
-    └── modules
-        └── mods
-            └── todo
-                └── web
-                    ├── index.html
-                    ├── style.css
-                todo.js
+    └── saito
+        ├── modules.js
+    └── templates
         ├── game.js
-        ├── mods.js
         ├── template.js
 
 ```
@@ -34,7 +34,7 @@ First thing to do is to make the constructor for our TODO module
 
 ```javascript
 const util = require('util');
-const ModTemplate = require('../../template');
+const ModTemplate = require('../../lib/templates/template');
 
 function Todo(app) {
 
@@ -64,7 +64,7 @@ The constructor is a place to setup any local app state that will be necessary f
 // todo.js
 
 const util = require('util');
-const ModTemplate = require('../../template');
+const ModTemplate = require('../../lib/templates/template');
 
 function Todo(app) {
 
@@ -297,12 +297,12 @@ Our serve won't bundle our module into our `browser.js` file with the rest of th
 
 // ...
 
-this.mods.push(require('./mods/reddit/reddit')(this.app));
-this.mods.push(require('./mods/remix/remix')(this.app));
-this.mods.push(require('./mods/money/money')(this.app));
-this.mods.push(require('./mods/debug/debug')(this.app));
+this.mods.push(require('../../mods/reddit/reddit')(this.app));
+this.mods.push(require('../../mods/remix/remix')(this.app));
+this.mods.push(require('../../mods/money/money')(this.app));
+this.mods.push(require('../../mods/debug/debug')(this.app));
 
-this.mods.push(require('./mods/todo/todo')(this.app));
+this.mods.push(require('../../mods/todo/todo')(this.app));
 ```
 
 Ok, now we're starting to see it take form! If you don't have your Saito instance started at this point, make sure to run `npm run nuke` in your temrinal to recompile the modules, then `npm start` and take a look at [`http://localhost:12101/todo`](http://localhost:12101/todo) to check it out and see what it looks like.
