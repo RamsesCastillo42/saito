@@ -12,10 +12,10 @@ to work out-of-the-box with Node v9 as follows:
 
 ### Linux
 ```
-apt-get update
-apt-get install g++ make
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-sudo apt-get install -y nodejs
+$ apt-get update
+$ apt-get install g++ make
+$ curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+$ sudo apt-get install -y nodejs
 ```
 
 ### Mac
@@ -30,13 +30,15 @@ Install Node.js through the website [here](https://nodejs.org/en/download/)
 
 ## Install Google's Dense Hashmap
 
+Saito uses Google Dense Hash Maps to store UTXO information. Google Dense Hash Maps are a special kind of in-memory data structure that optimizes for speed and lets us to eliminate the need for a database in many cases. This radically speeds up checking whether transaction slips are valid and gives us great scalability.
+
 Download Google's Dense Hashmap implementation:
 ```
-git clone https://github.com/sparsehash/sparsehash
-cd sparsehash
-./configure
-make
-make install
+$ git clone https://github.com/sparsehash/sparsehash
+$ cd sparsehash
+$ ./configure
+$ make
+$ make install
 ```
 
 If you cannot download this file, we have included a recent working
@@ -53,12 +55,9 @@ make install
 
 Clone Saito from the github repo:
 ```
-git clone https://github.com/saitotech/saito
-```
-
-Change directory into `saito` and install required NodeJS dependencies:
-```
-npm install
+$ git clone https://github.com/saitotech/saito
+$ cd saito
+$ npm install
 ```
 
 If you run into any problems at this point please write us and let us
@@ -68,12 +67,37 @@ you should be ready to run Saito.
 
 Run our `compile` script to refresh the software to a clean state:
 ```
-npm run nuke
+$ npm run nuke
 ```
+
+Now we have a couple of small steps before running saito, in your saito folder, create the following directories:
+
+```
+$ mkdir data
+$ cd data
+$ mkdir blocks
+$ cd blocks
+$ touch empty
+```
+
+at the end of this process, your folder should look like this:
+
+`saito/data/blocks/empty`
+
+Additionally if you want to work on Saito's flagship application, go back into the main saito directory and get into the mods folder:
+
+```
+$ cd mods
+$ git clone https://github.com/trevelyan/ts-blockchain twilight
+```
+
+After all this process, you are ready to go! If you forgot to compile run:
+
+`$ npm run compile`
 
 Then:
 ```
-npm start
+$ npm start
 ```
 
 This will start a version of Saito running on LOCALHOST. When we launch
@@ -85,7 +109,7 @@ If you wish to run Saito on a server and close your connection to the
 server while continuing to run Saito in background mode, enter this
 command instead:
 ```
-npm run serve
+$ npm run serve
 ```
 
 Wait a few seconds after starting the program and type `Ctrl-C`. You
