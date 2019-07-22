@@ -126,6 +126,8 @@
     let html = "";
 
     posts.forEach(post => {
+      let author = post.post_author;
+      if (author == null) { author = post.tx.from[0].add }
       html +=
         `<div class="post-preview" style="width:100%;">
           <div class="content_title">
@@ -133,7 +135,7 @@
           </div>
           <div class="content_details">
             submitted by
-            <span class="post_author_clickable">${post.post_author.substring(0,24)}
+            <span class="post_author_clickable">${author.substring(0,24)}
             to
             <a href="/r/${post.subreddit}">/r/${post.subreddit}</a>
           </div>
