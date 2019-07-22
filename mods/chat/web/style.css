@@ -167,6 +167,10 @@ pre {
     white-space: normal;
 }
 
+.chat-message-markdown {
+    max-width: 100%;
+}
+
 .chat_timestamp {
     justify-self: right;
     color: rgb(102, 102, 102);

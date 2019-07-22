@@ -482,13 +482,22 @@ Happy Chatting!`
         'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'],
       allowedAttributes: {
         a: ['href', 'name', 'target'],
-        img: ['src']
+        img: ['src', 'class']
       },
       selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
       allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
       allowedSchemesByTag: {},
       allowedSchemesAppliedToAttributes: ['href', 'src', 'cite'],
-      allowProtocolRelative: true
+      allowProtocolRelative: true,
+      transformTags: {
+        'img': function(tagName, attribs) {
+          attribs.class = 'chat-message-markdown';
+          return {
+            tagName: 'img',
+            attribs
+          };
+        }
+      }
     });
    
     message = emoji.emojify(message);
