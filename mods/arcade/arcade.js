@@ -215,6 +215,7 @@ class Arcade extends ModTemplate {
   /////////////////////////////////
   shouldAffixCallbackToModule(modname) {
     if (modname === "Arcade") { return 1; }
+    if (modname === "Pandemic") { return 1; }
     if (modname === "Twilight") { return 1; }
     if (modname === "Chess") { return 1; }
     if (modname === "Wordblocks") { return 1; }
@@ -477,6 +478,11 @@ class Arcade extends ModTemplate {
       //
       if (txmsg.request == "invite") {
 
+        if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
+            let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
+            let game_module = tx.transaction.msg.module;
+	    this.startInitializationTimer(game_id, game_module);
+	}
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
           try {
@@ -1033,6 +1039,10 @@ console.log("ERROR");
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
         $('.publisher_message').show();
       }
+      if (arcade_self.active_game == "Pandemic") {
+        $('.publisher_message').html("Pandemic is owned by <a href=\"https://www.zmangames.com\">Z-Man Games</a>. This edition uses the VASSAL module available for download from VASSAL since 2015. Usage conditions for VASSAL modules require that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy.");
+        $('.publisher_message').show();
+      }
     });
 
 
@@ -1251,6 +1261,10 @@ console.log("ERROR");
 
   startInitializationTimer(game_id, game_module) {
     let arcade_self = this;
+
+console.log("----------------");
+console.log("--INITIALIZING--");
+console.log("----------------");
 
     try {
 
@@ -1737,7 +1751,7 @@ console.log("ERROR REFRESHING: " + err);
     $('.find_player_button').show();
     $('.create_game_container').show();
 
-    if (game_self.name == "Twilight") {
+    if (game_self.name == "Twilight" || game_self.name == "Pandemic") {
       $('.publisher_message').show();
     } else {
       $('.publisher_message').hide();

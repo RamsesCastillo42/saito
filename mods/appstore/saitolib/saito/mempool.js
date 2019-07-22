@@ -413,6 +413,10 @@ Mempool.prototype.bundleBlock = async function bundleBlock() {
         // queue and process
         //
         await blk.bundle(prevblk);
+	if (blk.is_valid == 0) {
+	  console.log("Block is invalid when bundling. Aborting to prevent ghost-block...");
+	  return;
+	}
 
         //
         // propagate our block

@@ -40,6 +40,7 @@ function Wallet(app) {
   this.outputs_hmap_counter 	    = 0;
   this.outputs_hmap_counter_limit   = 100000;
 
+  this.store_outputs                = 0;
   this.is_testing                   = false;
   this.is_fastload		    = false; 	// used when loading blocks from disk -- we skip
 						// wallet inserts block-by-block and check the 
@@ -493,6 +494,7 @@ Wallet.prototype.createReplacementTransaction = function createReplacementTransa
 
   newtx.transaction.ts = oldtx.transaction.ts;
   newtx.transaction.msg = oldtx.transaction.msg;
+  newtx.transaction.msg.recreated = 1;
 
   //
   // we save here so that we don't create another transaction
