@@ -167,6 +167,16 @@ pre {
     white-space: normal;
 }
 
+.chat_message > p  {
+    display: inline-block;
+    margin: 0;
+}
+
+.intro_message > p {
+    display: inline-block;
+    margin: 5px;
+}
+
 .chat-message-markdown {
     max-width: 100%;
     max-height: 350px;
