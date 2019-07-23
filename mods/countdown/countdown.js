@@ -49,19 +49,21 @@ Countdown.prototype.addCountdown = function addCountdown(selector) {
 Countdown.prototype.onNewBlock = function onNewBlock() {
 
     if (this.app.BROWSER == 1) {
-        countdown = 0;
-        targetEl.html("");
-        targetEl.html('<div id="countdown" class="countdown">\
+        if (targetEl != null) {
+            countdown = 0;
+            targetEl.html("");
+            targetEl.html('<div id="countdown" class="countdown">\
         <div id="countdown-number"></div>\
         <svg>\
           <circle r="18" cx="20" cy="20"></circle>\
           </svg>\
       </div>');
 
-        countdownNumberEl = document.getElementById('countdown-number');
-        countdownNumberEl.textContent = countdown;
-        if (counterActive == false) {
-            tick();
+            countdownNumberEl = document.getElementById('countdown-number');
+            countdownNumberEl.textContent = countdown;
+            if (counterActive == false) {
+                tick();
+            }
         }
     }
 }
