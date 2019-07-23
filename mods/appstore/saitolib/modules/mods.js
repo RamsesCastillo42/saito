@@ -69,6 +69,9 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   const Chat = require('../../mods/chat/chat');
   this.mods.push(new Chat(this.app));
 
+  const Countdown = require('../../mods/countdown/countdown');
+  this.mods.push(new Countdown(this.app));
+
 //  const Notifer = require('../../mods/fcm-notification/notifier');
 //  this.mods.push(new Notifer(this.app));
 
