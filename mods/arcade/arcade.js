@@ -267,6 +267,26 @@ class Arcade extends ModTemplate {
           }
         }
 
+        if (txmsg.request == "accept") {
+          let sql1 = "SELECT sig FROM mod_arcade WHERE state = $state AND player = $player"
+
+          let sql2 = "UPDATE mod_arcade SET state = 'expired' WHERE state = $state AND player = $player";
+          let params = {
+            $state : 'open',
+            $player : tx.transaction.from[0].add
+          }
+          try {
+            let resp = await arcade_self.db.all(sql1, params);
+            await arcade_self.db.run(sql2, params);
+
+            arcade_self.app.network.sendRequest("arcade remove opengame", {sig: resp[0].sig});
+          } catch (err) {
+            console.log("error updating database in arcade...");
+            console.log(err)
+            return;
+          }
+        }
+
 
 
 
@@ -326,7 +346,7 @@ class Arcade extends ModTemplate {
           try {
             let res = await arcade_self.db.run(sql, params);
 
-            let opengame =  {
+            let opengame = {
               player: pkey ,
               winner : "",
               game: game,
@@ -667,6 +687,13 @@ console.log("ERROR");
             if (id.identifiers[0] !== "") { message.data.identifier = id.identifiers[0]; }
           }
           this.games.open.push(message.data);
+          renderGamesTable(this.games.open);
+          this.attachEvents();
+          break;
+        case "arcade remove opengame":
+          this.games.open = this.games.open.filter((game) => {
+            return game.sig != message.data.sig;
+          });
           renderGamesTable(this.games.open);
           this.attachEvents();
           break;
