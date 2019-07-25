@@ -8,6 +8,7 @@ var markdown = require("markdown").markdown;
 var marked = require("marked");
 var sanitizeHtml = require('sanitize-html');
 
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -499,7 +500,6 @@ Happy Chatting!`
         }
       }
     });
-   
     message = emoji.emojify(message);
     message = linkifyHtml(message, { target: { url: '_self' } });
 

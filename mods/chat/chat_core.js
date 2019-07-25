@@ -327,6 +327,7 @@ class ChatCore extends ModTemplate {
 
   _createMessage(chat_room_id, msg) {
     let fee = 0.0 //await this._returnModServerStatus() ? 0.0 : 2.0;
+    if (this.server.peer.publickey == null) { return null; }
     let newtx = this.app.wallet.createUnsignedTransaction(this.server.peer.publickey, 0.0, fee);
     if (newtx == null) { return; }
 

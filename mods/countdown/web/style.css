@@ -1,78 +1,78 @@
 #countdown {
-    position: relative;
-    width: 40px;
-    text-align: center;
-    margin: 5px;
+  position: relative;
+  width: 40px;
+  text-align: center;
+  margin: 5px;
 }
 
 #countdown-number {
-    color: red;
-    font-size: 15px;
-    display: inline-block;
-    line-height: 40px;
-    animation: textcolorchange 45s linear;
+  color: red;
+  font-size: 15px;
+  display: inline-block;
+  line-height: 40px;
+  animation: textcolorchange 45s linear;
 }
 
 svg {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 40px;
-    height: 40px;
-    transform: rotateY(180deg) rotateZ(-90deg);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  transform: rotateY(180deg) rotateZ(-90deg);
 }
 
 svg circle {
-    stroke-dasharray: 113px;
-    stroke-dashoffset: 0px;
-    stroke-linecap: round;
-    stroke-width: 3px;
-    stroke: red;
-    fill: none;
-    animation: countdown 30s linear, colorchange 45s linear;
+  stroke-dasharray: 113px;
+  stroke-dashoffset: 0px;
+  stroke-linecap: round;
+  stroke-width: 3px;
+  stroke: red;
+  fill: none;
+  animation: countdown 30s linear, colorchange 45s linear;
 }
 
 @keyframes countdown {
-    from {
-        stroke-dashoffset: 0px;
-    }
-    to {
-        stroke-dashoffset: 113px;
-    }
+  from {
+      stroke-dashoffset: 0px;
+  }
+  to {
+      stroke-dashoffset: 113px;
+  }
 }
 
 @keyframes colorchange {
-    0% {
-        stroke: green;
-    }
-    25% {
-        stroke: green;
-    }
-    50% {
-        stroke: green;
-    }
-    75% {
-        stroke: orange;
-    }
-    100% {
-        stroke: orangered;
-    }
+  0% {
+      stroke: green;
+  }
+  25% {
+      stroke: green;
+  }
+  50% {
+      stroke: green;
+  }
+  75% {
+      stroke: orange;
+  }
+  100% {
+      stroke: orangered;
+  }
 }
 
 @keyframes textcolorchange {
-    0% {
-        color: green;
-    }
-    25% {
-        color: green;
-    }
-    50% {
-        color: green;
-    }
-    75% {
-        color: orangered;
-    }
-    100% {
-        color: orangered;
-    }
+  0% {
+      color: green;
+  }
+  25% {
+      color: green;
+  }
+  50% {
+      color: green;
+  }
+  75% {
+      color: orangered;
+  }
+  100% {
+      color: orangered;
+  }
 }
