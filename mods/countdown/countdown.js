@@ -7,6 +7,7 @@ var countdownNumberEl = null;
 var counterActive = false;
 var targetEl = null;
 
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -27,7 +28,7 @@ module.exports = Countdown;
 util.inherits(Countdown, ModTemplate);
 
 Countdown.prototype.initialize = async function initialize() {
-    if (this.app.BROWSER == 0) { return; }
+  if (this.app.BROWSER == 0) { return; }
 }
 
 Countdown.prototype.webServer = function webServer(app, expressapp) {
@@ -39,7 +40,6 @@ Countdown.prototype.webServer = function webServer(app, expressapp) {
 }
 
 Countdown.prototype.addCountdown = function addCountdown(selector) {
-
     var head = document.getElementsByTagName('head')[0];
     head.innerHTML += '<link rel="stylesheet" type="text/css" href="/countdown/style.css" />';
     targetEl = $(selector);

@@ -1040,7 +1040,7 @@ console.log("ERROR");
         $('.publisher_message').show();
       }
       if (arcade_self.active_game == "Pandemic") {
-        $('.publisher_message').html("Pandemic is owned by <a href=\"https://www.zmangames.com\">Z-Man Games</a>. This edition uses the VASSAL module available for download from VASSAL since 2015. Usage conditions for VASSAL modules require that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy.");
+        $('.publisher_message').html("Pandemic is owned by <a href=\"https://www.zmangames.com\" style=\"border-bottom: 1px dashed;cursor:pointer;\">Z-Man Games</a>. This edition uses the VASSAL module available for <a href=\"http://www.vassalengine.org/wiki/Module:Pandemic\" style=\"border-bottom: 1px dashed;cursor:pointer;\">public download</a> and non-commercial usage from VASSAL since 2015. Usage conditions for VASSAL modules require that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy.");
         $('.publisher_message').show();
       }
     });

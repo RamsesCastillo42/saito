@@ -928,6 +928,10 @@ Block.prototype.validate = async function validate() {
       //
       // use merkle tree to ensure all transaction mhashs (i.e. no msgs altered)
       //
+      // NOTE: we can make this more efficient by making the content checks something that
+      // happens in parallel during transaction validation.... right? confirm and change this
+      // on next re-write if sensible.
+      //
       for (let m = 0; m < this.transactions.length; m++) {
         if (mt[this.transactions[m].transaction.mhash] != undefined) {
           if (mt[this.transactions[m].transaction.mhash].level !== 0) {
