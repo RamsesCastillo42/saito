@@ -30,7 +30,7 @@ class Arcade extends ModTemplate {
 
     this.initialization_check_active = true;
     this.initialization_check_timer  = null;
-    this.initialization_check_timer_interval = 2000;
+    this.initialization_check_timer_interval = 500;
     this.initialization_check_timer_ellapsed = 0;
 
     this.db              = null;
@@ -395,14 +395,14 @@ class Arcade extends ModTemplate {
           }
         }
 
-	// return;
+        // return;
 
       }
 
 
       if (txmsg.request == "opengame") {
 
-	if (arcade_self.browser_active == 1) {
+        if (arcade_self.browser_active == 1) {
 
           let game_exists = arcade_self.games.open.some((game) => game.sig === txmsg.sig);
           if (!game_exists) {
@@ -501,8 +501,8 @@ class Arcade extends ModTemplate {
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 1) {
             let game_id = tx.transaction.from[0].add + "&" + tx.transaction.ts;
             let game_module = tx.transaction.msg.module;
-	    this.startInitializationTimer(game_id, game_module);
-	}
+            this.startInitializationTimer(game_id, game_module);
+        }
         if (tx.isTo(app.wallet.returnPublicKey()) == 1 && tx.isFrom(app.wallet.returnPublicKey()) == 0) {
 
           try {
@@ -548,7 +548,7 @@ class Arcade extends ModTemplate {
 
               if (txmsg.ts != "" && txmsg.sig != "") {
                 if (this.app.crypto.verifyMessage(txmsg.ts.toString(), txmsg.sig.toString(), this.app.wallet.returnPublicKey())) {
-	          if (blk.block.id >= game_self.app.blockchain.last_bid) {
+                  if (blk.block.id >= this.app.blockchain.last_bid) {
                     this.showGameInitializer();
                     this.startInitializationTimer(game_id, txmsg.module);
                   }
@@ -666,11 +666,11 @@ class Arcade extends ModTemplate {
 
             } else {
 
-	      if (blk.block.id >= game_self.app.blockchain.last_bid) {
+              if (blk.block.id >= game_self.app.blockchain.last_bid) {
                 this.hideGameCreator();
                 this.showGameInitializer();
                 this.startInitializationTimer(txmsg.game_id, txmsg.module);
-	      }
+              }
 
             }
           } else {
@@ -963,10 +963,10 @@ console.log("ERROR");
       // only let people list 1 game at a time to avoid game-ending bugs
       //
       for (let i = 0; i < this.games.open.length; i++) {
-	if (this.games.open[i].player == this.app.wallet.returnPublicKey() && this.games.open[i].state == "open") {
-	  if (this.app.BROWSER == 1) { alert("Help avoid bugs. You cannot have two open invitations."); }
-	  return;
-	}
+        if (this.games.open[i].player == this.app.wallet.returnPublicKey() && this.games.open[i].state == "open") {
+          if (this.app.BROWSER == 1) { alert("Help avoid bugs. You cannot have two open invitations."); }
+          return;
+        }
       }
 
 
@@ -1302,7 +1302,7 @@ console.log("----------------");
 
         arcade_self.initialization_check_timer_ellapsed++;
 
-	if (invite_page != undefined) {
+        if (invite_page != undefined) {
         if (invite_page == 1) {
           if ($('.status').html() === "") {
             if (arcade_self.initialization_check_timer_ellapsed == 3) { $('.invite_description').html(`<center>Checking to Confirm that Opponent is Online....</center>`); }
@@ -1315,7 +1315,7 @@ console.log("----------------");
             $('.invite_description').html(`<center>Initializing Game with Opponent. Please stay on this page....</center>`);
           }
         }
-	}
+        }
 
         let pos = -1;
         if (arcade_self.app.options.games != undefined) {
