@@ -52,18 +52,6 @@ class Arcade extends ModTemplate {
 
     if (this.app.BROWSER == 1 && this.browser_active == 1) {
 
-/**** PROFILE ***
-      let saito_email   = this.app.wallet.returnIdentifier();
-      let saito_address = this.app.wallet.returnPublicKey();
-      let saito_balance = this.app.wallet.returnBalance();
-      if (saito_email == "") {
-        saito_email = saito_address.substring(0,13) + "...";
-        //saito_email = `<a href="/registry"><div class="register_address" id="register_address">[register address]</div></a>`;
-      }
-      $('.saito_email').html(saito_email);
-      //$('#saito_address').html(saito_address);
-      $('.saito_balance').html(numeral(saito_balance).format('0,0.[00000000]'));
-***/
       let {host, port, protocol} = this.app.network.peers[0].peer;
       let games_data = await axios.get(`${protocol}://${host}:${port}/arcade/opengames`);
 
@@ -114,7 +102,7 @@ class Arcade extends ModTemplate {
           player TEXT,
           player2 TEXT,
           game_bid INTEGER,
-          gameid TEXT,
+          game_id TEXT,
           game TEXT,
           state TEXT,
           status TEXT,
@@ -126,7 +114,20 @@ class Arcade extends ModTemplate {
           sms INTEGER,
           PRIMARY KEY (id ASC))`;
         await this.db.run(sql, {});
-        // this.refreshOpenGames();
+
+        sql = `CREATE TABLE IF NOT EXISTS mod_games (
+          id INTEGER,
+          mod_arcade_id INTEGER,
+          game_id TEXT,
+          state TEXT,
+          module TEXT,
+          bid INTEGER,
+          tid INTEGER,
+          lc INTEGER,
+          last_move INTEGER,
+          PRIMARY KEY (id ASC))`;
+        await this.db.run(sql, {});
+
       } catch (err) {
       }
     }
@@ -136,7 +137,7 @@ class Arcade extends ModTemplate {
 
   initializeHTML(app) {
 
-    const arcade_self = this;
+    let arcade_self = this;
 
     if (invite_page != undefined) {
     if (invite_page == 1) {
@@ -174,7 +175,7 @@ class Arcade extends ModTemplate {
         $('.get_tokens_button').off();
         $('.get_tokens_button').on('click', () => {
           $('#token_spinner').show();
-          let {host, port, protocol} = this.app.network.peers[0].peer
+          let {host, port, protocol} = this.app.network.peers[0].peer;
           $.get(`${protocol}://${host}:${port}/faucet/tokens?address=${this.app.wallet.returnPublicKey()}`, (response, error) => {
             $('#token_spinner').hide();
             if (response.payload.status) {
@@ -251,12 +252,59 @@ class Arcade extends ModTemplate {
         let txmsg = tx.returnMessage();
 
 
+
+        //
+        // save game state if provided
+        //
+        if (txmsg.saveGameState != undefined && txmsg.game_id != "") {
+          let sql = "SELECT id FROM mod_arcade WHERE game_id = $game_id";
+          let params = {
+            $game_id : txmsg.game_id
+          }
+console.log("\n\n\n");
+console.log(sql);
+console.log(params);
+console.log("\n\n\n");
+          try {
+            let rows = await arcade_self.db.all(sql, params);
+	    if (rows != null) {
+	    if (rows.length > 0) {
+	      let row = rows[0];
+              sql = "INSERT INTO mod_games (game_id, mod_arcade_id, module, state, bid, tid, lc, last_move) VALUES ($game_id, $mod_arcade_id, $module, $state, $bid, $tid, $lc, $last_move)";
+              params = {
+                $game_id : txmsg.game_id ,
+                $mod_arcade_id : row.id ,
+                $module : txmsg.module ,
+                $state : JSON.stringify(txmsg.saveGameState) ,
+	        $bid : blk.block.id ,
+	        $tid : tx.transaction.id ,
+	        $lc : 1 ,
+	        $last_move : (new Date().getTime())
+              }
+              try {
+                let res = arcade_self.db.run(sql, params);
+              } catch (err) {
+                console.log("error updating database in arcade...");
+               return;
+              }
+            }
+	    }
+	  } catch (err) {
+	    console.log("error fetching mod_arcade game id...");
+	    return;
+	  }
+	}
+
+
+
         //
         // update database to remove game from list
         //
         if (txmsg.request == "invite") {
-          let sql = "UPDATE mod_arcade SET state = 'active', player2 = $player2 WHERE sig = $sig";
+	  let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
+          let sql = "UPDATE mod_arcade SET state = 'active', game_id = $gid , player2 = $player2 WHERE sig = $sig";
           let params = {
+            $gid : game_id ,
             $player2 : tx.transaction.from[0].add ,
             $sig : txmsg.sig
           }
@@ -267,6 +315,30 @@ class Arcade extends ModTemplate {
             return;
           }
         }
+
+
+
+
+
+        //
+        // arcade tracks winners and losers
+        //
+        if (txmsg.request == "gameover") {
+          let sql = "UPDATE mod_arcade SET winner = $winner WHERE game_id = $game_id";
+          let params = {
+            $winner : txmsg.winner ,
+            $game_id : txmsg.game_id
+          }
+          try {
+            let res = arcade_self.db.run(sql, params);
+          } catch (err) {
+            console.log("error updating database in arcade...");
+            return;
+          }
+        }
+
+
+
 
         if (txmsg.request == "accept") {
           let sql1 = "SELECT sig FROM mod_arcade WHERE state = $state AND player = $player"
@@ -1701,6 +1773,32 @@ console.log("----------------");
       res.sendFile(__dirname + imgf);
       return;
     });
+
+
+
+    expressapp.get('/arcade/observer/:game_id', async (req, res) => {
+
+      var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id ORDER BY id DESC LIMIT 1";
+      var params = { $gameid : req.params.gameid }
+
+      var games = await this.db.all(sql, params);
+
+      if (games.length > 0) {
+
+	let game = games[0];
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        res.write(game.state);
+        res.end();
+        return;
+	
+      }
+
+    });
+
+
+
+
   }
 
 

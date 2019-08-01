@@ -68,6 +68,7 @@ struct StringToIntSerializer {
 std::string open_file(std::string filename);
 std::string return_slipname(std::string bid, std::string tid, std::string sid, std::string address, std::string amount, std::string bhash);
 int insert_new_slip(std::string slipname, int spent_value_of_zero);
+int validate_mempool_slip(std::string slipname);
 int validate_existing_slip(std::string slipname, int value);
 int validate_slip_spent(std::string slipname, int current_block_id); // is spent (not is spendable in this block) -- for monetary check
 int update_existing_slip(std::string slipname, int value);
@@ -134,6 +135,19 @@ void jsInsertSlip(const FunctionCallbackInfo<Value>& args) {
 
   args.GetReturnValue().Set(rv);
 
+}
+void jsValidateMempoolSlip(const FunctionCallbackInfo<Value>& args) {
+
+  //Isolate* isolate = args.GetIsolate();
+
+  ///////////////
+  // variables //
+  ///////////////
+  v8::String::Utf8Value param1(args[0]->ToString());
+  std::string slipname = std::string(*param1);
+  int rv = validate_mempool_slip(slipname); 
+ 
+  args.GetReturnValue().Set(rv);
 }
 void jsValidateSlip(const FunctionCallbackInfo<Value>& args) {
 
@@ -237,6 +251,7 @@ void init(Local<Object> exports) {
 
   NODE_SET_METHOD(exports, "insert_slip",  jsInsertSlip);
   NODE_SET_METHOD(exports, "validate_slip",  jsValidateSlip);
+  NODE_SET_METHOD(exports, "validate_mempool_slip",  jsValidateMempoolSlip);
   NODE_SET_METHOD(exports, "validate_slip_spent",  jsValidateSlipSpent);
   NODE_SET_METHOD(exports, "exists_slip",  jsExistsSlip);
   NODE_SET_METHOD(exports, "slip_value",  jsSlipValue);
@@ -318,6 +333,15 @@ int update_existing_slip(std::string slipname, int value) {
 int insert_new_slip(std::string slipname, int spent_value_of_zero) {
   slips[slipname] = spent_value_of_zero;
   return 1;
+}
+////////////////////////////
+// validate existing slip //
+////////////////////////////
+int validate_mempool_slip(std::string slipname) {
+  int x = slips[slipname];
+  if (x == 0) { return 0; }
+  if (x == -1) { return 1; }
+  return 0;
 }
 ////////////////////////////
 // validate existing slip //

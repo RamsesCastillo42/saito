@@ -697,6 +697,14 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
     if (tx.validate(this.app, null)) {
 
       //
+      // the slip validation code by default is checking to see if the slip is spend <= current_block_id
+      // so that it can handle chain-reorganizations, but here we only want to make sure the slip is 
+      // unspent, because a block we create should not be triggering a chain reorganization. So we 
+      // have this extra function. In the next version we should fold this into transaction validation.
+      //
+      if (!tx.validateSlipsForMempool(this.app)) { return; }
+
+      //
       // propagate if we can't use tx to create a block
       //
       if ( Big(this.bundling_fees_needed).gt(Big(tx.returnFeesUsable(this.app, this.app.wallet.returnPublicKey()))) ) {
