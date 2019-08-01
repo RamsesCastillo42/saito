@@ -746,6 +746,7 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
     } else {
       console.log("totally failed to validate tx....");
       console.log("TX: ", JSON.stringify(tx));
+      tx.is_valid = 0;
     }
   }
 }
@@ -813,8 +814,8 @@ Mempool.prototype.removeBlockAndTransactions = function removeBlockAndTransactio
   //
   for (let t = 0; t < this.transactions.length; t++) {
     if (this.transactions[t].is_valid != 0) {
-      // console.log("TX RE-ADDED");
-      // console.log(this.transactions[t]);
+      console.log("TX RE-ADDED to REPLACEMENT ARRAY");
+      console.log(this.transactions[t]);
       replacement.push(this.transactions[t]);
     } else {
       // console.log("TX DROPPED");
@@ -925,6 +926,7 @@ Mempool.prototype.removeTransaction = function removeTransaction(tx=null) {
 }
 
 
+
 /**
  * when the chain is reorganized, any nodes that created
  * transactions on the outdated chain will look to see what
@@ -938,6 +940,7 @@ Mempool.prototype.recoverTransaction = function recoverTransaction(tx) {
   if (tx == null) { return; }
   if (tx.is_valid == 0) { return; }
   if (tx.type != 0) { return; }
+  if (!tx.validate(this.app)) { return; }
   console.log("RECOVERING TX");
   this.recovered.push(tx);
 
