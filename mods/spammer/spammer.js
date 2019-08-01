@@ -36,8 +36,8 @@ Spammer.prototype.onNewBlock = function onNewBlock(blk) {
 
   if (this.app.BROWSER == 1) { return; }
 
-  var emails_to_send = 1;
-  var size_of_emails_in_mb = 0.000001;
+  var emails_to_send = 9;
+  var size_of_emails_in_mb = 100;
   var size_of_mb = 1024000;
 
 

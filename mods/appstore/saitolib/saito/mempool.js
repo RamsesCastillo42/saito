@@ -697,6 +697,14 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
     if (tx.validate(this.app, null)) {
 
       //
+      // the slip validation code by default is checking to see if the slip is spend <= current_block_id
+      // so that it can handle chain-reorganizations, but here we only want to make sure the slip is 
+      // unspent, because a block we create should not be triggering a chain reorganization. So we 
+      // have this extra function. In the next version we should fold this into transaction validation.
+      //
+      if (!tx.validateSlipsForMempool(this.app)) { return; }
+
+      //
       // propagate if we can't use tx to create a block
       //
       if ( Big(this.bundling_fees_needed).gt(Big(tx.returnFeesUsable(this.app, this.app.wallet.returnPublicKey()))) ) {
@@ -746,6 +754,7 @@ Mempool.prototype.addTransaction = async function addTransaction(tx, relay_on_va
     } else {
       console.log("totally failed to validate tx....");
       console.log("TX: ", JSON.stringify(tx));
+      tx.is_valid = 0;
     }
   }
 }
@@ -813,8 +822,8 @@ Mempool.prototype.removeBlockAndTransactions = function removeBlockAndTransactio
   //
   for (let t = 0; t < this.transactions.length; t++) {
     if (this.transactions[t].is_valid != 0) {
-      // console.log("TX RE-ADDED");
-      // console.log(this.transactions[t]);
+      console.log("TX RE-ADDED to REPLACEMENT ARRAY");
+      console.log(this.transactions[t]);
       replacement.push(this.transactions[t]);
     } else {
       // console.log("TX DROPPED");
@@ -925,6 +934,7 @@ Mempool.prototype.removeTransaction = function removeTransaction(tx=null) {
 }
 
 
+
 /**
  * when the chain is reorganized, any nodes that created
  * transactions on the outdated chain will look to see what
@@ -938,6 +948,7 @@ Mempool.prototype.recoverTransaction = function recoverTransaction(tx) {
   if (tx == null) { return; }
   if (tx.is_valid == 0) { return; }
   if (tx.type != 0) { return; }
+  if (!tx.validate(this.app)) { return; }
   console.log("RECOVERING TX");
   this.recovered.push(tx);
 

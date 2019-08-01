@@ -369,6 +369,21 @@ Keychain.prototype.returnWatchedPublicKeys = function returnWatchedPublicKeys() 
 }
 
 
+
+/**
+ * Add a watched publickey (and updates our peers)
+ *
+ */
+Keychain.prototype.addWatchedPublicKey = function addWatchedPublicKey(publickey="") {
+  this.addKey(publickey, "", true);
+  this.app.network.updatePeersWithWatchedPublicKeys();
+}
+
+
+
+
+
+
 /**
  * Update the pubkey / privkey / aes secret by publickey
  *

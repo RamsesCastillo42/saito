@@ -59,7 +59,7 @@ function Peer(app, peerjson = "") {
   // queue to prevent flooding
   //
   this.message_queue = [];
-  this.message_queue_speed = 3000;             // sent
+  this.message_queue_speed = 1000;             // sent
   this.message_queue_timer = null;
 
 
@@ -873,6 +873,19 @@ Peer.prototype.addSocketEvents = async function addSocketEvents() {
         }
         this.app.mempool.fetchBlocks();
         this.app.blockchain.saveBlockchain();
+      }
+
+
+
+      /////////////
+      // keylist //
+      /////////////
+      if (message.request == "keylist") {
+
+        if (this.handshake_completed == 0) { return; }
+        this.peer.keylist = message.data;
+	console.log("UPDATED KEYLIST: " + JSON.stringify(this.peer.keylist));
+	
       }
 
 

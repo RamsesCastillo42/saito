@@ -46,11 +46,15 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   // this.mods.push(require('../../mods/imperium/imperium')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   //this.mods.push(require('../../mods/arcadev2/arcade')(this.app));
+  //this.mods.push(require('../../mods/arcadev2/arcade')(this.app));
   //this.mods.push(require('../../mods/arcade/arcade')(this.app));
   //this.mods.push(require('../../mods/profile/profile')(this.app));
   this.mods.push(require('../../mods/proxymod/proxymod')(this.app));
   // this.mods.push(require('../../mods/citysim/citysim')(this.app));
 
+
+  const Observer = require('../../mods/observer/observer');
+  this.mods.push(new Observer(this.app));
 
   const Arcade = require('../../mods/arcade/arcade');
   this.mods.push(new Arcade(this.app));
@@ -69,8 +73,8 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   const Chat = require('../../mods/chat/chat');
   this.mods.push(new Chat(this.app));
 
-  // const Countdown = require('../../mods/countdown/countdown');
-  // this.mods.push(new Countdown(this.app));
+  const Countdown_MODULE = require('../../mods/countdown/countdown');
+  this.mods.push(new Countdown_MODULE(this.app));
 
 //  const Notifer = require('../../mods/fcm-notification/notifier');
 //  this.mods.push(new Notifer(this.app));
