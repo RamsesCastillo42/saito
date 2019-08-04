@@ -1776,10 +1776,30 @@ console.log("----------------");
 
 
 
+    expressapp.get('/arcade/restore/:game_id', async (req, res) => {
+
+      var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id ORDER BY id DESC LIMIT 1";
+      var params = { $game_id : req.params.game_id }
+
+      var games = await this.db.all(sql, params);
+
+      if (games.length > 0) {
+
+	let game = games[0];
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        res.write(game.state);
+        res.end();
+        return;
+	
+      }
+
+    });
+
     expressapp.get('/arcade/observer/:game_id', async (req, res) => {
 
       var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id ORDER BY id DESC LIMIT 1";
-      var params = { $gameid : req.params.gameid }
+      var params = { $game_id : req.params.game_id }
 
       var games = await this.db.all(sql, params);
 
