@@ -120,6 +120,8 @@ class Arcade extends ModTemplate {
           mod_arcade_id INTEGER,
           game_id TEXT,
           state TEXT,
+	  player_pkey TEXT,
+          key_state TEXT,
           module TEXT,
           bid INTEGER,
           tid INTEGER,
@@ -258,8 +260,11 @@ class Arcade extends ModTemplate {
         //
         if (txmsg.saveGameState != undefined && txmsg.game_id != "") {
           let sql = "SELECT id FROM mod_arcade WHERE game_id = $game_id";
+	  let keystate_to_save = "";
+	  if (txmsg.saveKeyState != undefined) { txmsg.saveKeyState; }
+	  let player_pkey = tx.transaction.from[0].add;
           let params = {
-            $game_id : txmsg.game_id
+            $game_id : txmsg.game_id 
           }
 console.log("\n\n\n");
 console.log(sql);
@@ -270,9 +275,11 @@ console.log("\n\n\n");
 	    if (rows != null) {
 	    if (rows.length > 0) {
 	      let row = rows[0];
-              sql = "INSERT INTO mod_games (game_id, mod_arcade_id, module, state, bid, tid, lc, last_move) VALUES ($game_id, $mod_arcade_id, $module, $state, $bid, $tid, $lc, $last_move)";
+              sql = "INSERT INTO mod_games (game_id, player_pkey, key_state, mod_arcade_id, module, state, bid, tid, lc, last_move) VALUES ($game_id, $playerpkey, $keystate, $mod_arcade_id, $module, $state, $bid, $tid, $lc, $last_move)";
               params = {
                 $game_id : txmsg.game_id ,
+	        $playerpkey : player_pkey ,
+	        $keystate : keystate_to_save ,
                 $mod_arcade_id : row.id ,
                 $module : txmsg.module ,
                 $state : JSON.stringify(txmsg.saveGameState) ,
@@ -1789,6 +1796,29 @@ console.log("----------------");
         res.setHeader('Content-type', 'text/html');
         res.charset = 'UTF-8';
         res.write(game.state);
+        res.end();
+        return;
+	
+      }
+
+    });
+
+    expressapp.get('/arcade/keystate/:game_id/:player_pkey', async (req, res) => {
+
+      var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id AND player_pkey = $playerpkey ORDER BY id DESC LIMIT 1";
+      var params = { 
+        $game_id : req.params.game_id ,
+	$playerpkey : req.params.player_pkey
+      }
+
+      var games = await this.db.all(sql, params);
+
+      if (games.length > 0) {
+
+	let game = games[0];
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        res.write(game.key_state);
         res.end();
         return;
 	
