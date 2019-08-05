@@ -203,6 +203,10 @@ class Arcade extends ModTemplate {
     }
     }
 
+    if (app.wallet.returnIdentifier() != "") {
+      $('#dont_be_a_hash').hide();
+    }
+
     //
     // add chat
     //
@@ -1363,6 +1367,27 @@ console.log("ERROR");
       });
     });
 
+    $('#arcade_reg_id').off();
+    $('#arcade_reg_id').on('click', () => {
+      this.showRegModal();
+      this.attachEvents();
+    });
+
+    $('#arcade_reg_button').off();
+    $('#arcade_reg_button').on('click', () => {
+      const registry = this.app.modules.returnModule("Registry");
+      registry.clientRegistryRequest($('.reg_id').val(), (err) => {
+        if (!err) {
+          alert("Your registration request has been submitted. Please wait several minutes for network confirmation");
+          var modal = document.getElementById("game_modal");
+          modal.style.display = "none";
+          $('#dont_be_a_hash').hide();
+        } else {
+          alert("There was an error submitting your request to the network. This is an issue with your network connection or wallet");
+          $("#arcade_reg_field").val("")
+        }
+      });
+    });
   }
 
   startInitializationTimer(game_id, game_module) {
@@ -1661,6 +1686,27 @@ console.log("----------------");
         <div for="submit_r" class="submit_r_label" id="submit_r_label">subreddit:</div>
         <input type="text" class="submit_r" id="submit_r" name="submit_r" />
         <input type="button" class="submit_button" id="submit_button" value="POST" />
+      </div>
+      `
+    );
+  }
+
+  showRegModal() {
+    var modal = document.getElementById("game_modal");
+    modal.style.display = "block";
+
+    $('#modal_header_text').html('Register Saito ID');
+    $('#modal_body_text').html(
+      `
+      <div id="submit_post" class="submit_post">
+        <p>Submit a unique name for your Saito ID</p>
+        <div style="display: flex; align-items: center;">
+          <input
+          style= "font-size: 1.5em; padding: 5px; width: 85%; margin-right: 10px"
+          type="text" class="reg_id" id="reg_id" name="reg_id" />
+          <p style="margin: 0 10px 0 0; font-size: 2em;">@saito</p>
+          <input style="width: 15%; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
+        </div>
       </div>
       `
     );
