@@ -44,7 +44,7 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
   // this.mods.push(require('../../mods/catan/catan')(this.app));
 
-  this.mods.push(require('../../mods/imperium/imperium')(this.app));
+  // this.mods.push(require('../../mods/imperium/imperium')(this.app));
   this.mods.push(require('../../mods/chess/chess')(this.app));
   //this.mods.push(require('../../mods/arcadev2/arcade')(this.app));
   //this.mods.push(require('../../mods/arcadev2/arcade')(this.app));
