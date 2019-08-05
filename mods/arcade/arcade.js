@@ -261,7 +261,7 @@ class Arcade extends ModTemplate {
         if (txmsg.saveGameState != undefined && txmsg.game_id != "") {
           let sql = "SELECT id FROM mod_arcade WHERE game_id = $game_id";
 	  let keystate_to_save = "";
-	  if (txmsg.saveKeyState != undefined) { txmsg.saveKeyState; }
+	  if (txmsg.saveKeyState != undefined) { keystate_to_save = txmsg.saveKeyState; }
 	  let player_pkey = tx.transaction.from[0].add;
           let params = {
             $game_id : txmsg.game_id 
@@ -1783,22 +1783,34 @@ console.log("----------------");
 
 
 
-    expressapp.get('/arcade/restore/:game_id', async (req, res) => {
+    expressapp.get('/arcade/restore/:game_id/:player_pkey', async (req, res) => {
 
-      var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id ORDER BY id DESC LIMIT 1";
+      var sql    = "SELECT * FROM mod_games WHERE game_id = $game_id ORDER BY id DESC LIMIT 10";
       var params = { $game_id : req.params.game_id }
-
       var games = await this.db.all(sql, params);
+
+      let stop_now = 0;
+      let games_to_push = [];
+
+      let recovering_pkey = "";
+      try {
+        if (req.params.player_pkey != undefined) { recovering_pkey = req.params.pkayer_pkey; }
+      } catch (err) {}
+
 
       if (games.length > 0) {
 
-	let game = games[0];
+	for (let z = 0; z < games.length; z++) {
+	  let game = games[z];
+	  if (game.player_pkey == recovering_pkey) { stop_now = 1; } else { games_to_push.push(game.state); }
+	  if (recovering_pkey == "" || stop_now == 1) { z = games.length+1; }
+	}
+
         res.setHeader('Content-type', 'text/html');
         res.charset = 'UTF-8';
-        res.write(game.state);
+        res.write(JSON.stringify(games_to_push));
         res.end();
         return;
-	
       }
 
     });
@@ -1813,16 +1825,23 @@ console.log("----------------");
 
       var games = await this.db.all(sql, params);
 
+console.log("GID & PKEY: " + req.params.game_id + " -- " + req.params.player_pkey);
+console.log("WE FOUND TOTAL OF: " + games.length);
       if (games.length > 0) {
 
 	let game = games[0];
         res.setHeader('Content-type', 'text/html');
         res.charset = 'UTF-8';
+console.log("writing 0: " + game.id);
+console.log("writing 1: " + game.state);
+console.log("writing 2: " + game.key_state);
         res.write(game.key_state);
         res.end();
         return;
 	
       }
+
+console.log("GOT THROUGH TO HERE!");
 
     });
 
