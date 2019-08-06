@@ -1651,6 +1651,7 @@ console.log(" .... block does not validate!");
  */
 Blockchain.prototype.isBlockHashOnLongestChain = function isBlockHashOnLongestChain(hash) {
   if (this.block_hash_lc_hmap[hash] == 1) { return true; }
+  if (this.hasFullGenesisPeriod() == 0) { return true; }
   return false;
 };
 

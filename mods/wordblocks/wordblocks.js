@@ -890,9 +890,13 @@ Wordblocks.prototype.returnBonus = function returnBonus(pos) {
   if (pos == "3_12") { return "2L"; }
   if (pos == "4_3") { return "2L"; }
   if (pos == "4_13") { return "2L"; }
+  if (pos == "5_8") { return "2L"; }
   if (pos == "5_1") { return "2L"; }
   if (pos == "5_15") { return "2L"; }
+  if (pos == "8_5") { return "2L"; }
+  if (pos == "8_11") { return "2L"; }
   if (pos == "11_1") { return "2L"; }
+  if (pos == "11_8") { return "2L"; }
   if (pos == "11_15") { return "2L"; }
   if (pos == "12_3") { return "2L"; }
   if (pos == "12_13") { return "2L"; }
