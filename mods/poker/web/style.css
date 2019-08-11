@@ -23,45 +23,36 @@ body {
   height: 1000px;
 }
 
-.status {
-  float: left;
-  font-size: 1.8em;
-  padding: 10px;
-  width: 390px;
-  height: 425px;
-  background-color: #fffccd;
-  border: 2px solid #948f8b;
-  border-bottom: 0px;
-}
-
-.log {
-  overflow: hidden;
-  position: absolute;
-  top: 431px;
-  left: 0px;
-  float: left;
-  padding: 10px;
-  font-family: Courier, Sans-Serif;
-  height: 200px;
-  width: 390px;
-  font-size: 1.1em;
-  background-color: #fffccd;
-  border: 2px solid #948f8b;
-  border-top: 0px;
-}
-
 .hand {
- margin-left: auto;
- margin-right: auto;
- height: 300px;
- width: auto;
- margin-top: 50px;
+# margin-left: auto;
+# margin-right: auto;
+# height: 300px;
+# width: auto;
+# margin-top: 50px;
+
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
+    padding-left: 600px;
+    padding-top:100px;
 }
+.menu_option {
+}
+
 .card {
   width: 200px;
   float:left;
   position: relative;
 }
+
+.deal {
+ margin-left: auto;
+ margin-right: auto;
+ width: 1000px;
+
+}
+
 %.card:nth-child(1n+2) {
 %  left: -130px;
 %}

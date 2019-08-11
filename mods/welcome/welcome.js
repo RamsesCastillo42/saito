@@ -83,11 +83,34 @@ Welcome.prototype.initializeHTML = function initializeHTML(app) {
 
   $('#reset').off();
   $('#reset').on('click', async () => {
-    let reset_confirm = confirm("Are you sure you want to reset your wallet? You cannot retrieve your keys once you delete them")
+    let reset_confirm = confirm("Are you sure you want to reset your wallet?");
     if (reset_confirm ){
+
+      let preserve_keys = confirm("Do you want to purge your existing private keys too? If you are having difficulty click OK to get a completely new address too.");
+
+      let privatekey = "";
+      let publickey = "";
+      let identifier = "";
+
+      if (preserve_keys != 1) {
+        privatekey = app.wallet.returnPrivateKey();
+        publickey  = app.wallet.returnPublicKey();
+        identifier = app.options.wallet.identifier;
+      }
+
       app.archives.resetArchives();
       await app.storage.resetOptions();
-      // app.storage.saveOptions();
+
+      if (preserve_keys != 1) {
+        app.wallet.wallet.privatekey = privatekey;
+        app.wallet.wallet.publickey = publickey;
+        app.wallet.wallet.identifier = identifier;
+        app.wallet.wallet.balance = "0";
+        app.wallet.saveWallet();
+      } else {
+        app.wallet.wallet.balance = "0";
+      }
+
       alert("Your account has been reset");
       location.reload();
     }
