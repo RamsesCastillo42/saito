@@ -12,9 +12,13 @@ a {
 
 .body, body {
   font-family: arial, helvetica, sans-serif, sans;
-  font-size: 13px;
+  font-size: 1.15em;
   padding: 0px;
   margin: 0px;
+}
+
+.game_to_observe {
+  cursor: pointer;
 }
 
 .logo {

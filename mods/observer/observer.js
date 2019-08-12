@@ -32,15 +32,18 @@ class Observer extends ModTemplate {
 
   attachEvents(app) {
 
-console.log("\n\n\nattaching events to html\n\n");
     let observer_self = this;
 
     $('.game_to_observe').off();
     $('.game_to_observe').on('click', function() {
 
+alert("TESTING HERE");
+
       let game_id = $(this).attr("id");
 
       $.get(`arcade/observer/${game_id}`, (response, error) => {
+
+alert("TESTING HERE: "+response);
 
 	if (error == "success") {
 
@@ -72,6 +75,8 @@ console.log("\n\n\nattaching events to html\n\n");
 	  //
 	  // move into game
 	  //
+	  window.location = '/'+observer_self.app.options.games[observer_self.app.options.games.length-1].module.toLowerCase();
+alert("load game!");
 
 	}
 
@@ -130,21 +135,18 @@ let html = '<html> \
     <div class="header"> \
       <a href="/" style="text-decoration:none;color:inherits"> \
         <img src="/img/saito_logo_black.png" style="width:35px;margin-top:5px;margin-left:25px;margin-right:10px;float:left;" /> \
-        <div style="font-family:Georgia;padding-top:0px;font-size:1.2em;color:#444;display:inline-block;">saito</div> \
       </a>  \
     </div> \
-    <div class="main"> \
+    <div style="padding:25px;font-size:1.2em;"> \
       <p></p> \
       <b>Active Games:</b> \
       <p></p> \
 ';
-
 for (let i = 0; i < games.length; i++) {
   if (games[i].game_id != "") {
-    html += '<div id="'+games[i].game_id+'" style="clear:both" class="game_to_observe game_'+games[i].game_id+'">game: '+games[i].game_id+'</div>';
+    html += '<div id="'+games[i].game_id+'" style="clear:both" class="game_to_observe game_'+games[i].game_id+'">Game ID: '+games[i].game_id+'</div>';
   }
 }
-
 html += ' \
     </div> \
   <script src="/socket.io/socket.io.js"></script> \
