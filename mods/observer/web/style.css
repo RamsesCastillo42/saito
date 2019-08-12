@@ -10,6 +10,11 @@ a {
   color: inherit;
 }
 
+.main {
+  display: block;
+  padding:30px;
+}
+
 .body, body {
   font-family: arial, helvetica, sans-serif, sans;
   font-size: 1.15em;

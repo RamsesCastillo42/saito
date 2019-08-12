@@ -37,13 +37,9 @@ class Observer extends ModTemplate {
     $('.game_to_observe').off();
     $('.game_to_observe').on('click', function() {
 
-alert("TESTING HERE");
-
       let game_id = $(this).attr("id");
 
       $.get(`arcade/observer/${game_id}`, (response, error) => {
-
-alert("TESTING HERE: "+response);
 
 	if (error == "success") {
 
@@ -76,7 +72,6 @@ alert("TESTING HERE: "+response);
 	  // move into game
 	  //
 	  window.location = '/'+observer_self.app.options.games[observer_self.app.options.games.length-1].module.toLowerCase();
-alert("load game!");
 
 	}
 
