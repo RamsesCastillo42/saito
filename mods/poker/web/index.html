@@ -17,11 +17,13 @@
   <link rel="stylesheet" type="text/css" href="/chat/style.css" />
   <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
   <link rel="stylesheet" type="text/css" href="/poker/style.css" />
+  <link rel="stylesheet" type="text/css" href="/lib/templates/game.css" />
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
 </head>
 <body>
+
 
   <div id="Poker_browser_active"></div>
 
@@ -36,12 +38,11 @@
   <div class="main" style="display:all">
     <div class="gameboard">
       <div class="connection_monitor" id="connection_monitor">CONNECTION UNSTABLE (refresh your browser) ...</div>
-      <div class="status" id="status">STATUS</div>
-      <div class="log" id="log"></div>
       <div class="deal" id="deal"></div>
       <div class="hand" id="hand"></div>
     </div>
   </div>
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/browser.js"></script>

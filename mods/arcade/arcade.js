@@ -222,8 +222,9 @@ class Arcade extends ModTemplate {
   /////////////////////////////////
   shouldAffixCallbackToModule(modname) {
     if (modname === "Arcade") { return 1; }
-    if (modname === "Pandemic") { return 1; }
     if (modname === "Twilight") { return 1; }
+    if (modname === "Poker") { return 1; }
+    if (modname === "Pandemic") { return 1; }
     if (modname === "Chess") { return 1; }
     if (modname === "Wordblocks") { return 1; }
     return 0;

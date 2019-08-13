@@ -28,6 +28,8 @@ lib/modules/mods/*
 
 mods/catan
 mods/catan/*
+mods/hospital
+mods/hospital/*
 mods/imperium
 mods/imperium/*
 mods/pandemic

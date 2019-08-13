@@ -15,9 +15,14 @@ function Poker(app) {
   this.app             = app;
 
   this.name            = "Poker";
+  this.description     = '<span style="background-color:yellow">This is a non-playable demo under development</span>. In this version of Texas Hold\'em Poker for the Saito Arcade, with five cards on the table and two in your hand, can you bet and bluff your way to victory?';
+
+
   this.browser_active  = 0;
   this.handlesEmail    = 1;
   this.emailAppName    = "Poker";
+
+  this.useHUD = 1;
 
   //
   // this sets the ratio used for determining
@@ -63,35 +68,36 @@ Poker.prototype.initializeGame = function initializeGame(game_id) {
   // initialize
   //
   if (this.game.deck.length == 0) {
-/*
+
     this.updateStatus("Generating the Game");
 
     this.game.queue.push("round");
-    this.game.queue.push("placement\t2");
-    this.game.queue.push("placement\t1");
     this.game.queue.push("EMAIL\tready");
-    this.game.queue.push("DEAL\t1\t2\t8");
-    this.game.queue.push("DEAL\t1\t1\t8");
+    this.game.queue.push("FLIPCARD\t1\t1\t1\t2");
+    this.game.queue.push("FLIPCARD\t1\t1\t1\t1");
+    this.game.queue.push("FLIPRESET\t1");
+    this.game.queue.push("POOL\t1"); // pool for cards on table
+    this.game.queue.push("DEAL\t1\t2\t2");
+    this.game.queue.push("DEAL\t1\t1\t2");
     this.game.queue.push("DECKENCRYPT\t1\t2");
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
     this.game.queue.push("DECKXOR\t1\t1");
     this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
-*/
 
-    this.game.queue.push("round");
-
+    //
+    // old 1-player mode
+    //
       // DECK [decknum] [array of cards]
       // POOL [poolnum]
       // FLIPCARD [decknum] [cardnum] [poolnum]
-      // RESOLVEFLIP [decknum] [cardnum] [poolnum]
-
-    this.game.queue.push("FLIPCARD\t1\t2\t1");
-    this.game.queue.push("POOL\t1"); // pool for cards on table
-
-    this.game.queue.push("DEAL\t1\t1\t5");
-    this.game.queue.push("SHUFFLE\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
+      // RESOLVEFLIP [decknum] [cardnum] [poolnum
+    //
+    // this.game.queue.push("FLIPCARD\t1\t2\t1");
+    // this.game.queue.push("POOL\t1"); // pool for cards on table
+    // this.game.queue.push("DEAL\t1\t1\t2");
+    // this.game.queue.push("SHUFFLE\t1");
+    // this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDeck()));
 
   }
 
@@ -99,6 +105,43 @@ Poker.prototype.initializeGame = function initializeGame(game_id) {
 
 
 
+
+
+Poker.prototype.playerTurn = function playerTurn() {
+
+  let poker_self = this;
+
+  this.displayBoard();
+
+  let html = '';
+  html  = 'Please select an option below: <p></p><ul>';
+  html += '<li class="menu_option" id="deal">deal card</li>';
+  html += '<li class="menu_option" id="flip">flip card</li>';
+  html += '</ul>';
+
+  this.updateStatus(html);
+
+  $('.menu_option').off();
+  $('.menu_option').on('click', function() {
+
+    let choice = $(this).attr("id");
+
+    poker_self.updateStatus("making your move...");
+
+    if (choice === "flip") {
+      poker_self.addMove("FLIPCARD\t1\t1\t1\t2");
+      poker_self.addMove("FLIPCARD\t1\t1\t1\t1");
+      poker_self.addMove("FLIPRESET\t1");
+      poker_self.endTurn();
+    }
+    if (choice === "deal") {
+      poker_self.addMove("DEAL\t1\t"+poker_self.game.player+"\t1");
+      poker_self.endTurn();
+    }
+
+  });
+
+}
 
 
 Poker.prototype.handleGame = function handleGame(msg=null) {
@@ -111,13 +154,14 @@ Poker.prototype.handleGame = function handleGame(msg=null) {
   }
 
 
-console.log("QUEUE: " + JSON.stringify(this.game.queue));
-
+  this.displayBoard();
 
   ///////////
   // QUEUE //
   ///////////
   if (this.game.queue.length > 0) {
+
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
@@ -130,9 +174,19 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       // fold
       // raise
       //
+      if (mv[0] === "turn") {
+        this.game.queue.splice(qe, 1);
+	if (parseInt(mv[1]) == this.game.player) {
+	  this.playerTurn();
+	}
+	shd_continue = 0;
+console.log("HERE WE ARE!");
+      }
       if (mv[0] === "round") {
 	this.displayBoard();
-	shd_continue = 0;
+	this.updateStatus("Your opponent is making the first move.");
+	for (let i = 0; i < this.game.opponents.length+1; i++) { this.game.queue.push("turn\t"+(i+1)); }
+	shd_continue = 1;
       }
       if (mv[0] === "play") {
         this.game.queue.splice(qe, 1);
@@ -168,23 +222,12 @@ Poker.prototype.displayBoard = function displayBoard() {
 
   if (this.browser_active == 0) { return; }
 
-
-  //
-  // display hand
-  //
-  $('#hand').empty();
-
-  for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-
-    let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-    let card_img = card.name + ".png";
-    let html = '<img class="card" src="/poker/images/cards/'+card_img+'" />';
-
-    $('#hand').append(html);
+  try {
+    this.displayHand();
+    this.displayDeal();
+  } catch (err) {
 
   }
-
-
 }
 
 
@@ -257,7 +300,55 @@ Poker.prototype.returnDeck = function returnDeck() {
 
 
 
+Poker.prototype.displayHand = function displayHand() {
 
+  $('#hand').empty();
+
+  for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+    let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
+    let card_img = card.name + ".png";
+    let html = '<img class="card" src="/poker/images/cards/'+card_img+'" />';
+    $('#hand').append(html);
+  }
+
+}
+Poker.prototype.displayDeal = function displayDeal() {
+
+  //
+  // display flip pool (cards on table)
+  //
+  $('#deal').empty();
+
+  for (let i = 0; i < 5 || i < this.game.pool[0].hand.length; i++) {
+    let card = "";
+    if (i < this.game.pool[0].hand.length) { card = this.game.pool[0].cards[this.game.pool[0].hand[i]]; } else { card = {}; card.name = "red_back"; }
+    let card_img = card.name + ".png";
+    let html = '<img class="card" src="/poker/images/cards/'+card_img+'" />';
+    $('#deal').append(html);
+  }
+
+}
+
+
+
+Poker.prototype.endTurn = function endTurn(nextTarget=0) {
+
+  this.updateStatus("Waiting for information from peers....");
+
+  //
+  // remove events from board to prevent "Doug Corley" gameplay
+  //
+  $(".menu_option").off();
+
+  let extra = {};
+      extra.target = this.returnNextPlayer(this.game.player);
+
+  if (nextTarget != 0) { extra.target = nextTarget; }
+  this.game.turn = this.moves;
+  this.moves = [];
+  this.sendMessage("game", extra);
+
+}
 
 
 
@@ -300,7 +391,9 @@ Poker.prototype.webServer = function webServer(app, expressapp) {
 
 
 
-
+Poker.prototype.addMove = function addMove(mv) {
+  this.moves.push(mv);
+}
 
 
 
