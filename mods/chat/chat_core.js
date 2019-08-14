@@ -27,6 +27,9 @@ class ChatCore extends ModTemplate {
     }
 
     this.server_processing = 500;
+
+    this.message_queue = [];
+    this.is_processing_message_queue = false;
   }
 
   installModule() {
@@ -149,6 +152,10 @@ class ChatCore extends ModTemplate {
       switch (txmsg.request) {
         case 'chat send message':
           chat_self._receiveMessage(app, tx);
+          // add tx to message queue
+
+          // if message queue isn't running --> run
+          // else let it pass
           break;
       }
     }
@@ -162,15 +169,27 @@ class ChatCore extends ModTemplate {
     if (txmsg.publickey == this.app.wallet.returnPublicKey()) { return; }
 
     if (!this.app.BROWSER) {
-      this._notifyRoom(tx);
-      this.app.network.sendTransactionToPeers(tx, "chat send message");
-      this._saveMessageToDB(tx);
+      this.message_queue.push(tx);
+      if (!this.is_processing_message_queue) {
+        this._processMessageQueue();
+      }
     } else {
       let room_idx = this._returnRoomIDX(txmsg.room_id);
       if (room_idx === parseInt(room_idx, 10)) {
         this._addMessageToRoom(tx, room_idx, app);
       }
     }
+  }
+
+  _processMessageQueue() {
+    this.is_processing_message_queue = true;
+    while (this.message_queue.length > 0) {
+      let tx = this.message_queue.shift();
+      this._notifyRoom(tx);
+      this._saveMessageToDB(tx);
+      this.app.network.sendTransactionToPeers(tx, "chat send message");
+    }
+    this.is_processing_message_queue = false;
   }
 
   _saveMessageToDB(newtx) {
@@ -185,7 +204,7 @@ class ChatCore extends ModTemplate {
         $sig: sig,
         $tx: JSON.stringify(newtx.transaction)
       }
-      this.app.storage.execDatabase(sql, params, function () { });
+      this.app.storage.db.run(sql, params);
     }
   }
 
@@ -336,11 +355,12 @@ class ChatCore extends ModTemplate {
       request: "chat send message",
       publickey: this.app.wallet.returnPublicKey(),
       room_id: chat_room_id,
-      message: this.app.keys.encryptMessage(this.app.wallet.returnPublicKey(), msg)
+      message: this.app.keys.encryptMessage(this.app.wallet.returnPublicKey(), msg),
+      timestamp: new Date().getTime(),
     };
 
     newtx.transaction.msg = this.app.keys.encryptMessage(this.app.wallet.returnPublicKey(), newtx.transaction.msg);
-    newtx.transaction.msg.sig = this.app.wallet.signMessage(msg);
+    newtx.transaction.msg.sig = this.app.wallet.signMessage(JSON.stringify(newtx.transaction.msg));
     newtx = this.app.wallet.signTransaction(newtx);
     return newtx;
   }
