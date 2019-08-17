@@ -2360,6 +2360,8 @@ console.log("ERROR REFRESHING: " + err);
           let options    = x.options;
           let state      = 'active';
           let status     = x.status;
+	  if (status != "") { status = status.replace(/<[^>]*>?/gm, ''); }
+
           let adminid    = `${gameid}_${gamename}`;
           let created_at = x.ts;
           let sig        = x.sig;
