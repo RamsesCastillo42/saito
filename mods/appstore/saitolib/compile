@@ -74,7 +74,7 @@ cp ../mods/welcome/web/style.css ../lib/saito/web/style.css
 # generate browser.js
 # sed 's/app.BROWSER           = 0;/app.BROWSER           = 1;/g' ../start.js > ../browser.js
 ../node_modules/.bin/browserify ../start.js > ../lib/saito/web/browser.js -i express -i sqlite3 -i express-basic-auth -i sendgrid -i request -i bluebird -i socket.io -i phantomjs -i express-fileupload -i body-parser -i shashmap -i http -i http-proxy -i simple-socks -i unzip -i node-zip -i shelljs -i crx -i jimp -i image-resolver -i fs-extra -i firebase-admin -i fs -t [ babelify --plugins [ @babel/plugin-proposal-class-properties ] ]
-sed -i '' -e 's/app.BROWSER = 0;/app.BROWSER = 1;/g' ../lib/saito/web/browser.js
+sed -i -e 's/app.BROWSER = 0;/app.BROWSER = 1;/g' ../lib/saito/web/browser.js
 
 #-i winston -i winston-daily-rotate-file
 
