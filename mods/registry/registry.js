@@ -509,30 +509,30 @@ Registry.prototype.clientRegistryRequest = function clientRegistryRequest(regist
   //
   // check that this entry is valid
   //
-  var c;
+  // var c;
 
-  if (this.app.dns.isActive() == 0) {
-    c = confirm("You are not connected to a DNS server, so we cannot confirm this address is available. Click OK to try and register it. You will receive a success or failure email from the registration server once the network has processed your request.");
-    if (!c) { return; }
+  // if (this.app.dns.isActive() == 0) {
+  //   c = confirm("You are not connected to a DNS server, so we cannot confirm this address is available. Click OK to try and register it. You will receive a success or failure email from the registration server once the network has processed your request.");
+  //   if (!c) { return; }
 
-    // send request across network
-    var newtx = this.app.wallet.createUnsignedTransaction(this.publickey, amount, fee);
+  //   // send request across network
+  //   var newtx = this.app.wallet.createUnsignedTransaction(this.publickey, amount, fee);
 
-    if (newtx == null) { alert("Unable to send TX"); return; }
-    newtx.transaction.msg = msg;
-    newtx = this.app.wallet.signTransaction(newtx);
-    this.app.network.propagateTransactionWithCallback(newtx, (err) => {
-  if (!err) {
-    alert("Your registration request has been submitted. Please wait several minutes for network confirmation");
-    window.location.replace("/email")
-  } else {
-    alert("There was an error submitting your request to the network. This is an issue with your network connection or wallet");
-    $("#requested_identifier").val("")
-  }
-    });
+  //   if (newtx == null) { alert("Unable to send TX"); return; }
+  //   newtx.transaction.msg = msg;
+  //   newtx = this.app.wallet.signTransaction(newtx);
+  //   this.app.network.propagateTransactionWithCallback(newtx, (err) => {
+  // if (!err) {
+  //   alert("Your registration request has been submitted. Please wait several minutes for network confirmation");
+  //   window.location.replace("/email")
+  // } else {
+  //   alert("There was an error submitting your request to the network. This is an issue with your network connection or wallet");
+  //   $("#requested_identifier").val("")
+  // }
+  //   });
 
-    return;
-  }
+  //   return;
+  // }
 
   this.app.dns.fetchPublicKey(msg.requested_identifier + "@saito", (answer) => {
     answer = JSON.parse(answer)

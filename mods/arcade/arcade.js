@@ -1736,7 +1736,7 @@ console.log("----------------");
           style= "font-size: 1.5em; padding: 5px; width: 85%; margin-right: 10px"
           type="text" class="reg_id" id="reg_id" name="reg_id" />
           <p style="margin: 0 10px 0 0; font-size: 2em;">@saito</p>
-          <input style="width: 15%; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
+          <input style="width: 15%; cursor: pointer; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
         </div>
       </div>
       `
