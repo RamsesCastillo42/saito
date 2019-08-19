@@ -81,6 +81,7 @@ async function initSaito() {
 
 
     if (app.BROWSER == 0) {
+      require('dotenv').config();
       console.log(`
 
 

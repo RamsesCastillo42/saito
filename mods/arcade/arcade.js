@@ -313,9 +313,33 @@ console.log("\n\n\n");
         // update database to remove game from list
         //
         if (txmsg.request == "invite") {
-	  let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
-          let sql = "UPDATE mod_arcade SET state = 'active', game_id = $gid , player2 = $player2 WHERE sig = $sig";
+
+          // if game creator provided a phone number, we'll fire a text message to them
+          let sql = "SELECT country_code, sms from mod_arcade where sig = $sig";
           let params = {
+            $sig: txmsg.sig
+          };
+
+          try {
+            let res = await arcade_self.db.get(sql, params);
+            if (res != null) {
+              const twilio = require('../twilio/twilio');
+              let {country_code, sms} = res;
+
+              let phone_number = `+${country_code}${sms}`;
+              let message = `[SAITO ARCADE - ${new Date().getTime()}] Your game has been accepted! Please go to https://apps.saito.network to start.`;
+
+              twilio.sendSms(phone_number, message);
+            }
+          } catch(err) {
+            console.log("Error retrieving phone number from database");
+            return;
+          }
+
+          let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
+
+          sql = "UPDATE mod_arcade SET state = 'active', game_id = $gid , player2 = $player2 WHERE sig = $sig";
+          params = {
             $gid : game_id ,
             $player2 : tx.transaction.from[0].add ,
             $sig : txmsg.sig
@@ -326,8 +350,6 @@ console.log("\n\n\n");
             console.log("error updating database in arcade...");
             return;
           }
-
-          // if game creator provided a phone number, we'll fire a text message to them
         }
 
 
