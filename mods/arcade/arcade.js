@@ -326,6 +326,8 @@ console.log("\n\n\n");
             console.log("error updating database in arcade...");
             return;
           }
+
+          // if game creator provided a phone number, we'll fire a text message to them
         }
 
 
@@ -624,6 +626,12 @@ console.log("\n\n\n");
             let tmpmod = txmsg.module;
             this.active_game = tmpmod.charAt(0).toUpperCase();
             this.active_game += tmpmod.slice(1);
+
+            this._createGameNotification(
+              "Your game has been accepted",
+              "Click here to play",
+              () => this._onclickGameNotification()
+            );
 
             //
             //
@@ -1917,6 +1925,16 @@ console.log("GOT THROUGH TO HERE!");
 
   }
 
+  _createGameNotification(title, message, onClickFunction) {
+    let notify = this.app.browser.notification(title, message);
+    if (notify) {
+      notify.onclick = onClickFunction;
+    }
+  }
+
+  _onclickGameNotification() {
+    window.focus();
+  }
 
 
 
