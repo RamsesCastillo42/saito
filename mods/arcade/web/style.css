@@ -852,6 +852,7 @@ hr {
   border: 3px solid #888;
   cursor: pointer;
   max-width: 375px;
+  max-height: 240px;
   grid-area: gameimage;
 }
 

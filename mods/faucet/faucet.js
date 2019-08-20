@@ -87,7 +87,7 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
     var source_app=""
 
     source_protocol = req.protocol
-    source_domain = req.get('host')
+    source_domain = req.get('hostname');
 
     if (req.query.source_port != null) {
       source_port = req.query.source_port;
@@ -112,7 +112,7 @@ Faucet.prototype.webServer = function webServer(app, expressapp) {
     var source_app = "";
 
     source_protocol = req.protocol
-    source_domain = req.get('host')
+    source_domain = req.get('hostname')
 
     if (req.query.app != null) {
       source_app = req.query.app;
@@ -322,8 +322,8 @@ Faucet.prototype.initializeHTML = function initializeHTML(app) {
 
 Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, source_domain="apps.saito.network", source_port="", source_protocol="http", source_app="email", user_email="") {
 
-  let {host, port, protocol} = this.app.network.peers[0].peer;
-  let advert_url = `${protocol}://${host}:${port}/faucet/success`
+  //let {host, port, protocol} = this.app.network.peers[0].peer;
+  //let advert_url = `${protocol}://${host}:${port}/faucet/success`
 
   let fhtml = `<html>
     <head>
@@ -347,7 +347,7 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
       <div class="main" id="main" style="">
         Click the button below to receive 1000 Saito tokens:
         <p></p>(auto-filled with your browser\'s address)<p></p>
-        <form method="get" action="${advert_url}">
+        <form method="get" action="${source_protocol}://${source_domain}/faucet/success">
           <input type="text" style="padding:2px;width:640px" name="saito_address" id="saito_address" value="${saito_address}" />
           <p>If you want to stay up-to-date, subscribe to the Saito Newsletter </p>
           <div style="display: flex">
