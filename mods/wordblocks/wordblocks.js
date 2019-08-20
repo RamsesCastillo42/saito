@@ -741,7 +741,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['18'] = { img: "/wordblocks/img/E.jpg", name: "E" };
   deck['19'] = { img: "/wordblocks/img/E.jpg", name: "E" };
   deck['20'] = { img: "/wordblocks/img/E.jpg", name: "E" };
-
+/*
   deck['21'] = { img: "/wordblocks/img/E.jpg", name: "E" };
   deck['22'] = { img: "/wordblocks/img/E.jpg", name: "E" };
   deck['23'] = { img: "/wordblocks/img/E.jpg", name: "E" };
@@ -828,7 +828,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
   deck['107'] = { img: "/wordblocks/img/Y.jpg", name: "Y" };
   deck['108'] = { img: "/wordblocks/img/Y.jpg", name: "Y" };
   deck['109'] = { img: "/wordblocks/img/Z.jpg", name: "Z" };
-
+*/
   return deck;
 
 }
@@ -1357,15 +1357,13 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     //
     // game over conditions
     //
+    
     if (mv[0] === "gameover") {
-      if (wordblocks_self.browser_active == 1) {
-        wordblocks_self.updateStatus("Game Over!");
-        wordblocks_self.updateLog("Game Over!");
-      }
-
+    
       //
       // pick the winner
       //
+    
       let x = 0;
       let idx = 0;
       for (let i = 0; i < wordblocks_self.game.score.length; i++) {
@@ -1374,11 +1372,28 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
           idx = i;
         }
       }
-
+      for (let i = 0; i < wordblocks_self.game.score.length; i++) {
+        if (i != idx && wordblocks_self.game.score[i] == wordblocks_self.game.score[idx]) {
+          idx = -1;
+        }
+      }
+      
       wordblocks_self.game.winner = idx + 1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
       wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
+    
+      if (wordblocks_self.browser_active == 1) {
+        this.disableEvents();
+        var result = "Game Over<br/>Player " + wordblocks_self.game.winner + " wins!";
+        if (idx < 0) {
+          result = "It's a tie! Well done everyone!";
+        }
+        wordblocks_self.updateStatus(result);
+        wordblocks_self.updateLog(result);
+      }
+
+      this.moves;
 
       return 0;
 
