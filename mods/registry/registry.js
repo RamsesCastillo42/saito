@@ -537,11 +537,15 @@ Registry.prototype.clientRegistryRequest = function clientRegistryRequest(regist
   this.app.dns.fetchPublicKey(msg.requested_identifier + "@saito", (answer) => {
     answer = JSON.parse(answer)
     if (answer) {
-  if (answer.publickey != "") {
-    c = confirm("This address appears to be registered. If you still want to try registering it, click OK.");
-  } else {
-    c = true;
-  };
+      if (answer.publickey == null && answer.identifier == null) {
+        alert("You are not connected to the network. Please reconnect and the retry your request");
+        c = false;
+      }
+      else if (answer.publickey != "") {
+        c = confirm("This address appears to be registered. If you still want to try registering it, click OK.");
+      } else {
+        c = true;
+      };
     }
 
     if (c) {
