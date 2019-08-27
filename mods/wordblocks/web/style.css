@@ -75,6 +75,16 @@ body {
   width: 33%;
 }
 
+.home {
+  display: inline-block;
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+.home > a > i {
+  color: #fff;
+}
+
 .score {
   font-size: 1.6rem;
   padding: 10px 20px;

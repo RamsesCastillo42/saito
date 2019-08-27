@@ -29,10 +29,10 @@ function Chessgame(app) {
   this.board = null;
   this.engine = null;
 
-  this.game.captured = {}
+  //#this.game.captured = {}
 
-  this.game.captured.white = "";
-  this.game.captured.black = "";
+  //#this.game.captured.white = "";
+  //#this.game.captured.black = "";
 
   this_chess = this;
 
@@ -80,14 +80,14 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   //
   this.loadGame(game_id);
 
-  if (this.game.captured == undefined) {
+  /*if (this.game.captured == undefined) {
     this.game.captured = {}
 
     this.game.captured.white = "";
     this.game.captured.black = "";
 
   }
-
+*/
 
   //
   // finish initializing
@@ -178,9 +178,9 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   this.game.position = data.position;
   this.game.target = msg.extra.target;
 
-  this.game.captured.white = data.captured.white;
+/*  this.game.captured.white = data.captured.white;
   this.game.captured.black = data.captured.black;
-
+*/
   if (msg.extra.target == this.game.player) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
@@ -272,10 +272,10 @@ Chessgame.prototype.attachEvents = function attachEvents() {
     data.id = this_chess.game.id;
     data.position = this_chess.engine.fen();
     data.move = this_chess.game.move;
-    data.captured = {};
+/*    data.captured = {};
     data.captured.white = this_chess.game.captured.white;
     data.captured.black = this_chess.game.captured.black;
-
+*/
     this_chess.endTurn(data);
 
     $('#move_accept').prop('disabled', true);
@@ -352,7 +352,12 @@ Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str = "")
   var statusEl = $('#status');
   statusEl.html(status);
   var capturedEL = $('#captured');
-  capturedEL.html(this.game.captured.white + this.game.captured.black);
+  console.log(this.game.position);
+  console.log(this.engine.fen());
+  console.log(this.returnCaptured(this.engine.fen()));
+  console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));  
+  //capturedEL.html(this.game.captured.white + "</br>" + this.game.captured.black);
+  capturedEL.html(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
   this.updateLog();
 
 };
@@ -447,14 +452,14 @@ Chessgame.prototype.onDrop = function onDrop(source, target) {
   if (move === null) return 'snapback';
 
   this_chess.game.move += this_chess.pieces(move.piece) + " ";
-  if (move.san.split("x").length > 1) {
-    this_chess.game.move += "captures " + this_chess.pieces(move.captured);
-    if (move.color == "w") {
-      this_chess.game.captured.black += this_chess.piecehtml(move.captured, "b");
-    } else {
-      this_chess.game.captured.white += this_chess.piecehtml(move.captured, "w");
-    }
-  }
+  //if (move.san.split("x").length > 1) {
+  //this_chess.game.move += "captures " + this_chess.pieces(move.captured);
+  //  if (move.color == "w") {
+  //    this_chess.game.captured.black += this_chess.piecehtml(move.captured, "b");
+  //  } else {
+  //    this_chess.game.captured.white += this_chess.piecehtml(move.captured, "w");
+  //  }
+  //}
 
   this_chess.game.move += " - " + move.san;
 
@@ -544,6 +549,33 @@ Chessgame.prototype.pieces = function pieces(x) {
 
   return;
 
+}
+
+Chessgame.prototype.returnCaptured = function returnCaptured(afen) {
+  afen = afen.split(" ")[0];
+  let WH = ["Q", "R", "R", "B", "B", "N", "N", "P", "P", "P", "P", "P", "P", "P", "P"];
+  let BL = ["q", "r", "r", "b", "b", "n", "n", "p", "p", "p", "p", "p", "p", "p", "p"];
+  for (var i = 0; i < afen.length; i++){
+     if (WH.indexOf(afen[i]) >= 0) {
+       WH.splice(WH.indexOf(afen[i]), 1);
+     }
+     if (BL.indexOf(afen[i]) >= 0) {
+      BL.splice(BL.indexOf(afen[i]), 1);
+    }
+  }
+  return [WH, BL];
+}
+
+Chessgame.prototype.returnCapturedHTML = function returnCapturedHTML(acapt) {
+  let captHTML = "";
+  for (var i = 0; i < acapt[0].length; i++){
+    captHTML += this.piecehtml(acapt[0][i], "w");
+  }
+  captHTML += "<br />";
+  for (var i = 0; i < acapt[1].length; i++){
+    captHTML += this.piecehtml(acapt[1][i], "b");
+  }
+  return captHTML;
 }
 
 Chessgame.prototype.piecehtml = function piecehtml(p, c) {

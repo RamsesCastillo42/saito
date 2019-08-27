@@ -427,7 +427,8 @@ Transaction.prototype.calculateFees = function calculateFees(app, publickey="") 
     // mined key at the beginning.
     //
     if ((this.transaction.type == 4 || this.transaction.type == 5) && app.blockchain.returnLatestBlockId() < 2) {} else {
-      this.is_valid = 0; 
+      console.log("SETTING TX AS INVALID IN CALCULATE FEES")
+      this.is_valid = 0;
     }
 
   }
@@ -460,6 +461,7 @@ Transaction.prototype.calculateFees = function calculateFees(app, publickey="") 
 
     if (this.transaction.path[i].from != from_node) {
       // path invalid
+      console.log("TX INVALID, INVALID PATH");
       this.fees_usable = "0";
       this.is_valid = 0;
       return;

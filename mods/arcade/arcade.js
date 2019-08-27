@@ -313,9 +313,33 @@ console.log("\n\n\n");
         // update database to remove game from list
         //
         if (txmsg.request == "invite") {
-	  let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
-          let sql = "UPDATE mod_arcade SET state = 'active', game_id = $gid , player2 = $player2 WHERE sig = $sig";
+
+          // if game creator provided a phone number, we'll fire a text message to them
+          let sql = "SELECT country_code, sms from mod_arcade where sig = $sig";
           let params = {
+            $sig: txmsg.sig
+          };
+
+          try {
+            let res = await arcade_self.db.get(sql, params);
+            if (res != null) {
+              const twilio = require('../twilio/twilio');
+              let {country_code, sms} = res;
+
+              let phone_number = `+${country_code}${sms}`;
+              let message = `[SAITO ARCADE - ${new Date().getTime()}] Your game has been accepted! Please go to https://apps.saito.network to start.`;
+
+              twilio.sendSms(phone_number, message);
+            }
+          } catch(err) {
+            console.log("Error retrieving phone number from database");
+            return;
+          }
+
+          let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
+
+          sql = "UPDATE mod_arcade SET state = 'active', game_id = $gid , player2 = $player2 WHERE sig = $sig";
+          params = {
             $gid : game_id ,
             $player2 : tx.transaction.from[0].add ,
             $sig : txmsg.sig
@@ -624,6 +648,12 @@ console.log("\n\n\n");
             let tmpmod = txmsg.module;
             this.active_game = tmpmod.charAt(0).toUpperCase();
             this.active_game += tmpmod.slice(1);
+
+            this._createGameNotification(
+              "Your game has been accepted",
+              "Click here to play",
+              () => this._onclickGameNotification()
+            );
 
             //
             //
@@ -1706,7 +1736,7 @@ console.log("----------------");
           style= "font-size: 1.5em; padding: 5px; width: 85%; margin-right: 10px"
           type="text" class="reg_id" id="reg_id" name="reg_id" />
           <p style="margin: 0 10px 0 0; font-size: 2em;">@saito</p>
-          <input style="width: 15%; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
+          <input style="width: 15%; cursor: pointer; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
         </div>
       </div>
       `
@@ -1917,6 +1947,16 @@ console.log("GOT THROUGH TO HERE!");
 
   }
 
+  _createGameNotification(title, message, onClickFunction) {
+    let notify = this.app.browser.notification(title, message);
+    if (notify) {
+      notify.onclick = onClickFunction;
+    }
+  }
+
+  _onclickGameNotification() {
+    window.focus();
+  }
 
 
 
