@@ -1,6 +1,8 @@
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/template');
 var util = require('util');
+const markdown = require( "markdown" ).markdown;
+const linkifyHtml = require('linkifyjs/html');
 
 
 //////////////////
@@ -70,6 +72,7 @@ TimeClock.prototype.installModule = async function installModule() {
                   address TEXT, \
                   login INTEGER, \
                   logout INTEGER, \
+                  force_logout INTEGER, \
                   active INTEGER, \
                   report TEXT, \
                   PRIMARY KEY(id ASC) \
@@ -157,7 +160,7 @@ TimeClock.prototype.attachEvents = function attachEvents() {
   //
   // post announcement
   //
-  $('#post_announement').off();
+  $('#post_announcement').off();
   $('#post_announcement').on('click', function() {
     let newtx = timeclock_self.app.wallet.createUnsignedTransactionWithDefaultFee(timeclock_self.address, 0.0);
     if (newtx == null) {
@@ -197,10 +200,22 @@ TimeClock.prototype.attachEvents = function attachEvents() {
 
 
   //
-  // logout
+  // submit logout
   //
-  $('#logout').off();
-  $('#logout').on('click', function() {
+  $('#submit_logout').off();
+  $('#submit_logout').on('click', function() {
+
+    let organics = $('#organics').val();
+    let nonorganics = $('#nonorganics').val();
+    let marketing = $('#submit_marketing').val();
+    let problems = $('#submit_text').val();
+
+    let report = {};
+        report.organics = organics;
+        report.nonorganics = nonorganics;
+        report.marketing = marketing;
+        report.problems = problems;
+
     let newtx = timeclock_self.app.wallet.createUnsignedTransactionWithDefaultFee(timeclock_self.address, 0.0);
     if (newtx == null) {
       alert("Error Logging-in! Does this browser have Saito tokens?");
@@ -208,9 +223,40 @@ TimeClock.prototype.attachEvents = function attachEvents() {
       newtx.transaction.msg.module       = "TimeClock";
       newtx.transaction.msg.data         = {};
       newtx.transaction.msg.data.request = "logout";
+      newtx.transaction.msg.data.report  = report;
       newtx = timeclock_self.app.wallet.signTransaction(newtx);
       timeclock_self.app.network.propagateTransactionWithCallback(newtx, function (errobj) {
         window.location = '/timeclock';
+      });
+    }
+  });
+  //
+  // logout
+  //
+  $('#logout').off();
+  $('#logout').on('click', function() {
+    timeclock_self.showLogoutForm();
+  });
+
+
+  //
+  // force logout
+  //
+  $('.force_logout').off();
+  $('.force_logout').on('click', function() {
+    let address_to_logout = $(this).attr("id");
+alert("logging out: " + address_to_logout);
+    newtx = timeclock_self.app.wallet.createUnsignedTransactionWithDefaultFee(timeclock_self.address, 0.0);
+    if (newtx == null) {
+      alert("Error Logging-in! Does this browser have Saito tokens?");
+    } else {
+      newtx.transaction.msg.module       = "TimeClock";
+      newtx.transaction.msg.data         = {};
+      newtx.transaction.msg.data.request = "force logout";
+      newtx.transaction.msg.data.address = address_to_logout;
+      newtx = timeclock_self.app.wallet.signTransaction(newtx);
+      timeclock_self.app.network.propagateTransactionWithCallback(newtx, function (errobj) {
+        window.location = '/timeclock/dashboard';
       });
     }
   });
@@ -329,6 +375,9 @@ TimeClock.prototype.onConfirmation = async function onConfirmation(blk, tx, conf
       let params = {
 	$address : tx.transaction.from[0].add
       }
+      let report = "";
+
+      if (txmsg.data.report != undefined) { report = txmsg.data.report; }
 
       let results = await timeclock_self.db.all(sql, params);
       let session_id = -1;
@@ -339,12 +388,50 @@ TimeClock.prototype.onConfirmation = async function onConfirmation(blk, tx, conf
       }
 
       if (session_id >= 0) {
-        sql = "UPDATE sessions SET logout = $logout , active = 0 WHERE id = $id";
+        sql = "UPDATE sessions SET force_logout = 0 , logout = $logout , report = $report , active = 0 WHERE id = $id";
+        params = {
+	  $logout : blk.block.ts ,
+	  $report : JSON.stringify(report) ,
+	  $id : session_id
+	}
+	await timeclock_self.db.run(sql, params);
+      }
+    }
+
+
+    //
+    // force logout
+    //
+    if (txmsg.data.request === "force logout") {
+
+      let sql = "SELECT max(id) AS id FROM sessions WHERE address = $address AND active = 1";
+      let params = {
+	$address : tx.transaction.from[0].add
+      }
+
+      let results = await timeclock_self.db.all(sql, params);
+      let session_id = -1;
+      if (results != null) {
+	if (results.length > 0) {
+          session_id = results[0].id;
+	}
+      }
+
+      if (session_id >= 0) {
+        sql = "UPDATE sessions SET force_logout = 1, logout = $logout , active = 0 WHERE id = $id";
         params = {
 	  $logout : blk.block.ts ,
 	  $id : session_id
 	}
 	await timeclock_self.db.run(sql, params);
+
+        sql = "UPDATE sessions SET force_logout = 1 , logout = $logout , active = 0 WHERE active = 1 AND address = $address";
+        params = {
+	  $logout : blk.block.ts ,
+	  $address : txmsg.data.address
+	}
+	await timeclock_self.db.run(sql, params);
+
       }
     }
 
@@ -506,14 +593,16 @@ TimeClock.prototype.handlePeerRequest = async function handlePeerRequest(app, ms
 
 
 TimeClock.prototype.addAnnouncement = function addAnnouncement(announcement) {
-  $('.announcements').append('<div class="announcement">'+announcement.announcement+'</div>');
-}
-TimeClock.prototype.addStaff = function addStaff(staff) {
+  $('.announcements').append('<li class="announcement">'+linkifyHtml(markdown.toHTML(announcement.announcement))+'</li>');}
+
+TimeClock.prototype.addStaff = async function addStaff(staff) {
   let current_time = new Date().getTime();
   let time_engaged = current_time - staff.login;
-  let identifier = this.app.keys.returnIdentifierByPublicKey(staff.address);
-  staff.address = staff.address.substring(0,14) + "...";
-  $('.staff').append('<tr><td>'+staff.address+'</td><td>'+identifier+'</td><td>'+staff.login+'</td><td>'+this.returnElapsedTime(time_engaged)+'</td></tr>');
+  let identifier = await this.app.dns.fetchIdentifierPromise(staff.address);
+  if (identifier == staff.address) { identifier = "unknown"; }
+  let short_address = staff.address.substring(0,14) + "...";
+  $('.staff').append('<tr><td>'+short_address+'</td><td>'+identifier+'</td><td>'+staff.login+'</td><td class="force_logout" id="'+staff.address+'">'+this.returnElapsedTime(time_engaged)+'</td></tr>');
+  this.attachEvents();
 }
 
 
@@ -533,3 +622,48 @@ TimeClock.prototype.returnElapsedTime = function returnElapsedTime(duration) {
   return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 
 }
+
+TimeClock.prototype.showLogoutForm = function showLogoutForm() {
+
+  var modal = document.getElementById("logout_modal");
+  modal.style.display = "block";
+
+  $('#modal_header_text').html('Session Information');
+  $('#modal_body_text').html(
+      `
+      <div id="submit_post" class="submit_post">
+        <select name="organics" class="modal_select organics" id="organics">
+	  <option value="0" selected>0 games</option>
+	  <option value="1"         >1 games</option>
+	  <option value="2"         >2 games</option>
+	  <option value="3"         >3 games</option>
+	  <option value="4"         >4 games</option>
+	  <option value="5"         >5 games</option>
+	  <option value="6"         >6+ games</option>
+	</select>
+        <select name="nonorganics" class="modal_select nonorganics" id="nonorganics">
+	  <option value="0" selected>0 organic</option>
+	  <option value="1"         >1 organic</option>
+	  <option value="2"         >2 organic</option>
+	  <option value="3"         >3 organic</option>
+	  <option value="4"         >4 organic</option>
+	  <option value="5"         >5 organic</option>
+	  <option value="6"         >6+ organic</option>
+	</select>
+	<p></p>
+        <div for="submit_marketing" class="submit_marketing_label modal_label" id="submit_marketing_label">marketing work?</div>
+        <textarea class="submit_marketing modal_textarea" id="submit_marketing" name="submit_marketing"></textarea>
+	<p></p>
+        <div for="submit_text" class="submit_text_label modal_label" id="submit_text_label">any problems?</div>
+        <textarea class="submit_text modal_textarea" id="submit_text" name="submit_text"></textarea>
+	<p></p>
+        <div class="orange_button" id="submit_logout">submit</div>
+      </div>
+      `
+  );
+
+  this.attachEvents();
+
+}
+
+

@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
   <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="stylesheet" type="text/css" href="/timeclock/style.css" />
 
   <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
 
@@ -25,6 +25,24 @@
   <div id="TimeClock_browser_active"></div>
 
   <div class="loader">Loading Saito Dashboard...</div>
+
+  <div id="logout_modal" class="modal">
+        <div class="modal_content">
+
+          <div class="modal_header">
+            <h2 id="modal_header_text"></h2>
+          </div>
+
+          <div class="modal_body">
+            <h2 id="modal_body_text"></h2>
+          </div>
+
+          <div class="modal_footer">
+          </div>
+
+        </div>
+  </div>
+
 
   <div class="main" style="display:none">
 
@@ -36,17 +54,16 @@
         <tr>
 	  <th>Address</th>
 	  <th>Identifier</th>
-	  <th>Login</th>
-	  <th>Time Engaged</th>
+	  <th>Time Online</th>
 	</tr>
       </table>
 
       <p></p>
 
-      <h3>Announcements: <span onclick="postAnnouncement();" style="font-weight:normal;font-size:0.85em;">(add)</span></h3>
+      <h3>Announcements: <span onclick="postAnnouncement();" style="font-weight:normal;font-size:0.85em;cursor:pointer">(add)</span></h3>
 
-      <div class="announcements" id="announcements">
-      </div>
+      <ul style="margin-top:0px" class="announcements" id="announcements">
+      </ul>
 
       <div class="post_announcement_container" style="display:none">
       <textarea class="announcement_textarea" id="announcement_textarea"></textarea>
