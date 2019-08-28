@@ -32,6 +32,26 @@
 
       <div class="section_header">Saito User Onboarding Dashboard:</div>
 
+      <table class="staff">
+        <tr>
+	  <th>Address</th>
+	  <th>Identifier</th>
+	  <th>Login</th>
+	  <th>Time Engaged</th>
+	</tr>
+      </table>
+
+      <p></p>
+
+      <h3>Announcements: <span onclick="postAnnouncement();" style="font-weight:normal;font-size:0.85em;">(add)</span></h3>
+
+      <div class="announcements" id="announcements">
+      </div>
+
+      <div class="post_announcement_container" style="display:none">
+      <textarea class="announcement_textarea" id="announcement_textarea"></textarea>
+      <div class="orange_button" id="post_announcement">post</div>
+      </div>
 
       <div class="buttons">
         <div class="orange_button" id="logout">logout</div>
@@ -49,6 +69,7 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/browser.js"></script>
+<script src="/timeclock/script.js"></script>
 
 </body>
 </html>
