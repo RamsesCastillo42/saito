@@ -511,7 +511,7 @@ Happy Chatting!`
       </p>
     `;
     }
-    var colorHash = new ColorHash({lightness: 0.35});
+    var colorHash = new ColorHash({saturation: 0.35});
     var color = colorHash.hex(author);
     if (this.app.crypto.isPublicKey(author)) { author = author.substring(0,8); }
     if (id == 0) {

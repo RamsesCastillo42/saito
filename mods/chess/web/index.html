@@ -14,6 +14,8 @@
     <link rel="stylesheet" type="text/css" href="/chat/style.css" />
     <link rel="stylesheet" type="text/css" href="/mailchat/style.css" />
     <link rel="stylesheet" type="text/css" href="/chess/style.css" />
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/lib/font-awesome-5/css/all.min.css" type="text/css" media="screen" />
     <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
     <title>Saito Chess</title>
@@ -41,10 +43,18 @@
                     <button id="move_accept" class="chess_button column" disabled>✔</button>
                     <button id="move_reject" class="chess_button column" disabled>✘</button>
                 </div>
+                <div id="promotion" class="promotion-holder">
+                    <span id="promotion-choices"></span>
+                </div>
             </div>
             <div class="controls column">
 
-                <p id="status_display">Status: <span id="status"></span></p>
+                <p id="status_display">Status: <span id="status"></span>
+                    <span id="home" class="home">
+                        <a href="/arcade">
+                            <i id="home_icon" class="fas fa-home"></i>
+                        </a>
+                    </span></p>
                 <p id="status_oponent">Opponent: <span id="opponent_id"></span></p>
                 <p id="status_captured">Captured: <span id="captured"></span></p>
                 <p id="status_history">History</p>

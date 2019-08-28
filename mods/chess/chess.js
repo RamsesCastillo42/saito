@@ -178,9 +178,9 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   this.game.position = data.position;
   this.game.target = msg.extra.target;
 
-/*  this.game.captured.white = data.captured.white;
-  this.game.captured.black = data.captured.black;
-*/
+  /*  this.game.captured.white = data.captured.white;
+    this.game.captured.black = data.captured.black;
+  */
   if (msg.extra.target == this.game.player) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
@@ -272,10 +272,10 @@ Chessgame.prototype.attachEvents = function attachEvents() {
     data.id = this_chess.game.id;
     data.position = this_chess.engine.fen();
     data.move = this_chess.game.move;
-/*    data.captured = {};
-    data.captured.white = this_chess.game.captured.white;
-    data.captured.black = this_chess.game.captured.black;
-*/
+    /*    data.captured = {};
+        data.captured.white = this_chess.game.captured.white;
+        data.captured.black = this_chess.game.captured.black;
+    */
     this_chess.endTurn(data);
 
     $('#move_accept').prop('disabled', true);
@@ -355,7 +355,7 @@ Chessgame.prototype.updateStatusMessage = function updateStatusMessage(str = "")
   console.log(this.game.position);
   console.log(this.engine.fen());
   console.log(this.returnCaptured(this.engine.fen()));
-  console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));  
+  console.log(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
   //capturedEL.html(this.game.captured.white + "</br>" + this.game.captured.black);
   capturedEL.html(this.returnCapturedHTML(this.returnCaptured(this.engine.fen())));
   this.updateLog();
@@ -435,35 +435,74 @@ Chessgame.prototype.onDragStart = function onDragStart(source, piece, position, 
   }
 };
 
-Chessgame.prototype.onDrop = function onDrop(source, target) {
+Chessgame.prototype.onDrop = function onDrop(source, target, piece, newPos, oldPos, orientation, topromote) {
 
   this_chess.removeGreySquares();
 
   this_chess.game.move = this_chess.engine.fen().split(" ").slice(-1)[0] + " " + this_chess.colours(this_chess.engine.fen().split(" ")[1]) + ": ";
 
-  // see if the move is legal
+  //was a pawn moved to the last rank
+  if ((source.charAt(1) == 7 && target.charAt(1) == 8 && piece == 'wP') 
+      || (source.charAt(1) == 2 && target.charAt(1) == 1 && piece == 'bP')) {
+    // check with user on desired piece to promote.
+    this_chess.checkPromotion(source, target, piece.charAt(0));
+  } else {
+    // see if the move is legal
+    var move = this_chess.engine.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    });
+    // illegal move
+    if (move === null) return 'snapback';
+    // legal move - make it
+
+    this_chess.game.move += this_chess.pieces(move.piece) + " ";
+
+    this_chess.game.move += " - " + move.san;
+  }
+}
+
+Chessgame.prototype.promoteAfterDrop = function promoteAfterDrop(source, target, piece) {
   var move = this_chess.engine.move({
     from: source,
     to: target,
-    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    promotion: piece
   });
+  $('#promotion').hide();
+  $('#buttons').show();
 
-  // illegal move
-  if (move === null) return 'snapback';
+  this_chess.updateStatusMessage("Confirm Move to Send!");
+
+  // legal move - make it
 
   this_chess.game.move += this_chess.pieces(move.piece) + " ";
-  //if (move.san.split("x").length > 1) {
-  //this_chess.game.move += "captures " + this_chess.pieces(move.captured);
-  //  if (move.color == "w") {
-  //    this_chess.game.captured.black += this_chess.piecehtml(move.captured, "b");
-  //  } else {
-  //    this_chess.game.captured.white += this_chess.piecehtml(move.captured, "w");
-  //  }
-  //}
 
   this_chess.game.move += " - " + move.san;
 
+  this_chess.updateStatusMessage('Pawn promoted to ' + this_chess.pieces(piece) + '.');
+
 };
+
+Chessgame.prototype.checkPromotion = function checkPromotion(source, target, color) {
+  $('#buttons').hide();
+  let html = "";
+  html += this.piecehtml('q', color);
+  html += this.piecehtml('r', color);
+  html += this.piecehtml('b', color);
+  html += this.piecehtml('n', color);
+  $('#promotion-choices').html(html);
+  $('#promotion-choices').children().each(function (i) {
+    var $this = $(this);
+    $this.click(function () {
+      $('#promotion').hide();
+      $('#buttons').show();
+      this_chess.promoteAfterDrop(source, target, $this.attr('alt'));
+    });
+  });
+  this_chess.updateStatusMessage('Chose promotion piece');
+  $('#promotion').show();
+}
 
 Chessgame.prototype.onMouseoverSquare = function onMouseoverSquare(square, piece) {
 
@@ -520,8 +559,10 @@ Chessgame.prototype.onChange = function onChange(oldPos, newPos) {
 
   $('#move_reject').prop('disabled', false);
   $('#move_reject').addClass('red');
-
-  this_chess.updateStatusMessage("Confirm Move to Send!");
+  
+  if ($('#buttons').is("vissible")) {
+    this_chess.updateStatusMessage("Confirm Move to Send!");
+  }
 
 };
 
@@ -555,11 +596,11 @@ Chessgame.prototype.returnCaptured = function returnCaptured(afen) {
   afen = afen.split(" ")[0];
   let WH = ["Q", "R", "R", "B", "B", "N", "N", "P", "P", "P", "P", "P", "P", "P", "P"];
   let BL = ["q", "r", "r", "b", "b", "n", "n", "p", "p", "p", "p", "p", "p", "p", "p"];
-  for (var i = 0; i < afen.length; i++){
-     if (WH.indexOf(afen[i]) >= 0) {
-       WH.splice(WH.indexOf(afen[i]), 1);
-     }
-     if (BL.indexOf(afen[i]) >= 0) {
+  for (var i = 0; i < afen.length; i++) {
+    if (WH.indexOf(afen[i]) >= 0) {
+      WH.splice(WH.indexOf(afen[i]), 1);
+    }
+    if (BL.indexOf(afen[i]) >= 0) {
       BL.splice(BL.indexOf(afen[i]), 1);
     }
   }
@@ -568,17 +609,18 @@ Chessgame.prototype.returnCaptured = function returnCaptured(afen) {
 
 Chessgame.prototype.returnCapturedHTML = function returnCapturedHTML(acapt) {
   let captHTML = "";
-  for (var i = 0; i < acapt[0].length; i++){
+  for (var i = 0; i < acapt[0].length; i++) {
     captHTML += this.piecehtml(acapt[0][i], "w");
   }
   captHTML += "<br />";
-  for (var i = 0; i < acapt[1].length; i++){
+  for (var i = 0; i < acapt[1].length; i++) {
     captHTML += this.piecehtml(acapt[1][i], "b");
   }
   return captHTML;
 }
 
 Chessgame.prototype.piecehtml = function piecehtml(p, c) {
-  var pieceImg = '<img class="captured" src = "/chess/pieces/' + c + p.toUpperCase() + '.png">';
+  var pieceImg = '<img class="captured" alt="' + p + '" src = "/chess/pieces/' + c + p.toUpperCase() + '.png">';
   return (pieceImg);
 }
+
