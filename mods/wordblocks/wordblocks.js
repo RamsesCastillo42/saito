@@ -121,19 +121,58 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
   }
 
-  Wordblocks.prototype.resizeBoard = function resizeBoard() {
-    //    $('.gameboard').outerWidth($('.main').outerWidth() - 2);
-    //    $('.gameboard').outerHeight($('.main').outerWidth() - 2);
-    $('.gameboard').outerWidth("100%");
-    $('.gameboard').outerWidth($('.gameboard').outerWidth() - 2);
-    $('.gameboard').outerHeight($('.gameboard').outerWidth() - 2);
-    $('#controls').outerWidth($('.main').outerWidth() + 6);
-    responsive();
+  resizeBoard = function resizeBoard() {
+
+    if (this.window) {
+
+      let height = this.window.innerHeight;
+      let width = this.window.innerWidth;
+
+      if (width < 900) {
+        if (width > 500) {
+          $('.main').css('zoom', (width / 905));
+          $('.rack').css('zoom', (width / 905));
+          $('h').css('zoom', (width / 905));
+        } else {
+          $('.main').css('zoom', 500 / 900);
+          $('.rack').css('zoom', 500 / 900);
+          $('#tiles > div.tile').css('zoom', 500 / 900);
+        }
+      }
+
+      if (height < 900) {
+        if (height > 500) {
+          $('.main').css('zoom', (height / 905));
+          $('.rack').css('zoom', (height / 905));
+          $('#tiles > div.tile').css('zoom', (height / 905));
+        } else {
+          $('.main').css('zoom', 500 / 900);
+          $('.rack').css('zoom', 500 / 900);
+          $('#tiles > div.tile').css('zoom', 500 / 900);
+        }
+      }
+      
+      if (height > 900 && width > 900) {
+        $('.main').css('zoom', 1);
+        $('.rack').css('zoom', 1);
+        $('#tiles > div.tile').css('zoom', 1);
+      }
+
+      if (height < 1125) {
+        $('#controls').addClass('fixedbottom');
+        $('.main').addClass('mainfixedbottom');
+      } else {
+        $('#controls').removeClass('fixedbottom');
+        $('.main').removeClass('mainfixedbottom');
+      }
+    }
   };
 
-  $(window).resize(function () {
-    responsive();
-  });
+
+
+  responsive = function responsive() {
+
+  };
 
   //
   // show tiles
@@ -201,7 +240,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   // initialize interface
   //
 
-  this.resizeBoard();
+  resizeBoard();
 
   //
   // load any existing tiles
@@ -241,8 +280,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
         this.firstmove = 0;
       }
     }
-  } 
-  
+  }
+
   //
   // attach events
   //
@@ -259,19 +298,10 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   });
   $('#tiles').sortable();
   $(window).resize(function () {
-    this_wordblocks.resizeBoard();
+    resizeBoard();
   });
 };
 
-responsive = function responsive() {
-  if (this.window.innerHeight <= $('.gameboard').outerHeight() + $('#controls').outerHeight()) {
-    $('#controls').addClass('fixedbottom');
-    $('.main').addClass('mainfixedbottom');
-  } else {
-    $('#controls').removeClass('fixedbottom');
-    $('.main').removeClass('mainfixedbottom');
-  }
-};
 
 /////////////////
 // Return Tile //
@@ -475,8 +505,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
         //
         // reset board
         //
-        $('.status').html("Processing your turn."); 
-        
+        $('.status').html("Processing your turn.");
+
         //
         // if entry is valid
         //
@@ -550,7 +580,7 @@ Wordblocks.prototype.removeTilesFromHand = function removeTilesFromHand(word) {
       word = "";
     }
   }
-}; 
+};
 
 //
 // is Entry Valid
@@ -561,8 +591,8 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
   let valid_placement = 1;
   let tmphand = JSON.parse(JSON.stringify(this.game.deck[0].hand));
   x = parseInt(x);
-  y = parseInt(y); 
-  
+  y = parseInt(y);
+
   //
   // if this is the first word, it has to cross a critical star
   //
@@ -623,7 +653,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
         if (this.game.deck[0].cards[tmphand[k]].name == letter) {
           tmphand.splice(k, 1);
           letter_found = 1;
-          k = tmphand.length + 1; 
+          k = tmphand.length + 1;
           //or we could use break. this was above the splice command. Endless letters.
         }
       }
@@ -640,7 +670,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
   }
 
   return valid_placement;
-}; 
+};
 
 //
 // exhaustWord
@@ -665,11 +695,11 @@ Wordblocks.prototype.exhaustWord = function exhaustWord(word, orientation, x, y)
     }
 
     this.game.board[boardslot].fresh = 0;
-  } 
-  
+  }
+
   //this.saveGame(this.game.id);
 
-}; 
+};
 
 //
 // discard tile
@@ -696,13 +726,13 @@ Wordblocks.prototype.discardTiles = function discardTiles(word, orientation, x, 
     if (this.game.board[boardslot].fresh == 1) {
       this.removeTilesFromHand(word[i]);
     }
-  } 
-  
+  }
+
   //this.saveGame(this.game.id);
 
 };
 
- //
+//
 // addWordToBoard
 //
 
@@ -735,7 +765,7 @@ Wordblocks.prototype.addWordToBoard = function addWordToBoard(word, orientation,
       }
     } else {
       this.game.board[boardslot].letter = letter;
-       //      $(divname).html(this.returnTile(letter));
+      //      $(divname).html(this.returnTile(letter));
 
       this.addTile($(divname), letter);
     }
@@ -787,7 +817,7 @@ Wordblocks.prototype.setBoard = function setBoard(word, orientation, x, y) {
     divname = "#" + boardslot;
     $(divname).addClass("set");
   }
-}; 
+};
 
 //////////////////
 // Return Board //
@@ -808,7 +838,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
   }
 
   return board;
-}; 
+};
 
 /////////////////
 // Return Deck //
@@ -1483,7 +1513,7 @@ Wordblocks.prototype.returnBonus = function returnBonus(pos) {
   }
 
   return bonus;
-}; 
+};
 
 ////////////////
 // Score Word //
@@ -1497,7 +1527,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   let finalword = "";
   x = parseInt(x);
   y = parseInt(y);
-  
+
   //
   // find the start of the word
   //
@@ -1505,8 +1535,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   if (orientation == "horizontal") {
     let beginning_of_word = x;
     let end_of_word = x;
-    let tilesUsed = 0; 
-    
+    let tilesUsed = 0;
+
     //
     // find the beginning of the word
     //
@@ -1529,8 +1559,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
           break;
         }
       }
-    } 
-    
+    }
+
     //
     // find the end of the word
     //
@@ -1554,8 +1584,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       }
     }
 
-    let word_bonus = 1; 
-    
+    let word_bonus = 1;
+
     //
     // score this word
     //
@@ -1607,8 +1637,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       word_bonus += 1;
     }
 
-    score *= word_bonus; 
-    
+    score *= word_bonus;
+
     //
     // now score vertical words 
     //
@@ -1618,8 +1648,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
       if (this.game.board[boardslot].fresh == 1) {
         let orth_start = parseInt(y);
-        let orth_end = parseInt(y); 
-        
+        let orth_end = parseInt(y);
+
         //
         // find the beginning of the word
         //
@@ -1642,8 +1672,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
               break;
             }
           }
-        } 
-        
+        }
+
         //
         // find the end of the word
         //
@@ -1669,8 +1699,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         }
 
         let wordscore = 0;
-        let word_bonus = 1; 
-        
+        let word_bonus = 1;
+
         //
         // score this word
         //
@@ -1722,7 +1752,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     let beginning_of_word = y;
     let end_of_word = y;
     let tilesUsed = 0;
-    
+
     //
     // find the beginning of the word
     //
@@ -1745,8 +1775,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
           break;
         }
       }
-    } 
-    
+    }
+
     //
     // find the end of the word
     //
@@ -1772,8 +1802,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       }
     }
 
-    let word_bonus = 1; 
-    
+    let word_bonus = 1;
+
     //
     // score this word
     //
@@ -1823,8 +1853,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       word_bonus += 1;
     }
 
-    score *= word_bonus; 
-    
+    score *= word_bonus;
+
     //
     // now score horizontal words 
     //
@@ -1835,7 +1865,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       if (this.game.board[boardslot].fresh == 1) {
         let orth_start = parseInt(x);
         let orth_end = parseInt(x);
-        
+
         //
         // find the beginning of the word
         //
@@ -1858,8 +1888,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
               break;
             }
           }
-        } 
-        
+        }
+
         //
         // find the end of the word
         //
@@ -1888,8 +1918,8 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
         }
 
         let wordscore = 0;
-        let word_bonus = 1; 
-        
+        let word_bonus = 1;
+
         //
         // score this word
         //
@@ -1959,7 +1989,7 @@ checkWord = function checkWord(word) {
   } else {
     return true;
   }
-}; 
+};
 
 //
 // Core Game Logic
@@ -1967,14 +1997,14 @@ checkWord = function checkWord(word) {
 
 
 Wordblocks.prototype.handleGame = function handleGame(msg = null) {
-  let wordblocks_self = this; 
-  
+  let wordblocks_self = this;
+
   //
   // show board and tiles
   //
 
-  this.showTiles(); 
-  
+  this.showTiles();
+
   ///////////
   // QUEUE //
   ///////////
@@ -1986,8 +2016,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     wordblocks_self.saveGame(wordblocks_self.game.id);
     let qe = this.game.queue.length - 1;
     let mv = this.game.queue[qe].split("\t");
-    let shd_continue = 1; 
-    
+    let shd_continue = 1;
+
     //
     // game over conditions
     //
@@ -2031,8 +2061,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
       this.moves;
       return 0;
-    } 
-    
+    }
+
     //
     // place word player x y [horizontal/vertical]
     //
@@ -2093,8 +2123,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
 
       this.game.queue.splice(this.game.queue.length - 1, 1);
       return 1;
-    } 
-    
+    }
+
     //
     // avoid infinite loops
     //
@@ -2103,8 +2133,8 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     if (shd_continue == 0) {
       return 0;
     }
-  } 
-  
+  }
+
   // if cards in queue
 
   /***
@@ -2142,7 +2172,7 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
   let divname = "#score_" + player;
   this.game.score[player - 1] = this.game.score[player - 1] + score;
   $(divname).html(parseInt($(divname).html()) + score);
-}; 
+};
 
 ///////////////
 // webServer //

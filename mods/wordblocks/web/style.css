@@ -32,8 +32,7 @@ body {
 
 .main {
   display: block;
-  max-width: 900px;
-  min-width: 500px;
+  width: 900px;
   margin: auto;
   margin-bottom: none;
   border: 1px solid orange;
@@ -63,6 +62,8 @@ body {
   color: #EEE;
   height: 340px;
   position: relative;
+  width: 100%;
+  max-width: 900px;
 }
 
 #remainder, #lastmove {
@@ -262,8 +263,6 @@ body {
 .sc11::after { content: "11"; }
 
 
-
-
 #chat_container {
   display: block;
 }
@@ -277,11 +276,10 @@ body {
     font-size: 1.4em;
     width: 20%;
   }
-  .tiles {
-    width: 60%
-  }
+ 
   #controls {
-    height: 350px;
+    height: 225px;
+    overflow-y: auto;
   }
 }
 
@@ -294,11 +292,10 @@ body {
     font-size: 1.4em;
     width: 20%;
   }
-  .tiles {
-    width: 60%
-  }
+  
   #controls {
-    height: 350px;
+    height: 225px;
+    overflow-y: auto;
   }
   #chat_container {
     display: block;
@@ -308,8 +305,10 @@ body {
 .fixedbottom {
   position: fixed !important;
   bottom: 0;
+  height: 225px;
+  overflow-y: auto;
 }
 
 .mainfixedbottom {
-  margin: 0 0 350px 0;
+  margin: 0 0 225px 0;
 }
