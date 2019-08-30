@@ -49,8 +49,17 @@ body {
   padding: 10px;
 }
 
-.card {
+
+.action {
+  display: block;
+  color: #fff;
+  border: 4px solid #cccccc;
+  padding: 5px;
+  border-radius: 10px;
+  margin: 5px;
+  background-color: #777;
   cursor: pointer;
+  text-align: center;
 }
 
 #controls {
@@ -118,6 +127,7 @@ body {
   width: 100%;
   height: 100%;
   cursor: pointer;
+  text-indent: 5px;
 }
 
 .tiles div.tile {
@@ -147,6 +157,11 @@ body {
   width: 65%;
 }
 
+.active-status {
+  padding: 0;
+  max-width: 300px;
+}
+
 .slot {
   cursor: pointer;
   display: flex;
@@ -157,6 +172,8 @@ body {
   border-image: initial;
   border-radius: 10px;
   overflow: hidden;
+  width: 50px;
+  height: 50px;
 }
 
 .slot div.tile {

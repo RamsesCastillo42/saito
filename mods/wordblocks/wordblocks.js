@@ -312,118 +312,40 @@ Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
   let html = "";
   let letterScore = this.returnLetters();
 
-  if (letter == "A") {
-    html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>';
-  }
-
-  if (letter == "B") {
-    html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>';
-  }
-
-  if (letter == "C") {
-    html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>';
-  }
-
-  if (letter == "D") {
-    html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>';
-  }
-
-  if (letter == "E") {
-    html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>';
-  }
-
-  if (letter == "F") {
-    html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>';
-  }
-
-  if (letter == "G") {
-    html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>';
-  }
-
-  if (letter == "H") {
-    html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>';
-  }
-
-  if (letter == "I") {
-    html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>';
-  }
-
-  if (letter == "J") {
-    html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>';
-  }
-
-  if (letter == "K") {
-    html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>';
-  }
-
-  if (letter == "L") {
-    html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>';
-  }
-
-  if (letter == "M") {
-    html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>';
-  }
-
-  if (letter == "N") {
-    html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>';
-  }
-
-  if (letter == "O") {
-    html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>';
-  }
-
-  if (letter == "P") {
-    html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>';
-  }
-
-  if (letter == "Q") {
-    html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>';
-  }
-
-  if (letter == "R") {
-    html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>';
-  }
-
-  if (letter == "S") {
-    html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>';
-  }
-
-  if (letter == "T") {
-    html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>';
-  }
-
-  if (letter == "U") {
-    html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>';
-  }
-
-  if (letter == "V") {
-    html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>';
-  }
-
-  if (letter == "W") {
-    html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>';
-  }
-
-  if (letter == "X") {
-    html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>';
-  }
-
-  if (letter == "Y") {
-    html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>';
-  }
-
-  if (letter == "Z") {
-    html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>';
-  }
-
+  if (letter == "A") {html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>';}
+  if (letter == "B") {html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>';}
+  if (letter == "C") {html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>';}
+  if (letter == "D") {html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>';}
+  if (letter == "E") {html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>';}
+  if (letter == "F") {html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>';}
+  if (letter == "G") {html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>';}
+  if (letter == "H") {html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>';}
+  if (letter == "I") {html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>';}
+  if (letter == "J") {html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>';}
+  if (letter == "K") {html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>';}
+  if (letter == "L") {html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>';}
+  if (letter == "M") {html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>';}
+  if (letter == "N") {html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>';}
+  if (letter == "O") {html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>';}
+  if (letter == "P") {html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>';}
+  if (letter == "Q") {html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>';}
+  if (letter == "R") {html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>';}
+  if (letter == "S") {html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>';}
+  if (letter == "T") {html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>';}
+  if (letter == "U") {html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>';}
+  if (letter == "V") {html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>';}
+  if (letter == "W") {html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>';}
+  if (letter == "X") {html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>';}
+  if (letter == "Y") {html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>';}
+  if (letter == "Z") {html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>';}
   return html;
 };
 
 Wordblocks.prototype.addTile = function (obj, letter) {
   if (letter !== "_") {
     //obj.css("background-image", "url(wordblocks/img/" + letter.toUpperCase() + ".jpg)");
-    obj.addClass("nobefore");
-    obj.html(this.returnTileHTML(letter));
+    obj.find('.bonus').css('display', 'none');
+    obj.append(this.returnTileHTML(letter));
   }
 };
 
@@ -472,16 +394,28 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
   $('.slot').off();
   $('.slot').on('click', function () {
     let divname = $(this).attr("id");
-    let html = 'Add a Word:<p></p><ul><li class="card" id="horizontally">horizontally</li><li class="card" id="vertically">vertically</li><li class="card" id="cancel">cancel</li></ul>';
+    let html = '<span class="action" id="horizontally"><i class="fas fa-arrows-alt-h"></i> horizontally</span><span class="action" id="vertically"><i class="fas fa-arrows-alt-v"></i> vertically</span><span class="action" id="cancel"><i class="far fa-window-close"></i> cancel</span>';
     let tmpx = divname.split("_");
     let y = tmpx[0];
     let x = tmpx[1];
     let orientation = "";
     let word = "";
+    let left = $(this).position().left + 45;
+    let top = $(this).position().top + 45;
+    if (x > 8){ left -= 325; }
+    if (y > 8){ top -= 200; }
+    $('.status').detach().appendTo($('.gameboard'));
+    $('.status').addClass("active-status");
+    $('.status').css({"position": "absolute", "top": top, "left": left});
     $('.status').html(html); //$('.status').show();
 
-    $('.card').off();
-    $('.card').on('click', function () {
+    $('.action').off();
+    $('.action').on('click', function () {
+
+      $('.status').detach().appendTo($('#controls'));
+      $('.status').removeClass("active-status");
+      $('.status').css({"position": "relative", "top": 0, "left": 0});
+
       let action2 = $(this).attr("id");
 
       if (action2 == "horizontally") {
@@ -493,8 +427,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       }
 
       if (action2 == "cancel") {
-        $('.card').off();
-        $('.status').html("Your  turn!<p></p><div style=\"font-size:1.0em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+        $('.action').off();
+        $('.status').html("<span>Your  turn!</span><p></p><div style=\"font-size:1.0em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
         wordblocks_self.addEventsToBoard();
         return;
       }
@@ -793,7 +727,8 @@ Wordblocks.prototype.removeWordFromBoard = function removeWordFromBoard(word, or
 
     if ($(divname).hasClass("set") != true) {
       this.game.board[boardslot].letter = "_";
-      $(divname).css("background-image", "");
+      $(divname).find('.tile').remove();
+      $(divname).find('.bonus').css("display", "block");
     }
   }
 };
