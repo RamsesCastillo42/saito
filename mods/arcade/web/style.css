@@ -1273,3 +1273,13 @@ hr {
 ::-webkit-scrollbar { 
   display: none; 
 }
+
+
+
+
+  .game_cell_player {
+    min-width: 200px;
+  }
+
+
+

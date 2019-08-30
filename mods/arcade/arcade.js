@@ -141,6 +141,53 @@ class Arcade extends ModTemplate {
 
     let arcade_self = this;
 
+    //
+    // timer to check DNS of unknown games
+    //
+    setTimeout(function() {
+
+      var keystocheck = [];
+
+      $('.game_cell_player').each(function() {
+        var author_address = $(this).attr("id");
+        var visible_author = $(this).text();
+        if (visible_author.indexOf("...") > 0) {
+          keystocheck.push(author_address);
+        }
+      });
+
+      for (var cfg = 0; cfg < keystocheck.length; cfg++) {
+
+        let thispublickey = keystocheck[cfg];
+
+        // fetch the ID for this KEY and update if FOUND
+        app.dns.fetchIdentifier(thispublickey, function(answer) {
+
+          if (app.dns.isRecordValid(answer) == 0) {
+            return;
+          }
+
+          dns_response = JSON.parse(answer);
+
+          let myidentifier = dns_response.identifier;
+          let mypublickey = dns_response.publickey;
+
+          $('.game_cell_player').each(function() {
+            var tmpid = $(this).attr('id');
+	    if (tmpid === mypublickey) {
+	      $(this).text(myidentifier);
+	    }
+	  });
+	});
+      }
+
+    //
+    // 1.5 second delay
+    //
+    }, 1500);
+
+
+
     if (invite_page != undefined) {
     if (invite_page == 1) {
 
@@ -378,7 +425,6 @@ console.log("\n\n\n");
 
         if (txmsg.request == "accept") {
           let sql1 = "SELECT sig FROM mod_arcade WHERE state = $state AND player = $player"
-
           let sql2 = "UPDATE mod_arcade SET state = 'expired' WHERE state = $state AND player = $player";
           let params = {
             $state : 'open',
@@ -2427,6 +2473,7 @@ console.log("ERROR REFRESHING: " + err);
             }
           }
 
+
           let id = this.app.keys.findByPublicKey(opponent);
           if (id != null) {
             if (id.identifiers[0] !== "") { identifier = id.identifiers[0]; }
@@ -2442,6 +2489,22 @@ console.log("ERROR REFRESHING: " + err);
 
 console.log("ADDING TO OPEN GAMES");
 console.log(gameid + " -- " + adminid);
+
+
+	  //
+	  // purge old invitations which have not been accepted
+	  // 
+          let datenow = new Date().getTime();
+	  let duration = datenow - created_at;
+          var milliseconds = parseInt((duration % 1000) / 100),
+              seconds = Math.floor((duration / 1000) % 60),
+              minutes = Math.floor((duration / (1000 * 60)) % 60),
+              hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+          if (minutes > 15) {
+	    state = "expired";
+	    status = "invitation expired";
+	  }
 
           this.games.open.push({
             player: opponent ,

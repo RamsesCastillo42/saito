@@ -41,7 +41,7 @@
 
     var gameTableCellContent = document.createTextNode(content);
     gameTableCell.appendChild(gameTableCellContent);
-    return gameTableCell
+    return gameTableCell;
   }
 
 
@@ -65,21 +65,24 @@
       if (game.state == "open") { game.status = "waiting for opponent"; }
       if (game.state == "over") { game.status = "opponent resigned"; }
       if (game.state == "accept") { game.status = "waiting for acceptance"; }
+      if (game.state == "expired") { game.status = "invitation expired"; }
 
 
-
-      let playerName = my_publickey == game.player ?  "Me" : game.player.substring(0,16);
+      let playerName = my_publickey == game.player ?  "Me" : game.player.substring(0,14) + "...";
       if (game.identifier != null) {
         playerName = game.identifier;
       }
       let playerCell = createGameTableCell(playerName);
-      playerCell.id = "game_cell_player";
+      playerCell.id = game.player;
+      playerCell.className = "game_table_cell game_cell_player";
 
       let gameCell = createGameTableCell(game.game);
       gameCell.id = "game_cell_game";
 
       let statusCell = createGameTableCell(game.status);
       statusCell.id = "game_cell_status";
+
+alert(game.state);
 
       if (game.state == "open") {
 
@@ -103,11 +106,21 @@
             buttonCell.appendChild(this.createGameButton("accept_game", game.adminid));
 
 	  } else {
+	
+	    if (game.state == "expired") {
 
-            var buttonCell = document.createElement("div");
-            buttonCell.className = "button_container";
-            buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
-            buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+              var buttonCell = document.createElement("div");
+              buttonCell.className = "button_container";
+              buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+
+	    } else {
+
+              var buttonCell = document.createElement("div");
+              buttonCell.className = "button_container";
+              buttonCell.appendChild(this.createGameButton("join_game", game.adminid));
+              buttonCell.appendChild(this.createGameButton("delete_game", game.adminid));
+
+	    }
 
 	  }
 	}
