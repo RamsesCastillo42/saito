@@ -101,6 +101,7 @@ class Arcade extends ModTemplate {
           id INTEGER,
           player TEXT,
           player2 TEXT,
+          winner INTEGER,
           game_bid INTEGER,
           game_id TEXT,
           game TEXT,
