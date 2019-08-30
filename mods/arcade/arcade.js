@@ -305,8 +305,6 @@ class Arcade extends ModTemplate {
       if (conf == 0) {
         let txmsg = tx.returnMessage();
 
-
-
         //
         // save game state if provided
         //
@@ -575,6 +573,22 @@ console.log("\n\n\n");
             if (id != null) {
               if (id.identifiers[0] !== "") { game.identifier = id.identifiers[0]; }
             }
+
+	    //
+	    // purge old invitations which have not been accepted
+	    // 
+            let datenow = new Date().getTime();
+	    let duration = datenow - game.created_at;
+            var milliseconds = parseInt((duration % 1000) / 100),
+                seconds = Math.floor((duration / 1000) % 60),
+                minutes = Math.floor((duration / (1000 * 60)) % 60),
+                hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+            if (minutes > 30) {
+	      game.state = "expired";
+	      game.status = "invitation expired";
+	      return;
+	    }
 
             arcade_self.games.open.push(game);
             renderGamesTable(arcade_self.games[arcade_self.games.nav.selected], arcade_self.app.wallet.returnPublicKey());
@@ -1036,6 +1050,24 @@ console.log("ERROR");
     $('.delete_game').on('click', function() {
 
       let tmpid = $(this).attr('id');
+
+      //
+      // delete expired games - this works as only 1 outstanding game at a time
+      //
+      if (tmpid == undefined || tmpid == "undefined") {
+        for (let i = 0; i < arcade_self.app.options.games.length; i++) {
+          if (arcade_self.app.options.games[i].accept == 0) {
+            arcade_self.app.options.games.splice(i, 1);
+            i--;
+          }
+	}
+
+	arcade_self.app.storage.saveOptions();
+	return;
+
+      }
+
+
       let tmpar = tmpid.split("_");
       let gameid = tmpar[0];
       let game_module = tmpar[1];
@@ -2489,7 +2521,6 @@ console.log("ERROR REFRESHING: " + err);
 
 console.log("ADDING TO OPEN GAMES");
 console.log(gameid + " -- " + adminid);
-
 
 	  //
 	  // purge old invitations which have not been accepted

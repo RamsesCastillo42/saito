@@ -1,11 +1,9 @@
 
-
   var open_games = [];
 
+  //
   // OPEN GAMES
-
-
-
+  //
   function createGameButton(button_class, button_id) {
 
     var button = document.createElement("button");
@@ -81,8 +79,6 @@
 
       let statusCell = createGameTableCell(game.status);
       statusCell.id = "game_cell_status";
-
-alert(game.state);
 
       if (game.state == "open") {
 
