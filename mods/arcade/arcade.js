@@ -167,8 +167,7 @@ class Arcade extends ModTemplate {
             return;
           }
 
-          dns_response = JSON.parse(answer);
-
+          let dns_response = JSON.parse(answer);
           let myidentifier = dns_response.identifier;
           let mypublickey = dns_response.publickey;
 
