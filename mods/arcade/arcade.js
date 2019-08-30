@@ -2519,9 +2519,6 @@ console.log("ERROR REFRESHING: " + err);
             remote_address += x.opponents[z];
           }
 
-console.log("ADDING TO OPEN GAMES");
-console.log(gameid + " -- " + adminid);
-
 	  //
 	  // purge old invitations which have not been accepted
 	  // 
@@ -2532,7 +2529,7 @@ console.log(gameid + " -- " + adminid);
               minutes = Math.floor((duration / (1000 * 60)) % 60),
               hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-          if (minutes > 15) {
+          if (minutes > 60) {
 	    state = "expired";
 	    status = "invitation expired";
 	  }
