@@ -58,6 +58,65 @@ Welcome.prototype.webServer = function webServer(app, expressapp) {
 
 
 
+Welcome.prototype.initialize = async function initialize() {
+
+  //
+  // test option file length
+  //
+  let options_file_length = JSON.stringify(this.app.options).length;
+
+  console.log("WALLET SIZE: " + options_file_length + " bytes");
+  //if (options_file_length > 100000) {
+  if (options_file_length > 3000000) {
+
+    let c = confirm("Your wallet is getting dangerously large... purge bloated data?");
+    if (c) {
+
+      let privatekey = "";
+      let publickey = "";
+      let identifier = "";
+
+      //
+      // clean up keychain
+      //
+      this.app.keys.clean();
+      let keychain = this.app.keys;
+
+      //
+      // remove finished games
+      //
+      for (let i = 0; i < this.app.options.games; i++) {
+ 	if (this.app.options.games[i].over == 1) {
+	  this.app.options.games[i].last_txmsg = "";
+	  this.app.options.games.splice(i, 1);
+	  i--;
+        }
+      }
+      let games = this.app.options.games;
+      let inputs = this.app.wallet.wallet.inputs;
+
+      privatekey = this.app.wallet.returnPrivateKey();
+      publickey  = this.app.wallet.returnPublicKey();
+      identifier = this.app.options.wallet.identifier;
+      
+      this.app.archives.resetArchives();
+      await this.app.storage.resetOptions();
+
+      this.app.wallet.wallet.privatekey = privatekey;
+      this.app.wallet.wallet.publickey = publickey;
+      this.app.wallet.wallet.identifier = identifier;
+      this.app.wallet.wallet.inputs = inputs;
+      this.app.keys = keychain;
+      this.app.wallet.saveWallet();
+
+      alert("Your browser wallet has been cleaned up");
+      location.reload();
+
+    }
+  }
+}
+
+
 /////////////////////
 // Initialize HTML //
 /////////////////////
@@ -295,5 +354,7 @@ Welcome.prototype.updateControlPanel = function updateControlPanel(app, blk=null
   //$('#saito_fee').html(saito_fee);
 
 }
+
+
 
 
