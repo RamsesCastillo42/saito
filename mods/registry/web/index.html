@@ -1,4 +1,5 @@
 <html>
+
 <head>
 
   <meta charset="utf-8">
@@ -10,7 +11,9 @@
   <title>Saito Network: Register an Email Address</title>
 
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800italic,700italic,600italic,400italic,300italic,800,700,600' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800italic,700italic,600italic,400italic,300italic,800,700,600'
+    rel='stylesheet' type='text/css'>
 
   <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/lib/jquery/jquery-ui.min.js"></script>
@@ -27,9 +30,10 @@
   <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" />
 
   <link rel="stylesheet" type="text/css" href="/registry/style.css" />
-  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2"/>
+  <link rel="icon" media="all" type="image/x-icon" href="/favicon.ico?v=2" />
 
 </head>
+
 <body>
 
   <div id="Registry_browser_active"></div>
@@ -47,26 +51,31 @@
 
 
     <div class="loader">
-      Saito is currently loading....
+      Saito is loading....
       <p></p>
-      We are downloading the application itself into your browser from our server in Los Angeles. The download is reasonably fast in the United States, but can take up to a minute in China due to its size (~1.6 MB). Please be patient.
+      Saito is downloading into your browser. <br/>The download can take up to a minute in China due to its size (~3.6 MB). Please be
+      patient.
     </div>
 
     <div class="main" style="display:none">
-      <h1 style="margin-bottom:10px">Register an Address:</h1>
+      <h1>Register an Address:</h1>
       <div>
         <div>
-          <input type="text" id="requested_identifier" style="font-size:1.2em;width:300px;padding:4px;border:1px solid grey" /><span style="font-size:1.6em;padding-left:3px;">@saito</span>
+          <input type="text" id="requested_identifier" /><span class="label">@saito</span>
         </div>
+        <input type="button" value="Submit" id="submit" class="submit" />
         <div>
-          <h3>Subscribe to the Saito Newsletter to stay up to date</h3>
-          <div>
-            <div>Email:</div>
-            <input type="email" name="email" id="email" style="font-size:1.2em;width:300px;height:37px;padding:4px;border:1px solid grey" />
+          <div class="field">
+            <h3><input type="checkbox" /> Stay up to date with all the Saito news.</h3>
+            <div>
+              <div><span class="label">Email:</span>
+              <input type="email" name="email" id="email" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <input type="button" value="Submit" id="submit" class="submit" style="border:0px;" />
+     
     </div>
 
   </div>
@@ -77,7 +86,7 @@
   <script type="text/javascript">
 
     $.ajaxSetup({ cache: true });
-    $.getScript( "/browser.js", function( data, textStatus, jqxhr ) {
+    $.getScript("/browser.js", function (data, textStatus, jqxhr) {
       $('.loader').hide();
       $('.main').show();
     });
@@ -87,7 +96,5 @@
 
 
 </body>
+
 </html>
-
-
-
