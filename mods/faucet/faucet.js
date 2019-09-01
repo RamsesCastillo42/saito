@@ -372,8 +372,10 @@ Faucet.prototype.returnFaucetHTML = function returnFaucetHTML(saito_address, sou
 
 }
 Faucet.prototype.returnFaucetSuccessHTML = function returnFaucetSuccessHTML(source_domain="saito.tech", source_port="", source_protocol="http", source_app="email") {
-  var emailUrl;
-  source_port = ":" + source_port;
+  var arcadelUrl= "/arcade";
+  var emailUrl= "/email";
+
+  /*source_port = ":" + source_port;
 
   if (source_domain.indexOf(source_port) > 0) { source_port = ""; };
 
@@ -382,7 +384,7 @@ Faucet.prototype.returnFaucetSuccessHTML = function returnFaucetSuccessHTML(sour
   } else {
     emailUrl = `${source_protocol}://${source_domain}/${source_app}`;
   }
-
+  */
   return `<html>
     <head>
       <meta charset="utf-8">
@@ -404,13 +406,27 @@ Faucet.prototype.returnFaucetSuccessHTML = function returnFaucetSuccessHTML(sour
         </a>
       </div>
       <div class="main" id="main" style="">
-        <h2>Success:</h2>
+        <h3>Success:</h3>
         <p></p>
         Our server has sent tokens to your Saito address.
         <p></p>
         It may take a few minutes for these tokens to arrive.
-        <p></p>
-        <a href="${emailUrl}">Click here to return to our Saito Mail client</a>.
+        <br />
+        <p>
+        <ul class="mod-list">
+          <li id="Email"><a href="/email">Saito Email</a></li>
+          <li id="Arcade"><a href="/arcade">Saito Arcade</a></li>
+          <li id="Chat"><a href="/chat">Saito Chat</a></li>
+          <li id="Reddit"><a href="/r/">Saito Reddit</a></li>
+          <li id="Facebook"><a href="/facebook">Saito Facebook</a></li>
+          <li id="AppStore"><a href="/appstore">Saito AppStore</a></li>
+          <li id="Remix"><a href="/remix">Module Builder</a></li>
+          <li id="Adsense"><a href="/adsense">Saito Ad Network</a></li>
+          <li id="Faucet"><a href="/faucet">Token Faucet</a></li>
+          <li id="Explorer"><a href="/explorer">Blockchain Explorer</a></li>
+        </ul>
+        </p>
+        
       </div>
     </body>
   </html>
