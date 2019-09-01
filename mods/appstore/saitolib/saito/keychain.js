@@ -457,7 +457,6 @@ Keychain.prototype.updateProxyByPublicKey = function updateProxyByPublicKey(publ
   return true;
 }
 
-
 /**
  * Update the proxymod information by publickey
  *
@@ -491,6 +490,32 @@ Keychain.prototype.returnProxyByPublicKey = function returnProxyByPublicKey(publ
   return null;
 
 }
+
+
+/**
+ * Purge hopefully unneeded key data
+ */
+Keychain.prototype.clean = function clean() {
+
+  for (let x = 0; x < this.keys.length; x++) {
+    if (this.keys[x].isWatched() == false) {
+      if (this.keys[x].aes_secret != "") {
+	console.log("purging dns record: " + this.keys[x].publickey + " " + JSON.stringify(this.keys[x].identifiers));
+        this.keys.splice(x, 1);
+	x--;
+      }
+    }
+  }
+
+}
+
+
+
+
+
+
+
+
 
 
 
