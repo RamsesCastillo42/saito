@@ -405,9 +405,9 @@ console.log("\n\n\n");
         // arcade tracks winners and losers
         //
         if (txmsg.request == "gameover") {
-          let sql = "UPDATE mod_arcade SET winner = $winner WHERE game_id = $game_id";
+          let sql = "UPDATE mod_arcade SET state = $state WHERE game_id = $game_id";
           let params = {
-            $winner : txmsg.winner ,
+            $state: 'over',
             $game_id : txmsg.game_id
           }
           try {
