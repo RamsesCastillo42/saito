@@ -411,7 +411,11 @@ Faucet.prototype.returnFaucetSuccessHTML = function returnFaucetSuccessHTML(sour
         Our server has sent tokens to your Saito address.
         <p></p>
         It may take a few minutes for these tokens to arrive.
-        <br />
+        <p>
+        </p>
+        <p>
+        In the mean time - there is plenty to do here:
+        </p>
         <p>
         <ul class="mod-list">
           <li id="Email"><a href="/email">Saito Email</a></li>
@@ -422,7 +426,6 @@ Faucet.prototype.returnFaucetSuccessHTML = function returnFaucetSuccessHTML(sour
           <li id="AppStore"><a href="/appstore">Saito AppStore</a></li>
           <li id="Remix"><a href="/remix">Module Builder</a></li>
           <li id="Adsense"><a href="/adsense">Saito Ad Network</a></li>
-          <li id="Faucet"><a href="/faucet">Token Faucet</a></li>
           <li id="Explorer"><a href="/explorer">Blockchain Explorer</a></li>
         </ul>
         </p>

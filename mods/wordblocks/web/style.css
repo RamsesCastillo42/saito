@@ -143,8 +143,8 @@ body {
   border-color: rgb(221, 221, 221);
   border-image: initial;
   padding: 10px;
-  border-radius: 10px;
-  background: rgb(102, 102, 102);
+  background: rgb(70, 70, 70);
+  font-size: 36px;
 }
 
 .status {

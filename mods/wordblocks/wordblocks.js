@@ -452,7 +452,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
           if (myscore <= 1) {
             wordblocks_self.removeWordFromBoard(word, orientation, x, y);
-            wordblocks_self.updateStatus("Try again!<p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
+            wordblocks_self.updateStatus("<span>Try again!</span><p></p><div style=\"font-size:0.9em\">Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</div>");
           } else {
             wordblocks_self.setBoard(word, orientation, x, y); //
             // place word on board

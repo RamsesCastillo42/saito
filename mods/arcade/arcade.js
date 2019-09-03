@@ -964,7 +964,7 @@ console.log("ERROR");
               newtx = arcade_self.app.wallet.signTransaction(newtx);
               arcade_self.app.network.propagateTransaction(newtx);
 
-            alert("Please be patient while the network starts to initialize the game!");
+            //alert("Please be patient while the network starts to initialize the game!");
 
             let game_id = `${arcade_self.app.wallet.returnPublicKey()}&${arcade_self.games.open[i].created_at}`
             let game_module = arcade_self.games.open[i].game;
