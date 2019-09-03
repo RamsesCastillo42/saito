@@ -158,7 +158,7 @@ Transaction.prototype.isGoldenTicket = function isGoldenTicket() {
  * @return {boolean} does the publickey exist in to?
  */
 Transaction.prototype.isTo = function isTo(receiverPublicKey) {
-  if (this.returnSlipsTo(receiverPublicKey).length != 0) { return true; }
+  if (this.returnSlipsTo(receiverPublicKey).length > 0) { return true; }
   return false;
 }
 
