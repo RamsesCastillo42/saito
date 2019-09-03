@@ -828,33 +828,33 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
   if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return true; }
 
   if (slip.amt > 0) {
-    if (shashmap.validate_slip(slip.returnIndex(), bid) == 0) {
-      console.log(`SHASHMAP VALUE FOR ${slip.returnIndex()}: `, this.returnShashmapValue(slip));
-      if (slip.bid < this.app.blockchain.lowest_acceptable_bid) {
+    if (slip.bid < this.app.blockchain.lowest_acceptable_bid) {
 
-        //
-        // we cannot be sure that we should be rejecting this block
-        // unless we have a full genesis period, as only with a full
-        // genesis period of blocks can we be sure that the inputs
-        // are coming from a valid chain.
-        //
-        // the solution to the problem posed by this is to confirm
-        // that the fork_id for the chain is correct once it has
-        // been downloaded. this is the same vulnerability as getting
-        // a chain-poisoned tip in bitcoin
-        //
+      //
+      // we cannot be sure that we should be rejecting this block
+      // unless we have a full genesis period, as only with a full
+      // genesis period of blocks can we be sure that the inputs
+      // are coming from a valid chain.
+      //
+      // the solution to the problem posed by this is to confirm
+      // that the fork_id for the chain is correct once it has
+      // been downloaded. this is the same vulnerability as getting
+      // a chain-poisoned tip in bitcoin
+      //
 
-        //
-        // but ensure slip also valid in genesis period
-        //
-        if (slip.bid < (bid - this.app.blockchain.genesis_period)) {
-          console.log("ERROR: slip is not valid in this genesis period");
-          return false;
-        }
-
-      } else {
+      //
+      // but ensure slip also valid in genesis period
+      //
+      if (slip.bid < (bid - this.app.blockchain.genesis_period)) {
+        console.log("ERROR: slip is not valid in this genesis period");
         return false;
       }
+
+    }
+
+    if (shashmap.validate_slip(slip.returnIndex(), bid) == 0) {
+      console.log(`SHASHMAP VALUE FOR ${slip.returnIndex()}: `, this.returnShashmapValue(slip));
+      return false;
     }
   }
 
@@ -865,7 +865,7 @@ Storage.prototype.validateTransactionInput = function validateTransactionInput(s
 /**
  * This is called when we want to validate that a transaction's
  * inputs have not been spent. It goes through all of the inputs
- * and checks them but it requires inputs to be unspent, not to 
+ * and checks them but it requires inputs to be unspent, not to
  * be spent on a longer chain elsewhere.
  *
  * @param {array} slip_array an array of slips to validate
@@ -899,35 +899,25 @@ Storage.prototype.validateTransactionInputForMempool = function validateTransact
   if (this.app.BROWSER == 1 || this.app.SPVMODE == 1) { return true; }
 
   if (slip.amt > 0) {
+    if (slip.bid < this.app.blockchain.lowest_acceptable_bid) {
+
+      //
+      // we cannot be sure that we should be rejecting this block
+      // unless we have a full genesis period, as only with a full
+      // genesis period of blocks can we be sure that the inputs
+      // are coming from a valid chain.
+      //
+      // the solution to the problem posed by this is to confirm
+      // that the fork_id for the chain is correct once it has
+      // been downloaded. this is the same vulnerability as getting
+      // a chain-poisoned tip in bitcoin
+      //
+      return false;
+    }
+
     if (shashmap.validate_mempool_slip(slip.returnIndex()) == 0) {
       console.log(`SHASHMAP VALUE FOR ${slip.returnIndex()}: `, this.returnShashmapValue(slip));
-      if (slip.bid < this.app.blockchain.lowest_acceptable_bid) {
-
-        //
-        // we cannot be sure that we should be rejecting this block
-        // unless we have a full genesis period, as only with a full
-        // genesis period of blocks can we be sure that the inputs
-        // are coming from a valid chain.
-        //
-        // the solution to the problem posed by this is to confirm
-        // that the fork_id for the chain is correct once it has
-        // been downloaded. this is the same vulnerability as getting
-        // a chain-poisoned tip in bitcoin
-        //
-
-        //
-        // we have checked this in our normal validate
-        //
-        // but ensure slip also valid in genesis period
-        //
-        //if (slip.bid < (bid - this.app.blockchain.genesis_period)) {
-        //  console.log("ERROR: slip is not valid in this genesis period");
-        //  return false;
-        //}
-
-      } else {
-        return false;
-      }
+      return false
     }
   }
 

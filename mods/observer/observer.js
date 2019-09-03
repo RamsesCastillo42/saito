@@ -97,7 +97,7 @@ class Observer extends ModTemplate {
       let arcade_self = app.modules.returnModule("Arcade");
 
       //var sql    = "SELECT DISTINCT game_id FROM mod_games ORDER BY id";
-      var sql    = "SELECT * FROM mod_games GROUP BY game_id ORDER BY last_move DESC";
+      var sql    = "SELECT game_id, module, last_move FROM mod_games GROUP BY game_id ORDER BY last_move DESC LIMIT 50";
       var params = {};
       var open_games = await arcade_self.db.all(sql, params);
       let html = this.returnHTML(open_games);
