@@ -62,6 +62,10 @@ class Arcade extends ModTemplate {
         if (id != null) {
           if (id.identifiers[0] !== "") { open_games[i].identifier = id.identifiers[0]; }
         }
+
+        let time_until_game_is_removed = open_games[i].expires_at - new Date().getTime();
+        this.removeOpenGameSetTimer(open_games[i], time_until_game_is_removed);
+
         this.games.open.push(open_games[i]);
       }
 
@@ -867,6 +871,10 @@ console.log("ERROR");
             if (id.identifiers[0] !== "") { message.data.identifier = id.identifiers[0]; }
           }
           this.games.open.push(message.data);
+
+          let time_until_game_is_removed = message.data.expires_at - new Date().getTime();
+          this.removeOpenGameSetTimer(message.data, time_until_game_is_removed);
+
           renderGamesTable(this.games.open);
           this.attachEvents();
           break;
@@ -1657,6 +1665,13 @@ console.log("----------------");
 
   }
 
+  removeOpenGameSetTimer(new_game, time_until_game_is_removed) {
+    setTimeout(() => {
+      this.games.open = this.games.open.filter(game => game.sig != new_game.sig);
+      renderGamesTable(this.games.open);
+    }, time_until_game_is_removed);
+  }
+
   findOpponentModal() {
     var modal = document.getElementById("game_modal");
     modal.style.display = "block";
@@ -1887,6 +1902,7 @@ console.log("----------------");
         let options    = "";
         let sig        = "";
         let created_at = 0;
+        let expires_at = 0;
 
         if (game.gameid != undefined && game.gameid != "") {
           gameid = game.gameid;
@@ -1909,6 +1925,10 @@ console.log("----------------");
           created_at = game.created_at;
         }
 
+        if (game.expires_at > 0) {
+          expires_at = game.expires_at;
+        }
+
         return {
           player: game.player ,
           winner : winner,
@@ -1918,6 +1938,7 @@ console.log("----------------");
           options : options ,
           sig : sig,
           created_at : created_at,
+          expires_at : expires_at,
           gameid : gameid,
           adminid : adminid
         };
