@@ -14,7 +14,7 @@ function Wordblocks(app) {
   Wordblocks.super_.call(this);
   this.app = app;
   this.name = "Wordblocks";
-  this.description = `Scrabble is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
+  this.description = `Wordblocks is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
   this.browser_active = 0;
   this.handlesEmail = 1;
   this.emailAppName = "Wordblocks";
@@ -203,12 +203,15 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   }
 
   for (let i = 0; i < players; i++) {
+    let op = 0;
     let this_player = i + 1;
 
     if (this.game.player == this_player) {
-      html += '<div class="player">Your Score: <span id="score_' + this_player + '">' + this.game.score[i] + '</span></div>';
+      html += '<div class="player"><span class="player_name">Your Score</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
     } else {
-      html += '<div class="player">Player ' + this_player + ': <span id="score_' + this_player + '">' + this.game.score[i] + '</span></div>';
+      let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[op]);
+      op++;
+      html += '<div class="player"><span class="player_name">' + opponent + '</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
     }
   }
 
@@ -220,6 +223,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   // who can go?
   //
 
+
+  
 
   if (this.game.target == this.game.player) {
     this.updateStatus("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
@@ -782,671 +787,187 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var deck = {};
-  deck['1'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['2'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['3'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['4'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['5'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['6'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['7'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['8'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['9'] = {
-    img: "/wordblocks/img/A.jpg",
-    name: "A"
-  };
-  deck['10'] = {
-    img: "/wordblocks/img/B.jpg",
-    name: "B"
-  };
-  deck['11'] = {
-    img: "/wordblocks/img/B.jpg",
-    name: "B"
-  };
-  deck['12'] = {
-    img: "/wordblocks/img/C.jpg",
-    name: "C"
-  };
-  deck['13'] = {
-    img: "/wordblocks/img/C.jpg",
-    name: "C"
-  };
-  deck['14'] = {
-    img: "/wordblocks/img/D.jpg",
-    name: "D"
-  };
-  deck['15'] = {
-    img: "/wordblocks/img/D.jpg",
-    name: "D"
-  };
-  deck['16'] = {
-    img: "/wordblocks/img/D.jpg",
-    name: "D"
-  };
-  deck['17'] = {
-    img: "/wordblocks/img/D.jpg",
-    name: "D"
-  };
-  deck['18'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['19'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['20'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['21'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['22'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['23'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['24'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['25'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['26'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['27'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['28'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['29'] = {
-    img: "/wordblocks/img/E.jpg",
-    name: "E"
-  };
-  deck['30'] = {
-    img: "/wordblocks/img/F.jpg",
-    name: "F"
-  };
-  deck['41'] = {
-    img: "/wordblocks/img/F.jpg",
-    name: "F"
-  };
-  deck['42'] = {
-    img: "/wordblocks/img/G.jpg",
-    name: "G"
-  };
-  deck['43'] = {
-    img: "/wordblocks/img/G.jpg",
-    name: "G"
-  };
-  deck['44'] = {
-    img: "/wordblocks/img/G.jpg",
-    name: "G"
-  };
-  deck['45'] = {
-    img: "/wordblocks/img/H.jpg",
-    name: "H"
-  };
-  deck['46'] = {
-    img: "/wordblocks/img/H.jpg",
-    name: "H"
-  };
-  deck['47'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['48'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['49'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['50'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['51'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['52'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['53'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['54'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['55'] = {
-    img: "/wordblocks/img/I.jpg",
-    name: "I"
-  };
-  deck['56'] = {
-    img: "/wordblocks/img/J.jpg",
-    name: "J"
-  };
-  deck['57'] = {
-    img: "/wordblocks/img/K.jpg",
-    name: "K"
-  };
-  deck['58'] = {
-    img: "/wordblocks/img/L.jpg",
-    name: "L"
-  };
-  deck['59'] = {
-    img: "/wordblocks/img/L.jpg",
-    name: "L"
-  };
-  deck['60'] = {
-    img: "/wordblocks/img/L.jpg",
-    name: "L"
-  };
-  deck['61'] = {
-    img: "/wordblocks/img/L.jpg",
-    name: "L"
-  };
-  deck['62'] = {
-    img: "/wordblocks/img/M.jpg",
-    name: "M"
-  };
-  deck['63'] = {
-    img: "/wordblocks/img/M.jpg",
-    name: "M"
-  };
-  deck['64'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['65'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['66'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['67'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['68'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['69'] = {
-    img: "/wordblocks/img/N.jpg",
-    name: "N"
-  };
-  deck['70'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['71'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['72'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['73'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['74'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['75'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['76'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['77'] = {
-    img: "/wordblocks/img/O.jpg",
-    name: "O"
-  };
-  deck['78'] = {
-    img: "/wordblocks/img/P.jpg",
-    name: "P"
-  };
-  deck['79'] = {
-    img: "/wordblocks/img/P.jpg",
-    name: "P"
-  };
-  deck['80'] = {
-    img: "/wordblocks/img/Q.jpg",
-    name: "Q"
-  };
-  deck['81'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['82'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['83'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['84'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['85'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['86'] = {
-    img: "/wordblocks/img/R.jpg",
-    name: "R"
-  };
-  deck['87'] = {
-    img: "/wordblocks/img/S.jpg",
-    name: "S"
-  };
-  deck['88'] = {
-    img: "/wordblocks/img/S.jpg",
-    name: "S"
-  };
-  deck['89'] = {
-    img: "/wordblocks/img/S.jpg",
-    name: "S"
-  };
-  deck['90'] = {
-    img: "/wordblocks/img/S.jpg",
-    name: "S"
-  };
-  deck['91'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['92'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['93'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['94'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['95'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['96'] = {
-    img: "/wordblocks/img/T.jpg",
-    name: "T"
-  };
-  deck['97'] = {
-    img: "/wordblocks/img/U.jpg",
-    name: "U"
-  };
-  deck['98'] = {
-    img: "/wordblocks/img/U.jpg",
-    name: "U"
-  };
-  deck['99'] = {
-    img: "/wordblocks/img/U.jpg",
-    name: "U"
-  };
-  deck['100'] = {
-    img: "/wordblocks/img/U.jpg",
-    name: "U"
-  };
-  deck['101'] = {
-    img: "/wordblocks/img/V.jpg",
-    name: "V"
-  };
-  deck['102'] = {
-    img: "/wordblocks/img/V.jpg",
-    name: "V"
-  };
-  deck['103'] = {
-    img: "/wordblocks/img/W.jpg",
-    name: "W"
-  };
-  deck['104'] = {
-    img: "/wordblocks/img/W.jpg",
-    name: "W"
-  };
-  deck['105'] = {
-    img: "/wordblocks/img/X.jpg",
-    name: "X"
-  };
-  deck['106'] = {
-    img: "/wordblocks/img/U.jpg",
-    name: "U"
-  };
-  deck['107'] = {
-    img: "/wordblocks/img/Y.jpg",
-    name: "Y"
-  };
-  deck['108'] = {
-    img: "/wordblocks/img/Y.jpg",
-    name: "Y"
-  };
-  deck['109'] = {
-    img: "/wordblocks/img/Z.jpg",
-    name: "Z"
-  };
+    deck['1'] = { name: "A" };
+    deck['2'] = { name: "A" };
+    deck['3'] = { name: "A" };
+    deck['4'] = { name: "A" };
+    deck['5'] = { name: "A" };
+    deck['6'] = { name: "A" };
+    deck['7'] = { name: "A" };
+    deck['8'] = { name: "A" };
+    deck['9'] = { name: "A" };
+    deck['10'] = { name: "B" };
+    deck['11'] = { name: "B" };
+    deck['12'] = { name: "C" };
+    deck['13'] = { name: "C" };
+    deck['14'] = { name: "D" };
+    deck['15'] = { name: "D" };
+    deck['16'] = { name: "D" };
+    deck['17'] = { name: "D" };
+    deck['18'] = { name: "E" };
+    deck['19'] = { name: "E" };
+    deck['20'] = { name: "E" };
+    deck['21'] = { name: "E" };
+    deck['22'] = { name: "E" };
+    deck['23'] = { name: "E" };
+    deck['24'] = { name: "E" };
+    deck['25'] = { name: "E" };
+    deck['26'] = { name: "E" };
+    deck['27'] = { name: "E" };
+    deck['28'] = { name: "E" };
+    deck['29'] = { name: "E" };
+    deck['30'] = { name: "F" };
+    deck['41'] = { name: "F" };
+    deck['42'] = { name: "G" };
+    deck['43'] = { name: "G" };
+    deck['44'] = { name: "G" };
+    deck['45'] = { name: "H" };
+    deck['46'] = { name: "H" };
+    deck['47'] = { name: "I" };
+    deck['48'] = { name: "I" };
+    deck['49'] = { name: "I" };
+    deck['50'] = { name: "I" };
+    deck['51'] = { name: "I" };
+    deck['52'] = { name: "I" };
+    deck['53'] = { name: "I" };
+    deck['54'] = { name: "I" };
+    deck['55'] = { name: "I" };
+    deck['56'] = { name: "J" };
+    deck['57'] = { name: "K" };
+    deck['58'] = { name: "L" };
+    deck['59'] = { name: "L" };
+    deck['60'] = { name: "L" };
+    deck['61'] = { name: "L" };
+    deck['62'] = { name: "M" };
+    deck['63'] = { name: "M" };
+    deck['64'] = { name: "N" };
+    deck['65'] = { name: "N" };
+    deck['66'] = { name: "N" };
+    deck['67'] = { name: "N" };
+    deck['68'] = { name: "N" };
+    deck['69'] = { name: "N" };
+    deck['70'] = { name: "O" };
+    deck['71'] = { name: "O" };
+    deck['72'] = { name: "O" };
+    deck['73'] = { name: "O" };
+    deck['74'] = { name: "O" };
+    deck['75'] = { name: "O" };
+    deck['76'] = { name: "O" };
+    deck['77'] = { name: "O" };
+    deck['78'] = { name: "P" };
+    deck['79'] = { name: "P" };
+    deck['80'] = { name: "Q" };
+    deck['81'] = { name: "R" };
+    deck['82'] = { name: "R" };
+    deck['83'] = { name: "R" };
+    deck['84'] = { name: "R" };
+    deck['85'] = { name: "R" };
+    deck['86'] = { name: "R" };
+    deck['87'] = { name: "S" };
+    deck['88'] = { name: "S" };
+    deck['89'] = { name: "S" };
+    deck['90'] = { name: "S" };
+    deck['91'] = { name: "T" };
+    deck['92'] = { name: "T" };
+    deck['93'] = { name: "T" };
+    deck['94'] = { name: "T" };
+    deck['95'] = { name: "T" };
+    deck['96'] = { name: "T" };
+    deck['97'] = { name: "U" };
+    deck['98'] = { name: "U" };
+    deck['99'] = { name: "U" };
+    deck['100'] = { name: "U" };
+    deck['101'] = { name: "V" };
+    deck['102'] = { name: "V" };
+    deck['103'] = { name: "W" };
+    deck['104'] = { name: "W" };
+    deck['105'] = { name: "X" };
+    deck['106'] = { name: "U" };
+    deck['107'] = { name: "Y" };
+    deck['108'] = { name: "Y" };
+    deck['109'] = { name: "Z" };
   return deck;
 };
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var letters = {};
-  letters['A'] = {
-    score: 1
-  };
-  letters['B'] = {
-    score: 3
-  };
-  letters['C'] = {
-    score: 2
-  };
-  letters['D'] = {
-    score: 2
-  };
-  letters['E'] = {
-    score: 1
-  };
-  letters['F'] = {
-    score: 2
-  };
-  letters['G'] = {
-    score: 2
-  };
-  letters['H'] = {
-    score: 1
-  };
-  letters['I'] = {
-    score: 1
-  };
-  letters['J'] = {
-    score: 8
-  };
-  letters['K'] = {
-    score: 4
-  };
-  letters['L'] = {
-    score: 2
-  };
-  letters['M'] = {
-    score: 2
-  };
-  letters['N'] = {
-    score: 1
-  };
-  letters['O'] = {
-    score: 1
-  };
-  letters['P'] = {
-    score: 2
-  };
-  letters['Q'] = {
-    score: 10
-  };
-  letters['R'] = {
-    score: 1
-  };
-  letters['S'] = {
-    score: 1
-  };
-  letters['T'] = {
-    score: 1
-  };
-  letters['U'] = {
-    score: 2
-  };
-  letters['V'] = {
-    score: 3
-  };
-  letters['W'] = {
-    score: 2
-  };
-  letters['X'] = {
-    score: 8
-  };
-  letters['Y'] = {
-    score: 2
-  };
-  letters['Z'] = {
-    score: 10
-  };
+  letters['A'] = { score: 1 };
+  letters['B'] = { score: 3 };
+  letters['C'] = { score: 2 };
+  letters['D'] = { score: 2 };
+  letters['E'] = { score: 1 };
+  letters['F'] = { score: 2 };
+  letters['G'] = { score: 2 };
+  letters['H'] = { score: 1 };
+  letters['I'] = { score: 1 };
+  letters['J'] = { score: 8 };
+  letters['K'] = { score: 4 };
+  letters['L'] = { score: 2 };
+  letters['M'] = { score: 2 };
+  letters['N'] = { score: 1 };
+  letters['O'] = { score: 1 };
+  letters['P'] = { score: 2 };
+  letters['Q'] = { score: 10 };
+  letters['R'] = { score: 1 };
+  letters['S'] = { score: 1 };
+  letters['T'] = { score: 1 };
+  letters['U'] = { score: 2 };
+  letters['V'] = { score: 3 };
+  letters['W'] = { score: 2 };
+  letters['X'] = { score: 8 };
+  letters['Y'] = { score: 2 };
+  letters['Z'] = { score: 10 };
   return letters;
 };
 
 Wordblocks.prototype.returnBonus = function returnBonus(pos) {
   let bonus = "";
 
-  if (pos == "1_1") {
-    return "3L";
-  }
-
-  if (pos == "1_15") {
-    return "3L";
-  }
-
-  if (pos == "3_8") {
-    return "3L";
-  }
-
-  if (pos == "8_3") {
-    return "3L";
-  }
-
-  if (pos == "8_13") {
-    return "3L";
-  }
-
-  if (pos == "13_8") {
-    return "3L";
-  }
-
-  if (pos == "15_1") {
-    return "3L";
-  }
-
-  if (pos == "15_15") {
-    return "3L";
-  }
-
-  if (pos == "2_2") {
-    return "3W";
-  }
-
-  if (pos == "2_14") {
-    return "3W";
-  }
-
-  if (pos == "8_8") {
-    return "3W";
-  }
-
-  if (pos == "14_2") {
-    return "3W";
-  }
-
-  if (pos == "14_14") {
-    return "3W";
-  }
-
-  if (pos == "1_5") {
-    return "2L";
-  }
-
-  if (pos == "1_11") {
-    return "2L";
-  }
-
-  if (pos == "3_4") {
-    return "2L";
-  }
-
-  if (pos == "3_12") {
-    return "2L";
-  }
-
-  if (pos == "4_3") {
-    return "2L";
-  }
-
-  if (pos == "4_13") {
-    return "2L";
-  }
-
-  if (pos == "5_8") {
-    return "2L";
-  }
-
-  if (pos == "5_1") {
-    return "2L";
-  }
-
-  if (pos == "5_15") {
-    return "2L";
-  }
-
-  if (pos == "8_5") {
-    return "2L";
-  }
-
-  if (pos == "8_11") {
-    return "2L";
-  }
-
-  if (pos == "11_1") {
-    return "2L";
-  }
-
-  if (pos == "11_8") {
-    return "2L";
-  }
-
-  if (pos == "11_15") {
-    return "2L";
-  }
-
-  if (pos == "12_3") {
-    return "2L";
-  }
-
-  if (pos == "12_13") {
-    return "2L";
-  }
-
-  if (pos === "13_4") {
-    return "2L";
-  }
-
-  if (pos === "13_12") {
-    return "2L";
-  }
-
-  if (pos == "15_5") {
-    return "2L";
-  }
-
-  if (pos == "15_11") {
-    return "2L";
-  }
-
-  if (pos == "1_8") {
-    return "2W";
-  }
-
-  if (pos == "4_6") {
-    return "2W";
-  }
-
-  if (pos == "4_10") {
-    return "2W";
-  }
-
-  if (pos == "6_4") {
-    return "2W";
-  }
-
-  if (pos == "6_12") {
-    return "2W";
-  }
-
-  if (pos == "8_1") {
-    return "2W";
-  }
-
-  if (pos == "8_15") {
-    return "2W";
-  }
-
-  if (pos == "10_4") {
-    return "2W";
-  }
-
-  if (pos == "10_12") {
-    return "2W";
-  }
-
-  if (pos == "12_6") {
-    return "2W";
-  }
-
-  if (pos == "12_10") {
-    return "2W";
-  }
-
-  if (pos == "15_8") {
-    return "2W";
-  }
-
+  if (pos == "1_1") { return "3L"; }
+  if (pos == "1_15") { return "3L"; }
+  if (pos == "3_8") { return "3L"; }
+  if (pos == "8_3") { return "3L"; }
+  if (pos == "8_13") { return "3L"; }
+  if (pos == "13_8") { return "3L"; }
+  if (pos == "15_1") { return "3L"; }
+  if (pos == "15_15") { return "3L"; }
+  if (pos == "2_2") { return "3W"; }
+  if (pos == "2_14") { return "3W"; }
+  if (pos == "8_8") { return "3W"; }
+  if (pos == "14_2") { return "3W"; }
+  if (pos == "14_14") { return "3W"; }
+  if (pos == "1_5") { return "2L"; }
+  if (pos == "1_11") { return "2L"; }
+  if (pos == "3_4") { return "2L"; }
+  if (pos == "3_12") { return "2L"; }
+  if (pos == "4_3") { return "2L"; }
+  if (pos == "4_13") { return "2L"; }
+  if (pos == "5_8") { return "2L"; }
+  if (pos == "5_1") { return "2L"; }
+  if (pos == "5_15") { return "2L"; }
+  if (pos == "8_5") { return "2L"; }
+  if (pos == "8_11") { return "2L"; }
+  if (pos == "11_1") { return "2L"; }
+  if (pos == "11_8") { return "2L"; }
+  if (pos == "11_15") { return "2L"; }
+  if (pos == "12_3") { return "2L"; }
+  if (pos == "12_13") { return "2L"; }
+  if (pos === "13_4") { return "2L"; }
+  if (pos === "13_12") { return "2L"; }
+  if (pos == "15_5") { return "2L"; }
+  if (pos == "15_11") { return "2L"; }
+  if (pos == "1_8") { return "2W"; }
+  if (pos == "4_6") { return "2W"; }
+  if (pos == "4_10") { return "2W"; }
+  if (pos == "6_4") { return "2W"; }
+  if (pos == "6_12") { return "2W"; }
+  if (pos == "8_1") { return "2W"; }
+  if (pos == "8_15") { return "2W"; }
+  if (pos == "10_4") { return "2W"; }
+  if (pos == "10_12") { return "2W"; }
+  if (pos == "12_6") { return "2W"; }
+  if (pos == "12_10") { return "2W"; }
+  if (pos == "15_8") { return "2W"; }
   return bonus;
 };
 
@@ -1963,6 +1484,14 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       //
       let x = 0;
       let idx = 0;
+
+      if (player != wordblocks_self.game.player) {
+        this.addWordToBoard(word, orient, x, y);
+        this.setBoard(word, orient, x, y);
+        score = this.scoreWord(word, player, orient, x, y);
+        this.exhaustWord(word, orient, x, y);
+        this.addScoreToPlayer(player, score);
+      }
 
       for (let i = 0; i < wordblocks_self.game.score.length; i++) {
         if (wordblocks_self.game.score[i] > x) {
