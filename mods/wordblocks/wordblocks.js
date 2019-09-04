@@ -787,10 +787,10 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var deck = {};
-    deck['1'] = { name: "A" };
-    deck['2'] = { name: "A" };
-    deck['3'] = { name: "A" };
-    deck['4'] = { name: "A" };
+    //deck['1'] = { name: "A" };
+    //deck['2'] = { name: "A" };
+    ///deck['3'] = { name: "A" };
+    //deck['4'] = { name: "A" };
     deck['5'] = { name: "A" };
     deck['6'] = { name: "A" };
     deck['7'] = { name: "A" };
@@ -806,7 +806,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['17'] = { name: "D" };
     deck['18'] = { name: "E" };
     deck['19'] = { name: "E" };
-    deck['20'] = { name: "E" };
+    /*deck['20'] = { name: "E" };
     deck['21'] = { name: "E" };
     deck['22'] = { name: "E" };
     deck['23'] = { name: "E" };
@@ -885,7 +885,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['106'] = { name: "U" };
     deck['107'] = { name: "Y" };
     deck['108'] = { name: "Y" };
-    deck['109'] = { name: "Z" };
+    deck['109'] = { name: "Z" };*/
   return deck;
 };
 
@@ -1485,6 +1485,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       let x = 0;
       let idx = 0;
 
+      /*
       if (player != wordblocks_self.game.player) {
         this.addWordToBoard(word, orient, x, y);
         this.setBoard(word, orient, x, y);
@@ -1492,7 +1493,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
         this.exhaustWord(word, orient, x, y);
         this.addScoreToPlayer(player, score);
       }
-
+      */
       for (let i = 0; i < wordblocks_self.game.score.length; i++) {
         if (wordblocks_self.game.score[i] > x) {
           x = wordblocks_self.game.score[i];
@@ -1509,7 +1510,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       wordblocks_self.game.winner = idx + 1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
-      wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
+      //wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
 
       if (wordblocks_self.browser_active == 1) {
         this.disableEvents();
@@ -1523,8 +1524,9 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
         wordblocks_self.updateLog(result);
       }
 
-      this.moves;
-      return 0;
+      //this.moves;
+      this.game.queue.splice(this.game.queue.length - 1, 1);
+      return 1;
     }
 
     //
@@ -1550,7 +1552,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       }
 
       if (wordblocks_self.game.over == 1) {
-        this.updateStatus("Game Over");
+        //this.updateStatus("Game Over");
         return;
       }
 
