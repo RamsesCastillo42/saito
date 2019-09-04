@@ -806,7 +806,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['17'] = { name: "D" };
     deck['18'] = { name: "E" };
     deck['19'] = { name: "E" };
- /*   deck['20'] = { name: "E" };
+    deck['20'] = { name: "E" };
     deck['21'] = { name: "E" };
     deck['22'] = { name: "E" };
     deck['23'] = { name: "E" };
@@ -886,7 +886,6 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['107'] = { name: "Y" };
     deck['108'] = { name: "Y" };
     deck['109'] = { name: "Z" };
-    */
   return deck;
 };
 
