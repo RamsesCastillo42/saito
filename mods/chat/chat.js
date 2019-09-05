@@ -261,7 +261,10 @@ Happy Chatting!`
   }
 
   _createChatNotification(title, message, onClickFunction) {
-    if (this.settings.notifications) {
+    //
+    // need to switch to web workers for push notifications on mobile
+    //
+    if (this.settings.notifications && !this.app.browser.isMobileBrowser(navigator.userAgent)) {
       let notify = this.app.browser.notification(title, message);
       if (notify) {
         notify.onclick = onClickFunction;
@@ -479,6 +482,30 @@ Happy Chatting!`
         chat_self._toggleMailchat();
       // }
     });
+
+    let element = document.getElementById('chat_header');
+    if (element != null) {
+      if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        var chat_header_ht = new Hammer(element, {});
+        chat_header_ht.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+        chat_header_ht.on("swipeup", () => {
+          if (window.matchMedia("(orientation: portrait)").matches) {
+            // $("#sizer").switchClass("fa-caret-up", "fa-caret-down");
+            this._showMailchat();
+            // $("#hud").switchClass("short", "tall", 150);
+          }
+        });
+
+        chat_header_ht.on("swipedown", () => {
+          if (window.matchMedia("(orientation: portrait)").matches) {
+            //$("#sizer").switchClass( "fa-caret-down", "fa-caret-up");
+            this._hideMailchat();
+            // $("#hud").switchClass("tall", "short", 150);
+          }
+        });
+      }
+    }
   }
 
   _formatMessage({id, timestamp, author, message}){
@@ -722,28 +749,30 @@ Happy Chatting!`
 
   /**
    * THIS FUNCTION SHOULD ***ONLY*** BE CALLED IN
-   * ***initializeHTML***
    */
   addPopUpChat() {
     let chat_header;
     let is_mobile = false;
     if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      //
       chat_header = `
         <div style="display:flex; flex-direction: row;">
           <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
           <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
         </div>
-          <div class="chat_notifications_number"
-          style=
-          "display: none;
-          margin: 0;
-          color: white;
-          background-color: #ff8844;
-          /* border: 1px solid black; */
-          border-radius: 200px;
-          justify-self: center;
-          align-self: center;
-          padding: 2px 10px;">0</div>
+        <select class="chat_chat-room-selector" style="display:none;border:2px solid #00adff;margin: 5px 0px 5px 0px;"></select>
+        <div class="chat_notifications_number"
+        style=
+        "display: none;
+        margin: 0;
+        color: white;
+        background-color: #ff8844;
+        /* border: 1px solid black; */
+        border-radius: 200px;
+        justify-self: flex-end;
+        align-self: center;
+        padding: 2px 10px;
+        margin-right: 5px">0</div>
       `;
       is_mobile = true;
       // return;
@@ -799,6 +828,7 @@ Happy Chatting!`
       this.settings.popup ? this._enableMailchat() : this._disableMailchat();
     } else {
       $('.mail_chat_popup').show();
+      this._scrollToBottom();
       this._hideMailchat();
     }
   }
