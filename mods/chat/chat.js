@@ -277,7 +277,7 @@ Happy Chatting!`
 
     // pull these from DOM
     let current_room = $('.chat_messages-list')[0];
-    let isPopupHidden = $('.mail_chat_popup').css("bottom") == "40px";
+    let isPopupHidden = $('.mail_chat_popup').hasClass("hidden");
 
     //if ((current_room.id != room.room_id || isPopupHidden || !document.hasFocus()) && room.room_id != this.public_room_id)  {
     if (current_room.id != room.room_id || isPopupHidden || !document.hasFocus())  {
@@ -309,7 +309,7 @@ Happy Chatting!`
 
   _onclickChatNotification(room_id) {
     window.focus();
-    let isPopupHidden = $('.mail_chat_popup').css("bottom") == "40px";
+    let isPopupHidden = $('.mail_chat_popup').hasClass("hidden");
     this._renderMessagesToDOM(room_id);
     if (isPopupHidden) { this._showMailchat(); }
     this._scrollToBottom();
@@ -583,7 +583,7 @@ Happy Chatting!`
 
   _toggleMailchat() {
     // otherwise toggle divs
-    if ($('.mail_chat_popup').css('bottom') == '500px') {
+    if ($('.mail_chat_popup').hasClass('show')) {
       this._hideMailchat();
     } else {
       this._showMailchat();
@@ -591,7 +591,8 @@ Happy Chatting!`
   }
 
   _showMailchat() {
-    $('.mail_chat_popup').css('bottom','500px');
+    //$('.mail_chat_popup').css('bottom','500px');
+    $('.mail_chat_popup').switchClass('hidden','show', 150);
     if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
       $('.chat_notifications_number').hide()
       $('.chat_notifications_number').html(0);
@@ -607,7 +608,7 @@ Happy Chatting!`
   }
 
   _hideMailchat() {
-    $('.mail_chat_popup').css('bottom','40px');
+    $('.mail_chat_popup').switchClass('show','hidden', 150);
     setTimeout(() => {
       $('.chat_chat_main').hide();
       $('#chat_new-message').hide();
@@ -627,6 +628,7 @@ Happy Chatting!`
   _enableMailchat() {
     this._showMailchat();
     $('.mail_chat_popup').show();
+    $('.mail_chat_popup').addClass('show');
     $('.sidechat').show();
     $('.sidechat_controls').show();
     this._scrollToBottom();

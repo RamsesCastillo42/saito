@@ -7,7 +7,7 @@
 .mail_chat_popup {
   position: fixed;
   right: 400px;
-  bottom: 500px;
+  /* bottom: 500px; */
   z-index: 100;
 }
 #chat_header {
@@ -118,9 +118,13 @@
 
 @media only screen and (max-width: 800px) {
   .mail_chat_popup {
-    /* display: none */
-    bottom: unset;
     right: unset;
+  }
+  .show {
+    bottom: 60vh;
+  }
+  #chat_main {
+    height: 50vh;
   }
   #chat_header {
     grid-template-columns: 50% 50%;

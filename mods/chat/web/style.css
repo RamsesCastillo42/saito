@@ -208,6 +208,14 @@ pre {
     font-weight: bold;
 }
 
+.show {
+    bottom: 500px;
+}
+
+.hidden {
+    bottom: 40px;
+}
+
 
 @media only screen and (max-width: 535px) {
     #chat_header {

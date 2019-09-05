@@ -65,7 +65,7 @@ function hideMailchat() {
 
 
 function toggleMailchat() {
-    if ($('.mail_chat_popup').css('bottom') == '500px') {
+    if ($('.mail_chat_popup').hasClass('show')) {
         hideMailchat();
     } else {
         showMailchat();
