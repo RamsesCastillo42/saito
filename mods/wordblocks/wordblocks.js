@@ -63,8 +63,10 @@ Wordblocks.prototype.showTiles = function showTiles() {
 
 
 Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
-  const chat = this.app.modules.returnModule("Chat");
-  chat.addPopUpChat();
+  if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+  }
   this.updateStatus("loading game...");
   this.loadGame(game_id);
 

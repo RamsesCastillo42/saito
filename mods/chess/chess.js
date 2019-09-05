@@ -66,8 +66,11 @@ Chessgame.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.browser_active == 1) {
 
     // enable chat
-    const chat = this.app.modules.returnModule("Chat");
-    chat.addPopUpChat();
+
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      const chat = this.app.modules.returnModule("Chat");
+      chat.addPopUpChat();
+    }
 
     chess = require('chess.js');
     chessboard = require("../chess/web/chessboard");

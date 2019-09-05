@@ -118,7 +118,21 @@
 
 @media only screen and (max-width: 800px) {
   .mail_chat_popup {
-    display: none
+    /* display: none */
+    bottom: unset;
+    right: unset;
+  }
+  #chat_header {
+    grid-template-columns: 90% 10%;
+    grid-gap: unset;
+  }
+  #chat_new-message {
+    display: flex;
+    justify-content: space-around;
+    background: white;
+  }
+  #chat_new-message-input {
+    max-width: unset;
   }
   .sidechat {
     display: none
