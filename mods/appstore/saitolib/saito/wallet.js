@@ -1229,7 +1229,6 @@ Wallet.prototype.validateWalletSlips = function validateWalletSlips(peer) {
         slip.lc = valid_array[index]
         return slip;
       });
-      this.wallet.spends = this.wallet.inputs.map(slip => 0);
 
       this.saveWallet();
     });
