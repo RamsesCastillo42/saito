@@ -16,11 +16,6 @@ body {
   padding: 15px;
 }
 
-.player {
-  margin-bottom: 6px;
-  white-space: nowrap;
-}
-
 .link {
   border-bottom: 1px dashed;
   cursor: pointer;
@@ -284,6 +279,22 @@ body {
   display: block;
 }
 
+.player {
+  margin: 3px 0 12px;
+  white-space: nowrap;
+}
+
+.player_name {
+  overflow: hidden;
+  display: inline-block;
+  text-overflow: ellipsis;
+  width: 85%;
+}
+
+.player span {
+  line-height: 20px;
+}
+
 @media only screen and (max-width: 600px) {
   .status {
     font-size: 1.4em;
@@ -310,6 +321,10 @@ body {
     width: 20%;
   }
   
+  .player span {
+    line-height: 12px;
+  }
+
   #controls {
     height: 225px;
     overflow-y: auto;

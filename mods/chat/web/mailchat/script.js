@@ -65,7 +65,7 @@ function hideMailchat() {
 
 
 function toggleMailchat() {
-    if ($('.mail_chat_popup').css('bottom') == '500px') {
+    if ($('.mail_chat_popup').hasClass('show')) {
         hideMailchat();
     } else {
         showMailchat();
@@ -97,7 +97,7 @@ setTimeout(function() { initialize_sidechat(); addEvents();}, chat_init_speed);
 
 function initialize_sidechat() {
     if ($(window).width() <= 900) {
-        $('.mail_chat_popup').hide();
+        // $('.mail_chat_popup').hide();
         $('.sidechat').hide();
         $('.sidechat_controls').hide();
         return;

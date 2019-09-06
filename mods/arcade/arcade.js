@@ -62,6 +62,10 @@ class Arcade extends ModTemplate {
         if (id != null) {
           if (id.identifiers[0] !== "") { open_games[i].identifier = id.identifiers[0]; }
         }
+
+        let time_until_game_is_removed = open_games[i].expires_at - new Date().getTime();
+        this.removeOpenGameSetTimer(open_games[i], time_until_game_is_removed);
+
         this.games.open.push(open_games[i]);
       }
 
@@ -328,15 +332,15 @@ console.log("\n\n\n");
               sql = "INSERT INTO mod_games (game_id, player_pkey, key_state, mod_arcade_id, module, state, bid, tid, lc, last_move) VALUES ($game_id, $playerpkey, $keystate, $mod_arcade_id, $module, $state, $bid, $tid, $lc, $last_move)";
               params = {
                 $game_id : txmsg.game_id ,
-	        $playerpkey : player_pkey ,
-	        $keystate : keystate_to_save ,
+	              $playerpkey : player_pkey ,
+	              $keystate : keystate_to_save ,
                 $mod_arcade_id : row.id ,
                 $module : txmsg.module ,
                 $state : JSON.stringify(txmsg.saveGameState) ,
-	        $bid : blk.block.id ,
-	        $tid : tx.transaction.id ,
-	        $lc : 1 ,
-	        $last_move : (new Date().getTime())
+	              $bid : blk.block.id ,
+	              $tid : tx.transaction.id ,
+	              $lc : 1 ,
+	              $last_move : (new Date().getTime())
               }
               try {
                 let res = arcade_self.db.run(sql, params);
@@ -378,7 +382,7 @@ console.log("\n\n\n");
             }
           } catch(err) {
             console.log("Error retrieving phone number from database");
-            return;
+            //return; don't return hee - as we still want to update the db.
           }
 
           let game_id = tx.transaction.from[0].add + '&' + tx.transaction.ts;
@@ -405,9 +409,9 @@ console.log("\n\n\n");
         // arcade tracks winners and losers
         //
         if (txmsg.request == "gameover") {
-          let sql = "UPDATE mod_arcade SET winner = $winner WHERE game_id = $game_id";
+          let sql = "UPDATE mod_arcade SET state = $state WHERE game_id = $game_id";
           let params = {
-            $winner : txmsg.winner ,
+            $state: 'over',
             $game_id : txmsg.game_id
           }
           try {
@@ -491,9 +495,9 @@ console.log("\n\n\n");
             $options : JSON.stringify(options) ,
             $sig : sig ,
             $created_at : created_at ,
-                  $expires_at : expires_at ,
-                  $country_code : parseInt(country_code) ,
-                  $sms : parseInt(sms)
+            $expires_at : expires_at ,
+            $country_code : parseInt(country_code) ,
+            $sms : parseInt(sms)
           }
 
           try {
@@ -867,6 +871,10 @@ console.log("ERROR");
             if (id.identifiers[0] !== "") { message.data.identifier = id.identifiers[0]; }
           }
           this.games.open.push(message.data);
+
+          let time_until_game_is_removed = message.data.expires_at - new Date().getTime();
+          this.removeOpenGameSetTimer(message.data, time_until_game_is_removed);
+
           renderGamesTable(this.games.open);
           this.attachEvents();
           break;
@@ -966,8 +974,8 @@ console.log("ERROR");
 
             //alert("Please be patient while the network starts to initialize the game!");
 
-            let game_id = `${arcade_self.app.wallet.returnPublicKey()}&${arcade_self.games.open[i].created_at}`
-            let game_module = arcade_self.games.open[i].game;
+              let game_id = `${arcade_self.app.wallet.returnPublicKey()}&${arcade_self.games.open[i].created_at}`
+              let game_module = arcade_self.games.open[i].game;
 
               arcade_self.hideArcadeHome();
               arcade_self.showGameInitializer();
@@ -1657,6 +1665,13 @@ console.log("----------------");
 
   }
 
+  removeOpenGameSetTimer(new_game, time_until_game_is_removed) {
+    setTimeout(() => {
+      this.games.open = this.games.open.filter(game => game.sig != new_game.sig);
+      renderGamesTable(this.games.open);
+    }, time_until_game_is_removed);
+  }
+
   findOpponentModal() {
     var modal = document.getElementById("game_modal");
     modal.style.display = "block";
@@ -1887,6 +1902,7 @@ console.log("----------------");
         let options    = "";
         let sig        = "";
         let created_at = 0;
+        let expires_at = 0;
 
         if (game.gameid != undefined && game.gameid != "") {
           gameid = game.gameid;
@@ -1909,6 +1925,10 @@ console.log("----------------");
           created_at = game.created_at;
         }
 
+        if (game.expires_at > 0) {
+          expires_at = game.expires_at;
+        }
+
         return {
           player: game.player ,
           winner : winner,
@@ -1918,6 +1938,7 @@ console.log("----------------");
           options : options ,
           sig : sig,
           created_at : created_at,
+          expires_at : expires_at,
           gameid : gameid,
           adminid : adminid
         };
@@ -2172,7 +2193,7 @@ console.log("ERROR REFRESHING: " + err);
     $('.ads').hide();
     $('.manage_invitations').css('font-size','1.4em');
     $('.status').css('font-size','1.25em');
-    $('.invite_description').html(`Your game is initializing with your opponent. Please do not leave this page`);
+    $('.invite_description').html(`Your game is initializing with your opponent.<br /><br />Please do not leave this page`);
     $('#game_spinner').show();
   }
 
@@ -2523,7 +2544,7 @@ console.log("ERROR REFRESHING: " + err);
 	  // purge old invitations which have not been accepted
 	  // 
           let datenow = new Date().getTime();
-	  let duration = datenow - created_at;
+	        let duration = datenow - created_at;
           var milliseconds = parseInt((duration % 1000) / 100),
               seconds = Math.floor((duration / 1000) % 60),
               minutes = Math.floor((duration / (1000 * 60)) % 60),

@@ -262,9 +262,24 @@ Happy Chatting!`
 
   _createChatNotification(title, message, onClickFunction) {
     if (this.settings.notifications) {
-      let notify = this.app.browser.notification(title, message);
-      if (notify) {
-        notify.onclick = onClickFunction;
+      if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        let notify = this.app.browser.notification(title, message);
+        if (notify) {
+          notify.onclick = onClickFunction;
+        }
+      } else {
+        Notification.requestPermission(function(result) {
+          if (result === 'granted') {
+            navigator.serviceWorker.ready.then(function(registration) {
+              registration.showNotification(title, {
+                body: message,
+                icon: '/img/Logo-blue-icon.png',
+                vibrate: [200, 100, 200, 100, 200, 100, 200],
+                tag: 'chat-notification'
+              });
+            });
+          }
+        });
       }
     }
   }
@@ -274,7 +289,7 @@ Happy Chatting!`
 
     // pull these from DOM
     let current_room = $('.chat_messages-list')[0];
-    let isPopupHidden = $('.mail_chat_popup').css("bottom") == "40px";
+    let isPopupHidden = $('.mail_chat_popup').hasClass("hidden");
 
     //if ((current_room.id != room.room_id || isPopupHidden || !document.hasFocus()) && room.room_id != this.public_room_id)  {
     if (current_room.id != room.room_id || isPopupHidden || !document.hasFocus())  {
@@ -296,11 +311,17 @@ Happy Chatting!`
       this._updateChatRoomSelector(this.chat.rooms[room_idx]);
     }
 
+    if (this.app.browser.isMobileBrowser(navigator.userAgent) && isPopupHidden) {
+      let existing_notifications = parseInt($('.chat_notifications_number').html())
+      $('.chat_notifications_number').html(existing_notifications + 1);
+      $('.chat_notifications_number').show();
+    }
+
   }
 
   _onclickChatNotification(room_id) {
     window.focus();
-    let isPopupHidden = $('.mail_chat_popup').css("bottom") == "40px";
+    let isPopupHidden = $('.mail_chat_popup').hasClass("hidden");
     this._renderMessagesToDOM(room_id);
     if (isPopupHidden) { this._showMailchat(); }
     this._scrollToBottom();
@@ -462,7 +483,7 @@ Happy Chatting!`
 
     $('#chat_header').off();
     $('#chat_header').on('click', function(e) {
-      if ($('#chat_container').width() <= 400) {
+      // if ($('#chat_container').width() <= 400) {
         // check we are not chat-selector
         if ($(e.target).is(".chat_chat-room-selector") ||
             $(e.target).is(".chat_chat-room-option") ||
@@ -471,8 +492,32 @@ Happy Chatting!`
             }
 
         chat_self._toggleMailchat();
-      }
+      // }
     });
+
+    let element = document.getElementById('chat_header');
+    if (element != null) {
+      if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        var chat_header_ht = new Hammer(element, {});
+        chat_header_ht.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+        chat_header_ht.on("swipeup", () => {
+          if (window.matchMedia("(orientation: portrait)").matches) {
+            // $("#sizer").switchClass("fa-caret-up", "fa-caret-down");
+            this._showMailchat();
+            // $("#hud").switchClass("short", "tall", 150);
+          }
+        });
+
+        chat_header_ht.on("swipedown", () => {
+          if (window.matchMedia("(orientation: portrait)").matches) {
+            //$("#sizer").switchClass( "fa-caret-down", "fa-caret-up");
+            this._hideMailchat();
+            // $("#hud").switchClass("tall", "short", 150);
+          }
+        });
+      }
+    }
   }
 
   _formatMessage({id, timestamp, author, message}){
@@ -550,7 +595,7 @@ Happy Chatting!`
 
   _toggleMailchat() {
     // otherwise toggle divs
-    if ($('.mail_chat_popup').css('bottom') == '500px') {
+    if ($('.mail_chat_popup').hasClass('show')) {
       this._hideMailchat();
     } else {
       this._showMailchat();
@@ -558,7 +603,12 @@ Happy Chatting!`
   }
 
   _showMailchat() {
-    $('.mail_chat_popup').css('bottom','500px');
+    //$('.mail_chat_popup').css('bottom','500px');
+    $('.mail_chat_popup').switchClass('hidden','show', 150);
+    if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      $('.chat_notifications_number').hide()
+      $('.chat_notifications_number').html(0);
+    }
     setTimeout(() => {
       $('.chat_chat_main').show();
       $('#chat_new-message').show();
@@ -570,7 +620,7 @@ Happy Chatting!`
   }
 
   _hideMailchat() {
-    $('.mail_chat_popup').css('bottom','40px');
+    $('.mail_chat_popup').switchClass('show','hidden', 150);
     setTimeout(() => {
       $('.chat_chat_main').hide();
       $('#chat_new-message').hide();
@@ -590,6 +640,7 @@ Happy Chatting!`
   _enableMailchat() {
     this._showMailchat();
     $('.mail_chat_popup').show();
+    $('.mail_chat_popup').addClass('show');
     $('.sidechat').show();
     $('.sidechat_controls').show();
     this._scrollToBottom();
@@ -712,11 +763,43 @@ Happy Chatting!`
 
   /**
    * THIS FUNCTION SHOULD ***ONLY*** BE CALLED IN
-   * ***initializeHTML***
    */
   addPopUpChat() {
-    if ($(window).width() < 600){
-      return;
+    let chat_header;
+    let is_mobile = false;
+    if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      //
+      chat_header = `
+        <div style="display:flex; flex-direction: row;">
+          <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
+          <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
+        </div>
+        <select class="chat_chat-room-selector" style="display:none;border:2px solid #00adff;margin: 5px 0px 5px 0px;"></select>
+        <div class="chat_notifications_number"
+        style=
+        "display: none;
+        margin: 0;
+        color: white;
+        background-color: #ff8844;
+        /* border: 1px solid black; */
+        border-radius: 200px;
+        justify-self: flex-end;
+        align-self: center;
+        padding: 2px 10px;
+        margin-right: 5px">0</div>
+      `;
+      is_mobile = true;
+      // return;
+    } else {
+      chat_header = `
+        <div style="display:flex; flex-direction: row;width: 207px;">
+          <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
+          <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
+        </div>
+        <button class="chat_orange_button">add</button>
+        <select class="chat_chat-room-selector">
+        </select>
+      `;
     }
 
     if ($('.mail_chat_popup')[0]) {
@@ -730,13 +813,7 @@ Happy Chatting!`
       <div id="chat_container">
 
         <section id="chat_header">
-          <div style="display:flex; flex-direction: row;width: 207px;">
-            <img id="chat_saitoLogo" src="/img/saito_logo_black.png" />
-            <div id="chat_saitoText" style="font-family:Georgia;padding-top:5px;color:#444;">chat</div>
-          </div>
-          <button class="chat_orange_button">add</button>
-          <select class="chat_chat-room-selector">
-          </select>
+          ${chat_header}
         </section>
 
         <section id="chat_connection_unstable" style="display: none">
@@ -754,13 +831,20 @@ Happy Chatting!`
 
         <section id="chat_new-message">
           <textarea class="chat_new-message-input" id="chat_new-message-input"></textarea>
+          <i class="fa fa-arrow-right chat-send-message-button" style="font-size: 2em; align-self: center; margin-right: 0.2em;"></i>
         </section>
 
       </div>
     </div>
     `);
     this.attachEvents(this.app);
-    this.settings.popup ? this._enableMailchat() : this._disableMailchat();
+    if (!is_mobile) {
+      this.settings.popup ? this._enableMailchat() : this._disableMailchat();
+    } else {
+      $('.mail_chat_popup').show();
+      this._scrollToBottom();
+      this._hideMailchat();
+    }
   }
 
   addSideChat() {
