@@ -261,13 +261,25 @@ Happy Chatting!`
   }
 
   _createChatNotification(title, message, onClickFunction) {
-    //
-    // need to switch to web workers for push notifications on mobile
-    //
-    if (this.settings.notifications && !this.app.browser.isMobileBrowser(navigator.userAgent)) {
-      let notify = this.app.browser.notification(title, message);
-      if (notify) {
-        notify.onclick = onClickFunction;
+    if (this.settings.notifications) {
+      if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        let notify = this.app.browser.notification(title, message);
+        if (notify) {
+          notify.onclick = onClickFunction;
+        }
+      } else {
+        Notification.requestPermission(function(result) {
+          if (result === 'granted') {
+            navigator.serviceWorker.ready.then(function(registration) {
+              registration.showNotification(title, {
+                body: message,
+                icon: '/img/Logo-blue-icon.png',
+                vibrate: [200, 100, 200, 100, 200, 100, 200],
+                tag: 'chat-notification'
+              });
+            });
+          }
+        });
       }
     }
   }
