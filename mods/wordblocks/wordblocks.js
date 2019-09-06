@@ -203,9 +203,9 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.score[i] = 0;
     }
   }
-
+  
+  var op = 0;
   for (let i = 0; i < players; i++) {
-    let op = 0;
     let this_player = i + 1;
 
     if (this.game.player == this_player) {
@@ -804,7 +804,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['13'] = { name: "C" };
     deck['14'] = { name: "D" };
     deck['15'] = { name: "D" };
-    deck['16'] = { name: "D" };
+    /*deck['16'] = { name: "D" };
     deck['17'] = { name: "D" };
     deck['18'] = { name: "E" };
     deck['19'] = { name: "E" };
@@ -887,7 +887,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['106'] = { name: "U" };
     deck['107'] = { name: "Y" };
     deck['108'] = { name: "Y" };
-    deck['109'] = { name: "Z" };
+    deck['109'] = { name: "Z" };*/
   return deck;
 };
 
@@ -1481,21 +1481,14 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
     //
 
     if (mv[0] === "gameover") {
+      //lets end this
+
       //
       // pick the winner
       //
       let x = 0;
       let idx = 0;
 
-      /*
-      if (player != wordblocks_self.game.player) {
-        this.addWordToBoard(word, orient, x, y);
-        this.setBoard(word, orient, x, y);
-        score = this.scoreWord(word, player, orient, x, y);
-        this.exhaustWord(word, orient, x, y);
-        this.addScoreToPlayer(player, score);
-      }
-      */
       for (let i = 0; i < wordblocks_self.game.score.length; i++) {
         if (wordblocks_self.game.score[i] > x) {
           x = wordblocks_self.game.score[i];
@@ -1512,8 +1505,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       wordblocks_self.game.winner = idx + 1;
       wordblocks_self.game.over = 1;
       wordblocks_self.saveGame(wordblocks_self.game.id);
-      //wordblocks_self.game.queue.splice(wordblocks_self.game.queue.length - 1, 1);
-
+      
       if (wordblocks_self.browser_active == 1) {
         this.disableEvents();
         var result = "Game Over<br/>Player " + wordblocks_self.game.winner + " wins!";
@@ -1526,8 +1518,15 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
         wordblocks_self.updateLog(result);
       }
 
+      this.game.queue.splice(this.game.queue.length - 1, 1);
+      return 0;
+    }
+
+    if (mv[0] === "endgame") {
+     
       //this.moves;
       this.game.queue.splice(this.game.queue.length - 1, 1);
+      this.addMove("gameover");
       return 1;
     }
 
@@ -1624,7 +1623,7 @@ Wordblocks.prototype.checkForEndGame = function checkForEndGame() {
   // the game ends when one player has no cards left
   //
   if (this.game.deck[0].hand.length == 0 && this.game.deck[0].crypt.length == 0) {
-    this.addMove("gameover");
+    this.addMove("endgame");
     this.endTurn();
     return 1;
   }
