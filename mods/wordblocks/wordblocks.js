@@ -20,7 +20,7 @@ function Wordblocks(app) {
   this.emailAppName = "Wordblocks";
   this.maxPlayers = 4;
   this.useHUD = 1;
-  this.addHUDMenu = ['Tiles', 'Score', 'Lang'];
+  // this.addHUDMenu = ['Tiles', 'Score', 'Lang'];
 
   //
   // this sets the ratio used for determining
@@ -125,12 +125,15 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
   }
 
-  resizeBoard = function resizeBoard() {
+  resizeBoard = function resizeBoard(app) {
 
-    if (this.window) {
+    if (this.window && !app.browser.isMobileBrowser(navigator.userAgent)) {
 
-      let height = this.window.innerHeight;
-      let width = this.window.innerWidth;
+      // let height = this.window.innerHeight;
+      // let width = this.window.innerWidth;
+
+      let height = this.screen.height;
+      let width = this.screen.width;
 
       if (width < 900) {
         if (width > 500) {
@@ -155,7 +158,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
           $('#tiles > div.tile').css('zoom', 500 / 900);
         }
       }
-      
+
       if (height > 900 && width > 900) {
         $('.main').css('zoom', 1);
         $('.rack').css('zoom', 1);
@@ -211,11 +214,22 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     let this_player = i + 1;
 
     if (this.game.player == this_player) {
-      html += '<div class="player"><span class="player_name">Your Score</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
+      html += `
+        <div class="player">
+          <span class="player_name">Your Score</span>
+          <span id="score_${this_player}"> ${this.game.score[i]} </span>
+        </div>
+      `;
     } else {
-      let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[op]);
+      //let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[op]);
+      let opponent = this.game.opponents[op];
       op++;
-      html += '<div class="player"><span class="player_name">' + opponent + '</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
+      html += `
+        <div class="player">
+          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span id="score_${this_player}"> ${this.game.score[i]} </span>
+        </div>
+      `;
     }
   }
 
@@ -249,7 +263,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   // initialize interface
   //
 
-  resizeBoard();
+  resizeBoard(this.app);
 
   //
   // load any existing tiles
@@ -309,6 +323,175 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   $(window).resize(function () {
     resizeBoard();
   });
+
+  var element = document.getElementById('gameboard');
+  if (element !== null) {
+    var hammertime = new Hammer(element, {});
+
+    hammertime.get('pinch').set({ enable: true });
+    hammertime.get('pan').set({ threshold: 0 });
+
+    var fixHammerjsDeltaIssue = undefined;
+    var pinchStart = { x: undefined, y: undefined }
+    var lastEvent = undefined;
+
+    var originalSize = {
+      width: window.screen.width,
+      height: window.screen.width
+    }
+
+    var current = {
+      x: 0,
+      y: 0,
+      z: 1,
+      zooming: false,
+      width: originalSize.width * 1,
+      height: originalSize.height * 1,
+    }
+
+    var last = {
+      x: current.x,
+      y: current.y,
+      z: current.z
+    }
+
+    function getRelativePosition(element, point, originalSize, scale) {
+      var domCoords = getCoords(element);
+
+      var elementX = point.x - domCoords.x;
+      var elementY = point.y - domCoords.y;
+
+      var relativeX = elementX / (originalSize.width * scale / 2) - 1;
+      var relativeY = elementY / (originalSize.height * scale / 2) - 1;
+      return { x: relativeX, y: relativeY }
+    }
+
+    function getCoords(elem) { // crossbrowser version
+      var box = elem.getBoundingClientRect();
+
+      var body = document.body;
+      var docEl = document.documentElement;
+
+      var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+      var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+      var clientTop = docEl.clientTop || body.clientTop || 0;
+      var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+      var top  = box.top +  scrollTop - clientTop;
+      var left = box.left + scrollLeft - clientLeft;
+
+      return { x: Math.round(left), y: Math.round(top) };
+    }
+
+    function scaleFrom(zoomOrigin, currentScale, newScale) {
+      var currentShift = getCoordinateShiftDueToScale(originalSize, currentScale);
+      var newShift = getCoordinateShiftDueToScale(originalSize, newScale)
+
+      var zoomDistance = newScale - currentScale
+
+      var shift = {
+        x: currentShift.x - newShift.x,
+        y: currentShift.y - newShift.y,
+      }
+
+      var output = {
+        x: zoomOrigin.x * shift.x,
+        y: zoomOrigin.y * shift.y,
+        z: zoomDistance
+      }
+      return output
+    }
+
+
+    function getCoordinateShiftDueToScale(size, scale){
+      var newWidth = scale * size.width;
+      var newHeight = scale * size.height;
+      var dx = (newWidth - size.width) / 2
+      var dy = (newHeight - size.height) / 2
+      return {
+        x: dx,
+        y: dy
+      }
+    }
+
+    hammertime.on('pan', function(e) {
+      if (lastEvent !== 'pan') {
+        fixHammerjsDeltaIssue = {
+          x: e.deltaX,
+          y: e.deltaY
+        }
+      }
+
+      current.x = last.x + e.deltaX - fixHammerjsDeltaIssue.x;
+      current.y = last.y + e.deltaY - fixHammerjsDeltaIssue.y;
+      lastEvent = 'pan';
+      update();
+    });
+
+    hammertime.on('pinch', function(e) {
+      var d = scaleFrom(pinchZoomOrigin, last.z, last.z * e.scale)
+
+      let newX = d.x + last.x + e.deltaX;
+      let newY = d.y + last.y + e.deltaY;
+      let newZ = d.z + last.z;
+
+      current.x = newX;
+      current.y = newY;
+      current.z = newZ;
+      lastEvent = 'pinch';
+      update();
+    });
+
+    var pinchZoomOrigin = undefined;
+    hammertime.on('pinchstart', function(e) {
+      pinchStart.x = e.center.x;
+      pinchStart.y = e.center.y;
+      pinchZoomOrigin = getRelativePosition(element, { x: pinchStart.x, y: pinchStart.y }, originalSize, current.z);
+      lastEvent = 'pinchstart';
+    });
+
+    hammertime.on('panend', function(e) {
+      last.x = current.x;
+      last.y = current.y;
+      lastEvent = 'panend';
+    });
+
+    hammertime.on('pinchend', function(e) {
+      if ((originalSize.height * current.z) <= originalSize.height &&
+        (originalSize.width * current.z) <= originalSize.width) {
+        return;
+      }
+
+      last.x = current.x;
+      last.y = current.y;
+      last.z = current.z;
+      lastEvent = 'pinchend';
+    });
+
+    function update() {
+      // if (lastEvent !== 'pan') {
+        if ((originalSize.height * current.z) < originalSize.height &&
+          (originalSize.width * current.z) < originalSize.width) {
+          if (current.z < 1) {
+            element.style.transform = `translate3d(0, 0, 0) scale(1)`;
+            current = {x: 0, y: 0, z: 1};
+            last = {
+              x: current.x,
+              y: current.y,
+              z: current.z
+            }
+            return;
+          }
+        }
+      // }
+
+      current.height = originalSize.height * current.z;
+      current.width = originalSize.width * current.z;
+
+      element.style.transform = "translate3d(" + current.x + "px, " + current.y + "px, 0) scale(" + current.z + ")";
+    }
+  }
 };
 
 
@@ -318,9 +501,10 @@ Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(stat
     tile_html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
   let html =
+  ////style="display:grid;grid-template-rows: 3em auto 5em;"
   `
     <div>${status}</div>
-    <div style="display:grid;grid-template-rows: 3em auto 5em;">
+    <div class="status_container">
       <div id="remainder" class="remainder">Tiles left: 109</div>
       <div class="rack" id="rack">
         <div class="tiles" id="tiles">
@@ -356,17 +540,28 @@ Wordblocks.prototype.calculateScore = async function calculateScore() {
       this.game.score[i] = 0;
     }
   }
-  
+
   var op = 0;
   for (let i = 0; i < players; i++) {
     let this_player = i + 1;
 
     if (this.game.player == this_player) {
-      html += '<div class="player"><span class="player_name">Your Score</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
+      html += `
+        <div class="player">
+          <span class="player_name">Your Score</span>
+          <span class="player_score" id="score_${this_player}"> ${this.game.score[i]} </span>
+        </div>
+      `;
     } else {
-      let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[op]);
+      //let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[op]);
+      let opponent = this.game.opponents[op];
       op++;
-      html += '<div class="player"><span class="player_name">' + opponent + '</span><span id="score_' + this_player + '"> ' + this.game.score[i] + '</span></div>';
+      html += `
+        <div class="player">
+          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span class="player_score" id="score_${this_player}"> ${this.game.score[i]} </span>
+        </div>
+      `;
     }
   }
 
@@ -473,10 +668,10 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     let x = tmpx[1];
     let orientation = "";
     let word = "";
-    let left = $(this).position().left + 45;
-    let top = $(this).position().top + 45;
-    if (x > 8){ left -= 325; }
-    if (y > 8){ top -= 200; }
+    let left = $(this).position().left + 55;
+    let top = $(this).position().top + 55;
+    if (x > 8){ left -= 155; }
+    if (y > 8){ top -= 155; }
     // $('.status').detach().appendTo($('.gameboard'));
     // $('.status').addClass("active-status");
     // $('.status').css({"position": "absolute", "top": top, "left": left});
@@ -576,6 +771,16 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
         }
       }
     });
+  });
+
+  $('#shuffle').on('click', function () {
+    for (var i = $('#tiles').children.length; i >= 0; i--) {
+      $('#tiles')[0].appendChild($('#tiles')[0].childNodes[Math.random() * i | 0]);
+    }
+  });
+  $('#tiles').sortable();
+  $(window).resize(function () {
+    resizeBoard();
   });
 };
 

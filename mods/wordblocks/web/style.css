@@ -100,14 +100,15 @@ body {
 .rack {
   align-self: center;
   display: flex;
-  padding: 10px 0;
-  height: 80px;
+  /* padding: 10px 0;
+  height: 80px; */
 }
 
 .shuffle {
   display: inline-block;
   font-size: 20px;
-  width: 10%;
+  width: 12%;
+  height: 4em;
   cursor: pointer;
 }
 
@@ -155,13 +156,18 @@ body {
 } */
 
 .hud {
-  max-width: unset;
+  /* max-width: unset; */
 }
 
 .status {
   grid-area: hud-content;
   display: grid;
   grid-template-rows: 3em auto;
+}
+
+.status_container {
+  display: grid;
+  grid-template-rows: 3em auto 5em;
 }
 
 .log {
@@ -298,32 +304,149 @@ body {
 .player {
   margin: 3px 0 12px;
   white-space: nowrap;
+  display: grid;
+  grid-template-columns: 90% 10%;
 }
 
 .player_name {
   overflow: hidden;
   display: inline-block;
   text-overflow: ellipsis;
-  width: 85%;
+  /* width: 85%; */
 }
 
 .player span {
   line-height: 20px;
 }
 
+.player_score {
+  justify-self: right;
+}
+
 @media only screen and (max-width: 600px) {
+  .hud {
+    font-size: 1rem;
+  }
+  .main {
+    /* display: block; */
+    width: unset;
+    margin: auto;
+    margin-bottom: none;
+    border: 1px solid orange;
+    padding: 0px;
+  }
+  .gameboard {
+    display: grid;
+    grid-template-columns: repeat(15, 15fr);
+    grid-template-rows: repeat(15, 15fr);
+    grid-gap: 1px;
+    background: #999;
+    border: 0.5em solid #333;
+    padding: 0.5em;
+  }
+  .tall {
+    height: 43vh;
+  }
+  .slot {
+    cursor: pointer;
+    display: flex;
+    background: rgb(102, 102, 102);
+    border-style: solid;
+    border-color: rgb(102, 102, 102);
+    border-image: initial;
+    border-radius: 0.3em;
+    overflow: hidden;
+    width: 5vw;
+    height: 5vw;
+    justify-self: center;
+    align-self: center;
+  }
+  .tlbk {
+    padding: 3px 0px;
+    text-align: center;
+    font-size: 0.3rem;
+  }
+  .dlbk {
+    padding: 3px 0px;
+    text-align: center;
+    font-size: 0.3rem;
+  }
+  .twbk {
+    padding: 3px 0px;
+    text-align: center;
+    font-size: 0.3rem;
+  }
+  .dwbk {
+    padding: 3px 0px;
+    text-align: center;
+    font-size: 0.3rem;
+  }
+  .starbk {
+    padding: 1px 0px;
+    font-size: 0.8rem;
+  }
+  .slot div.tile {
+    color: rgb(238, 238, 238);
+    font-size: 0.7rem;
+    background-color: rgb(68, 68, 68);
+    /* text-align: center; */
+    padding-top: 4px;
+    border-radius: 2px;
+    text-indent: 2px;
+    /* margin: inherit; */
+  }
   .status {
-    font-size: 1.4em;
-    width: 60%;
+    /* font-size: 1.4em; */
+    margin: 0;
+    grid-gap: 0.5em;
+    /* width: 60%; */
+  }
+  .status_container {
+    grid-template-rows: 1em auto;
   }
   .score {
-    font-size: 1.4em;
-    width: 20%;
+    /* font-size: 1.4em; */
+    font-size: 1rem;
+    /* width: 20%; */
   }
- 
+  #remainder {
+    font-size: 0.8em;
+  }
   #controls {
     height: 225px;
     overflow-y: auto;
+  }
+  .tiles div.tile {
+    width: 4.5vw;
+    height: 4.5vw;
+    display: inline-block;
+    text-align: center;
+    line-height: 0.9em;
+    text-indent: 0px;
+    font-weight: bold;
+    margin: 3px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(221, 221, 221);
+    border-image: initial;
+    padding: 2.5vw;
+    background: rgb(70, 70, 70);
+    font-size: 1.25em;
+  }
+  .shuffle {
+    /* display: inline-block; */
+    /* font-size: 1em; */
+    /* width: 14%; */
+    height: 3em;
+    cursor: pointer;
+    max-height: 50px;
+    /* margin-right: 1em; */
+  }
+  .player_name {
+    /* width: 92%; */
+  }
+  .dragbar {
+    width: 2em;
   }
 }
 
@@ -336,7 +459,6 @@ body {
     /* font-size: 1.4em;
     width: 20%; */
   }
-  
   .player span {
     /* line-height: 12px; */
   }
