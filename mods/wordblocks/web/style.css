@@ -57,7 +57,7 @@ body {
   text-align: center;
 }
 
-#controls {
+/* #controls {
   margin: auto;
   display: block;
   overflow: hidden;
@@ -68,12 +68,12 @@ body {
   position: relative;
   width: 100%;
   max-width: 900px;
-}
+} */
 
 #remainder, #lastmove {
-  display: inline-block;
+  /* display: inline-block; */
   font-size: 1.7em;
-  padding: 10px 10px 0 10px;
+  /* padding: 10px 10px 0 10px; */
 }
 
 #remainder {
@@ -92,13 +92,14 @@ body {
 
 .score {
   font-size: 1.6rem;
-  padding: 10px 20px;
-  display: inline-block;
-  width: 20%
+  /* padding: 10px 20px; */
+  /* display: inline-block; */
+  /* width: 20% */
 }
 
 .rack {
-  display: block;
+  align-self: center;
+  display: flex;
   padding: 10px 0;
   height: 80px;
 }
@@ -111,11 +112,12 @@ body {
 }
 
 .tiles {
-  display: inline-block;
+  /* display: inline-block;
   font-size: 1.9em;
   width: 80%;
   position: relative;
-  top: -45px;
+  top: -45px; */
+  display: flex;
 }
 
 .tile {
@@ -142,7 +144,7 @@ body {
   font-size: 36px;
 }
 
-.status {
+/* .status {
   font-size: 1.5rem;
   padding: 10px;
   width: auto;
@@ -150,6 +152,20 @@ body {
   vertical-align: top;
   padding: 10px 20px;
   width: 65%;
+} */
+
+.hud {
+  max-width: unset;
+}
+
+.status {
+  grid-area: hud-content;
+  display: grid;
+  grid-template-rows: 3em auto;
+}
+
+.log {
+  display: none;
 }
 
 .active-status {
@@ -313,33 +329,33 @@ body {
 
 @media only screen and (max-height: 1200px) {
   .status {
-    font-size: 1.4em;
-    width: 60%;
+    /* font-size: 1.4em;
+    width: 60%; */
   }
   .score {
-    font-size: 1.4em;
-    width: 20%;
+    /* font-size: 1.4em;
+    width: 20%; */
   }
   
   .player span {
-    line-height: 12px;
+    /* line-height: 12px; */
   }
 
   #controls {
-    height: 225px;
-    overflow-y: auto;
+    /* height: 225px;
+    overflow-y: auto; */
   }
   #chat_container {
     display: block;
   }
 }
 
-.fixedbottom {
+/* .fixedbottom {
   position: fixed !important;
   bottom: 0;
   height: 225px;
   overflow-y: auto;
-}
+} */
 
 .mainfixedbottom {
   margin: 0 0 225px 0;
