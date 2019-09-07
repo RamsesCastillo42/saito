@@ -492,6 +492,20 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       element.style.transform = "translate3d(" + current.x + "px, " + current.y + "px, 0) scale(" + current.z + ")";
     }
   }
+
+  $('#game_status').on('click', () => {
+    $('.log').hide();
+    if (this.app.browser.isMobileBrowser(navigator.userAgent) && window.matchMedia("(orientation: portrait)").matches || window.innerHeight > 700) {
+      $("#sizer").switchClass("fa-caret-up", "fa-caret-down");
+      $("#hud").switchClass("short", "tall", 150);
+    } else {
+      $("#sizer").switchClass("fa-caret-left", "fa-caret-right");
+      $("#hud").switchClass("narrow", "wide", 150);
+    }
+
+    $('.hud_menu_overlay').hide();
+    $('.status').show();
+  });
 };
 
 
@@ -668,10 +682,18 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     let x = tmpx[1];
     let orientation = "";
     let word = "";
-    let left = $(this).position().left + 55;
-    let top = $(this).position().top + 55;
-    if (x > 8){ left -= 155; }
-    if (y > 8){ top -= 155; }
+
+    let offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
+    let offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 25 : 55;
+
+    let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
+    let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
+
+    let left = $(this).position().left + offsetX;
+    let top = $(this).position().top + offsetY;
+
+    if (x > 8){ left -= greater_offsetX; }
+    if (y > 8){ top -= greater_offsetY; }
     // $('.status').detach().appendTo($('.gameboard'));
     // $('.status').addClass("active-status");
     // $('.status').css({"position": "absolute", "top": top, "left": left});
