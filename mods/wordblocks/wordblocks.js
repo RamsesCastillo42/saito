@@ -320,6 +320,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     }
   });
   $('#tiles').sortable();
+  $('#tiles').disableSelection();
   $(window).resize(function () {
     resizeBoard();
   });
@@ -676,7 +677,12 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
   $('.slot').off();
   $('.slot').on('click', function () {
     let divname = $(this).attr("id");
-    let html = '<div class="tile-placement-controls"><span class="action" id="horizontally"><i class="fas fa-arrows-alt-h"></i> horizontally</span><span class="action" id="vertically"><i class="fas fa-arrows-alt-v"></i> vertically</span><span class="action" id="cancel"><i class="far fa-window-close"></i> cancel</span></div>';
+    let html = `
+      <div class="tile-placement-controls">
+        <span class="action" id="horizontally"><i class="fas fa-arrows-alt-h"></i> horizontally</span>
+        <span class="action" id="vertically"><i class="fas fa-arrows-alt-v"></i> vertically</span>
+        <span class="action" id="cancel"><i class="far fa-window-close"></i> cancel</span>
+      </div>`;
     let tmpx = divname.split("_");
     let y = tmpx[0];
     let x = tmpx[1];
@@ -700,17 +706,35 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     // <div class="tile-placement-controls"></div>
     //$('.status').html(html); //$('.status').show();
 
-    $('.gameboard').append(html);
-    $('.tile-placement-controls').addClass("active-status");
-    $('.tile-placement-controls').css({"position": "absolute", "top": top, "left": left});
+    $('.tile-placement-controls').remove();
+    if (wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+      let tile_html ='';
+      for (let i = 0; i < wordblocks_self.game.deck[0].hand.length; i++) {
+        tile_html += wordblocks_self.returnTileHTML(wordblocks_self.game.deck[0].cards[wordblocks_self.game.deck[0].hand[i]].name);
+      }
+      let updated_status = `
+      <div class="rack" id="rack">
+        <div class="tiles" id="tiles">
+          ${tile_html}
+        </div>
+        <img id="shuffle" class="shuffle" src="/wordblocks/img/reload.png">
+      </div>
+      ${html}
+      `
+      $('.status').html(updated_status);
+      wordblocks_self.enableEvents();
+    } else {
+      $('body').append(html);
+      $('.tile-placement-controls').addClass("active-status");
+      $('.tile-placement-controls').css({"position": "absolute", "top": top, "left": left});
+    }
 
     $('.action').off();
     $('.action').on('click', function () {
 
       // $('.status').detach().appendTo($('#controls'));
-      $('.tile-placement-controls').html('');
-      $('.status').removeClass("active-status");
-      $('.status').css({"position": "relative", "top": 0, "left": 0});
+      // $('.status').removeClass("active-status");
+      // $('.status').css({"position": "relative", "top": 0, "left": 0});
 
       let action2 = $(this).attr("id");
 
@@ -735,6 +759,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
         //
         // reset board
         //
+        $('.tile-placement-controls').html('');
         $('.status').html("Processing your turn.");
 
         //
@@ -801,6 +826,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     }
   });
   $('#tiles').sortable();
+  $('#tiles').disableSelection();
   $(window).resize(function () {
     resizeBoard();
   });
