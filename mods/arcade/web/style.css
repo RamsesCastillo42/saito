@@ -604,6 +604,34 @@ select {
   transform: translate(-50%, -50%);
 }
 
+
+
+/* Arcade registry form */
+
+.arcade_registry_form {
+  display: flex;
+  align-items: center;
+  flex-direction: center;
+}
+
+.arcade_registry_form > p {
+  font-size: 2em;
+  margin: 0 10px 0 0;
+}
+
+#arcade_registry_input {
+  font-size: 1.5em;
+  padding: 5px;
+  width: 85%;
+  margin-right: 10px;
+}
+
+#arcade_reg_button {
+  width: 15%;
+  cursor: pointer;
+  text-align: center;
+}
+
 /* Add Animation */
 
 @keyframes animatetop {
@@ -1135,6 +1163,26 @@ hr {
     display: inline-block;
   }
 
+  .arcade_registry_form {
+    display: grid;
+    row-gap: 0.5em;
+  }
+
+  .arcade_registry_form > p {
+    margin: 0;
+    font-size: 1.5em;
+  }
+
+  #arcade_registry_input {
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  #arcade_reg_button {
+    width: 100%;
+  }
 }
 
 .loader {

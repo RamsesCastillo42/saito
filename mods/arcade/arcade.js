@@ -1842,17 +1842,17 @@ console.log("----------------");
     var modal = document.getElementById("game_modal");
     modal.style.display = "block";
 
+    // style="display: flex; align-items: center;"
+
     $('#modal_header_text').html('Register Saito ID');
     $('#modal_body_text').html(
       `
       <div id="submit_post" class="submit_post">
         <p>Submit a unique name for your Saito ID</p>
-        <div style="display: flex; align-items: center;">
-          <input
-          style= "font-size: 1.5em; padding: 5px; width: 85%; margin-right: 10px"
-          type="text" class="reg_id" id="reg_id" name="reg_id" />
-          <p style="margin: 0 10px 0 0; font-size: 2em;">@saito</p>
-          <input style="width: 15%; cursor: pointer; text-align: center" id="arcade_reg_button" class="submit_button"  value="SUBMIT"/>
+        <div class="arcade_registry_form">
+          <input id="arcade_registry_input" type="text" class="reg_id" id="reg_id" name="reg_id" />
+          <p>@saito</p>
+          <input id="arcade_reg_button" class="submit_button" value="SUBMIT"/>
         </div>
       </div>
       `
