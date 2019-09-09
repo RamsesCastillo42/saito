@@ -100,6 +100,8 @@ body {
 .rack {
   align-self: center;
   display: flex;
+  align-items: center;
+  justify-content: center;
   /* padding: 10px 0;
   height: 80px; */
 }
@@ -452,7 +454,7 @@ body {
     /* width: 14%; */
     height: 3em;
     cursor: pointer;
-    max-height: 50px;
+    /* max-height: 50px; */
     /* margin-right: 1em; */
   }
   .player_name {
