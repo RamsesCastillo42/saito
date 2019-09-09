@@ -539,8 +539,8 @@ Happy Chatting!`
         'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
         'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'marquee', 'pre'],
       allowedAttributes: {
-        div: ['class'],
-        a: ['href', 'name', 'target', 'class'],
+        div: ['class', 'id'],
+        a: ['href', 'name', 'target', 'class', 'id'],
         img: ['src', 'class']
       },
       selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
