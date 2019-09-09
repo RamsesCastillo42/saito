@@ -271,8 +271,8 @@ class Arcade extends ModTemplate {
       $(".chat_invite").each( function() {
         let invitets = this.id; 
         if (expiry >= invitets) {
-          $(this).innerHTML = "Invite Expired";
-          $(this).css("background", "#aaaaaa");
+          this.innerHTML = "Invite Expired";
+          this.css("background", "#aaaaaa");
         }
       });
     });
