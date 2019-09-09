@@ -271,7 +271,7 @@ class Arcade extends ModTemplate {
       $(".live_invite").each( function() {
         let invitets = this.id; 
         if (expiry >= invitets) {
-          $(this.removeClass("live_invite"));
+          $(this).removeClass("live_invite");
           this.innerHTML = "Invite Expired";
           $(this).css("background", "#aaaaaa");
         }
