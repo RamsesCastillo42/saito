@@ -493,6 +493,20 @@ Happy Chatting!`
       chat_self._toggleMailchat();
     });
 
+    // $().off();
+    $('.chat_new-message-input').focus(() => {
+      if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        $('#chat_messages-list').css('padding-bottom', '2.9em');
+      }
+      this._scrollToBottom();
+    });
+
+    $('.chat_new-message-input').blur(() => {
+      if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+        $('#chat_messages-list').css('padding-bottom', 0);
+      }
+    });
+
     let element = document.getElementById('chat_header');
     if (element != null) {
       if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -822,7 +836,6 @@ Happy Chatting!`
         </section>
 
         <div id="chat_main" class="chat_chat_main">
-          <section id="chat_messages-list">Messages:</section>
           <section id="chat_messages-list">
             <ul class="chat_messages-list" id="All">
               <p id="chat_message_id_0" class="chat_message"><i>BearGuy</i>: Welcome to Saito!</p>
