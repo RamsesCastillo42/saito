@@ -1244,8 +1244,10 @@ console.log("ERROR");
     $('#find_opponent_modal_button_mob').on('click', () => {
       let invite_html = "<div class='chat-game-invite'>I would love to play a game of:<br />" + this.renderModalOptions("chat_link") + "<div>Click to accept.</div></div>";
       $('#chat_new-message-input').text(invite_html);
+      $('.return_to_arcade').trigger('click');
       $('.chat-send-message-button').trigger('click');
       $('#chat_header').trigger("click");     
+      this.mobileInviteModal();
     });
 
 
@@ -1679,6 +1681,18 @@ console.log("----------------");
       this.games.open = this.games.open.filter(game => game.sig != new_game.sig);
       renderGamesTable(this.games.open);
     }, time_until_game_is_removed);
+  }
+
+  mobileInviteModal() {
+    var modal = document.getElementById("game_modal");
+    var modalTitle = document.getElementById("modal_header_text");
+    var modalBody = document.getElementById("modal_body_text");
+      
+    let html = `<div>Your invitation has been added to the chat box as a message.</br>
+            Oponents will let you know if they would like to accept.</div>`;
+    modalTitle.innerHTML = "Invite Sent";
+    modalBody.innerHTML = html;
+    modal.style.display = "block";
   }
 
   findOpponentModal() {
