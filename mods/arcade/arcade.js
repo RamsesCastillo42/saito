@@ -271,6 +271,7 @@ class Arcade extends ModTemplate {
       $(".chat_invite").each( function() {
         let invitets = this.id; 
         if (expiry >= invitets) {
+          $(this.removeClass("live_invite"));
           this.innerHTML = "Invite Expired";
           $(this).css("background", "#aaaaaa");
         }
@@ -2286,7 +2287,7 @@ console.log("ERROR REFRESHING: " + err);
   
           base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
             
-          return `<a id="${txmsg.ts + (5*60*1000)}" class="quick_link_button chat_invite" href="${window.location.href}/invite/${base64str}" />${(game_module.name)}</a>`
+          return `<a id="${txmsg.ts + (5*60*1000)}" class="quick_link_button chat_invite live_invite" href="${window.location.href}/invite/${base64str}" />${(game_module.name)}</a>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`
