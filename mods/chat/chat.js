@@ -483,16 +483,14 @@ Happy Chatting!`
 
     $('#chat_header').off();
     $('#chat_header').on('click', function(e) {
-      // if ($('#chat_container').width() <= 400) {
-        // check we are not chat-selector
-        if ($(e.target).is(".chat_chat-room-selector") ||
-            $(e.target).is(".chat_chat-room-option") ||
-            $(e.target).is(".chat_orange_button")) {
-              return;
-            }
+      // check we are not chat-selector
+      if ($(e.target).is(".chat_chat-room-selector") ||
+          $(e.target).is(".chat_chat-room-option") ||
+          $(e.target).is(".chat_orange_button")) {
+            return;
+          }
 
-        chat_self._toggleMailchat();
-      // }
+      chat_self._toggleMailchat();
     });
 
     let element = document.getElementById('chat_header');
@@ -617,6 +615,8 @@ Happy Chatting!`
       $('.chat_orange_button').show();
       $('#chat_header').css('background-color','#fff');
       $('#chat_saitoText').css('color','#444');
+
+      this._scrollToBottom();
     }, 0);
   }
 
