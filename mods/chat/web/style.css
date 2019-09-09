@@ -244,3 +244,31 @@ pre {
         padding: 0;
     }
 }
+
+.chat-game-invite {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #1c1c1f;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.chat-game-invite div {
+    text-align: right;
+}
+
+a.quick_link_button.chat_invite {
+    background: #07a61e;
+    border-radius: 5px;
+    width: 240px;
+    display: inline-block;
+    color: #efefcf;
+    text-align: center;
+    padding: 10px;
+    font-weight: 400;
+    font-size: 1.6em;
+    line-height: 28px;
+    text-decoration: none;
+}

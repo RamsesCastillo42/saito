@@ -214,7 +214,7 @@ class Arcade extends ModTemplate {
       }
 
       if (game_exists == 1) {
-        app.options.games[i].ts = new Date().getTime();
+        app.options.games[idx].ts = new Date().getTime();
         this.saveGame(app.options.games[game_exists_idx].id);
         $('.invite_main').html('You already have a game with this opponent.<p></p><a href="/twilight">Join this Game</a>');
         $('.invite_main').css('font-size','1.7em');
@@ -1240,6 +1240,17 @@ console.log("ERROR");
       this.attachEvents();
     });
 
+    $('#find_opponent_modal_button_mob').off();
+    $('#find_opponent_modal_button_mob').on('click', () => {
+      let invite_html = "<div class='chat-game-invite'>I would love to play a game of:<br />" + this.renderModalOptions("chat_link") + "<div>Click to accept.</div></div>";
+      $('#chat_new-message-input').text(invite_html);
+      $('.return_to_arcade').trigger('click');
+      $('.chat-send-message-button').trigger('click');
+      $('#chat_header').trigger("click");     
+      this.mobileInviteModal();
+    });
+
+
     $('#invite_by_publickey').off()
     $('#invite_by_publickey').on('click', () => {
       this.inviteByPublickeyModal();
@@ -1672,6 +1683,18 @@ console.log("----------------");
     }, time_until_game_is_removed);
   }
 
+  mobileInviteModal() {
+    var modal = document.getElementById("game_modal");
+    var modalTitle = document.getElementById("modal_header_text");
+    var modalBody = document.getElementById("modal_body_text");
+      
+    let html = `<div>Your invitation has been added to the chat box as a message.</br>
+            Oponents will let you know if they would like to accept.</div>`;
+    modalTitle.innerHTML = "Invite Sent";
+    modalBody.innerHTML = html;
+    modal.style.display = "block";
+  }
+
   findOpponentModal() {
     var modal = document.getElementById("game_modal");
     modal.style.display = "block";
@@ -2058,10 +2081,6 @@ console.log("GOT THROUGH TO HERE!");
   }
 
 
-
-
-
-
   async refreshOpenGames() {
 
 console.log("REFRESHING OPEN GAMES");
@@ -2200,13 +2219,15 @@ console.log("ERROR REFRESHING: " + err);
 
 
   renderModalOptions(option) {
+    let game_module = this.app.modules.returnModule(this.active_game);
+    let options = {};
+    let txmsg = {};
+    let base64str = "";
+
     switch(option) {
       case 'open':
         return `<button id="create_game_button" style="margin: 0" class="quick_invite">CREATE GAME</button>`
       case 'link':
-        let game_module = this.app.modules.returnModule(this.active_game);
-        let options = {};
-
         $('form input, form select').each(
           function(index) {
             var input = $(this);
@@ -2222,17 +2243,41 @@ console.log("ERROR REFRESHING: " + err);
 
         options = game_module.returnQuickLinkGameOptions(options);
 
-        let txmsg = {};
         txmsg.module = this.active_game;
         txmsg.pubkey = this.app.wallet.returnPublicKey();
         txmsg.options = options;
         txmsg.ts = new Date().getTime();
         txmsg.sig = this.app.wallet.signMessage(txmsg.ts.toString(), this.app.wallet.returnPrivateKey());
 
-        let base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
+        base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
 
         return `<input class="quick_link_input" value="${window.location.href}/invite/${base64str}" />
         <button class="quick_invite" id="copy_quick_link_button" style="margin: 0"> COPY</button>`
+      case 'chat_link':
+         $('form input, form select').each(
+            function(index) {
+              var input = $(this);
+              if (input.is(":checkbox")) {
+                if (input.prop("checked")) {
+                  options[input.attr('name')] = 1;
+                }
+              } else {
+                options[input.attr('name')] = input.val();
+              }
+            }
+          );
+  
+          options = game_module.returnQuickLinkGameOptions(options);
+  
+          txmsg.module = this.active_game;
+          txmsg.pubkey = this.app.wallet.returnPublicKey();
+          txmsg.options = options;
+          txmsg.ts = new Date().getTime();
+          txmsg.sig = this.app.wallet.signMessage(txmsg.ts.toString(), this.app.wallet.returnPrivateKey());
+  
+          base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
+  
+          return `<a class="quick_link_button chat_invite" href="${window.location.href}/invite/${base64str}" />${(game_module.name)}</a>`  
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`
