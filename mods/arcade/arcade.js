@@ -268,7 +268,7 @@ class Arcade extends ModTemplate {
       let expiry = new Date().getTime();
       
       console.log("clearing in-chat game invites");
-      $(".chat_invite").each( function() {
+      $(".live_invite").each( function() {
         let invitets = this.id; 
         if (expiry >= invitets) {
           $(this.removeClass("live_invite"));
