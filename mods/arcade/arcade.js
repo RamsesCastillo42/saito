@@ -261,8 +261,21 @@ class Arcade extends ModTemplate {
     //
     // add chat
     //
+
     const chat = app.modules.returnModule("Chat");
     chat.addPopUpChat();
+    $('#chat_main').bind("DOMSubtreeModified", function() {
+      let expiry = new Date().getTime();
+      
+      console.log("clearing in-chat game invites");
+      $(".chat_invite").each( function() {
+        let invitets = this.id; 
+        if (expiry >= invitets) {
+          $(this).innerHTML = "Invite Expired";
+          $(this).css("background", "#aaaaaa");
+        }
+      });
+    });
   }
 
 
@@ -1246,12 +1259,11 @@ console.log("ERROR");
       $('#chat_new-message-input').text(invite_html);
       $('.return_to_arcade').trigger('click');
       $('.chat-send-message-button').trigger('click');
-      $('#chat_header').trigger("click");     
+      $('#chat_header').trigger("click");  
       this.mobileInviteModal();
     });
 
-
-    $('#invite_by_publickey').off()
+        $('#invite_by_publickey').off()
     $('#invite_by_publickey').on('click', () => {
       this.inviteByPublickeyModal();
       this.attachEvents();
@@ -1282,9 +1294,6 @@ console.log("ERROR");
         $('.publisher_message').show();
       }
     });
-
-
-
 
     //
     // CREATE GAME -- STEP #2
@@ -2276,8 +2285,8 @@ console.log("ERROR REFRESHING: " + err);
           txmsg.sig = this.app.wallet.signMessage(txmsg.ts.toString(), this.app.wallet.returnPrivateKey());
   
           base64str = this.app.crypto.stringToBase64(JSON.stringify(txmsg));
-  
-          return `<a class="quick_link_button chat_invite" href="${window.location.href}/invite/${base64str}" />${(game_module.name)}</a>`  
+            
+          return `<a id="${txmsg.ts + (5*60*1000)}" class="quick_link_button chat_invite" href="${window.location.href}/invite/${base64str}" />${(game_module.name)}</a>`
       case 'key':
         let selectedGameModule = this.app.modules.returnModule(this.active_game);
         let html = `<div class="opponent_key_container">`
@@ -2619,6 +2628,8 @@ console.log("ERROR REFRESHING: " + err);
   }
 
 }
+
+
 
 module.exports = Arcade;
 
