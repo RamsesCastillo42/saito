@@ -272,7 +272,7 @@ class Arcade extends ModTemplate {
         let invitets = this.id; 
         if (expiry >= invitets) {
           this.innerHTML = "Invite Expired";
-          this.css("background", "#aaaaaa");
+          $(this).css("background", "#aaaaaa");
         }
       });
     });
