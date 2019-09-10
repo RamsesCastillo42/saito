@@ -33,6 +33,7 @@ function Wordblocks(app) {
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
+  this.last_played_word = {player: '', finalword: '', score: ''};
   this_wordblocks = this;
   return this;
 }
@@ -245,7 +246,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   
 
   if (this.game.target == this.game.player) {
-    this.updateStatusWithTiles("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
+    this.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
     this.enableEvents();
   } else {
     this.updateStatusWithTiles(`Waiting for Player ${this.game.target} to move.`);
@@ -515,12 +516,18 @@ Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(stat
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
     tile_html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
+  let {player, finalword, score} = this.last_played_word;
+  let last_move_html = finalword == '' ? '...' : `Player ${player} played ${finalword} for: ${score} points.`;
   let html =
-  ////style="display:grid;grid-template-rows: 3em auto 5em;"
   `
     <div>${status}</div>
     <div class="status_container">
-      <div id="remainder" class="remainder">Tiles left: 109</div>
+      <div style="display: flex; font-size: 0.8rem;">
+        <div id="remainder" class="remainder">Tiles left: ${this.game.deck[0].crypt.length}</div>
+        <div id="lastmove" class="lastmove">
+        ${last_move_html}
+        </div>
+      </div>
       <div class="rack" id="rack">
         <div class="tiles" id="tiles">
           ${tile_html}
@@ -530,7 +537,6 @@ Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(stat
       <div class="score" id="score">loading...</div>
     </div
   `
-  // this.updateStatus();
   $('.status').html(html);
   this.calculateScore();
   this.enableEvents();
@@ -695,16 +701,11 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     let greater_offsetX = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
     let greater_offsetY = wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent) ? 135 : 155;
 
-    let left = $(this).position().left + offsetX;
-    let top = $(this).position().top + offsetY;
+    let left = $(this).offset().left + offsetX;
+    let top = $(this).offset().top + offsetY;
 
     if (x > 8){ left -= greater_offsetX; }
     if (y > 8){ top -= greater_offsetY; }
-    // $('.status').detach().appendTo($('.gameboard'));
-    // $('.status').addClass("active-status");
-    // $('.status').css({"position": "absolute", "top": top, "left": left});
-    // <div class="tile-placement-controls"></div>
-    //$('.status').html(html); //$('.status').show();
 
     $('.tile-placement-controls').remove();
     if (wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -731,10 +732,6 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
     $('.action').off();
     $('.action').on('click', function () {
-
-      // $('.status').detach().appendTo($('#controls'));
-      // $('.status').removeClass("active-status");
-      // $('.status').css({"position": "relative", "top": 0, "left": 0});
 
       let action2 = $(this).attr("id");
 
@@ -815,6 +812,12 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
           }
 
           ;
+        } else {
+          wordblocks_self.updateStatusWithTiles(
+            `Word is not valid, try again! Click on the board to place a word, or
+            <span class="link tosstiles">discard tiles</span>`
+          );
+          wordblocks_self.addEventsToBoard();
         }
       }
     });
@@ -1760,8 +1763,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   }
 
   this.firstmove = 0;
-  $('#lastmove').html("Player " + player + " played " + finalword + " for: " + score + " points.");
-  $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
+  $('#lastmove').html(`Player ${player} played ${finalword} for: ${score} points.`);
+  $('#remainder').html(`Tiles left: ${this.game.deck[0].crypt.length}`);
+  this.last_played_word = {player, finalword, score};
   return score;
 };
 
@@ -1890,7 +1894,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
           return;
         }
 
-        wordblocks_self.updateStatusWithTiles("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
+        wordblocks_self.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
         wordblocks_self.enableEvents();
       } else {
         wordblocks_self.updateStatusWithTiles("Player " + wordblocks_self.returnNextPlayer(player) + " turn");
@@ -1909,7 +1913,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
       let player = mv[1];
 
       if (wordblocks_self.game.player == wordblocks_self.returnNextPlayer(player)) {
-        wordblocks_self.updateStatusWithTiles("YOUR TURN: click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
+        wordblocks_self.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
         wordblocks_self.enableEvents();
       } else {
         wordblocks_self.updateStatusWithTiles("Player " + wordblocks_self.returnNextPlayer(player) + " turn");
