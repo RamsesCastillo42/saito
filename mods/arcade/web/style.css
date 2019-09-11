@@ -271,6 +271,14 @@ select {
   padding: 1em;
 }
 
+#my_address {
+  margin: 1em;
+}
+
+#my_publickey {
+  font-weight: bolder;
+}
+
 .create_game_box {
   display: flex;
   align-items: center;
@@ -630,6 +638,7 @@ select {
   width: 15%;
   cursor: pointer;
   text-align: center;
+  min-width: 6em;
 }
 
 /* Add Animation */

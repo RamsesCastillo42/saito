@@ -146,6 +146,11 @@ class Arcade extends ModTemplate {
 
     let arcade_self = this;
 
+    // display our publickey
+    $('#my_publickey').html(
+      `${this.app.wallet.returnPublicKey().substring(0,16)}...`
+    );
+
     //
     // timer to check DNS of unknown games
     //
