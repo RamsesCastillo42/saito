@@ -598,36 +598,8 @@ Wordblocks.prototype.calculateScore = async function calculateScore() {
 
 
 Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
-  let html = "";
   let letterScore = this.returnLetters();
-
-  if (letter == "A") {html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>';}
-  if (letter == "B") {html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>';}
-  if (letter == "C") {html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>';}
-  if (letter == "D") {html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>';}
-  if (letter == "E") {html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>';}
-  if (letter == "F") {html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>';}
-  if (letter == "G") {html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>';}
-  if (letter == "H") {html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>';}
-  if (letter == "I") {html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>';}
-  if (letter == "J") {html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>';}
-  if (letter == "K") {html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>';}
-  if (letter == "L") {html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>';}
-  if (letter == "M") {html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>';}
-  if (letter == "N") {html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>';}
-  if (letter == "O") {html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>';}
-  if (letter == "P") {html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>';}
-  if (letter == "Q") {html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>';}
-  if (letter == "R") {html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>';}
-  if (letter == "S") {html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>';}
-  if (letter == "T") {html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>';}
-  if (letter == "U") {html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>';}
-  if (letter == "V") {html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>';}
-  if (letter == "W") {html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>';}
-  if (letter == "X") {html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>';}
-  if (letter == "Y") {html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>';}
-  if (letter == "Z") {html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>';}
-  return html;
+  return `<div class="tile ${letter} sc${letterScore[letter].score}">${letter}</div>`
 };
 
 Wordblocks.prototype.addTile = function (obj, letter) {
@@ -664,6 +636,9 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     if (tiles) {
       alert("Tossed: " + tiles);
       wordblocks_self.removeTilesFromHand(tiles);
+      if (wordblocks_self.checkForEndGame() == 1) {
+        return;
+      }
       wordblocks_self.addMove("turn\t" + wordblocks_self.game.player);
       let cards_needed = 7;
       cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
@@ -1847,7 +1822,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
           result = "It's a tie! Well done everyone!";
         }
 
-        wordblocks_self.updateStatus(result);
+        wordblocks_self.updateStatusWithTiles(result);
         wordblocks_self.updateLog(result);
       }
 

@@ -732,11 +732,29 @@ console.log("\n\n\n");
             this.active_game = tmpmod.charAt(0).toUpperCase();
             this.active_game += tmpmod.slice(1);
 
-            this._createGameNotification(
-              "Your game has been accepted",
-              "Click here to play",
-              () => this._onclickGameNotification()
-            );
+            let title = "Your game has been accepted";
+            let message = "Click here to play";
+
+            if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+              this._createGameNotification(
+                title,
+                message,
+                () => this._onclickGameNotification()
+              );
+            } else {
+              Notification.requestPermission(function(result) {
+                if (result === 'granted') {
+                  navigator.serviceWorker.ready.then(function(registration) {
+                    registration.showNotification(title, {
+                      body: message,
+                      icon: '/img/Logo-blue-icon.png',
+                      vibrate: [200, 100, 200, 100, 200, 100, 200],
+                      tag: 'arcade-notification'
+                    });
+                  });
+                }
+              });
+            }
 
             //
             //
