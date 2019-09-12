@@ -181,15 +181,16 @@ Chessgame.prototype.handleGame = function handleGame(msg) {
   this.game.position = data.position;
   this.game.target = msg.extra.target;
 
-  /*  this.game.captured.white = data.captured.white;
+  /*  
+    this.game.captured.white = data.captured.white;
     this.game.captured.black = data.captured.black;
   */
   if (msg.extra.target == this.game.player) {
     if (this.browser_active == 1) {
       this.setBoard(this.game.position);
+      this.updateLog(data.move, 999);
+      this.updateStatusMessage();
     }
-    this.updateLog(data.move, 999);
-    this.updateStatusMessage();
   } else {
     if (this.browser_active == 1) {
       this.lockBoard(this.game.position);
