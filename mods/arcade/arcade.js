@@ -413,7 +413,9 @@ console.log("\n\n\n");
             $sig : txmsg.sig
           }
           try {
-                  let res = await arcade_self.db.run(sql, params);
+            await arcade_self.db.run(sql, params);
+
+            arcade_self.app.network.sendRequest('arcade remove opengame', { sigs: [txmsg.sig] });
           } catch (err) {
             console.log("error updating database in arcade...");
             return;
@@ -445,17 +447,25 @@ console.log("\n\n\n");
 
 
         if (txmsg.request == "accept") {
-          let sql1 = "SELECT sig FROM mod_arcade WHERE state = $state AND player = $player"
-          let sql2 = "UPDATE mod_arcade SET state = 'expired' WHERE state = $state AND player = $player";
+          let publickeys = tx.transaction.to.map(slip => slip.add);
+          let removeDuplicates = (names) => names.filter((v,i) => names.indexOf(v) === i)
+          let unique_keys = removeDuplicates(publickeys);
+
+          let sql1 = "SELECT sig FROM mod_arcade WHERE state = $state AND player IN ($player1, $player2, $player3, $player4)"
+          let sql2 = "UPDATE mod_arcade SET state = 'expired' WHERE state = $state AND player IN ($player1, $player2, $player3, $player4)";
           let params = {
             $state : 'open',
-            $player : tx.transaction.from[0].add
+            $player1 : unique_keys[0] || '',
+            $player2 : unique_keys[1] || '',
+            $player3 : unique_keys[2] || '',
+            $player4 : unique_keys[3] || '',
           }
           try {
             let resp = await arcade_self.db.all(sql1, params);
             await arcade_self.db.run(sql2, params);
 
-            arcade_self.app.network.sendRequest("arcade remove opengame", {sig: resp[0].sig});
+            let sigs = resp.map(res => res.sig);
+            arcade_self.app.network.sendRequest("arcade remove opengame", { sigs });
           } catch (err) {
             console.log("error updating database in arcade...");
             console.log(err)
@@ -917,7 +927,7 @@ console.log("ERROR");
           break;
         case "arcade remove opengame":
           this.games.open = this.games.open.filter((game) => {
-            return game.sig != message.data.sig;
+            return !message.data.sigs.some(sig => sig == game.sig);
           });
           renderGamesTable(this.games.open);
           this.attachEvents();
