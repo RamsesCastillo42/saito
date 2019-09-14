@@ -1776,7 +1776,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 
 
 
-    if (this.game.options.dictionary === "english") {
+/*   if (this.game.options.dictionary === "english") {
 
       console.log("english");
       
@@ -1810,9 +1810,52 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
       }
     };
 
-
   }
+*/
 
+
+switch(this.game.options.dictionary) {
+  case "english":
+    console.log("spanish");
+    checkWord = function checkWord(word) {
+      if (word.length >= 1 && typeof allWords != "undefined") {
+        if (allWords.indexOf(word.toLowerCase()) <= 0) {
+          alert(word + " is not a playable word.");
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    };
+    break;
+    
+  case "spanish":
+    console.log("spanish");
+    checkWord = function checkWord(word) {
+      if (word.length >= 1 && typeof allWordsES != "undefined") {
+        if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
+          alert(word + " is not a playable word.");
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    };
+    break;
+  default:
+    console.log("not working");
+}
+
+
+
+
+
+
+//Switch end
 ////////
 
 
@@ -2067,8 +2110,8 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="english">English Sowpods</option>
-            <option value="spanish" default>Spanish</option>
+            <option value="english" default>English</option>
+            <option value="spanish">Spanish</option>
           </select>
 
           </form>
