@@ -33,7 +33,7 @@ function Wordblocks(app) {
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
-  this.last_played_word = {player: '', finalword: '', score: ''};
+  this.last_played_word = { player: '', finalword: '', score: '' };
   this_wordblocks = this;
   return this;
 }
@@ -85,7 +85,47 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       }
     }
   }
+  //
+  // Dictionary Switch *temp*
+  //
 
+  if (this.game.options.dictionary != undefined) {
+
+    if (this.game.options.dictionary === "english") {
+      console.log("english")
+      checkWord = function checkWord(word) {
+        if (word.length >= 1 && typeof allWords != "undefined") {
+          if (allWords.indexOf(word.toLowerCase()) <= 0) {
+            alert(word + " is not a playable word.");
+            return false;
+          } else {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      };
+    }
+
+
+    if (this.game.options.dictionary === "spanish") {
+      console.log("spanish")
+      checkWord = function checkWord(word) {
+        if (word.length >= 1 && typeof allWordsES != "undefined") {
+          if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
+            alert(word + " is not a playable word.");
+            return false;
+          } else {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      };
+
+    }
+
+  }
   //
   // deal cards 
   //
@@ -218,7 +258,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.score[i] = 0;
     }
   }
-  
+
   var op = 0;
   for (let i = 0; i < players; i++) {
     let this_player = i + 1;
@@ -236,7 +276,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       op++;
       html += `
         <div class="player">
-          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span class="player_name">${opponent.substring(0, 16)}</span>
           <span id="score_${this_player}"> ${this.game.score[i]} </span>
         </div>
       `;
@@ -252,7 +292,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
 
 
-  
+
 
   if (this.game.target == this.game.player) {
     this.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
@@ -389,7 +429,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       var clientTop = docEl.clientTop || body.clientTop || 0;
       var clientLeft = docEl.clientLeft || body.clientLeft || 0;
 
-      var top  = box.top +  scrollTop - clientTop;
+      var top = box.top + scrollTop - clientTop;
       var left = box.left + scrollLeft - clientLeft;
 
       return { x: Math.round(left), y: Math.round(top) };
@@ -415,7 +455,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     }
 
 
-    function getCoordinateShiftDueToScale(size, scale){
+    function getCoordinateShiftDueToScale(size, scale) {
       var newWidth = scale * size.width;
       var newHeight = scale * size.height;
       var dx = (newWidth - size.width) / 2
@@ -426,7 +466,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       }
     }
 
-    hammertime.on('pan', function(e) {
+    hammertime.on('pan', function (e) {
       if (lastEvent !== 'pan') {
         fixHammerjsDeltaIssue = {
           x: e.deltaX,
@@ -440,7 +480,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       update();
     });
 
-    hammertime.on('pinch', function(e) {
+    hammertime.on('pinch', function (e) {
       var d = scaleFrom(pinchZoomOrigin, last.z, last.z * e.scale)
 
       let newX = d.x + last.x + e.deltaX;
@@ -455,20 +495,20 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     });
 
     var pinchZoomOrigin = undefined;
-    hammertime.on('pinchstart', function(e) {
+    hammertime.on('pinchstart', function (e) {
       pinchStart.x = e.center.x;
       pinchStart.y = e.center.y;
       pinchZoomOrigin = getRelativePosition(element, { x: pinchStart.x, y: pinchStart.y }, originalSize, current.z);
       lastEvent = 'pinchstart';
     });
 
-    hammertime.on('panend', function(e) {
+    hammertime.on('panend', function (e) {
       last.x = current.x;
       last.y = current.y;
       lastEvent = 'panend';
     });
 
-    hammertime.on('pinchend', function(e) {
+    hammertime.on('pinchend', function (e) {
       if ((originalSize.height * current.z) <= originalSize.height &&
         (originalSize.width * current.z) <= originalSize.width) {
         return;
@@ -482,19 +522,19 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
     function update() {
       // if (lastEvent !== 'pan') {
-        if ((originalSize.height * current.z) < originalSize.height &&
-          (originalSize.width * current.z) < originalSize.width) {
-          if (current.z < 1) {
-            element.style.transform = `translate3d(0, 0, 0) scale(1)`;
-            current = {x: 0, y: 0, z: 1};
-            last = {
-              x: current.x,
-              y: current.y,
-              z: current.z
-            }
-            return;
+      if ((originalSize.height * current.z) < originalSize.height &&
+        (originalSize.width * current.z) < originalSize.width) {
+        if (current.z < 1) {
+          element.style.transform = `translate3d(0, 0, 0) scale(1)`;
+          current = { x: 0, y: 0, z: 1 };
+          last = {
+            x: current.x,
+            y: current.y,
+            z: current.z
           }
+          return;
         }
+      }
       // }
 
       current.height = originalSize.height * current.z;
@@ -521,14 +561,14 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 
 Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(status) {
-  let tile_html ='';
+  let tile_html = '';
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
     tile_html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
-  let {player, finalword, score} = this.last_played_word;
+  let { player, finalword, score } = this.last_played_word;
   let last_move_html = finalword == '' ? '...' : `Player ${player} played ${finalword} for: ${score} points.`;
   let html =
-  `
+    `
     <div>${status}</div>
     <div class="status_container">
       <div style="display: flex; font-size: 0.8rem;">
@@ -588,7 +628,7 @@ Wordblocks.prototype.calculateScore = async function calculateScore() {
       op++;
       html += `
         <div class="player">
-          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span class="player_name">${opponent.substring(0, 16)}</span>
           <span class="player_score" id="score_${this_player}"> ${this.game.score[i]} </span>
         </div>
       `;
@@ -610,32 +650,32 @@ Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
   let html = "";
   let letterScore = this.returnLetters();
 
-  if (letter == "A") {html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>';}
-  if (letter == "B") {html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>';}
-  if (letter == "C") {html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>';}
-  if (letter == "D") {html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>';}
-  if (letter == "E") {html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>';}
-  if (letter == "F") {html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>';}
-  if (letter == "G") {html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>';}
-  if (letter == "H") {html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>';}
-  if (letter == "I") {html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>';}
-  if (letter == "J") {html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>';}
-  if (letter == "K") {html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>';}
-  if (letter == "L") {html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>';}
-  if (letter == "M") {html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>';}
-  if (letter == "N") {html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>';}
-  if (letter == "O") {html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>';}
-  if (letter == "P") {html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>';}
-  if (letter == "Q") {html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>';}
-  if (letter == "R") {html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>';}
-  if (letter == "S") {html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>';}
-  if (letter == "T") {html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>';}
-  if (letter == "U") {html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>';}
-  if (letter == "V") {html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>';}
-  if (letter == "W") {html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>';}
-  if (letter == "X") {html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>';}
-  if (letter == "Y") {html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>';}
-  if (letter == "Z") {html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>';}
+  if (letter == "A") { html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>'; }
+  if (letter == "B") { html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>'; }
+  if (letter == "C") { html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>'; }
+  if (letter == "D") { html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>'; }
+  if (letter == "E") { html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>'; }
+  if (letter == "F") { html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>'; }
+  if (letter == "G") { html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>'; }
+  if (letter == "H") { html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>'; }
+  if (letter == "I") { html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>'; }
+  if (letter == "J") { html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>'; }
+  if (letter == "K") { html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>'; }
+  if (letter == "L") { html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>'; }
+  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }
+  if (letter == "N") { html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>'; }
+  if (letter == "O") { html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>'; }
+  if (letter == "P") { html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>'; }
+  if (letter == "Q") { html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>'; }
+  if (letter == "R") { html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>'; }
+  if (letter == "S") { html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>'; }
+  if (letter == "T") { html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>'; }
+  if (letter == "U") { html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>'; }
+  if (letter == "V") { html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>'; }
+  if (letter == "W") { html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>'; }
+  if (letter == "X") { html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>'; }
+  if (letter == "Y") { html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>'; }
+  if (letter == "Z") { html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>'; }
   return html;
 };
 
@@ -713,12 +753,12 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     let left = $(this).offset().left + offsetX;
     let top = $(this).offset().top + offsetY;
 
-    if (x > 8){ left -= greater_offsetX; }
-    if (y > 8){ top -= greater_offsetY; }
+    if (x > 8) { left -= greater_offsetX; }
+    if (y > 8) { top -= greater_offsetY; }
 
     $('.tile-placement-controls').remove();
     if (wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent)) {
-      let tile_html ='';
+      let tile_html = '';
       for (let i = 0; i < wordblocks_self.game.deck[0].hand.length; i++) {
         tile_html += wordblocks_self.returnTileHTML(wordblocks_self.game.deck[0].cards[wordblocks_self.game.deck[0].hand[i]].name);
       }
@@ -736,7 +776,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     } else {
       $('body').append(html);
       $('.tile-placement-controls').addClass("active-status");
-      $('.tile-placement-controls').css({"position": "absolute", "top": top, "left": left});
+      $('.tile-placement-controls').css({ "position": "absolute", "top": top, "left": left });
     }
 
     $('.action').off();
@@ -1130,105 +1170,105 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var deck = {};
-    deck['1'] = { name: "A" };
-    deck['2'] = { name: "A" };
-    deck['3'] = { name: "A" };
-    deck['4'] = { name: "A" };
-    deck['5'] = { name: "A" };
-    deck['6'] = { name: "A" };
-    deck['7'] = { name: "A" };
-    deck['8'] = { name: "A" };
-    deck['9'] = { name: "A" };
-    deck['10'] = { name: "B" };
-    deck['11'] = { name: "B" };
-    deck['12'] = { name: "C" };
-    deck['13'] = { name: "C" };
-    deck['14'] = { name: "D" };
-    deck['15'] = { name: "D" };
-    deck['16'] = { name: "D" };
-    deck['17'] = { name: "D" };
-    deck['18'] = { name: "E" };
-    deck['19'] = { name: "E" };
-    deck['20'] = { name: "E" };
-    deck['21'] = { name: "E" };
-    deck['22'] = { name: "E" };
-    deck['23'] = { name: "E" };
-    deck['24'] = { name: "E" };
-    deck['25'] = { name: "E" };
-    deck['26'] = { name: "E" };
-    deck['27'] = { name: "E" };
-    deck['28'] = { name: "E" };
-    deck['29'] = { name: "E" };
-    deck['30'] = { name: "F" };
-    deck['41'] = { name: "F" };
-    deck['42'] = { name: "G" };
-    deck['43'] = { name: "G" };
-    deck['44'] = { name: "G" };
-    deck['45'] = { name: "H" };
-    deck['46'] = { name: "H" };
-    deck['47'] = { name: "I" };
-    deck['48'] = { name: "I" };
-    deck['49'] = { name: "I" };
-    deck['50'] = { name: "I" };
-    deck['51'] = { name: "I" };
-    deck['52'] = { name: "I" };
-    deck['53'] = { name: "I" };
-    deck['54'] = { name: "I" };
-    deck['55'] = { name: "I" };
-    deck['56'] = { name: "J" };
-    deck['57'] = { name: "K" };
-    deck['58'] = { name: "L" };
-    deck['59'] = { name: "L" };
-    deck['60'] = { name: "L" };
-    deck['61'] = { name: "L" };
-    deck['62'] = { name: "M" };
-    deck['63'] = { name: "M" };
-    deck['64'] = { name: "N" };
-    deck['65'] = { name: "N" };
-    deck['66'] = { name: "N" };
-    deck['67'] = { name: "N" };
-    deck['68'] = { name: "N" };
-    deck['69'] = { name: "N" };
-    deck['70'] = { name: "O" };
-    deck['71'] = { name: "O" };
-    deck['72'] = { name: "O" };
-    deck['73'] = { name: "O" };
-    deck['74'] = { name: "O" };
-    deck['75'] = { name: "O" };
-    deck['76'] = { name: "O" };
-    deck['77'] = { name: "O" };
-    deck['78'] = { name: "P" };
-    deck['79'] = { name: "P" };
-    deck['80'] = { name: "Q" };
-    deck['81'] = { name: "R" };
-    deck['82'] = { name: "R" };
-    deck['83'] = { name: "R" };
-    deck['84'] = { name: "R" };
-    deck['85'] = { name: "R" };
-    deck['86'] = { name: "R" };
-    deck['87'] = { name: "S" };
-    deck['88'] = { name: "S" };
-    deck['89'] = { name: "S" };
-    deck['90'] = { name: "S" };
-    deck['91'] = { name: "T" };
-    deck['92'] = { name: "T" };
-    deck['93'] = { name: "T" };
-    deck['94'] = { name: "T" };
-    deck['95'] = { name: "T" };
-    deck['96'] = { name: "T" };
-    deck['97'] = { name: "U" };
-    deck['98'] = { name: "U" };
-    deck['99'] = { name: "U" };
-    deck['100'] = { name: "U" };
-    deck['101'] = { name: "V" };
-    deck['102'] = { name: "V" };
-    deck['103'] = { name: "W" };
-    deck['104'] = { name: "W" };
-    deck['105'] = { name: "X" };
-    deck['106'] = { name: "U" };
-    deck['107'] = { name: "Y" };
-    deck['108'] = { name: "Y" };
-    deck['109'] = { name: "Z" };
+  deck['1'] = { name: "A" };
+  deck['2'] = { name: "A" };
+  deck['3'] = { name: "A" };
+  deck['4'] = { name: "A" };
+  deck['5'] = { name: "A" };
+  deck['6'] = { name: "A" };
+  deck['7'] = { name: "A" };
+  deck['8'] = { name: "A" };
+  deck['9'] = { name: "A" };
+  deck['10'] = { name: "B" };
+  deck['11'] = { name: "B" };
+  deck['12'] = { name: "C" };
+  deck['13'] = { name: "C" };
+  deck['14'] = { name: "D" };
+  deck['15'] = { name: "D" };
+  deck['16'] = { name: "D" };
+  deck['17'] = { name: "D" };
+  deck['18'] = { name: "E" };
+  deck['19'] = { name: "E" };
+  deck['20'] = { name: "E" };
+  deck['21'] = { name: "E" };
+  deck['22'] = { name: "E" };
+  deck['23'] = { name: "E" };
+  deck['24'] = { name: "E" };
+  deck['25'] = { name: "E" };
+  deck['26'] = { name: "E" };
+  deck['27'] = { name: "E" };
+  deck['28'] = { name: "E" };
+  deck['29'] = { name: "E" };
+  deck['30'] = { name: "F" };
+  deck['41'] = { name: "F" };
+  deck['42'] = { name: "G" };
+  deck['43'] = { name: "G" };
+  deck['44'] = { name: "G" };
+  deck['45'] = { name: "H" };
+  deck['46'] = { name: "H" };
+  deck['47'] = { name: "I" };
+  deck['48'] = { name: "I" };
+  deck['49'] = { name: "I" };
+  deck['50'] = { name: "I" };
+  deck['51'] = { name: "I" };
+  deck['52'] = { name: "I" };
+  deck['53'] = { name: "I" };
+  deck['54'] = { name: "I" };
+  deck['55'] = { name: "I" };
+  deck['56'] = { name: "J" };
+  deck['57'] = { name: "K" };
+  deck['58'] = { name: "L" };
+  deck['59'] = { name: "L" };
+  deck['60'] = { name: "L" };
+  deck['61'] = { name: "L" };
+  deck['62'] = { name: "M" };
+  deck['63'] = { name: "M" };
+  deck['64'] = { name: "N" };
+  deck['65'] = { name: "N" };
+  deck['66'] = { name: "N" };
+  deck['67'] = { name: "N" };
+  deck['68'] = { name: "N" };
+  deck['69'] = { name: "N" };
+  deck['70'] = { name: "O" };
+  deck['71'] = { name: "O" };
+  deck['72'] = { name: "O" };
+  deck['73'] = { name: "O" };
+  deck['74'] = { name: "O" };
+  deck['75'] = { name: "O" };
+  deck['76'] = { name: "O" };
+  deck['77'] = { name: "O" };
+  deck['78'] = { name: "P" };
+  deck['79'] = { name: "P" };
+  deck['80'] = { name: "Q" };
+  deck['81'] = { name: "R" };
+  deck['82'] = { name: "R" };
+  deck['83'] = { name: "R" };
+  deck['84'] = { name: "R" };
+  deck['85'] = { name: "R" };
+  deck['86'] = { name: "R" };
+  deck['87'] = { name: "S" };
+  deck['88'] = { name: "S" };
+  deck['89'] = { name: "S" };
+  deck['90'] = { name: "S" };
+  deck['91'] = { name: "T" };
+  deck['92'] = { name: "T" };
+  deck['93'] = { name: "T" };
+  deck['94'] = { name: "T" };
+  deck['95'] = { name: "T" };
+  deck['96'] = { name: "T" };
+  deck['97'] = { name: "U" };
+  deck['98'] = { name: "U" };
+  deck['99'] = { name: "U" };
+  deck['100'] = { name: "U" };
+  deck['101'] = { name: "V" };
+  deck['102'] = { name: "V" };
+  deck['103'] = { name: "W" };
+  deck['104'] = { name: "W" };
+  deck['105'] = { name: "X" };
+  deck['106'] = { name: "U" };
+  deck['107'] = { name: "Y" };
+  deck['108'] = { name: "Y" };
+  deck['109'] = { name: "Z" };
   return deck;
 };
 
@@ -1774,52 +1814,9 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   this.firstmove = 0;
   $('#lastmove').html(`Player ${player} played ${finalword} for: ${score} points.`);
   $('#remainder').html(`Tiles left: ${this.game.deck[0].crypt.length}`);
-  this.last_played_word = {player, finalword, score};
+  this.last_played_word = { player, finalword, score };
   return score;
 };
-
-
-//
-// Dictionary Switch *temp*
-//
-
-if (this.game.options.dictionary != undefined) {
-
-      if (this.game.options.dictionary === "english") {
-      console.log("english")
-      checkWord = function checkWord(word) {
-        if (word.length >= 1 && typeof allWords != "undefined") {
-          if (allWords.indexOf(word.toLowerCase()) <= 0) {
-            alert(word + " is not a playable word.");
-            return false;
-          } else {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      };
-    }
-    
-
-  if (this.game.options.dictionary === "spanish") {
-      console.log("spanish")
-    checkWord = function checkWord(word) {
-      if (word.length >= 1 && typeof allWordsES != "undefined") {
-        if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
-          alert(word + " is not a playable word.");
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    };
-
-  }
-
-}
 
 
 
