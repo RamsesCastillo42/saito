@@ -37,6 +37,8 @@ Settings.prototype.displayEmailForm = function displayEmailForm(app) {
 
   element_to_edit = $('#module_editable_space');
 
+  if (app.options.mining != 0) { app.options.mining = 1; }
+
   element_to_edit_html = `
     <div id="module_instructions" class="module_instructions">
       <b>Network Keys:</b>
@@ -53,7 +55,13 @@ Settings.prototype.displayEmailForm = function displayEmailForm(app) {
       </div>
       <p></p>
       <b>Advanced Options:</b>
-      <br/>
+      <br/>`;
+  if (app.options.mining == 1) {
+   element_to_edit_html += '<input type="button" id="toggle_mining" class="settings_button toggle_mining" value="Disable Mining" />'
+  } else {
+   element_to_edit_html += '<input type="button" id="toggle_mining" class="settings_button toggle_mining" value="Enable Mining" />'
+  }
+  element_to_edit_html += `
       <input type="button" id="save_wallet" class="settings_button save_wallet" value="Backup Wallet" />
       <input type="button" id="save_messages" class="settings_button save_messages" value="Backup Inbox" />
       <input type="button" id="import_wallet" class="settings_button import_wallet" value="Import Wallet" />
@@ -150,6 +158,18 @@ Settings.prototype.displayEmailForm = function displayEmailForm(app) {
     }else {
       $('#privatekey')[0].type="password";
     }
+  });
+
+
+  $('#toggle_mining').on('click', function() {
+    if (app.options.mining != 1) {
+      app.options.mining = 1;
+      $(this).val("Disable Mining");
+    } else {
+      app.options.mining = 0;
+      $(this).val("Enable Mining");
+    }
+    app.storage.saveOptions();    
   });
 
   $("input[name='key']").on('change', function () {
