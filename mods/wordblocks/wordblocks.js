@@ -77,6 +77,15 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.updateStatus(this.game.status);
   }
 
+
+  if (this.game.options != undefined) {
+    if (this.game.options.dictionary != undefined) {
+      if (this.app.game.gamepref.interface == 0) {
+        this.interface = 0;
+      }
+    }
+  }
+
   //
   // deal cards 
   //
@@ -1774,12 +1783,10 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
 // Dictionary Switch *temp*
 //
 
+if (this.game.options.dictionary != undefined) {
 
-
-/*   if (this.game.options.dictionary === "english") {
-
-      console.log("english");
-      
+      if (this.game.options.dictionary === "english") {
+      console.log("english")
       checkWord = function checkWord(word) {
         if (word.length >= 1 && typeof allWords != "undefined") {
           if (allWords.indexOf(word.toLowerCase()) <= 0) {
@@ -1796,7 +1803,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     
 
   if (this.game.options.dictionary === "spanish") {
-      console.log("spanish");
+      console.log("spanish")
     checkWord = function checkWord(word) {
       if (word.length >= 1 && typeof allWordsES != "undefined") {
         if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
@@ -1811,43 +1818,7 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
     };
 
   }
-*/
 
-
-switch(this.game.options.dictionary) {
-  case "english":
-    console.log("spanish");
-    checkWord = function checkWord(word) {
-      if (word.length >= 1 && typeof allWords != "undefined") {
-        if (allWords.indexOf(word.toLowerCase()) <= 0) {
-          alert(word + " is not a playable word.");
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    };
-    break;
-    
-  case "spanish":
-    console.log("spanish");
-    checkWord = function checkWord(word) {
-      if (word.length >= 1 && typeof allWordsES != "undefined") {
-        if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
-          alert(word + " is not a playable word.");
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    };
-    break;
-  default:
-    console.log("not working");
 }
 
 
