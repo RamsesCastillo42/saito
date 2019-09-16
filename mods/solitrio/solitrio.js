@@ -552,10 +552,10 @@ Solitrio.prototype.recycleBoard = function recycleBoard() {
       if (j == 1 && num == 2) {
         rowsuite = suite;
       } else {
-	continuous = 0;
+	if (rowsuite !== suite) { continuous = 0; }
       }
 
-      if (rowsuite == suite) {
+      if (rowsuite == suite && continuous == 1) {
 	if (num == j+1) {
   	  if (i == 1) { row1 = j; }
 	  if (i == 2) { row2 = j; }
