@@ -78,13 +78,14 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   }
 
 
-  if (this.game.options != undefined) {
+  /*if (this.game.options != undefined) {
     if (this.game.options.dictionary != undefined) {
       if (this.app.game.gamepref.interface == 0) {
         this.interface = 0;
       }
     }
   }
+  */
   //
   // Dictionary Switch *temp*
   //
