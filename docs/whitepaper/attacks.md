@@ -52,22 +52,24 @@ Security reaches the 100 percent level as attackers who do not include the "rout
 The only way attackers can escape bankruptcy is by including the "routing work" of honest nodes in their attack block. In this case they must necessarily double their mining costs however as it will suddenly take them two golden tickets on average to find a solution that will pay them (rather than an honest node) all of the revenues. The security of the network is double that of all proof-of-work and proof-of-stake networks are every level of fee volume.
 
 
+## 6. THE DEATH OF MOORE'S LAW
 
-## 4. THE PAYMENT LOTTERY
+Blockchains secured by proof-of-work collapse once the supply curve of hashpower becomes reasonably elastic. This is likely to occur to Bitcoin in the next decade. Even if the network continues to grow in the short term, the death of Moore's Law will slow the pace of improvements in mining technology and create a more commoditized market for hashpower generally.
 
-## 5. I-HAVE-ALL-THIS-MONEY-WILL-NO-ONE-SELL-ME-A-PEPSI-ATTACK
+Saito remains secure beyond the death of Moore's Law. The reason for this is that the golden ticket system ensures that collecting 100 percent of the routing reward always costs 100 percet of network fees. This property holds even if not every block is solved by a golden ticket. The addition of proof-of-stake component adds a deadweight loss *on top of this* that is proportional to the percentage of the stake that is not controlled by the attacker multiplied by the proportion of total network revenue that is allocated to the staking pool.
 
-Saito provides economic incentives. 
-
-This problem exists in all blockchains. Saito is the only network that provides
-
-
-## 1. DENIAL OF DATA ATTACKS
+In the mainnet Saito implementation, The only situation in which attackers can theoretically avoid losing money attacking the network is if they control 100 percent of network hashpower, control 100 percent of the outstanding network stake, and are able to match 100 percent of the . Since attackers must transfer wealth to any other stakers in the network in the course of their attack, the rational behavior for stakers when the network comes under attack is to expand their stake and bankrupt the attacker sooner. The network self-balances towards security instead of away from it as in existing proof-of-stake implementations, where stakers have an incentive to liquidate their stake when the network comes under attack.
 
 
-It is possible to reconstruct the staking / history 
+## 7. I-HAVE-ALL-THIS-MONEY-WHY-DEAR-GOD-WILL-NO-ONE-SELL-ME-A-PEPSI ATTACKS
+
+Occasionally people new to Saito think their way into circular critiques where there is some hypothetical attack on a Saito node that consists of an attacker maneuvering itself into being someone's only point of access to the network and leveraging that to censor transaction flows, extract supra-market rents or produce a dummy blockchain at a much slower rate than the chain produced by the honest network. We call these I-HAVE-ALL-THIS-MONEY-WHY-DEAR-GOD-WILL-NO-ONE-SELL-ME-A-PEPSI attacks.
+
+All consensus systems fail in situations where one's view of the longest chain is dictated by an attacker. Saito is no different than other blockchains in this regard. For those concerned about these issues, the important thing to note is that only Saito provides explicit economic incentives to prevent these issues. While blockchains with other consensus systems often suffer from underfunded access nodes (giving attackers a vector to ) in Saito access to the network is easy: it can be purchased with as little effort as sending someone a transaction.
 
 
+## 8. OTHER ATTACKS
 
+Concerned about other attacks? Contact us at info@saito.tech and we will expand this document to clarify any outstanding issues.
 
 
