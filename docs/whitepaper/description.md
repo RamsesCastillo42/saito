@@ -2,17 +2,14 @@
 
 This document is divided into four parts. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how the block reward is issued. The fourth explains how to ensure ensure attackers always lose money attacking the network.
 
-## 1. BLOCKCHAIN PRUNING
+## 1. PRUNING THE BLOCKCHAIN
 
-Saito divides the blockchain into "genesis periods" of 100,000 blocks. If the latest block is 500,000, the genesis period streches from block 400,001 onwards.
+Saito divides the blockchain into "epochs" of 100,000 blocks. If the latest block is 500,000, the current epoch streches from block 400,001 onwards.
 
-Once a block falls off the genesis period, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO contained in that block which contain enough tokens to pay a rebroadcasting fee must be rebroadcast and re-included in the chain by the next block producer.
+Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. But any UTXO in that block which contain enough tokens to pay a rebroadcasting fee must be rebroadcast and re-included in the chain by the next block producer.
 
-The next block producer does this by creating special "automatic transaction rebroadcasting" (ATR) transactions. The ATR transactions include the original transaction in their data field, and create new UTXO that pay the original user in the amount of the original UTXO minus the transaction fee. Any blocks not containing all necessary ATR transactions are considered invalid by the network.
+Block producers do this by creating special "automatic transaction rebroadcasting" (ATR) transactions. The ATR transactions include the original transactions in an associated message field, but contain new UTXO that pay out to the original recipients the amount in their original UTXO minus the rebroadcasting fee (which is added to the block reward). Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all data, although the 32-byte header hash may be retained to prove the connection with the genesis block.
 
-The result is that spent outputs fall off the chain. Unspent outputs that cannot pay the rebroadcasting fee fall off the chain. Any "dust" in unrebroadcast transactions are collected into the "treasury" of the blockchain, from where they are redistributed in future block rewards.
-
-After two genesis periods block producers may delete all data. The 32-byte header hash may be retained if a cryptographic proof of connection with the original genesis block is desired.
 
 ## 2. PRODUCING BLOCKS
 
