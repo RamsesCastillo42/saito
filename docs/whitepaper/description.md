@@ -33,11 +33,9 @@ Each node has a chance of winning proportional to the amount of routing work it 
 
 Mining difficulty auto-adjusts until the network produces one golden ticket solution on average per block.
 
-## 4. IMPROVING SECURITY WITH A DEADWEIGHT LOSS MECHANISM
+## 4. ADDING A DEADWEIGHT LOSS MECHANISM
 
-The above system eliminates the fifty-one percent attack. Unless attackers match one hundred percent of the mining and routing work done by the honest network, they either cannot produce blocks as quickly as honest nodes, or are able to produce blocks but not collect payments. While the network is at least twice as secure as all proof-of-work and proof-of-stake networks in existence, it is still vulnerable to the commoditization of the hashpower market.
-
-To improve security beyond the 100 percent point, Saito introduces a deadweight-loss mechanism through the addition of a proof-of-stake component. This ensures that attacking the network will *always* be costly to attackers.
+The above system eliminates the fifty-one percent attack. Unless attackers match one hundred percent of the mining and routing work done by the honest network, they either cannot produce blocks as quickly as honest nodes, or are able to produce blocks but not collect payments. We can increase this beyond the 100 percent point by adding a deadweight loss mechanism.
 
 We accomplish this by modifying the lottery. Once a golden ticket is found, the routing and mining rewards for the solved block are allocated as usual. The random variable used to select the winning routing node is then hashed again to select the winning routing node of the previous block (if unsolved), and then hashed again to pick a winner from a table of stakers maintained in the consensus code, which is assigned the unclaimed reward to the miner from that block. This process repeats until all previous unsolved blocks are processed. An upper limit to the number of sequential unsolved blocks may be applied for practical purposes, at which point any uncollected funds are simply apportioned to the treasury.
 
@@ -50,8 +48,10 @@ Block producers who rebroadcast staking-UTXOs must indicate in their reformatted
 Mining difficulty is adjusted upwards if two blocks containing golden tickets are found in a row and downwards if two blocks without golden tickets are found in a row. An exponential multiplier to mining difficulty also begins to apply if than two blocks with golden tickets are found in a row. A similarly punitive cost applies if two blocks without golden tickets are found consecutively, which carves off an ever-increasing amount of the staking revenue for direct deposit to the network treasury instead of delivery to stakers.
 
 
-## 5. ADVANCED SECURITY
+### 5. SAITO LINGO
 
-We refer to the desired proportion of proof-of-work to proof-of-stake payout as the "powsplit" of the network. Increasing POWSPLIT reduces the deadweight loss the network can impose on attackers.
+The division of the block reward between the routing nodes and lottery miners as the "paysplit" of the network. A higher paysplit allocates a greater percentage of revenue to the miners in the network.
+
+We refer to the desired proportion of proof-of-work to proof-of-stake blocks as the "powsplit" of the network. Increasing POWSPLIT reduces the ease of forking the tip of the blockchain. Decreasing POWSPLIT increases the deadweight loss per block and allows a reduction in network paysplit while keeping security above the 100 percent point.
 
 
