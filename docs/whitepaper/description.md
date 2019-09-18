@@ -23,7 +23,7 @@ The blockchain sets a "difficulty" for block production. This difficulty is over
 We specify that nodes cannot use "routing work" from transactions that do not include them on their routing path. If the "routing work" available to a block producer is equal to or greater than the "difficulty" required to produce a block, the block producer may produce a block. We also specify that any surplus value of "routing work" may be taken by the block producer in immediate payment for block production.
 
 
-### 3. THE PAYMENT LOTTERY
+## 3. THE PAYMENT LOTTERY
 
 Each block contains a proof-of-work challenge in the form of its block hash. We call the solution to this challenge the "golden ticket". If a miner finds a "golden ticket" it broadcasts its solution to the network as part of a normal Saito transaction.
 
