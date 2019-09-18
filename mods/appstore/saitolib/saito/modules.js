@@ -39,10 +39,11 @@ Modules.prototype.pre_initialize = function pre_initialize() {
   this.mods.push(require('../../mods/wordblocks/wordblocks')(this.app));
   this.mods.push(require('../../mods/twilight/twilight')(this.app));
   this.mods.push(require('../../mods/solitrio/solitrio')(this.app));
-  //this.mods.push(require('../../mods/poker/poker')(this.app));
+  this.mods.push(require('../../mods/poker/poker')(this.app));
   // this.mods.push(require('../../mods/dhb/dhb')(this.app));
-  //this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
+  this.mods.push(require('../../mods/pandemic/pandemic')(this.app));
   // this.mods.push(require('../../mods/catan/catan')(this.app));
+
 
   //this.mods.push(require('../../mods/timeclock/timeclock')(this.app));
   this.mods.push(require('../../mods/hospital/hospital')(this.app));
