@@ -77,15 +77,6 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.updateStatus(this.game.status);
   }
 
-
-  /*if (this.game.options != undefined) {
-    if (this.game.options.dictionary != undefined) {
-      if (this.app.game.gamepref.interface == 0) {
-        this.interface = 0;
-      }
-    }
-  }
-  */
   //
   // Dictionary Switch *temp*
   //
@@ -1170,6 +1161,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
+  
   var deck = {};
   deck['1'] = { name: "A" };
   deck['2'] = { name: "A" };
