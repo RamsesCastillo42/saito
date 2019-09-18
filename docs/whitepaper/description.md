@@ -1,6 +1,6 @@
 # Description of Network
 
-This document is divided into three parts. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced and payments are issued to the network. The third explains how to modify the payment lottery to ensure attackers always lose money attacking the network.
+This document is divided into four parts. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how payments are issued to the network. The fourth explains how to modify the payment lottery to ensure attackers always lose money attacking the network.
 
 ## 1. BLOCKCHAIN PRUNING
 
