@@ -38,6 +38,7 @@ module.exports = Miner;
 */
 Miner.prototype.startMining = function startMining(blk) {
 
+  if (this.app.options.mining == 0) { return; }
   if (blk == null) { return; }
   if (!blk.is_valid) { return; }
 
