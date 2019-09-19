@@ -1,6 +1,6 @@
 # Attacks
 
-Saito is secure against classes of attack which have no defense mechanisms in other chains. This document explains how these defense mechanisms work, since many of them do not exist in other blockchains and it can be non-obvious to newcomers how they work.
+Saito is secure against classes of attack which have no defense mechanisms in other chains. This document explains how these defense mechanisms work, since they can be non-obvious to those new to way Saito works.
 
 
 ## 1. SYBIL ATTACKS
