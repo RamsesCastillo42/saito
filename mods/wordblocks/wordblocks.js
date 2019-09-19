@@ -1402,6 +1402,7 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   letters['L'] = { score: 2 };
   letters['M'] = { score: 2 };
   letters['N'] = { score: 1 };
+  letters['Ñ'] = { score: 8 };
   letters['O'] = { score: 1 };
   letters['P'] = { score: 2 };
   letters['Q'] = { score: 10 };
