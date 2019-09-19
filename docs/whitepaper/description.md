@@ -6,7 +6,7 @@ This document is divided into four parts. The first discusses the Saito mechanis
 
 Saito divides the blockchain into "epochs" of roughly 100,000 blocks. If the latest block is 500,000, the current epoch streches from block 400,001 onwards.
 
-Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO from that block which contains enough tokens to pay a rebroadcasting fee must re-included in the very next block. The rebroadcasting fee is twice the average fee per byte paid by new transactions for inclusion in the blockchain over a smoothing period.
+Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO from that block which contains enough tokens to pay a rebroadcasting fee must be re-included in the very next block. The rebroadcasting fee is twice the average fee per byte paid by new transactions for inclusion in the blockchain over a smoothing period.
 
 Block producers rebroadcast UTXO by creating special "automatic transaction rebroadcasting" (ATR) transactions. These ATR transactions include the original transaction in an associated message field, but have new UTXO. The rebroadcasting fee is deducted from each UTXO and added to the block reward. Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all block data, although the 32-byte header hash may be retained to prove the connection with the genesis block.
 
@@ -32,7 +32,7 @@ Mining difficulty auto-adjusts until the network produces one golden ticket solu
 
 ## 4. ADDING A DEADWEIGHT LOSS MECHANISM
 
-The above system eliminates the fifty-one percent attack. Unless attackers match one hundred percent of the mining and routing work done by the honest network, they either cannot produce blocks as quickly as honest nodes, or are able to produce blocks but not collect payments. We can increase costs further by modifying the payment lottery.
+The above system eliminates the fifty-one percent attack. Unless attackers match one hundred percent of the mining and routing work done by the honest network, they either cannot produce blocks as quickly as honest nodes, or are able to produce blocks but not collect payments. We increase costs even further by modifying the payment lottery.
 
 Once a golden ticket is found, the routing and mining rewards for the previous block are allocated as usual. If the previous block did not contain a golden ticket, the random variable is then hashed again to select a winning routing node for the previous block, and then again to pick a winner from a table of stakers. This process is repeated until all unsolved preceding blocks have had their payments issued. An upper limit to the number of solvable blocks may be applied for practical purposes, beyond which point any uncollected funds are simply apportioned to the treasury.
 
@@ -51,7 +51,8 @@ Mining difficulty is adjusted upwards if two blocks containing golden tickets ar
 
 **Powspit:** a variable between 0 and 1 that determines the target percentage of blocks solved through golden tickets.
 
-**Genesis Period:** the length of the epoch in number of blocks.
+**Golden Ticket:** a transaction from a miner containing a valid solution to the computational lottery puzzle embodied in the previous block hash.
 
+**Genesis Period:** the length of the epoch in number of blocks.
 
 
