@@ -4,27 +4,27 @@ This document is divided into four parts. The first discusses the Saito mechanis
 
 ## 1. PRUNING THE BLOCKCHAIN
 
-Saito divides the blockchain into "epochs" of 100,000 blocks. If the latest block is 500,000, the current epoch streches from block 400,001 onwards.
+Saito divides the blockchain into "epochs" of roughly 100,000 blocks. If the latest block is 500,000, the current epoch streches from block 400,001 onwards.
 
-Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. But any UTXO in that block which contain enough tokens to pay a rebroadcasting fee must be rebroadcast and re-included in the chain by the next block producer.
+Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO from that block which contains enough tokens to pay a rebroadcasting fee must be rebroadcast and re-included in the chain by the next block producer. The rebroadcasting fee is set to twice the average fee per byte paid by new transactions for inclusion in the blockchain.
 
-Block producers do this by creating special "automatic transaction rebroadcasting" (ATR) transactions. The ATR transactions include the original transactions in an associated message field, but contain new UTXO that pay out to the original recipients the amount in their original UTXO minus the rebroadcasting fee (which is added to the block reward). Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all data, although the 32-byte header hash may be retained to prove the connection with the genesis block.
+Block producers rebroadcast UTXO by creating special "automatic transaction rebroadcasting" (ATR) transactions. These ATR transactions include their original transaction in an associated message field, but have new UTXO that pay the amount of the outdated UTXO minus its rebroadcasting fee, which is added to the block reward as with other fees. Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all data in pruned blocks, although the 32-byte header hash may be retained to prove the connection with the genesis block.
 
 
 ## 2. PRODUCING BLOCKS
 
-Saito adds cryptographic signatures to the network layer, which give each transaction an unforgeable record of the path taken from originator to block producer. These paths generate a measure of the "routing work" provided by the routing nodes in the network.
+Saito adds cryptographic signatures to the network layer, adding to each transaction an unforgeable record of the path taken from originator to block producer. These paths allow us to measure the "routing work" provided by the nodes in the network.
 
-The blockchain sets a "difficulty" for block production. This difficulty is overcome by collecting the  "routing work" embedded in individual transactions. The amount of "work" available to any node is the aggregate amount of work contained in its mempool. The amount of work in any transaction is the value of each transaction fee halved by each additional hop the transaction has taken into the network.
+The blockchain sets a "difficulty" for block production. This difficulty is overcome by producing a block containing adequate "routing work" in its included transactions. The amount of "work" embedded in any transaction the value of its fee halved by each additional hop beyond the first that the transaction has taken into the network.
 
-We specify that nodes cannot use "routing work" from transactions that do not include them on their routing path. If the "routing work" available to a block producer is equal to or greater than the "difficulty" required to produce a block, the block producer may produce a block. We also specify that any surplus value of "routing work" may be taken by the block producer in immediate payment for block production.
+We specify that nodes cannot use "routing work" from transactions that do not include them on their routing path. We also specify that any surplus value of "routing work" may be taken by the block producer in immediate payment for block production.
 
 
 ## 3. THE PAYMENT LOTTERY
 
-Each block contains a proof-of-work challenge in the form of its block hash. We call the solution to this challenge the "golden ticket". If a miner finds a "golden ticket" it broadcasts its solution to the network as part of a normal Saito transaction.
+Each block contains a proof-of-work challenge in the form of its block hash. If a miner finds a solution to this challenge it broadcasts it as part of a normal Saito transaction. We call the solution the "golden ticket".
 
-A golden ticket solving any block must appear in the very next block for the lottery to allocate payment. And only one golden ticket may be included in any block. If a solution is found, the block reward is split between the miner that found the solution and a lucky node in the network selected through a random variable included in the miner solution. The "paysplit" of the network is 0.5 by default but may be adjusted to pay routing nodes more or less than miners respectively.
+If a solution is found and included in the very next (and only one solution is permitted per block) the network will split the block reward for the previously block between the miner that found the solution and a lucky routing node. The winning routing node is selected through a random variable included in the miner solution. The "paysplit" of the network is 50-50 by default (half to miners, half to routers).
 
 Each node has a chance of winning proportional to the amount of routing work it contributed to the block.\footnote[1]{If a transaction paying a 10 SAITO fee passes through two relay nodes before its inclusion in a block, the first relay node is deemed to have done 10 / 17.5 percent (57\%), the second node is deemed to have done 5 / 17.5 percent (29\%), and the block producer is deemed to have done 2.5 / 17.5 percent (14\%) of the routing work for that transaction. If a transaction is included without a routing path, the originator is assigned all of the work for that transaction.} Payment is guaranteed to be proportional to the value that nodes contribute to collecting fees and ensuring the network can continue to pay for its operations.
 
@@ -47,11 +47,11 @@ Mining difficulty is adjusted upwards if two blocks containing golden tickets ar
 
 ### APPENDIX I: SAITO TERMINOLOGY
 
-The division of the block reward between the routing nodes and lottery miners as the "paysplit" of the network. A higher paysplit allocates a greater percentage of revenue to the miners in the network.
+**Paysplit:** a variable between 0 and 1 that determines the percentage of the block reward that is allocated to mining nodes.
 
-We refer to the desired proportion of proof-of-work to proof-of-stake blocks as the "powsplit" of the network. Increasing POWSPLIT reduces the ease of forking the tip of the blockchain. Decreasing POWSPLIT increases the deadweight loss per block and allows a reduction in network paysplit while keeping security above the 100 percent point.
+**Powspit:** a variable between 0 and 1 that determines the target percentage of blocks solved through golden tickets.
 
-
+**Genesis Period:** the length of the epoch in number of blocks.
 
 
 
