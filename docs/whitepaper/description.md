@@ -1,23 +1,23 @@
 # Description of Network
 
-This document is divided into four parts. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how the block reward is issued. The fourth explains how to ensure ensure attackers always lose money attacking the network.
+This document is divided into four parts. The first discusses the Saito mechanism for pruning old data at market prices. The second explains how blocks are produced. The third explains how the block reward is issued. The fourth explains how to ensure attackers always lose money attacking the network.
 
 ## 1. PRUNING THE BLOCKCHAIN
 
 Saito divides the blockchain into "epochs" of roughly 100,000 blocks. If the latest block is 500,000, the current epoch streches from block 400,001 onwards.
 
-Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO from that block which contains enough tokens to pay a rebroadcasting fee must be rebroadcast and re-included in the chain by the next block producer. The rebroadcasting fee is set to twice the average fee per byte paid by new transactions for inclusion in the blockchain.
+Once a block falls out of the current epoch, its unspent transaction outputs (UTXO) are no longer spendable. Any UTXO from that block which contains enough tokens to pay a rebroadcasting fee must re-included in the very next block. The rebroadcasting fee is twice the average fee per byte paid by new transactions for inclusion in the blockchain over a smoothing period.
 
-Block producers rebroadcast UTXO by creating special "automatic transaction rebroadcasting" (ATR) transactions. These ATR transactions include their original transaction in an associated message field, but have new UTXO that pay the amount of the outdated UTXO minus its rebroadcasting fee, which is added to the block reward as with other fees. Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all data in pruned blocks, although the 32-byte header hash may be retained to prove the connection with the genesis block.
+Block producers rebroadcast UTXO by creating special "automatic transaction rebroadcasting" (ATR) transactions. These ATR transactions include the original transaction in an associated message field, but have new UTXO. The rebroadcasting fee is deducted from each UTXO and added to the block reward. Any blocks not containing all necessary ATR transactions are invalid by consensus rules. After two epochs block producers may delete all block data, although the 32-byte header hash may be retained to prove the connection with the genesis block.
 
 
 ## 2. PRODUCING BLOCKS
 
-Saito adds cryptographic signatures to the network layer, adding to each transaction an unforgeable record of the path taken from originator to block producer. These paths allow us to measure the "routing work" provided by the nodes in the network.
+Saito adds cryptographic signatures to the network layer. Each transaction contains an unforgeable record of the path it takes into the network. This allows u to measure the "routing work" provided by the nodes in the network.
 
-The blockchain sets a "difficulty" for block production. This difficulty is overcome by producing a block containing adequate "routing work" in its included transactions. The amount of "work" embedded in any transaction the value of its fee halved by each additional hop beyond the first that the transaction has taken into the network.
+The blockchain sets a "difficulty" for block production. This difficulty is met by producing a block containing adequate "routing work" in its included transactions. The amount of "work" embedded in any transaction is the value of its fee halved by each additional hop beyond the first that the transaction has taken into the network.
 
-We specify that nodes cannot use "routing work" from transactions that do not include them on their routing path. We also specify that any surplus value of "routing work" may be taken by the block producer in immediate payment for block production.
+Consensus rules specify that nodes cannot use "routing work" from transactions that do not include them on their routing path. Any surplus value of "routing work" may be taken by the block producer in immediate payment for block production and deducted from the block reward.
 
 
 ## 3. THE PAYMENT LOTTERY
