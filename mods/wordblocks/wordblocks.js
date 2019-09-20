@@ -654,7 +654,7 @@ Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
   if (letter == "J") { html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>'; }
   if (letter == "K") { html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>'; }
   if (letter == "L") { html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>'; }
-  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }Ñ
+  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }
   if (letter == "N") { html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>'; }
   if (letter == "Ñ") { html = '<div class="tile Ñ sc' + letterScore["Ñ"].score + '">Ñ</div>'; }
   if (letter == "O") { html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>'; }
@@ -1384,7 +1384,7 @@ if (this.game.options.dictionary === "spanish") {
 
 };
 
-letters['Ñ'] = { score: 8 };
+
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
 
@@ -1424,31 +1424,29 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
     console.log("Spanish Letter Value");
     var letters = {};
     letters['A'] = { score: 1 };
-    letters['B'] = { score: 3 };
-    letters['C'] = { score: 2 };
+    letters['B'] = { score: 2 };
+    letters['C'] = { score: 3 };
     letters['D'] = { score: 2 };
     letters['E'] = { score: 1 };
-    letters['F'] = { score: 2 };
+    letters['F'] = { score: 4 };
     letters['G'] = { score: 2 };
-    letters['H'] = { score: 1 };
+    letters['H'] = { score: 4 };
     letters['I'] = { score: 1 };
     letters['J'] = { score: 8 };
-    letters['K'] = { score: 4 };
-    letters['L'] = { score: 2 };
-    letters['M'] = { score: 2 };
+    letters['L'] = { score: 1 };
+    letters['M'] = { score: 3 };
     letters['N'] = { score: 1 };
     letters['Ñ'] = { score: 8 };
     letters['O'] = { score: 1 };
-    letters['P'] = { score: 2 };
-    letters['Q'] = { score: 10 };
-    letters['R'] = { score: 1 };
+    letters['P'] = { score: 3 };
+    letters['Q'] = { score: 6 };
+    letters['R'] = { score: 2 };
     letters['S'] = { score: 1 };
     letters['T'] = { score: 1 };
-    letters['U'] = { score: 2 };
-    letters['V'] = { score: 3 };
-    letters['W'] = { score: 2 };
+    letters['U'] = { score: 1 };
+    letters['V'] = { score: 4 };
     letters['X'] = { score: 8 };
-    letters['Y'] = { score: 2 };
+    letters['Y'] = { score: 4 };
     letters['Z'] = { score: 10 };
     return letters;
     }
