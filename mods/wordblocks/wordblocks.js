@@ -654,8 +654,9 @@ Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
   if (letter == "J") { html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>'; }
   if (letter == "K") { html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>'; }
   if (letter == "L") { html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>'; }
-  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }
+  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }Ñ
   if (letter == "N") { html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>'; }
+  if (letter == "Ñ") { html = '<div class="tile Ñ sc' + letterScore["Ñ"].score + '">Ñ</div>'; }
   if (letter == "O") { html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>'; }
   if (letter == "P") { html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>'; }
   if (letter == "Q") { html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>'; }
@@ -1163,6 +1164,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 Wordblocks.prototype.returnDeck = function returnDeck() {
   
   if (this.game.options.dictionary === "english") {
+    console.log("English Deck");
   var deck = {};
   deck['1'] = { name: "A" };
   deck['2'] = { name: "A" };
@@ -1267,6 +1269,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 };
 
 if (this.game.options.dictionary === "spanish") {
+  console.log("Spanish Deck");
   var deck = {};
   deck['1'] = { name: "A" };
   deck['2'] = { name: "A" };
@@ -1378,15 +1381,14 @@ if (this.game.options.dictionary === "spanish") {
   return deck;
 };
 
-
-
-
-
-
 };
+
+letters['Ñ'] = { score: 8 };
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
 
+  if (this.game.options.dictionary === "english"){
+  console.log("English Letter Value");
   var letters = {};
   letters['A'] = { score: 1 };
   letters['B'] = { score: 3 };
@@ -1402,7 +1404,6 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   letters['L'] = { score: 2 };
   letters['M'] = { score: 2 };
   letters['N'] = { score: 1 };
-  letters['Ñ'] = { score: 8 };
   letters['O'] = { score: 1 };
   letters['P'] = { score: 2 };
   letters['Q'] = { score: 10 };
@@ -1416,6 +1417,43 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   letters['Y'] = { score: 2 };
   letters['Z'] = { score: 10 };
   return letters;
+  }
+
+  if (this.game.options.dictionary === "spanish"){
+    console.log("Spanish Letter Value");
+    var letters = {};
+    letters['A'] = { score: 1 };
+    letters['B'] = { score: 3 };
+    letters['C'] = { score: 2 };
+    letters['D'] = { score: 2 };
+    letters['E'] = { score: 1 };
+    letters['F'] = { score: 2 };
+    letters['G'] = { score: 2 };
+    letters['H'] = { score: 1 };
+    letters['I'] = { score: 1 };
+    letters['J'] = { score: 8 };
+    letters['K'] = { score: 4 };
+    letters['L'] = { score: 2 };
+    letters['M'] = { score: 2 };
+    letters['N'] = { score: 1 };
+    letters['Ñ'] = { score: 8 };
+    letters['O'] = { score: 1 };
+    letters['P'] = { score: 2 };
+    letters['Q'] = { score: 10 };
+    letters['R'] = { score: 1 };
+    letters['S'] = { score: 1 };
+    letters['T'] = { score: 1 };
+    letters['U'] = { score: 2 };
+    letters['V'] = { score: 3 };
+    letters['W'] = { score: 2 };
+    letters['X'] = { score: 8 };
+    letters['Y'] = { score: 2 };
+    letters['Z'] = { score: 10 };
+    return letters;
+    }
+  
+
+
 };
 
 Wordblocks.prototype.returnBonus = function returnBonus(pos) {
