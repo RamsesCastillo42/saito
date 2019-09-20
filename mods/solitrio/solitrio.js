@@ -541,8 +541,9 @@ Solitrio.prototype.recycleBoard = function recycleBoard() {
   for (let i = 1; i < 5; i++) {
 
     let rowsuite = "";
+    let continuous = 1;
 
-    for (let j = 1; j < 11; j++) {
+    for (let j = 1; j < 11 && continuous == 1; j++) {
 
       let slot  = "row"+i+"_slot"+j;
       let suite = this.returnCardSuite(slot);
@@ -550,15 +551,21 @@ Solitrio.prototype.recycleBoard = function recycleBoard() {
 
       if (j == 1 && num == 2) {
         rowsuite = suite;
+      } else {
+	if (rowsuite !== suite) { continuous = 0; }
       }
 
-      if (rowsuite != "") {
+      if (rowsuite == suite && continuous == 1) {
 	if (num == j+1) {
   	  if (i == 1) { row1 = j; }
-	  if (i == 1) { row2 = j; }
-	  if (i == 1) { row3 = j; }
-	  if (i == 1) { row4 = j; }
+	  if (i == 2) { row2 = j; }
+	  if (i == 3) { row3 = j; }
+	  if (i == 4) { row4 = j; }
+	} else {
+	  continuous = 0;
 	}
+      } else {
+	continuous = 0;
       }
     }
   }

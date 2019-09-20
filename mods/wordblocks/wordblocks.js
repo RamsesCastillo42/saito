@@ -787,6 +787,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
 
       if (action2 == "cancel") {
         $('.action').off();
+        $('.tile-placement-controls').remove();
         wordblocks_self.updateStatusWithTiles("Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
         wordblocks_self.addEventsToBoard();
         return;
