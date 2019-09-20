@@ -56,8 +56,8 @@ a {
   grid-template-columns: 3fr 1fr;
   grid-column-gap: 1em;
   width: 100%;
-  max-width: 1600px;
-  font-size: 1.6em;
+  max-width: 80vw;
+  font-size: 1.25em;
   margin-left: auto;
   margin-right: auto;
   color: #444;
@@ -324,7 +324,7 @@ select {
   overflow-y: scroll;
   row-gap: 1em;
   max-height: 580px;
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 .forum_title {
@@ -729,7 +729,7 @@ select {
 }
 
 .game_creation_modal_options input[type="radio"]:checked + label {
-  /* background:rgb(0, 190, 10); 
+  /* background:rgb(0, 190, 10);
   background: #47A;
 }
 
@@ -1039,6 +1039,7 @@ hr {
 @media only screen and (max-width: 750px) {
   .main {
     grid-template-columns: 1fr;
+    max-width: unset;
   }
   .arcade {
     overflow: scroll;
@@ -1046,6 +1047,7 @@ hr {
   .sidebar {
     justify-self: center;
     width: 90%;
+    margin-bottom: 2em;
   }
   .advert-300-250 {
     justify-self: center;
@@ -1079,6 +1081,9 @@ hr {
   .logo {
     margin-left: 0.5em;
   }
+  .logo_text {
+    font-size: 1em;
+  }
   #game_start_options {
     display: grid;
     row-gap: 1em;
@@ -1104,6 +1109,7 @@ hr {
     line-height: 1.4em;
     padding-bottom: 25px;
   }
+
   #create_game_button {
     width: unset;
   }
@@ -1189,8 +1195,32 @@ hr {
     width: 100%;
   }
 
+  .create_game_box_mob {
+    width: 100%
+  }
+
+  .create_game_mob {
+    background-color: #07a61e;
+    color: white;
+    border: white 1px solid;
+    border-radius: 10px;
+    padding: 1em 1em;
+    cursor: pointer;
+    margin-bottom: 25px;
+    margin-top: 25px;
+    width: unset;
+    text-align: center;
+    float: unset;
+  }
+
   #arcade_reg_button {
     width: 100%;
+  }
+
+  .removecard > li {
+      float: unset;
+      min-width: 50vw;
+      list-style-type: none;
   }
 }
 

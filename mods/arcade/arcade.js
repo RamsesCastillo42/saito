@@ -999,7 +999,7 @@ console.log("ERROR");
 
       // if accepting a game, the id is our sig
       for (let i = 0; i < arcade_self.games.open.length; i++) {
-        if (arcade_self.games.open[i].sig == id) {
+        if (arcade_self.games.open[i].sig === id) {
           if (arcade_self.games.open[i].player == arcade_self.app.wallet.returnPublicKey()) { alert('You cannot accept a game with yourself'); return; }
           if (arcade_self.app.wallet.returnBalance() > arcade_self.app.wallet.returnDefaultFee()) {
 
