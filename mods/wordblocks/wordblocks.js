@@ -84,7 +84,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.options.dictionary != undefined) {
 
     if (this.game.options.dictionary === "english") {
-      console.log("english")
+      console.log("English Dictionary")
       checkWord = function checkWord(word) {
         if (word.length >= 1 && typeof allWords != "undefined") {
           if (allWords.indexOf(word.toLowerCase()) <= 0) {
@@ -101,7 +101,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 
     if (this.game.options.dictionary === "spanish") {
-      console.log("spanish")
+      console.log("Spanish Dictionary")
       checkWord = function checkWord(word) {
         if (word.length >= 1 && typeof allWordsES != "undefined") {
           if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
@@ -2230,8 +2230,8 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="english" default>English</option>
-            <option value="spanish">Spanish</option>
+            <option value="english" default>English-SOWPODS</option>
+            <option value="spanish">Spanish-FISE</option>
           </select>
 
           </form>
