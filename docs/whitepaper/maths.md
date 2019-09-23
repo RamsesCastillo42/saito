@@ -35,7 +35,7 @@ Given these conditions the expected reward for an attack over time on the networ
 #### Mining Reward
 We are presuming the miner uses one of the golden ticket solutions found so their expected reward includes the miner reward or golden ticket prize.
 
-$$f \cdot Ps$$
+<img src="https://render.githubusercontent.com/render/math?invert_in_darkmode&math=f \cdot Ps">
 
 #### Routing Payment
 
