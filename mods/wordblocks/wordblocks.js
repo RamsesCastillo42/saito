@@ -2174,6 +2174,9 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
 // webServer //
 ///////////////
 
+app.use(express.static(path.join(__dirname, 'web')));
+
+/*
 
 Wordblocks.prototype.webServer = function webServer(app, expressapp) {
   expressapp.get('/wordblocks/', function (req, res) {
@@ -2207,6 +2210,8 @@ Wordblocks.prototype.webServer = function webServer(app, expressapp) {
     return;
   });
 };
+
+*/
 
 Wordblocks.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
