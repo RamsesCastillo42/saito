@@ -1,6 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
+var express = require('express');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -2174,44 +2175,13 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
 // webServer //
 ///////////////
 
-app.use(express.static(path.join(__dirname, 'web')));
-
-/*
-
 Wordblocks.prototype.webServer = function webServer(app, expressapp) {
-  expressapp.get('/wordblocks/', function (req, res) {
-    res.sendFile(__dirname + '/web/index.html');
-    return;
-  });
-  expressapp.get('/wordblocks/style.css', function (req, res) {
-    res.sendFile(__dirname + '/web/style.css');
-    return;
-  });
-  expressapp.get('/wordblocks/script.js', function (req, res) {
-    res.sendFile(__dirname + '/web/script.js');
-    return;
-  });
-  expressapp.get('/wordblocks/sowpods.js', function (req, res) {
-    res.sendFile(__dirname + '/web/sowpods.js');
-    return;
-  });
-  expressapp.get('/wordblocks/fise.js', function (req, res) {
-    res.sendFile(__dirname + '/web/fise.js');
-    return;
-  });
-  expressapp.get('/wordblocks/img/:imagefile', function (req, res) {
-    var imgf = '/web/img/' + req.params.imagefile;
+   
+  expressapp.use('/wordblocks', express.static(__dirname + '/web/'));
 
-    if (imgf.indexOf("\/") != false) {
-      return;
-    }
-
-    res.sendFile(__dirname + imgf);
-    return;
-  });
 };
 
-*/
+
 
 Wordblocks.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
