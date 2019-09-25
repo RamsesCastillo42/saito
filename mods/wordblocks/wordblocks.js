@@ -79,42 +79,23 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   }
 
   //
-  // Dictionary Switch *temp*
+  // Options
   //
 
   if (this.game.options.dictionary != undefined) {
 
     if (this.game.options.dictionary === "english") {
       console.log("English Dictionary")
-      checkWord = function checkWord(word) {
-        if (word.length >= 1 && typeof allWords != "undefined") {
-          if (allWords.indexOf(word.toLowerCase()) <= 0) {
-            alert(word + " is not a playable word.");
-            return false;
-          } else {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      };
+
     }
 
 
     if (this.game.options.dictionary === "spanish") {
       console.log("Spanish Dictionary")
-      checkWord = function checkWord(word) {
-        if (word.length >= 1 && typeof allWordsES != "undefined") {
-          if (allWordsES.indexOf(word.toLowerCase()) <= 0) {
-            alert(word + " is not a playable word.");
-            return false;
-          } else {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      };
+      
+      jQuery.get("/wordblocks/dictionaries/fise/fise.js", function(data) {
+        var myvar = data;
+    });
 
     }
 
@@ -1162,7 +1143,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 // Return Deck //
 /////////////////
 
-
+/*
 Wordblocks.prototype.returnDeck = function returnDeck() {
   
   if (this.game.options.dictionary === "english") {
@@ -1454,6 +1435,21 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   
 
 
+};
+
+*/
+
+checkWord = function checkWord(word) {
+  if (word.length >= 1 && typeof allWords != "undefined") {
+    if (allWords.indexOf(word.toLowerCase()) <= 0) {
+      alert(word + " is not a playable word.");
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
 };
 
 Wordblocks.prototype.returnBonus = function returnBonus(pos) {

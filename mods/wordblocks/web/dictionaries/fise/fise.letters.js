@@ -1,0 +1,31 @@
+Wordblocks.prototype.returnLetters = function returnLetters() {
+    console.log("Spanish Letter Value");
+    var letters = {};
+    letters['A'] = { score: 1 };
+    letters['B'] = { score: 2 };
+    letters['C'] = { score: 3 };
+    letters['D'] = { score: 2 };
+    letters['E'] = { score: 1 };
+    letters['F'] = { score: 4 };
+    letters['G'] = { score: 2 };
+    letters['H'] = { score: 4 };
+    letters['I'] = { score: 1 };
+    letters['J'] = { score: 8 };
+    letters['L'] = { score: 1 };
+    letters['M'] = { score: 3 };
+    letters['N'] = { score: 1 };
+    letters['Ñ'] = { score: 8 };
+    letters['O'] = { score: 1 };
+    letters['P'] = { score: 3 };
+    letters['Q'] = { score: 6 };
+    letters['R'] = { score: 2 };
+    letters['S'] = { score: 1 };
+    letters['T'] = { score: 1 };
+    letters['U'] = { score: 1 };
+    letters['V'] = { score: 4 };
+    letters['X'] = { score: 8 };
+    letters['Y'] = { score: 4 };
+    letters['Z'] = { score: 10 };
+    return letters;
+
+}
