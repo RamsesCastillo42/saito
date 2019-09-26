@@ -131,8 +131,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.queue.push("DECKXOR\t1\t2");
       this.game.queue.push("DECKXOR\t1\t1");
     }
-
-    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+    let tmp_json = JSON.stringify(this.returnDeck());
+    this.game.queue.push("DECK\t1\t" + tmp_json);
   }
 
   resizeBoard = function resizeBoard(app) {
@@ -1132,20 +1132,29 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var dictionary = this.game.options.dictionary;
-  
   var deck = {};
-    jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.js", function(data) {
-        deck = data;
+  $.ajax({
+    async: false,
+    url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
+    dataType: "json",
+    success: function (response) {
+      deck = response;
+    }
   });
   return deck;
 };
 
- 
+
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
   var letters = {};
-    jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js", function(data) {
-        letters = data;
+  $.ajax({
+    async: false,
+    url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
+    dataType: "json",
+    success: function (response) {
+      letters = response;
+    }
   });
   return letters;
   
