@@ -1,6 +1,3 @@
-Wordblocks.prototype.returnLetters = function returnLetters() {
-    console.log("Spanish Letter Value");
-    var letters = {};
     letters['A'] = { score: 1 };
     letters['B'] = { score: 2 };
     letters['C'] = { score: 3 };
@@ -26,6 +23,3 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
     letters['X'] = { score: 8 };
     letters['Y'] = { score: 4 };
     letters['Z'] = { score: 10 };
-    return letters;
-
-}

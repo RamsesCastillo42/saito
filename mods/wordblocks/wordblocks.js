@@ -1143,301 +1143,26 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 // Return Deck //
 /////////////////
 
-/*
+
 Wordblocks.prototype.returnDeck = function returnDeck() {
   
-  if (this.game.options.dictionary === "english") {
-    console.log("English Deck");
   var deck = {};
-  deck['1'] = { name: "A" };
-  deck['2'] = { name: "A" };
-  deck['3'] = { name: "A" };
-  deck['4'] = { name: "A" };
-  deck['5'] = { name: "A" };
-  deck['6'] = { name: "A" };
-  deck['7'] = { name: "A" };
-  deck['8'] = { name: "A" };
-  deck['9'] = { name: "A" };
-  deck['10'] = { name: "B" };
-  deck['11'] = { name: "B" };
-  deck['12'] = { name: "C" };
-  deck['13'] = { name: "C" };
-  deck['14'] = { name: "D" };
-  deck['15'] = { name: "D" };
-  deck['16'] = { name: "D" };
-  deck['17'] = { name: "D" };
-  deck['18'] = { name: "E" };
-  deck['19'] = { name: "E" };
-  deck['20'] = { name: "E" };
-  deck['21'] = { name: "E" };
-  deck['22'] = { name: "E" };
-  deck['23'] = { name: "E" };
-  deck['24'] = { name: "E" };
-  deck['25'] = { name: "E" };
-  deck['26'] = { name: "E" };
-  deck['27'] = { name: "E" };
-  deck['28'] = { name: "E" };
-  deck['29'] = { name: "E" };
-  deck['30'] = { name: "F" };
-  deck['41'] = { name: "F" };
-  deck['42'] = { name: "G" };
-  deck['43'] = { name: "G" };
-  deck['44'] = { name: "G" };
-  deck['45'] = { name: "H" };
-  deck['46'] = { name: "H" };
-  deck['47'] = { name: "I" };
-  deck['48'] = { name: "I" };
-  deck['49'] = { name: "I" };
-  deck['50'] = { name: "I" };
-  deck['51'] = { name: "I" };
-  deck['52'] = { name: "I" };
-  deck['53'] = { name: "I" };
-  deck['54'] = { name: "I" };
-  deck['55'] = { name: "I" };
-  deck['56'] = { name: "J" };
-  deck['57'] = { name: "K" };
-  deck['58'] = { name: "L" };
-  deck['59'] = { name: "L" };
-  deck['60'] = { name: "L" };
-  deck['61'] = { name: "L" };
-  deck['62'] = { name: "M" };
-  deck['63'] = { name: "M" };
-  deck['64'] = { name: "N" };
-  deck['65'] = { name: "N" };
-  deck['66'] = { name: "N" };
-  deck['67'] = { name: "N" };
-  deck['68'] = { name: "N" };
-  deck['69'] = { name: "N" };
-  deck['70'] = { name: "O" };
-  deck['71'] = { name: "O" };
-  deck['72'] = { name: "O" };
-  deck['73'] = { name: "O" };
-  deck['74'] = { name: "O" };
-  deck['75'] = { name: "O" };
-  deck['76'] = { name: "O" };
-  deck['77'] = { name: "O" };
-  deck['78'] = { name: "P" };
-  deck['79'] = { name: "P" };
-  deck['80'] = { name: "Q" };
-  deck['81'] = { name: "R" };
-  deck['82'] = { name: "R" };
-  deck['83'] = { name: "R" };
-  deck['84'] = { name: "R" };
-  deck['85'] = { name: "R" };
-  deck['86'] = { name: "R" };
-  deck['87'] = { name: "S" };
-  deck['88'] = { name: "S" };
-  deck['89'] = { name: "S" };
-  deck['90'] = { name: "S" };
-  deck['91'] = { name: "T" };
-  deck['92'] = { name: "T" };
-  deck['93'] = { name: "T" };
-  deck['94'] = { name: "T" };
-  deck['95'] = { name: "T" };
-  deck['96'] = { name: "T" };
-  deck['97'] = { name: "U" };
-  deck['98'] = { name: "U" };
-  deck['99'] = { name: "U" };
-  deck['100'] = { name: "U" };
-  deck['101'] = { name: "V" };
-  deck['102'] = { name: "V" };
-  deck['103'] = { name: "W" };
-  deck['104'] = { name: "W" };
-  deck['105'] = { name: "X" };
-  deck['106'] = { name: "U" };
-  deck['107'] = { name: "Y" };
-  deck['108'] = { name: "Y" };
-  deck['109'] = { name: "Z" };
+    jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.js", function(data) {
+        deck = data;
+  });
   return deck;
 };
 
-if (this.game.options.dictionary === "spanish") {
-  console.log("Spanish Deck");
-  var deck = {};
-  deck['1'] = { name: "A" };
-  deck['2'] = { name: "A" };
-  deck['3'] = { name: "A" };
-  deck['4'] = { name: "A" };
-  deck['5'] = { name: "A" };
-  deck['6'] = { name: "A" };
-  deck['7'] = { name: "A" };
-  deck['8'] = { name: "A" };
-  deck['9'] = { name: "A" };
-  deck['10'] = { name: "A" };
-  deck['11'] = { name: "A" };
-  deck['12'] = { name: "A" };
-  deck['13'] = { name: "B" };
-  deck['14'] = { name: "B" };
-  deck['15'] = { name: "C" };
-  deck['16'] = { name: "C" };
-  deck['17'] = { name: "C" };
-  deck['18'] = { name: "C" };
-  deck['19'] = { name: "C" };
-  deck['20'] = { name: "D" };
-  deck['21'] = { name: "D" };
-  deck['22'] = { name: "D" };
-  deck['23'] = { name: "D" };
-  deck['24'] = { name: "D" };
-  deck['25'] = { name: "E" };
-  deck['26'] = { name: "E" };
-  deck['27'] = { name: "E" };
-  deck['28'] = { name: "E" };
-  deck['29'] = { name: "E" };
-  deck['30'] = { name: "E" };
-  deck['31'] = { name: "E" };
-  deck['32'] = { name: "E" };
-  deck['33'] = { name: "E" };
-  deck['34'] = { name: "E" };
-  deck['35'] = { name: "E" };
-  deck['36'] = { name: "E" };
-  deck['37'] = { name: "E" };
-  deck['38'] = { name: "F" };
-  deck['39'] = { name: "G" };
-  deck['40'] = { name: "G" };
-  deck['42'] = { name: "H" };
-  deck['42'] = { name: "H" };
-  deck['43'] = { name: "H" };
-  deck['44'] = { name: "H" };
-  deck['45'] = { name: "I" };
-  deck['46'] = { name: "I" };
-  deck['47'] = { name: "I" };
-  deck['48'] = { name: "I" };
-  deck['49'] = { name: "I" };
-  deck['50'] = { name: "I" };
-  deck['51'] = { name: "J" };
-  deck['52'] = { name: "L" };
-  deck['53'] = { name: "L" };
-  deck['54'] = { name: "L" };
-  deck['55'] = { name: "L" };
-  deck['56'] = { name: "L" };
-  deck['57'] = { name: "L" };
-  deck['58'] = { name: "M" };
-  deck['59'] = { name: "M" };
-  deck['60'] = { name: "N" };
-  deck['61'] = { name: "N" };
-  deck['62'] = { name: "N" };
-  deck['63'] = { name: "N" };
-  deck['64'] = { name: "N" };
-  deck['65'] = { name: "Ñ" };
-  deck['66'] = { name: "Ñ" };
-  deck['67'] = { name: "O" };
-  deck['68'] = { name: "O" };
-  deck['69'] = { name: "O" };
-  deck['70'] = { name: "O" };
-  deck['71'] = { name: "O" };
-  deck['72'] = { name: "O" };
-  deck['73'] = { name: "O" };
-  deck['74'] = { name: "O" };
-  deck['75'] = { name: "O" };
-  deck['76'] = { name: "O" };
-  deck['77'] = { name: "P" };
-  deck['78'] = { name: "P" };
-  deck['79'] = { name: "Q" };
-  deck['80'] = { name: "R" };
-  deck['81'] = { name: "R" };
-  deck['82'] = { name: "R" };
-  deck['83'] = { name: "R" };
-  deck['84'] = { name: "R" };
-  deck['85'] = { name: "R" };
-  deck['86'] = { name: "R" };
-  deck['87'] = { name: "S" };
-  deck['88'] = { name: "S" };
-  deck['89'] = { name: "S" };
-  deck['90'] = { name: "S" };
-  deck['91'] = { name: "S" };
-  deck['92'] = { name: "S" };
-  deck['93'] = { name: "S" };
-  deck['94'] = { name: "T" };
-  deck['95'] = { name: "T" };
-  deck['96'] = { name: "T" };
-  deck['97'] = { name: "T" };
-  deck['98'] = { name: "U" };
-  deck['99'] = { name: "U" };
-  deck['100'] = { name: "U" };
-  deck['101'] = { name: "U" };
-  deck['102'] = { name: "U" };
-  deck['103'] = { name: "V" };
-  deck['104'] = { name: "X" };
-  deck['105'] = { name: "Y" };
-  deck['106'] = { name: "Z" };
-
-  return deck;
-};
-
-};
-
-
-
+ 
 Wordblocks.prototype.returnLetters = function returnLetters() {
 
-  if (this.game.options.dictionary === "english"){
-  console.log("English Letter Value");
   var letters = {};
-  letters['A'] = { score: 1 };
-  letters['B'] = { score: 3 };
-  letters['C'] = { score: 2 };
-  letters['D'] = { score: 2 };
-  letters['E'] = { score: 1 };
-  letters['F'] = { score: 2 };
-  letters['G'] = { score: 2 };
-  letters['H'] = { score: 1 };
-  letters['I'] = { score: 1 };
-  letters['J'] = { score: 8 };
-  letters['K'] = { score: 4 };
-  letters['L'] = { score: 2 };
-  letters['M'] = { score: 2 };
-  letters['N'] = { score: 1 };
-  letters['O'] = { score: 1 };
-  letters['P'] = { score: 2 };
-  letters['Q'] = { score: 10 };
-  letters['R'] = { score: 1 };
-  letters['S'] = { score: 1 };
-  letters['T'] = { score: 1 };
-  letters['U'] = { score: 2 };
-  letters['V'] = { score: 3 };
-  letters['W'] = { score: 2 };
-  letters['X'] = { score: 8 };
-  letters['Y'] = { score: 2 };
-  letters['Z'] = { score: 10 };
+    jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js", function(data) {
+        letters = data;
+  });
   return letters;
-  }
-
-  if (this.game.options.dictionary === "spanish"){
-    console.log("Spanish Letter Value");
-    var letters = {};
-    letters['A'] = { score: 1 };
-    letters['B'] = { score: 2 };
-    letters['C'] = { score: 3 };
-    letters['D'] = { score: 2 };
-    letters['E'] = { score: 1 };
-    letters['F'] = { score: 4 };
-    letters['G'] = { score: 2 };
-    letters['H'] = { score: 4 };
-    letters['I'] = { score: 1 };
-    letters['J'] = { score: 8 };
-    letters['L'] = { score: 1 };
-    letters['M'] = { score: 3 };
-    letters['N'] = { score: 1 };
-    letters['Ñ'] = { score: 8 };
-    letters['O'] = { score: 1 };
-    letters['P'] = { score: 3 };
-    letters['Q'] = { score: 6 };
-    letters['R'] = { score: 2 };
-    letters['S'] = { score: 1 };
-    letters['T'] = { score: 1 };
-    letters['U'] = { score: 1 };
-    letters['V'] = { score: 4 };
-    letters['X'] = { score: 8 };
-    letters['Y'] = { score: 4 };
-    letters['Z'] = { score: 10 };
-    return letters;
-    }
   
-
-
-};
-
-*/
+  }
 
 checkWord = function checkWord(word) {
   if (word.length >= 1 && typeof allWords != "undefined") {
@@ -2174,7 +1899,6 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
 Wordblocks.prototype.webServer = function webServer(app, expressapp) {
    
   expressapp.use('/wordblocks', express.static(__dirname + '/web/'));
-
 };
 
 
@@ -2201,8 +1925,8 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="english" default>English-SOWPODS</option>
-            <option value="spanish">Spanish-FISE</option>
+            <option value="sowpods" default>English-SOWPODS</option>
+            <option value="fise">Spanish-FISE</option>
           </select>
 
           </form>

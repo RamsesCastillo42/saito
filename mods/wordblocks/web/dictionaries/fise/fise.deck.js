@@ -1,6 +1,3 @@
-Wordblocks.prototype.returnDeck = function returnDeck() {
-    console.log("Spanish Deck");
-    var deck = {};
     deck['1'] = { name: "A" };
     deck['2'] = { name: "A" };
     deck['3'] = { name: "A" };
@@ -107,9 +104,3 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
     deck['104'] = { name: "X" };
     deck['105'] = { name: "Y" };
     deck['106'] = { name: "Z" };
-  
-    return deck;
-
-
-
-}
