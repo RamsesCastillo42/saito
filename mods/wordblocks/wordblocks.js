@@ -13,6 +13,7 @@ function Wordblocks(app) {
   }
 
   Wordblocks.super_.call(this);
+  this.wordlist="";
   this.app = app;
   this.name = "Wordblocks";
   this.description = `Wordblocks is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
@@ -78,28 +79,13 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     this.updateStatus(this.game.status);
   }
 
-  //
-  // Options
-  //
 
-  if (this.game.options.dictionary != undefined) {
+  var dictionary = this.game.options.dictionary;
 
-    if (this.game.options.dictionary === "english") {
-      console.log("English Dictionary")
+  jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js", function(data) {
+    this.allWords = data;
+});
 
-    }
-
-
-    if (this.game.options.dictionary === "spanish") {
-      console.log("Spanish Dictionary")
-      
-      jQuery.get("/wordblocks/dictionaries/fise/fise.js", function(data) {
-        var myvar = data;
-    });
-
-    }
-
-  }
   //
   // deal cards 
   //
@@ -1145,6 +1131,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
+  var dictionary = this.game.options.dictionary;
   
   var deck = {};
     jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.js", function(data) {
@@ -1155,7 +1142,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 
  
 Wordblocks.prototype.returnLetters = function returnLetters() {
-
+  var dictionary = this.game.options.dictionary;
   var letters = {};
     jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js", function(data) {
         letters = data;
@@ -1165,8 +1152,8 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
   }
 
 checkWord = function checkWord(word) {
-  if (word.length >= 1 && typeof allWords != "undefined") {
-    if (allWords.indexOf(word.toLowerCase()) <= 0) {
+  if (word.length >= 1 && typeof this.allWords != "undefined") {
+    if (this.allWords.indexOf(word.toLowerCase()) <= 0) {
       alert(word + " is not a playable word.");
       return false;
     } else {
