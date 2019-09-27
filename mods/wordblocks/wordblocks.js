@@ -14,6 +14,8 @@ function Wordblocks(app) {
 
   Wordblocks.super_.call(this);
   this.wordlist="";
+  this.letter="";
+  this.score="";
   this.app = app;
   this.name = "Wordblocks";
   this.description = `Wordblocks is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
@@ -610,33 +612,8 @@ Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
   let html = "";
   let letterScore = this.returnLetters();
 
-  if (letter == "A") { html = '<div class="tile A sc' + letterScore["A"].score + '">A</div>'; }
-  if (letter == "B") { html = '<div class="tile B sc' + letterScore["B"].score + '">B</div>'; }
-  if (letter == "C") { html = '<div class="tile C sc' + letterScore["C"].score + '">C</div>'; }
-  if (letter == "D") { html = '<div class="tile D sc' + letterScore["D"].score + '">D</div>'; }
-  if (letter == "E") { html = '<div class="tile E sc' + letterScore["E"].score + '">E</div>'; }
-  if (letter == "F") { html = '<div class="tile F sc' + letterScore["F"].score + '">F</div>'; }
-  if (letter == "G") { html = '<div class="tile G sc' + letterScore["G"].score + '">G</div>'; }
-  if (letter == "H") { html = '<div class="tile H sc' + letterScore["H"].score + '">H</div>'; }
-  if (letter == "I") { html = '<div class="tile I sc' + letterScore["I"].score + '">I</div>'; }
-  if (letter == "J") { html = '<div class="tile J sc' + letterScore["J"].score + '">J</div>'; }
-  if (letter == "K") { html = '<div class="tile K sc' + letterScore["K"].score + '">K</div>'; }
-  if (letter == "L") { html = '<div class="tile L sc' + letterScore["L"].score + '">L</div>'; }
-  if (letter == "M") { html = '<div class="tile M sc' + letterScore["M"].score + '">M</div>'; }
-  if (letter == "N") { html = '<div class="tile N sc' + letterScore["N"].score + '">N</div>'; }
-  if (letter == "Ñ") { html = '<div class="tile Ñ sc' + letterScore["Ñ"].score + '">Ñ</div>'; }
-  if (letter == "O") { html = '<div class="tile O sc' + letterScore["O"].score + '">O</div>'; }
-  if (letter == "P") { html = '<div class="tile P sc' + letterScore["P"].score + '">P</div>'; }
-  if (letter == "Q") { html = '<div class="tile Q sc' + letterScore["Q"].score + '">Q</div>'; }
-  if (letter == "R") { html = '<div class="tile R sc' + letterScore["R"].score + '">R</div>'; }
-  if (letter == "S") { html = '<div class="tile S sc' + letterScore["S"].score + '">S</div>'; }
-  if (letter == "T") { html = '<div class="tile T sc' + letterScore["T"].score + '">T</div>'; }
-  if (letter == "U") { html = '<div class="tile U sc' + letterScore["U"].score + '">U</div>'; }
-  if (letter == "V") { html = '<div class="tile V sc' + letterScore["V"].score + '">V</div>'; }
-  if (letter == "W") { html = '<div class="tile W sc' + letterScore["W"].score + '">W</div>'; }
-  if (letter == "X") { html = '<div class="tile X sc' + letterScore["X"].score + '">X</div>'; }
-  if (letter == "Y") { html = '<div class="tile Y sc' + letterScore["Y"].score + '">Y</div>'; }
-  if (letter == "Z") { html = '<div class="tile Z sc' + letterScore["Z"].score + '">Z</div>'; }
+  html = '<div class="tile ' + letter + ' sc'+ letterScore[letter].score + '">' + letter + '</div>';
+
   return html;
 };
 
@@ -1921,8 +1898,9 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="sowpods" default>English-SOWPODS</option>
-            <option value="fise">Spanish-FISE</option>
+            <option value="sowpods" default>English|SOWPODS</option>
+            <option value="twl">English|TWL06</option>
+            <option value="fise">Spanish|Fise</option>
           </select>
 
           </form>
