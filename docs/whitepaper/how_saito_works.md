@@ -13,7 +13,7 @@ Block producers rebroadcast UTXO by creating special "automatic transaction rebr
 
 ## 2. PRODUCING BLOCKS
 
-Saito adds cryptographic signatures to the network layer. Each transaction contains an unforgeable record of the path it takes into the network. This allows u to measure the "routing work" provided by the nodes in the network.
+Saito adds cryptographic signatures to the network layer. Each transaction contains an unforgeable record of the path it takes into the network. This allows the network to measure the "routing work" provided by the nodes in the network.
 
 The blockchain sets a "difficulty" for block production. This difficulty is met by producing a block containing adequate "routing work" in its included transactions. The amount of "work" embedded in any transaction is the value of its fee halved by each additional hop beyond the first that the transaction has taken into the network.
 
