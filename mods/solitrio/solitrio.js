@@ -15,15 +15,15 @@ function Solitrio(app) {
   this.app             = app;
 
   this.name            = "Solitrio";
-  this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Wuhan to Ningxia. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
+  this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
 
   this.browser_active  = 0;
   this.handlesEmail    = 1;
   this.emailAppName    = "Solitrio";
+  this.maxPlayers      = 1;
 
-  this.useHUD = 1;
-  this.useHUD          = 1;
-  this.addHUDMenu      = ['Cards','Lang', 'Player'];
+  this.useHUD 	       = 1;
+  //this.addHUDMenu      = ['Cards','Lang', 'Player'];
 
   //
   // this sets the ratio used for determining

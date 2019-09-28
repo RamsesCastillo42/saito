@@ -292,6 +292,7 @@ class Arcade extends ModTemplate {
   /////////////////////////////////
   shouldAffixCallbackToModule(modname) {
     if (modname === "Arcade") { return 1; }
+    if (modname === "Solitrio") { return 1; }
     if (modname === "Twilight") { return 1; }
     if (modname === "Poker") { return 1; }
     if (modname === "Pandemic") { return 1; }
@@ -1297,7 +1298,7 @@ console.log("ERROR");
       this.mobileInviteModal();
     });
 
-        $('#invite_by_publickey').off()
+    $('#invite_by_publickey').off()
     $('#invite_by_publickey').on('click', () => {
       this.inviteByPublickeyModal();
       this.attachEvents();
@@ -1318,6 +1319,12 @@ console.log("ERROR");
       arcade_self.active_game = $(this).attr("id");
       arcade_self.hideArcadeHome();
       arcade_self.showGameCreator();
+
+      if (arcade_self.active_game == "Solitrio") {
+	window.location = "/solitrio";
+	return;
+      }
+
 
       if (arcade_self.active_game == "Twilight") {
         $('.publisher_message').html("Twilight Struggle is <a href=\"https://github.com/trevelyan/ts-blockchain/blob/master/license/GMT_Vassal_Modules.pdf\" style=\"border-bottom: 1px dashed;cursor:pointer;\">released for use</a> in open source gaming engines provided that at least one player has purchased the game. By clicking to start a game you confirm that either you or your opponent has purchased a copy. Please support <a href=\"https://gmtgames.com\" style=\"border-bottom: 1px dashed; cursor:pointer\">GMT Games</a> and encourage further development of Twilight Struggle by <a style=\"border-bottom: 1px dashed;cursor:pointer\" href=\"https://www.gmtgames.com/p-588-twilight-struggle-deluxe-edition-2016-reprint.aspx\">picking up a physical copy of the game</a>");
