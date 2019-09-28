@@ -14,7 +14,7 @@ function Wordblocks(app) {
 
   Wordblocks.super_.call(this);
   this.wordlist="";
-  this.letter="";
+  this.letters="";
   this.score="";
   this.app = app;
   this.name = "Wordblocks";
@@ -85,8 +85,9 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   var dictionary = this.game.options.dictionary;
 
   jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js", function(data) {
-    this.allWords = data;
+    this.wordlist = data;
 });
+
 
   //
   // deal cards 
@@ -1122,24 +1123,28 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 };
 
 
+
+
+
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
-  var letters = {};
   $.ajax({
-    async: false,
-    url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
-    dataType: "json",
-    success: function (response) {
-      letters = response;
-    }
-  });
+  async: false,
+  url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
+  dataType: "json",
+  success: function (response) {
+    letters = response;
+  }
+});
+
+  var letters = {};
   return letters;
   
   }
 
 checkWord = function checkWord(word) {
-  if (word.length >= 1 && typeof this.allWords != "undefined") {
-    if (this.allWords.indexOf(word.toLowerCase()) <= 0) {
+  if (word.length >= 1 && typeof this.wordlist != "undefined") {
+    if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
       alert(word + " is not a playable word.");
       return false;
     } else {
