@@ -553,7 +553,7 @@ console.log(JSON.stringify(rows));
 
 
   ////////////////////////
-  // server -- calendar //
+  // client -- calendar //
   ////////////////////////
   if (msg.request === "timeclock calendar") {
 console.log("received calendar info: ");
