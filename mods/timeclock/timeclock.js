@@ -114,6 +114,17 @@ TimeClock.prototype.initialize = async function initialize() {
     }, 500);
 
 
+    //////////////
+    // CALENDAR //
+    //////////////
+    var rdloadtimer = setTimeout(() => {
+          message                 = {};
+          message.request         = "timeclock load calendar";
+          message.data            = {};
+          message.data.request    = "timeclock load calendar";
+          this.app.network.sendRequest(message.request, message.data);
+    }, 500);
+
 
     return; 
   }
@@ -497,6 +508,63 @@ TimeClock.prototype.webServer = function webServer(app, expressapp) {
 TimeClock.prototype.handlePeerRequest = async function handlePeerRequest(app, msg, peer, mycallback) {
 
   var timeclock_self = this;
+
+
+  ////////////////////////
+  // server -- calendar //
+  ////////////////////////
+  if (msg.request === "timeclock load calendar") {
+
+    let datenow = new Date().getTime();
+    let weekago = datenow - (604800000);  // 60 x 60 x 24 x 7
+
+    //
+    // fetch data from server and send it back
+    //
+    let sql    = "SELECT * FROM sessions WHERE login > $weekago ORDER BY login DESC";
+    let params = { $weekago : weekago };
+    let sessions = [];
+
+    try {
+      var rows = await timeclock_self.db.all(sql, params);
+    } catch(err) {
+      console.log(err);
+    }
+
+console.log("returning timeclock info...");
+console.log(JSON.stringify(rows));
+
+    if (rows != null) {
+      if (rows.length != 0) {
+        for (var fat = 0; fat < rows.length; fat++) {
+          sessions[fat] = {};
+          sessions[fat].session = JSON.stringify(rows[fat]);
+        }
+        peer.sendRequest("timeclock calendar", sessions);
+      }
+      return;
+    }
+
+    return;
+  }
+
+
+
+
+
+  ////////////////////////
+  // server -- calendar //
+  ////////////////////////
+  if (msg.request === "timeclock calendar") {
+console.log("received calendar info: ");
+    for (let i = 0; i < msg.data.length; i++) {
+      console.log(msg.data[i]);
+    }
+    return;
+  }
+
+
+
 
   /////////////////////////////
   // server -- announcements //
