@@ -459,6 +459,10 @@ TimeClock.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + '/web/dashboard.html');
     return;
   });
+  expressapp.get('/timeclock/calendar/', function (req, res) {
+    res.sendFile(__dirname + '/web/calendar.html');
+    return;
+  });
   expressapp.get('/timeclock/admin/', function (req, res) {
     res.sendFile(__dirname + '/web/admin.html');
     return;

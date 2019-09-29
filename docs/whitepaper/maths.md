@@ -29,7 +29,7 @@ In Saito the block reward does not go to the block creator. Rather, the reward i
 
 The proportion of the block reward awarded to the routing network and miner is known as the 'paysplit'. Here we will concentrate on Saito's standard implimentation of a paysplit of 0.5. 
 
-The randomness is created by the minner solving a cryptographic puzzle on the hash of the proceeding block. The solution to the puzzle is called a 'golden ticket'. If no golden ticket is found, no block reward is paid to the network and no prize if paid to the miner.
+The randomness is created by the miner solving a cryptographic puzzle on the hash of the proceeding block. The solution to the puzzle is called a 'golden ticket'. If no golden ticket is found, no block reward is paid to the network and no prize if paid to the miner.
 
 I early versions of Saito unalocated block reward was moved into the network treasury. Here we analyse a refined version in which token holders can stake their tokens. Unpaid routing and mining rewards are then paid to stakers.
 
