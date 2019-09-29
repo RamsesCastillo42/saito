@@ -628,3 +628,18 @@ Chessgame.prototype.piecehtml = function piecehtml(p, c) {
   return (pieceImg);
 }
 
+Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
+
+  return `
+        <h3>Chess: </h3>
+
+        <form id="options" class="options">
+
+          <label for="color">Pick Your Color:</label>
+          <select name="color">
+            <option value="black" default>Black</option>
+            <option value="white">White</option>
+          </select>
+
+          </form>
+          `}

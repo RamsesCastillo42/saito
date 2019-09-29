@@ -1,6 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
+var express = require('express');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -12,6 +13,9 @@ function Wordblocks(app) {
   }
 
   Wordblocks.super_.call(this);
+  this.wordlist="";
+  this.letters="";
+  this.score="";
   this.app = app;
   this.name = "Wordblocks";
   this.description = `Wordblocks is a word game in which two to four players score points by placing tiles bearing a single letter onto a board divided into a 15×15 grid of squares. The tiles must form words that, in crossword fashion, read left to right in rows or downward in columns, and be included in a standard dictionary or lexicon.`;
@@ -33,7 +37,7 @@ function Wordblocks(app) {
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
-  this.last_played_word = {player: '', finalword: '', score: ''};
+  this.last_played_word = { player: '', finalword: '', score: '' };
   this_wordblocks = this;
   return this;
 }
@@ -76,6 +80,14 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   if (this.game.status != "") {
     this.updateStatus(this.game.status);
   }
+
+
+  var dictionary = this.game.options.dictionary;
+
+  jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js", function(data) {
+    this.wordlist = data;
+});
+
 
   //
   // deal cards 
@@ -122,8 +134,8 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.queue.push("DECKXOR\t1\t2");
       this.game.queue.push("DECKXOR\t1\t1");
     }
-
-    this.game.queue.push("DECK\t1\t" + JSON.stringify(this.returnDeck()));
+    let tmp_json = JSON.stringify(this.returnDeck());
+    this.game.queue.push("DECK\t1\t" + tmp_json);
   }
 
   resizeBoard = function resizeBoard(app) {
@@ -209,7 +221,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       this.game.score[i] = 0;
     }
   }
-  
+
   var op = 0;
   for (let i = 0; i < players; i++) {
     let this_player = i + 1;
@@ -227,7 +239,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       op++;
       html += `
         <div class="player">
-          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span class="player_name">${opponent.substring(0, 16)}</span>
           <span id="score_${this_player}"> ${this.game.score[i]} </span>
         </div>
       `;
@@ -243,7 +255,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   //
 
 
-  
+
 
   if (this.game.target == this.game.player) {
     this.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
@@ -380,7 +392,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       var clientTop = docEl.clientTop || body.clientTop || 0;
       var clientLeft = docEl.clientLeft || body.clientLeft || 0;
 
-      var top  = box.top +  scrollTop - clientTop;
+      var top = box.top + scrollTop - clientTop;
       var left = box.left + scrollLeft - clientLeft;
 
       return { x: Math.round(left), y: Math.round(top) };
@@ -406,7 +418,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     }
 
 
-    function getCoordinateShiftDueToScale(size, scale){
+    function getCoordinateShiftDueToScale(size, scale) {
       var newWidth = scale * size.width;
       var newHeight = scale * size.height;
       var dx = (newWidth - size.width) / 2
@@ -417,7 +429,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       }
     }
 
-    hammertime.on('pan', function(e) {
+    hammertime.on('pan', function (e) {
       if (lastEvent !== 'pan') {
         fixHammerjsDeltaIssue = {
           x: e.deltaX,
@@ -431,7 +443,7 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
       update();
     });
 
-    hammertime.on('pinch', function(e) {
+    hammertime.on('pinch', function (e) {
       var d = scaleFrom(pinchZoomOrigin, last.z, last.z * e.scale)
 
       let newX = d.x + last.x + e.deltaX;
@@ -446,20 +458,20 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
     });
 
     var pinchZoomOrigin = undefined;
-    hammertime.on('pinchstart', function(e) {
+    hammertime.on('pinchstart', function (e) {
       pinchStart.x = e.center.x;
       pinchStart.y = e.center.y;
       pinchZoomOrigin = getRelativePosition(element, { x: pinchStart.x, y: pinchStart.y }, originalSize, current.z);
       lastEvent = 'pinchstart';
     });
 
-    hammertime.on('panend', function(e) {
+    hammertime.on('panend', function (e) {
       last.x = current.x;
       last.y = current.y;
       lastEvent = 'panend';
     });
 
-    hammertime.on('pinchend', function(e) {
+    hammertime.on('pinchend', function (e) {
       if ((originalSize.height * current.z) <= originalSize.height &&
         (originalSize.width * current.z) <= originalSize.width) {
         return;
@@ -473,19 +485,19 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
     function update() {
       // if (lastEvent !== 'pan') {
-        if ((originalSize.height * current.z) < originalSize.height &&
-          (originalSize.width * current.z) < originalSize.width) {
-          if (current.z < 1) {
-            element.style.transform = `translate3d(0, 0, 0) scale(1)`;
-            current = {x: 0, y: 0, z: 1};
-            last = {
-              x: current.x,
-              y: current.y,
-              z: current.z
-            }
-            return;
+      if ((originalSize.height * current.z) < originalSize.height &&
+        (originalSize.width * current.z) < originalSize.width) {
+        if (current.z < 1) {
+          element.style.transform = `translate3d(0, 0, 0) scale(1)`;
+          current = { x: 0, y: 0, z: 1 };
+          last = {
+            x: current.x,
+            y: current.y,
+            z: current.z
           }
+          return;
         }
+      }
       // }
 
       current.height = originalSize.height * current.z;
@@ -512,14 +524,14 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 
 Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(status) {
-  let tile_html ='';
+  let tile_html = '';
   for (let i = 0; i < this.game.deck[0].hand.length; i++) {
     tile_html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
-  let {player, finalword, score} = this.last_played_word;
+  let { player, finalword, score } = this.last_played_word;
   let last_move_html = finalword == '' ? '...' : `Player ${player} played ${finalword} for: ${score} points.`;
   let html =
-  `
+    `
     <div>${status}</div>
     <div class="status_container">
       <div style="display: flex; font-size: 0.8rem;">
@@ -579,7 +591,7 @@ Wordblocks.prototype.calculateScore = async function calculateScore() {
       op++;
       html += `
         <div class="player">
-          <span class="player_name">${opponent.substring(0,16)}</span>
+          <span class="player_name">${opponent.substring(0, 16)}</span>
           <span class="player_score" id="score_${this_player}"> ${this.game.score[i]} </span>
         </div>
       `;
@@ -598,8 +610,12 @@ Wordblocks.prototype.calculateScore = async function calculateScore() {
 
 
 Wordblocks.prototype.returnTileHTML = function returnTileHTML(letter) {
+  let html = "";
   let letterScore = this.returnLetters();
-  return `<div class="tile ${letter} sc${letterScore[letter].score}">${letter}</div>`
+
+  html = '<div class="tile ' + letter + ' sc'+ letterScore[letter].score + '">' + letter + '</div>';
+
+  return html;
 };
 
 Wordblocks.prototype.addTile = function (obj, letter) {
@@ -636,9 +652,6 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     if (tiles) {
       alert("Tossed: " + tiles);
       wordblocks_self.removeTilesFromHand(tiles);
-      if (wordblocks_self.checkForEndGame() == 1) {
-        return;
-      }
       wordblocks_self.addMove("turn\t" + wordblocks_self.game.player);
       let cards_needed = 7;
       cards_needed = cards_needed - wordblocks_self.game.deck[0].hand.length;
@@ -679,12 +692,12 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     let left = $(this).offset().left + offsetX;
     let top = $(this).offset().top + offsetY;
 
-    if (x > 8){ left -= greater_offsetX; }
-    if (y > 8){ top -= greater_offsetY; }
+    if (x > 8) { left -= greater_offsetX; }
+    if (y > 8) { top -= greater_offsetY; }
 
     $('.tile-placement-controls').remove();
     if (wordblocks_self.app.browser.isMobileBrowser(navigator.userAgent)) {
-      let tile_html ='';
+      let tile_html = '';
       for (let i = 0; i < wordblocks_self.game.deck[0].hand.length; i++) {
         tile_html += wordblocks_self.returnTileHTML(wordblocks_self.game.deck[0].cards[wordblocks_self.game.deck[0].hand[i]].name);
       }
@@ -702,7 +715,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
     } else {
       $('body').append(html);
       $('.tile-placement-controls').addClass("active-status");
-      $('.tile-placement-controls').css({"position": "absolute", "top": top, "left": left});
+      $('.tile-placement-controls').css({ "position": "absolute", "top": top, "left": left });
     }
 
     $('.action').off();
@@ -1096,138 +1109,50 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
+  var dictionary = this.game.options.dictionary;
   var deck = {};
-    deck['1'] = { name: "A" };
-    deck['2'] = { name: "A" };
-    deck['3'] = { name: "A" };
-    deck['4'] = { name: "A" };
-    deck['5'] = { name: "A" };
-    deck['6'] = { name: "A" };
-    deck['7'] = { name: "A" };
-    deck['8'] = { name: "A" };
-    deck['9'] = { name: "A" };
-    deck['10'] = { name: "B" };
-    deck['11'] = { name: "B" };
-    deck['12'] = { name: "C" };
-    deck['13'] = { name: "C" };
-    deck['14'] = { name: "D" };
-    deck['15'] = { name: "D" };
-    deck['16'] = { name: "D" };
-    deck['17'] = { name: "D" };
-    deck['18'] = { name: "E" };
-    deck['19'] = { name: "E" };
-    deck['20'] = { name: "E" };
-    deck['21'] = { name: "E" };
-    deck['22'] = { name: "E" };
-    deck['23'] = { name: "E" };
-    deck['24'] = { name: "E" };
-    deck['25'] = { name: "E" };
-    deck['26'] = { name: "E" };
-    deck['27'] = { name: "E" };
-    deck['28'] = { name: "E" };
-    deck['29'] = { name: "E" };
-    deck['30'] = { name: "F" };
-    deck['41'] = { name: "F" };
-    deck['42'] = { name: "G" };
-    deck['43'] = { name: "G" };
-    deck['44'] = { name: "G" };
-    deck['45'] = { name: "H" };
-    deck['46'] = { name: "H" };
-    deck['47'] = { name: "I" };
-    deck['48'] = { name: "I" };
-    deck['49'] = { name: "I" };
-    deck['50'] = { name: "I" };
-    deck['51'] = { name: "I" };
-    deck['52'] = { name: "I" };
-    deck['53'] = { name: "I" };
-    deck['54'] = { name: "I" };
-    deck['55'] = { name: "I" };
-    deck['56'] = { name: "J" };
-    deck['57'] = { name: "K" };
-    deck['58'] = { name: "L" };
-    deck['59'] = { name: "L" };
-    deck['60'] = { name: "L" };
-    deck['61'] = { name: "L" };
-    deck['62'] = { name: "M" };
-    deck['63'] = { name: "M" };
-    deck['64'] = { name: "N" };
-    deck['65'] = { name: "N" };
-    deck['66'] = { name: "N" };
-    deck['67'] = { name: "N" };
-    deck['68'] = { name: "N" };
-    deck['69'] = { name: "N" };
-    deck['70'] = { name: "O" };
-    deck['71'] = { name: "O" };
-    deck['72'] = { name: "O" };
-    deck['73'] = { name: "O" };
-    deck['74'] = { name: "O" };
-    deck['75'] = { name: "O" };
-    deck['76'] = { name: "O" };
-    deck['77'] = { name: "O" };
-    deck['78'] = { name: "P" };
-    deck['79'] = { name: "P" };
-    deck['80'] = { name: "Q" };
-    deck['81'] = { name: "R" };
-    deck['82'] = { name: "R" };
-    deck['83'] = { name: "R" };
-    deck['84'] = { name: "R" };
-    deck['85'] = { name: "R" };
-    deck['86'] = { name: "R" };
-    deck['87'] = { name: "S" };
-    deck['88'] = { name: "S" };
-    deck['89'] = { name: "S" };
-    deck['90'] = { name: "S" };
-    deck['91'] = { name: "T" };
-    deck['92'] = { name: "T" };
-    deck['93'] = { name: "T" };
-    deck['94'] = { name: "T" };
-    deck['95'] = { name: "T" };
-    deck['96'] = { name: "T" };
-    deck['97'] = { name: "U" };
-    deck['98'] = { name: "U" };
-    deck['99'] = { name: "U" };
-    deck['100'] = { name: "U" };
-    deck['101'] = { name: "V" };
-    deck['102'] = { name: "V" };
-    deck['103'] = { name: "W" };
-    deck['104'] = { name: "W" };
-    deck['105'] = { name: "X" };
-    deck['106'] = { name: "U" };
-    deck['107'] = { name: "Y" };
-    deck['108'] = { name: "Y" };
-    deck['109'] = { name: "Z" };
+  $.ajax({
+    async: false,
+    url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
+    dataType: "json",
+    success: function (response) {
+      deck = response;
+    }
+  });
   return deck;
 };
 
+
+
+
+
 Wordblocks.prototype.returnLetters = function returnLetters() {
+  var dictionary = this.game.options.dictionary;
+  $.ajax({
+  async: false,
+  url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
+  dataType: "json",
+  success: function (response) {
+    letters = response;
+  }
+});
+
   var letters = {};
-  letters['A'] = { score: 1 };
-  letters['B'] = { score: 3 };
-  letters['C'] = { score: 2 };
-  letters['D'] = { score: 2 };
-  letters['E'] = { score: 1 };
-  letters['F'] = { score: 2 };
-  letters['G'] = { score: 2 };
-  letters['H'] = { score: 1 };
-  letters['I'] = { score: 1 };
-  letters['J'] = { score: 8 };
-  letters['K'] = { score: 4 };
-  letters['L'] = { score: 2 };
-  letters['M'] = { score: 2 };
-  letters['N'] = { score: 1 };
-  letters['O'] = { score: 1 };
-  letters['P'] = { score: 2 };
-  letters['Q'] = { score: 10 };
-  letters['R'] = { score: 1 };
-  letters['S'] = { score: 1 };
-  letters['T'] = { score: 1 };
-  letters['U'] = { score: 2 };
-  letters['V'] = { score: 3 };
-  letters['W'] = { score: 2 };
-  letters['X'] = { score: 8 };
-  letters['Y'] = { score: 2 };
-  letters['Z'] = { score: 10 };
   return letters;
+  
+  }
+
+checkWord = function checkWord(word) {
+  if (word.length >= 1 && typeof this.wordlist != "undefined") {
+    if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
+      alert(word + " is not a playable word.");
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
 };
 
 Wordblocks.prototype.returnBonus = function returnBonus(pos) {
@@ -1741,22 +1666,18 @@ Wordblocks.prototype.scoreWord = function scoreWord(word, player, orientation, x
   this.firstmove = 0;
   $('#lastmove').html(`Player ${player} played ${finalword} for: ${score} points.`);
   $('#remainder').html(`Tiles left: ${this.game.deck[0].crypt.length}`);
-  this.last_played_word = {player, finalword, score};
+  this.last_played_word = { player, finalword, score };
   return score;
 };
 
-checkWord = function checkWord(word) {
-  if (word.length >= 1 && typeof allWords != "undefined") {
-    if (allWords.indexOf(word.toLowerCase()) <= 0) {
-      alert(word + " is not a playable word.");
-      return false;
-    } else {
-      return true;
-    }
-  } else {
-    return true;
-  }
-};
+
+
+
+
+
+//Switch end
+////////
+
 
 //
 // Core Game Logic
@@ -1823,7 +1744,7 @@ Wordblocks.prototype.handleGame = function handleGame(msg = null) {
           result = "It's a tie! Well done everyone!";
         }
 
-        wordblocks_self.updateStatusWithTiles(result);
+        wordblocks_self.updateStatus(result);
         wordblocks_self.updateLog(result);
       }
 
@@ -1953,35 +1874,12 @@ Wordblocks.prototype.addScoreToPlayer = function addScoreToPlayer(player, score)
 // webServer //
 ///////////////
 
-
 Wordblocks.prototype.webServer = function webServer(app, expressapp) {
-  expressapp.get('/wordblocks/', function (req, res) {
-    res.sendFile(__dirname + '/web/index.html');
-    return;
-  });
-  expressapp.get('/wordblocks/style.css', function (req, res) {
-    res.sendFile(__dirname + '/web/style.css');
-    return;
-  });
-  expressapp.get('/wordblocks/script.js', function (req, res) {
-    res.sendFile(__dirname + '/web/script.js');
-    return;
-  });
-  expressapp.get('/wordblocks/sowpods.js', function (req, res) {
-    res.sendFile(__dirname + '/web/sowpods.js');
-    return;
-  });
-  expressapp.get('/wordblocks/img/:imagefile', function (req, res) {
-    var imgf = '/web/img/' + req.params.imagefile;
-
-    if (imgf.indexOf("\/") != false) {
-      return;
-    }
-
-    res.sendFile(__dirname + imgf);
-    return;
-  });
+   
+  expressapp.use('/wordblocks', express.static(__dirname + '/web/'));
 };
+
+
 
 Wordblocks.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
@@ -1995,3 +1893,20 @@ Wordblocks.prototype.endTurn = function endTurn() {
   this.moves = [];
   this.sendMessage("game", extra);
 };
+
+Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
+
+  return `
+        <h3>Wordblocks: </h3>
+
+        <form id="options" class="options">
+
+          <label for="dictionary">Dictionary:</label>
+          <select name="dictionary">
+            <option value="sowpods" default>English|SOWPODS</option>
+            <option value="twl">English|TWL06</option>
+            <option value="fise">Spanish|Fise</option>
+          </select>
+
+          </form>
+          `}
