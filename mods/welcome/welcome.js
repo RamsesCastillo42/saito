@@ -59,14 +59,17 @@ Welcome.prototype.webServer = function webServer(app, expressapp) {
 
 
 Welcome.prototype.initialize = async function initialize() {
-
+  // skip for servers
+  if (this.app.BROWSER == 0) {
+    return;
+  }
   //
   // test option file length
   //
   let options_file_length = JSON.stringify(this.app.options).length;
 
   console.log("WALLET SIZE: " + options_file_length + " bytes");
-  //if (options_file_length > 100000) {
+
   if (options_file_length > 3000000) {
 
     let c = confirm("Your wallet is getting dangerously large... purge bloated data?");
