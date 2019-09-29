@@ -15,15 +15,15 @@ function Solitrio(app) {
   this.app             = app;
 
   this.name            = "Solitrio";
-  this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Wuhan to Ningxia. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
+  this.description     = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks.';
 
   this.browser_active  = 0;
   this.handlesEmail    = 1;
   this.emailAppName    = "Solitrio";
+  this.maxPlayers      = 1;
 
-  this.useHUD = 1;
-  this.useHUD          = 1;
-  this.addHUDMenu      = ['Cards','Lang', 'Player'];
+  //this.useHUD 	       = 1;
+  //this.addHUDMenu      = ['Cards','Lang', 'Player'];
 
   //
   // this sets the ratio used for determining
@@ -92,6 +92,12 @@ Solitrio.prototype.initializeGame = function initializeGame(game_id) {
 
   this.saveGame(game_id);
 
+
+  //
+  // empty slot size properly
+  //
+  $('.slot').css('min-height', $('.card').css('min-height'));
+
 }
 
 
@@ -131,8 +137,6 @@ Solitrio.prototype.attachEventsToBoard = function attachEventsToBoard() {
 
     let card = $(this).attr("id");
 
-console.log("SELECTED: " + selected + " -- CARD: " + card);
-
     if (selected === card) {
       solitrio_self.untoggleCard(card);
       selected = "";
@@ -150,8 +154,6 @@ console.log("SELECTED: " + selected + " -- CARD: " + card);
 	return;
       }
 
-console.log("BOARD: " + JSON.stringify(solitrio_self.game.board));
-
 
       //
       // selected must work in this context
@@ -164,9 +166,6 @@ console.log("BOARD: " + JSON.stringify(solitrio_self.game.board));
         let x = JSON.stringify(solitrio_self.game.board[selected]);
         let y = JSON.stringify(solitrio_self.game.board[card]);
 
-console.log("UPDATING: " + selected + " to " + y.name);
-console.log("UPDATING: " + card + " to " + x.name);
-
         solitrio_self.game.board[selected] = JSON.parse(y);
         solitrio_self.game.board[card] = JSON.parse(x);
 
@@ -175,6 +174,12 @@ console.log("UPDATING: " + card + " to " + x.name);
 	selected = "";
 
         solitrio_self.displayBoard();
+
+	let winning_state = solitrio_self.isWinningState();
+	if (winning_state == 1) {
+	  alert("Congratulations! You win!");
+	}
+
 	return;
 
       } else {
@@ -475,19 +480,35 @@ Solitrio.prototype.displayUserInterface = function displayUserInterface() {
   let solitrio_self = this;
 
   let html = 'Order cards by suite from 2 to 10. You may randomize the unarranged cards ';
-  if (this.game.state.recycles_remaining == 2) { html += 'two more times.'; }
-  if (this.game.state.recycles_remaining == 1) { html += 'one more time.'; }
-  if (this.game.state.recycles_remaining == 0) { html += 'no more times.'; }
+  if (this.game.state.recycles_remaining == 2) { 
+    html += 'two more times.'; 
+    $('.chances').text('two chances');
+  }
+  if (this.game.state.recycles_remaining == 1) { 
+    html += 'one more time.'; 
+    $('.chances').text('one chance');
+  }
+  if (this.game.state.recycles_remaining == 0) { 
+    html += 'no more times.'; 
+    $('.chances').text('no chances');
+  }
   if (this.game.state.recycles_remaining > 0) {
     html += ' <p></p><div id="recycles_remaining">click here to cycle the board</div>';
   }
   this.updateStatus(html);	
 
+  $('.logobox').off();
+  $('.logobox').on('click', function() {
+    solitrio_self.recycleBoard();
+    solitrio_self.game.state.recycles_remaining--;
+    solitrio_self.displayUserInterface();
+  });
+
+
   $('#recycles_remaining').off();
   $('#recycles_remaining').on('click', function() {
     solitrio_self.recycleBoard();
     solitrio_self.game.state.recycles_remaining--;
-    //solitrio_self.saveGame();
     solitrio_self.displayUserInterface();
   });
 

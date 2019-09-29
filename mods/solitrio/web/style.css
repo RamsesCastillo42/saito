@@ -21,26 +21,48 @@ body {
   background-size: cover;
   width: 1504px;
   height: 1000px;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.logobox {
+  position: absolute;
+  float: left;
+  left: 82%;
+  top: 40px;
+  width: 16%;
+  cursor:pointer;
+}
+.logobox img {
+  width: 100%;
+}
+.chances {
+ position: absolute;
+ top: 80%;
+ left: 36%;
 }
 
 .rowbox {
+  float:left;
   padding: 40px;
 }
 .card {
   position: relative;
   float:left;
-  width: 100px;
-}
-.row {
- position:relative;
- height: 110px;
- clear: both;
+  #width: 100px;
+  #min-width:10%;
 }
 .slot {
  position: relative;
- width: 100px;
+ width:8%;
+ #width: 100px;
  min-height: 150px;
  float: left;
+}
+.row {
+ position:relative;
+ #height: 110px;
+ clear: both;
 }
 .slot img {
  width: 100%;
