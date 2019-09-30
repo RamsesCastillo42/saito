@@ -14,7 +14,8 @@ function Wordblocks(app) {
 
   Wordblocks.super_.call(this);
   this.wordlist="";
-  this.letter="";
+  this.letterset= {};
+  this.mydeck = {};
   this.score="";
   this.app = app;
   this.name = "Wordblocks";
@@ -1109,33 +1110,38 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var dictionary = this.game.options.dictionary;
-  var deck = {};
-  $.ajax({
-    async: false,
-    url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
-    dataType: "json",
-    success: function (response) {
-      deck = response;
-    }
-  });
-  return deck;
+  if (typeof this.mydeck.length == "undefined") {
+    var tmpdeck = {};
+    $.ajax({
+      async: false,
+      url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
+      dataType: "json",
+      success: function (response) {
+        tmpdeck = response;
+      }
+    });
+    this.mydeck = tmpdeck;
+  }
+  return this.mydeck;
 };
 
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
-  var letters = {};
-  $.ajax({
-    async: false,
-    url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
-    dataType: "json",
-    success: function (response) {
-      letters = response;
-    }
-  });
-  return letters;
-  
+  if (typeof this.letterset.length == "undefined" ) {
+    var tmpletters = {};
+    $.ajax({
+      async: false,
+      url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
+      dataType: "json",
+      success: function (response) {
+        tmpletters = response;
+      }
+    });
+    this.letterset = tmpletters;
   }
+  return this.letterset;
+}
 
 checkWord = function checkWord(word) {
   if (word.length >= 1 && typeof this.allWords != "undefined") {
