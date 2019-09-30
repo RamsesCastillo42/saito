@@ -86,8 +86,9 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
   var dictionary = this.game.options.dictionary;
 
   jQuery.get("/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".js", function(data) {
-    this.allWords = data;
+    this.wordlist = data;
 });
+
 
   //
   // deal cards 
@@ -1126,6 +1127,9 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 };
 
 
+
+
+
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
   if (typeof this.letterset.length == "undefined" ) {
@@ -1144,8 +1148,8 @@ Wordblocks.prototype.returnLetters = function returnLetters() {
 }
 
 checkWord = function checkWord(word) {
-  if (word.length >= 1 && typeof this.allWords != "undefined") {
-    if (this.allWords.indexOf(word.toLowerCase()) <= 0) {
+  if (word.length >= 1 && typeof this.wordlist != "undefined") {
+    if (this.wordlist.indexOf(word.toLowerCase()) <= 0) {
       alert(word + " is not a playable word.");
       return false;
     } else {

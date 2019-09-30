@@ -1,4 +1,4 @@
-var allWords = ["aa",
+var wordlist = ["aa",
 "aah",
 "aahed",
 "aahing",

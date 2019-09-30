@@ -12,6 +12,8 @@ var app                   = {};
 //
 global.__webdir = __dirname + "/lib/saito/web/";
 
+
+console.log("new saito here!");
 initSaito();
 
 
