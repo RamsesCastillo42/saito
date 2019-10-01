@@ -1111,7 +1111,7 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var dictionary = this.game.options.dictionary;
-  if (typeof this.mydeck.length == "undefined") {
+  if (jQuery.isEmptyObject(this.mydeck)) {
     var tmpdeck = {};
     $.ajax({
       async: false,
@@ -1132,7 +1132,7 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
-  if (typeof this.letterset.length == "undefined" ) {
+  if (jQuery.isEmptyObject(this.letterset)) {
     var tmpletters = {};
     $.ajax({
       async: false,
@@ -1908,9 +1908,9 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="sowpods" default>English|SOWPODS</option>
-            <option value="twl">English|TWL06</option>
-            <option value="fise">Spanish|Fise</option>
+            <option value="sowpods" default>English: SOWPODS</option>
+            <option value="twl">English: TWL06</option>
+            <option value="fise">Spanish: FISE</option>
           </select>
 
           </form>
