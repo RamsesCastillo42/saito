@@ -570,7 +570,7 @@ Chessgame.prototype.onChange = function onChange(oldPos, newPos) {
 
 };
 
-Chessgame.prototype.colours = function colours(x) {
+Chessgame.prototype.colours = function colours(x) { 
 
   switch (x) {
     case "w": return ("White");
@@ -628,7 +628,7 @@ Chessgame.prototype.piecehtml = function piecehtml(p, c) {
   return (pieceImg);
 }
 
-Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
+/*Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
   return `
         <h3>Chess: </h3>
@@ -642,4 +642,6 @@ Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           </select>
 
           </form>
-          `}
+          `} 
+
+*/
