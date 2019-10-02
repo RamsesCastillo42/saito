@@ -628,6 +628,7 @@ Chessgame.prototype.piecehtml = function piecehtml(p, c) {
   return (pieceImg);
 }
 
+/*
 Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
   return `
@@ -643,3 +644,4 @@ Chessgame.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           </form>
           `}
+  */
