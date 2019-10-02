@@ -14,7 +14,8 @@ function Wordblocks(app) {
 
   Wordblocks.super_.call(this);
   this.wordlist="";
-  this.letters="";
+  this.letterset= {};
+  this.mydeck = {};
   this.score="";
   this.app = app;
   this.name = "Wordblocks";
@@ -1110,16 +1111,19 @@ Wordblocks.prototype.returnBoard = function returnBoard() {
 
 Wordblocks.prototype.returnDeck = function returnDeck() {
   var dictionary = this.game.options.dictionary;
-  var deck = {};
-  $.ajax({
-    async: false,
-    url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
-    dataType: "json",
-    success: function (response) {
-      deck = response;
-    }
-  });
-  return deck;
+  if (jQuery.isEmptyObject(this.mydeck)) {
+    var tmpdeck = {};
+    $.ajax({
+      async: false,
+      url: "/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".deck.json",
+      dataType: "json",
+      success: function (response) {
+        tmpdeck = response;
+      }
+    });
+    this.mydeck = tmpdeck;
+  }
+  return this.mydeck;
 };
 
 
@@ -1128,19 +1132,20 @@ Wordblocks.prototype.returnDeck = function returnDeck() {
 
 Wordblocks.prototype.returnLetters = function returnLetters() {
   var dictionary = this.game.options.dictionary;
-  $.ajax({
-  async: false,
-  url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
-  dataType: "json",
-  success: function (response) {
-    letters = response;
+  if (jQuery.isEmptyObject(this.letterset)) {
+    var tmpletters = {};
+    $.ajax({
+      async: false,
+      url:"/wordblocks/dictionaries/" + dictionary + "/" + dictionary + ".letters.js",
+      dataType: "json",
+      success: function (response) {
+        tmpletters = response;
+      }
+    });
+    this.letterset = tmpletters;
   }
-});
-
-  var letters = {};
-  return letters;
-  
-  }
+  return this.letterset;
+}
 
 checkWord = function checkWord(word) {
   if (word.length >= 1 && typeof this.wordlist != "undefined") {
@@ -1903,9 +1908,9 @@ Wordblocks.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <label for="dictionary">Dictionary:</label>
           <select name="dictionary">
-            <option value="sowpods" default>English|SOWPODS</option>
-            <option value="twl">English|TWL06</option>
-            <option value="fise">Spanish|Fise</option>
+            <option value="sowpods" default>English: SOWPODS</option>
+            <option value="twl">English: TWL06</option>
+            <option value="fise">Spanish: FISE</option>
           </select>
 
           </form>

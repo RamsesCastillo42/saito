@@ -44,8 +44,7 @@ body {
   padding: 10px;
 }
 
-
-.action  {
+.action {
   display: block;
   color: #fff;
   border: 4px solid #cccccc;
@@ -147,9 +146,17 @@ body {
   font-size: 36px;
 }
 
-.tile-placement-controls {
 
-}
+
+.tile-placement-controls {}.tiles .tile.O {
+	    padding: 10px 12px 10px 8px;
+	      }
+	        .tiles .tile.M {
+			    padding: 10px 14px 10px 6px;
+			      }
+			        .tiles .tile.W {
+					    padding: 10px 15px 10px 5px;
+					      }
 
 /* .status {
   font-size: 1.5rem;
@@ -290,18 +297,49 @@ body {
   margin-left: 1px;
 }
 
-.sc1::after { content: "1"; }
-.sc2::after { content: "2"; }
-.sc3::after { content: "3"; }
-.sc4::after { content: "4"; }
-.sc5::after { content: "5"; }
-.sc6::after { content: "6"; }
-.sc7::after { content: "7"; }
-.sc8::after { content: "8"; }
-.sc9::after { content: "9"; }
-.sc10::after { content: "10"; }
-.sc11::after { content: "11"; }
+.sc1::after {
+  content: "1";
+}
 
+.sc2::after {
+  content: "2";
+}
+
+.sc3::after {
+  content: "3";
+}
+
+.sc4::after {
+  content: "4";
+}
+
+.sc5::after {
+  content: "5";
+}
+
+.sc6::after {
+  content: "6";
+}
+
+.sc7::after {
+  content: "7";
+}
+
+.sc8::after {
+  content: "8";
+}
+
+.sc9::after {
+  content: "9";
+}
+
+.sc10::after {
+  content: "10";
+}
+
+.sc11::after {
+  content: "11";
+}
 
 #chat_container {
   display: block;
@@ -439,6 +477,15 @@ body {
     padding: 2.5vw;
     background: rgb(70, 70, 70);
     font-size: 1.25em;
+  }
+  .tiles .tile.O {
+    padding: 10px 12px 10px 8px;
+  }
+  .tiles .tile.M {
+    padding: 10px 14px 10px 6px;
+  }
+  .tiles .tile.W {
+    padding: 10px 15px 10px 5px;
   }
   .tile-placement-controls {
     display: grid;
