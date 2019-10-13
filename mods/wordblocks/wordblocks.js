@@ -62,7 +62,7 @@ Wordblocks.prototype.showTiles = function showTiles() {
   }
 
   $('.tiles').html(html);
-  $('#remainder').html("Tiles left: " + this.game.deck[0].crypt.length);
+  $('#remainder').html("<span>Tiles left: </span>" + this.game.deck[0].crypt.length);
 };
 
 ////////////////
