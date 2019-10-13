@@ -71,7 +71,7 @@ for (let row = 0; row < this.ROWS; row++) {
     $board.append($row);
   }
 }
-//test
+
 
 Connect4.prototype.setupEventListeners = function setupEventListeners(){
   const $board = $(this.selector);
