@@ -38,7 +38,7 @@ function Wordblocks(app) {
   this.letters = {};
   this.moves = [];
   this.firstmove = 1;
-  this.last_played_word = { player: '', finalword: '', score: '' };
+  this.last_played_word = { <span>player</span>: '', finalword: '', <span>score</span>: '' };
   this_wordblocks = this;
   return this;
 }
