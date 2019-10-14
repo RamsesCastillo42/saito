@@ -259,10 +259,10 @@ Wordblocks.prototype.initializeGame = async function initializeGame(game_id) {
 
 
   if (this.game.target == this.game.player) {
-    this.updateStatusWithTiles("YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.");
+    this.updateStatusWithTiles("<span>YOUR TURN: click on the board to place tiles, or <span class=\"link tosstiles\">discard tiles</span>.</span>");
     this.enableEvents();
   } else {
-    this.updateStatusWithTiles(`Waiting for Player ${this.game.target} to move.`);
+    this.updateStatusWithTiles(`<span>Waiting for Player ${this.game.target} to move.</span>`);
     this.disableEvents();
   }
 
@@ -530,7 +530,7 @@ Wordblocks.prototype.updateStatusWithTiles = function updateStatusWithTiles(stat
     tile_html += this.returnTileHTML(this.game.deck[0].cards[this.game.deck[0].hand[i]].name);
   }
   let { player, finalword, score } = this.last_played_word;
-  let last_move_html = finalword == '' ? '...' : `Player ${player} played ${finalword} for: ${score} points.`;
+  let last_move_html = finalword == '' ? '...' : `<span>Player ${player} played ${finalword} for: ${score} points.</span>`;
   let html =
     `
     <div>${status}</div>
@@ -648,7 +648,7 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
   let wordblocks_self = this;
   $('.tosstiles').off();
   $('.tosstiles').on('click', function () {
-    tiles = prompt("Which tiles do you want to discard? Tossed tiles count against your score:");
+    tiles = prompt("<span>Which tiles do you want to discard? Tossed tiles count against your score:</span>");
 
     if (tiles) {
       alert("Tossed: " + tiles);
@@ -735,19 +735,19 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
       if (action2 == "cancel") {
         $('.action').off();
         $('.tile-placement-controls').remove();
-        wordblocks_self.updateStatusWithTiles("Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.");
+        wordblocks_self.updateStatusWithTiles("<span>Click on the board to place a letter from that square, or <span class=\"link tosstiles\">discard tiles</span> if you cannot move.</span>");
         wordblocks_self.addEventsToBoard();
         return;
       }
 
-      word = prompt("Provide your word:");
+      word = prompt("<span>Provide your word:</span>");
 
       if (word) {
         //
         // reset board
         //
         $('.tile-placement-controls').html('');
-        $('.status').html("Processing your turn.");
+        $('.status').html("<span>Processing your turn.</span>");
 
         //
         // if entry is valid
@@ -761,8 +761,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
           if (myscore <= 1) {
             wordblocks_self.removeWordFromBoard(word, orientation, x, y);
             wordblocks_self.updateStatusWithTiles(
-              `Try again! Click on the board to place a letter from that square, or
-              <span class="link tosstiles">discard tiles</span> if you cannot move.`
+              `<span>Try again! Click on the board to place a letter from that square, or
+              <span class="link tosstiles">discard tiles</span> if you cannot move.</span>`
             );
             wordblocks_self.addEventsToBoard();
           } else {
@@ -804,8 +804,8 @@ Wordblocks.prototype.addEventsToBoard = function addEventsToBoard() {
           ;
         } else {
           wordblocks_self.updateStatusWithTiles(
-            `Word is not valid, try again! Click on the board to place a word, or
-            <span class="link tosstiles">discard tiles</span>`
+            `<span>Word is not valid, try again! Click on the board to place a word, or
+            <span class="link tosstiles">discard tiles</span></span>`
           );
           wordblocks_self.addEventsToBoard();
         }
@@ -863,7 +863,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
   if (this.firstmove == 1) {
     if (orientation == "vertical") {
       if (x != 6 && x != 10) {
-        alert("First Word must be placed to cross a Star");
+        alert("<span>First Word must be placed to cross a Star</span>");
         return 0;
       }
 
@@ -871,14 +871,14 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       let ending_point = y + word.length - 1;
 
       if (starting_point <= 6 && ending_point >= 6 || starting_point <= 10 && ending_point >= 6) { } else {
-        alert("First Word must be long enough to cross a Star");
+        alert("<span>First Word must be long enough to cross a Star</span>");
         return 0;
       }
     }
 
     if (orientation == "horizontal") {
       if (y != 6 && y != 10) {
-        alert("First Word must be placed to cross a Star");
+        alert("<span>First Word must be placed to cross a Star</span>");
         return 0;
       }
 
@@ -886,7 +886,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       let ending_point = x + word.length - 1;
 
       if (starting_point <= 6 && ending_point >= 6 || starting_point <= 10 && ending_point >= 6) { } else {
-        alert("First Word must be long enough to cross a Star");
+        alert("<span>First Word must be long enough to cross a Star</span>");
         return 0;
       }
     } //this.firstmove = 0;
@@ -922,7 +922,7 @@ Wordblocks.prototype.isEntryValid = function isEntryValid(word, orientation, x, 
       }
 
       if (letter_found == 0) {
-        alert("INVALID: letter not in hand: " + letter);
+        alert("<span>INVALID: letter not in hand: </span>" + letter);
         return 0;
       }
     }
